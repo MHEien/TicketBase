@@ -4,7 +4,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { PluginsController } from './plugins.controller';
 import { PluginsService } from './plugins.service';
 import { Plugin, PluginSchema } from './schemas/plugin.schema';
-import { InstalledPlugin, InstalledPluginSchema } from './schemas/installed-plugin.schema';
+import {
+  InstalledPlugin,
+  InstalledPluginSchema,
+} from './schemas/installed-plugin.schema';
 import { PluginProxyController } from './plugin-proxy.controller';
 import { WebhookController } from './webhook.controller';
 import { AssetsModule } from '../assets/assets.module';
@@ -30,23 +33,23 @@ import { MinioModule } from '../minio/minio.module';
     }),
   ],
   controllers: [
-    PluginsController, 
-    PluginProxyController, 
+    PluginsController,
+    PluginProxyController,
     WebhookController,
     PluginBundleController,
   ],
   providers: [
-    PluginsService, 
-    CompatibilityService, 
-    PluginEventBus, 
+    PluginsService,
+    CompatibilityService,
+    PluginEventBus,
     BundleService,
     PluginStorageService,
   ],
   exports: [
-    PluginsService, 
-    CompatibilityService, 
+    PluginsService,
+    CompatibilityService,
     PluginEventBus,
     PluginStorageService,
   ],
 })
-export class PluginsModule {} 
+export class PluginsModule {}

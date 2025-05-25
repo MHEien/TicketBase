@@ -5,6 +5,7 @@ To complete your plugin system architecture, you need to develop a plugin server
 ## Overview
 
 The plugin server will:
+
 1. Manage the plugin registry (installation, uninstallation, updates)
 2. Serve plugin assets (JavaScript, CSS, etc.)
 3. Handle plugin-specific API requests
@@ -14,6 +15,7 @@ The plugin server will:
 ## Technology Stack
 
 I recommend using NestJS for your plugin server due to its:
+
 - Modular architecture aligned with plugin concepts
 - TypeScript support for type safety
 - Built-in dependency injection
@@ -125,7 +127,8 @@ export class InstalledPlugin {
   updatedAt: Date;
 }
 
-export const InstalledPluginSchema = SchemaFactory.createForClass(InstalledPlugin);
+export const InstalledPluginSchema =
+  SchemaFactory.createForClass(InstalledPlugin);
 // Add compound index for tenantId + pluginId
 InstalledPluginSchema.index({ tenantId: 1, pluginId: 1 }, { unique: true });
 ```
@@ -138,13 +141,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Plugin, PluginDocument } from './schemas/plugin.schema';
-import { InstalledPlugin, InstalledPluginDocument } from './schemas/installed-plugin.schema';
+import {
+  InstalledPlugin,
+  InstalledPluginDocument,
+} from './schemas/installed-plugin.schema';
 
 @Injectable()
 export class PluginsService {
   constructor(
     @InjectModel(Plugin.name) private pluginModel: Model<PluginDocument>,
-    @InjectModel(InstalledPlugin.name) private installedPluginModel: Model<InstalledPluginDocument>,
+    @InjectModel(InstalledPlugin.name)
+    private installedPluginModel: Model<InstalledPluginDocument>,
   ) {}
 
   async findAll(): Promise<Plugin[]> {
@@ -161,9 +168,7 @@ export class PluginsService {
 
   async getInstalledPlugins(tenantId: string): Promise<any[]> {
     // Get all installed plugins for this tenant with populated plugin data
-    const installed = await this.installedPluginModel
-      .find({ tenantId })
-      .exec();
+    const installed = await this.installedPluginModel.find({ tenantId }).exec();
 
     // Map to full plugin data
     const installedWithData = await Promise.all(
@@ -188,17 +193,21 @@ export class PluginsService {
   async installPlugin(tenantId: string, pluginId: string): Promise<any> {
     // Verify plugin exists
     const plugin = await this.findById(pluginId);
-    
+
     // Check if already installed
-    const existing = await this.installedPluginModel.findOne({
-      tenantId, 
-      pluginId: plugin._id
-    }).exec();
-    
+    const existing = await this.installedPluginModel
+      .findOne({
+        tenantId,
+        pluginId: plugin._id,
+      })
+      .exec();
+
     if (existing) {
-      throw new Error(`Plugin ${pluginId} is already installed for tenant ${tenantId}`);
+      throw new Error(
+        `Plugin ${pluginId} is already installed for tenant ${tenantId}`,
+      );
     }
-    
+
     // Install plugin
     const installed = await this.installedPluginModel.create({
       tenantId,
@@ -207,7 +216,7 @@ export class PluginsService {
       configuration: {},
       installedAt: new Date(),
     });
-    
+
     return {
       ...plugin.toObject(),
       enabled: installed.enabled,
@@ -220,41 +229,45 @@ export class PluginsService {
 
   async uninstallPlugin(tenantId: string, pluginId: string): Promise<void> {
     const plugin = await this.findById(pluginId);
-    
-    const result = await this.installedPluginModel.deleteOne({
-      tenantId,
-      pluginId: plugin._id,
-    }).exec();
-    
+
+    const result = await this.installedPluginModel
+      .deleteOne({
+        tenantId,
+        pluginId: plugin._id,
+      })
+      .exec();
+
     if (result.deletedCount === 0) {
       throw new NotFoundException(
-        `Plugin ${pluginId} is not installed for tenant ${tenantId}`
+        `Plugin ${pluginId} is not installed for tenant ${tenantId}`,
       );
     }
   }
 
   async updatePluginConfig(
-    tenantId: string, 
-    pluginId: string, 
-    config: Record<string, any>
+    tenantId: string,
+    pluginId: string,
+    config: Record<string, any>,
   ): Promise<any> {
     const plugin = await this.findById(pluginId);
-    
-    const installed = await this.installedPluginModel.findOne({
-      tenantId,
-      pluginId: plugin._id,
-    }).exec();
-    
+
+    const installed = await this.installedPluginModel
+      .findOne({
+        tenantId,
+        pluginId: plugin._id,
+      })
+      .exec();
+
     if (!installed) {
       throw new NotFoundException(
-        `Plugin ${pluginId} is not installed for tenant ${tenantId}`
+        `Plugin ${pluginId} is not installed for tenant ${tenantId}`,
       );
     }
-    
+
     installed.configuration = config;
     installed.updatedAt = new Date();
     await installed.save();
-    
+
     return {
       ...plugin.toObject(),
       enabled: installed.enabled,
@@ -266,27 +279,29 @@ export class PluginsService {
   }
 
   async setPluginEnabled(
-    tenantId: string, 
-    pluginId: string, 
-    enabled: boolean
+    tenantId: string,
+    pluginId: string,
+    enabled: boolean,
   ): Promise<any> {
     const plugin = await this.findById(pluginId);
-    
-    const installed = await this.installedPluginModel.findOne({
-      tenantId,
-      pluginId: plugin._id,
-    }).exec();
-    
+
+    const installed = await this.installedPluginModel
+      .findOne({
+        tenantId,
+        pluginId: plugin._id,
+      })
+      .exec();
+
     if (!installed) {
       throw new NotFoundException(
-        `Plugin ${pluginId} is not installed for tenant ${tenantId}`
+        `Plugin ${pluginId} is not installed for tenant ${tenantId}`,
       );
     }
-    
+
     installed.enabled = enabled;
     installed.updatedAt = new Date();
     await installed.save();
-    
+
     return {
       ...plugin.toObject(),
       enabled: installed.enabled,
@@ -303,15 +318,15 @@ export class PluginsService {
 
 ```typescript
 // plugins/plugins.controller.ts
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Body, 
-  Param, 
-  Headers, 
-  UnauthorizedException 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PluginsService } from './plugins.service';
 
@@ -335,7 +350,7 @@ export class PluginsController {
   @Post('install')
   async installPlugin(
     @Headers('x-tenant-id') tenantId: string,
-    @Body() body: { pluginId: string }
+    @Body() body: { pluginId: string },
   ) {
     if (!tenantId) {
       throw new UnauthorizedException('Tenant ID is required');
@@ -346,7 +361,7 @@ export class PluginsController {
   @Post('uninstall')
   async uninstallPlugin(
     @Headers('x-tenant-id') tenantId: string,
-    @Body() body: { pluginId: string }
+    @Body() body: { pluginId: string },
   ) {
     if (!tenantId) {
       throw new UnauthorizedException('Tenant ID is required');
@@ -359,7 +374,7 @@ export class PluginsController {
   async updatePluginConfig(
     @Headers('x-tenant-id') tenantId: string,
     @Param('id') pluginId: string,
-    @Body() config: Record<string, any>
+    @Body() config: Record<string, any>,
   ) {
     if (!tenantId) {
       throw new UnauthorizedException('Tenant ID is required');
@@ -371,12 +386,16 @@ export class PluginsController {
   async setPluginEnabled(
     @Headers('x-tenant-id') tenantId: string,
     @Param('id') pluginId: string,
-    @Body() body: { enabled: boolean }
+    @Body() body: { enabled: boolean },
   ) {
     if (!tenantId) {
       throw new UnauthorizedException('Tenant ID is required');
     }
-    return this.pluginsService.setPluginEnabled(tenantId, pluginId, body.enabled);
+    return this.pluginsService.setPluginEnabled(
+      tenantId,
+      pluginId,
+      body.enabled,
+    );
   }
 }
 ```
@@ -390,7 +409,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PluginsController } from './plugins.controller';
 import { PluginsService } from './plugins.service';
 import { Plugin, PluginSchema } from './schemas/plugin.schema';
-import { InstalledPlugin, InstalledPluginSchema } from './schemas/installed-plugin.schema';
+import {
+  InstalledPlugin,
+  InstalledPluginSchema,
+} from './schemas/installed-plugin.schema';
 
 @Module({
   imports: [
@@ -444,7 +466,7 @@ import { S3 } from 'aws-sdk';
 @Injectable()
 export class AssetsService {
   private s3Client: S3;
-  
+
   constructor(private configService: ConfigService) {
     this.s3Client = new S3({
       region: configService.get('AWS_REGION'),
@@ -452,23 +474,25 @@ export class AssetsService {
       secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
     });
   }
-  
+
   async uploadPluginAsset(
-    pluginId: string, 
-    fileName: string, 
+    pluginId: string,
+    fileName: string,
     fileContent: Buffer,
-    contentType: string
+    contentType: string,
   ): Promise<string> {
     const bucket = this.configService.get('PLUGIN_ASSETS_BUCKET');
     const key = `plugins/${pluginId}/${fileName}`;
-    
-    await this.s3Client.putObject({
-      Bucket: bucket,
-      Key: key,
-      Body: fileContent,
-      ContentType: contentType,
-    }).promise();
-    
+
+    await this.s3Client
+      .putObject({
+        Bucket: bucket,
+        Key: key,
+        Body: fileContent,
+        ContentType: contentType,
+      })
+      .promise();
+
     return `https://${bucket}.s3.amazonaws.com/${key}`;
   }
 }
@@ -480,13 +504,13 @@ To handle plugin-specific API requests:
 
 ```typescript
 // plugins/plugin-proxy.controller.ts
-import { 
-  Controller, 
-  All, 
-  Req, 
-  Res, 
-  Headers, 
-  NotFoundException 
+import {
+  Controller,
+  All,
+  Req,
+  Res,
+  Headers,
+  NotFoundException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PluginsService } from './plugins.service';
@@ -500,26 +524,29 @@ export class PluginProxyController {
   async proxyRequest(
     @Headers('x-tenant-id') tenantId: string,
     @Req() req: Request,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const pluginId = req.params.pluginId;
     const pathSuffix = req.params[0];
-    
+
     // Get plugin data
     try {
       const plugin = await this.pluginsService.findById(pluginId);
-      
+
       // Check if plugin is installed for this tenant
-      const installedPlugins = await this.pluginsService.getInstalledPlugins(tenantId);
-      const isInstalled = installedPlugins.some(p => p.id === pluginId);
-      
+      const installedPlugins =
+        await this.pluginsService.getInstalledPlugins(tenantId);
+      const isInstalled = installedPlugins.some((p) => p.id === pluginId);
+
       if (!isInstalled) {
-        return res.status(404).json({ error: `Plugin ${pluginId} not installed` });
+        return res
+          .status(404)
+          .json({ error: `Plugin ${pluginId} not installed` });
       }
-      
+
       // Forward request to plugin API service
       const targetUrl = `https://api.plugin-service.example.com/${pluginId}/${pathSuffix}`;
-      
+
       try {
         // Forward the request with tenant context
         const response = await axios({
@@ -532,7 +559,7 @@ export class PluginProxyController {
           },
           params: req.query,
         });
-        
+
         // Return the response
         return res
           .status(response.status)
@@ -540,11 +567,11 @@ export class PluginProxyController {
           .json(response.data);
       } catch (error) {
         if (error.response) {
-          return res
-            .status(error.response.status)
-            .json(error.response.data);
+          return res.status(error.response.status).json(error.response.data);
         }
-        return res.status(500).json({ error: 'Error connecting to plugin service' });
+        return res
+          .status(500)
+          .json({ error: 'Error connecting to plugin service' });
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -562,13 +589,13 @@ For processing webhooks:
 
 ```typescript
 // plugins/webhook.controller.ts
-import { 
-  Controller, 
-  Post, 
-  Param, 
-  Headers, 
-  Body, 
-  NotFoundException 
+import {
+  Controller,
+  Post,
+  Param,
+  Headers,
+  Body,
+  NotFoundException,
 } from '@nestjs/common';
 import { PluginsService } from './plugins.service';
 import axios from 'axios';
@@ -581,19 +608,19 @@ export class WebhookController {
   async handleWebhook(
     @Param('pluginId') pluginId: string,
     @Headers() headers: Record<string, string>,
-    @Body() body: any
+    @Body() body: any,
   ) {
     try {
       // Verify plugin exists
       const plugin = await this.pluginsService.findById(pluginId);
-      
+
       // Forward webhook to plugin's webhook handler
       const webhookUrl = `https://api.plugin-service.example.com/${pluginId}/webhook`;
-      
+
       const response = await axios.post(webhookUrl, body, {
         headers,
       });
-      
+
       return response.data;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -624,35 +651,37 @@ export class MarketplaceService {
 
   async publishPlugin(pluginData: Partial<Plugin>): Promise<Plugin> {
     // Check if plugin already exists
-    const existing = await this.pluginModel.findOne({ id: pluginData.id }).exec();
-    
+    const existing = await this.pluginModel
+      .findOne({ id: pluginData.id })
+      .exec();
+
     if (existing) {
       // Update existing plugin
       Object.assign(existing, pluginData);
       return existing.save();
     }
-    
+
     // Create new plugin
     return this.pluginModel.create(pluginData);
   }
 
   async getMarketplacePlugins(
     category?: string,
-    search?: string
+    search?: string,
   ): Promise<Plugin[]> {
     let query = this.pluginModel.find();
-    
+
     if (category) {
       query = query.where('category').equals(category);
     }
-    
+
     if (search) {
       query = query.or([
         { name: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
       ]);
     }
-    
+
     return query.exec();
   }
 }
@@ -680,8 +709,9 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const path = req.nextUrl.pathname.replace('/api/plugins', '');
-  const pluginServiceUrl = process.env.PLUGIN_SERVICE_URL || 'http://localhost:3001';
-  
+  const pluginServiceUrl =
+    process.env.PLUGIN_SERVICE_URL || 'http://localhost:3001';
+
   // Forward request to plugin service
   const response = await fetch(`${pluginServiceUrl}/plugins${path}`, {
     method: req.method,
@@ -691,7 +721,7 @@ export default async function handler(req: NextRequest) {
     },
     body: req.body,
   });
-  
+
   // Return response from plugin service
   return NextResponse.json(await response.json(), {
     status: response.status,
@@ -719,22 +749,23 @@ import { StripeService } from './stripe.service';
 @Controller('stripe-payment')
 export class StripeController {
   constructor(private readonly stripeService: StripeService) {}
-  
+
   @Post('create-payment-intent')
   async createPaymentIntent(
-    @Body() data: {
+    @Body()
+    data: {
       amount: number;
       currency: string;
       metadata?: Record<string, string>;
-    }
+    },
   ) {
     return this.stripeService.createPaymentIntent(
       data.amount,
       data.currency,
-      data.metadata
+      data.metadata,
     );
   }
-  
+
   @Post('webhook')
   async handleWebhook(@Body() body: any, @Headers() headers: any) {
     return this.stripeService.handleWebhook(body, headers);
@@ -764,11 +795,13 @@ This comprehensive guide should provide everything you need to develop a robust 
 ## 1. Plugin Versioning and Compatibility
 
 ### Version Management
+
 - Implement semantic versioning for plugins
 - Store version history for each plugin
 - Allow tenants to choose which version to use (or auto-update)
 
 ### Compatibility Checks
+
 - Define a compatibility matrix between plugin versions and platform versions
 - Implement runtime compatibility checks before loading plugins
 - Provide graceful fallbacks for incompatible plugins
@@ -779,11 +812,11 @@ This comprehensive guide should provide everything you need to develop a robust 
 export class CompatibilityService {
   checkPluginCompatibility(
     pluginManifest: PluginManifest,
-    platformVersion: string
+    platformVersion: string,
   ): { compatible: boolean; issues: string[] } {
     // Implementation logic
   }
-  
+
   getSupportedPlatformVersions(pluginVersion: string): string[] {
     // Implementation logic
   }
@@ -793,6 +826,7 @@ export class CompatibilityService {
 ## 2. Plugin Communication Architecture
 
 ### Inter-Plugin Communication
+
 - Define a message bus for plugins to communicate with each other
 - Implement event broadcasting system for plugins
 - Add plugin dependencies and dependency resolution
@@ -802,15 +836,18 @@ export class CompatibilityService {
 @Injectable()
 export class PluginEventBus {
   private eventEmitter = new EventEmitter();
-  
+
   emit(eventName: string, payload: any, source: string): void {
     this.eventEmitter.emit(eventName, { payload, source });
   }
-  
-  on(eventName: string, handler: (data: { payload: any, source: string }) => void): void {
+
+  on(
+    eventName: string,
+    handler: (data: { payload: any; source: string }) => void,
+  ): void {
     this.eventEmitter.on(eventName, handler);
   }
-  
+
   off(eventName: string, handler: Function): void {
     this.eventEmitter.off(eventName, handler);
   }
@@ -820,6 +857,7 @@ export class PluginEventBus {
 ## 3. Plugin System Extensibility
 
 ### Extension Point Registry
+
 - Create a central registry of all possible extension points
 - Allow plugins to register new extension points for other plugins
 - Implement validation for extension point implementations
@@ -829,15 +867,15 @@ export class PluginEventBus {
 @Injectable()
 export class ExtensionPointRegistry {
   private extensionPoints = new Map<string, ExtensionPointDefinition>();
-  
+
   registerExtensionPoint(definition: ExtensionPointDefinition): void {
     // Implementation logic
   }
-  
+
   getExtensionPoint(id: string): ExtensionPointDefinition | undefined {
     return this.extensionPoints.get(id);
   }
-  
+
   getAllExtensionPoints(): ExtensionPointDefinition[] {
     return Array.from(this.extensionPoints.values());
   }
@@ -847,10 +885,12 @@ export class ExtensionPointRegistry {
 ## 4. Advanced Tenant Isolation
 
 ### Database Isolation
+
 - Implement tenant-specific collections/schemas for plugin data
 - Use tenant context in all database operations
 
 ### Request Isolation
+
 - Implement tenant middleware for all plugin API requests
 - Add tenant-specific rate limiting and quotas
 
@@ -863,12 +903,12 @@ export class TenantContextMiddleware implements NestMiddleware {
     if (!tenantId) {
       return res.status(401).json({ message: 'Tenant ID required' });
     }
-    
+
     TenantContext.setCurrentTenant(tenantId.toString());
     res.on('finish', () => {
       TenantContext.clear();
     });
-    
+
     next();
   }
 }
@@ -877,6 +917,7 @@ export class TenantContextMiddleware implements NestMiddleware {
 ## 5. Plugin Lifecycle Hooks
 
 ### Extended Lifecycle Events
+
 - Add pre/post installation hooks
 - Implement activation/deactivation hooks
 - Add data migration hooks for version updates
@@ -887,9 +928,15 @@ export class TenantContextMiddleware implements NestMiddleware {
 export class PluginLifecycleService {
   async executeHook(
     pluginId: string,
-    hook: 'preInstall' | 'postInstall' | 'preUninstall' | 'postUninstall' | 'activate' | 'deactivate',
+    hook:
+      | 'preInstall'
+      | 'postInstall'
+      | 'preUninstall'
+      | 'postUninstall'
+      | 'activate'
+      | 'deactivate',
     tenantId: string,
-    data?: any
+    data?: any,
   ): Promise<any> {
     // Implementation logic
   }
@@ -899,11 +946,13 @@ export class PluginLifecycleService {
 ## 6. Developer Experience
 
 ### Plugin SDK
+
 - Create a Plugin SDK package for plugin developers
 - Provide typings for all extension points
 - Include development tools and testing utilities
 
 ### Local Development Environment
+
 - Support local plugin development with hot reloading
 - Implement a developer mode with extended debugging
 - Create scaffolding tools for generating plugin templates
@@ -930,11 +979,13 @@ export class PluginLifecycleService {
 ## 7. Performance Optimization
 
 ### Caching Strategy
+
 - Implement multi-level caching for plugin assets
 - Add caching for plugin configuration
 - Use Redis for distributed caching of plugin data
 
 ### Performance Monitoring
+
 - Add performance metrics for plugin operations
 - Implement plugin-specific tracing
 - Create performance benchmarks for plugins
@@ -944,15 +995,15 @@ export class PluginLifecycleService {
 @Injectable()
 export class PluginPerformanceService {
   private metrics = new Map<string, PluginMetrics>();
-  
+
   recordApiCall(pluginId: string, endpoint: string, duration: number): void {
     // Implementation logic
   }
-  
+
   getPluginMetrics(pluginId: string): PluginMetrics {
     // Implementation logic
   }
-  
+
   getSlowPlugins(threshold: number): string[] {
     // Implementation logic
   }
@@ -962,11 +1013,13 @@ export class PluginPerformanceService {
 ## 8. Advanced Security Features
 
 ### Plugin Code Analysis
+
 - Implement static code analysis for plugin code
 - Scan for security vulnerabilities
 - Enforce coding standards and best practices
 
 ### Permissions and Capabilities
+
 - Define fine-grained plugin capabilities
 - Implement permission requests and approvals
 - Add audit logging for all plugin operations
@@ -978,10 +1031,10 @@ export class PluginSecurityService {
   async analyzePlugin(pluginId: string): Promise<SecurityAnalysisResult> {
     // Implementation logic
   }
-  
+
   validatePermissions(
-    pluginId: string, 
-    requestedCapabilities: string[]
+    pluginId: string,
+    requestedCapabilities: string[],
   ): PermissionValidationResult {
     // Implementation logic
   }
@@ -991,11 +1044,13 @@ export class PluginSecurityService {
 ## 9. Plugin Marketplace Features
 
 ### Monetization
+
 - Support for paid plugins with licensing
 - Implement subscription billing for premium plugins
 - Add usage-based billing for certain plugin features
 
 ### Ratings and Reviews
+
 - Add plugin rating system
 - Implement verified reviews
 - Create featured/trending plugin sections
@@ -1005,18 +1060,18 @@ export class PluginSecurityService {
 @Injectable()
 export class MarketplaceEnhancedService extends MarketplaceService {
   async purchasePlugin(
-    tenantId: string, 
-    pluginId: string, 
-    licenseType: 'monthly' | 'annual' | 'perpetual'
+    tenantId: string,
+    pluginId: string,
+    licenseType: 'monthly' | 'annual' | 'perpetual',
   ): Promise<PurchaseResult> {
     // Implementation logic
   }
-  
+
   async addPluginReview(
     tenantId: string,
     pluginId: string,
     rating: number,
-    review: string
+    review: string,
   ): Promise<ReviewResult> {
     // Implementation logic
   }
@@ -1026,11 +1081,13 @@ export class MarketplaceEnhancedService extends MarketplaceService {
 ## 10. Testing and Quality Assurance
 
 ### Testing Framework
+
 - Create a testing framework for plugins
 - Implement automated testing for plugin compatibility
 - Add integration test suites for common plugin types
 
 ### Plugin Verification System
+
 - Implement a verification process for marketplace plugins
 - Create security and performance certification
 - Add verified publisher program
@@ -1042,11 +1099,11 @@ export class PluginTestingService {
   async runCompatibilityTests(pluginId: string): Promise<TestResult> {
     // Implementation logic
   }
-  
+
   async runSecurityTests(pluginId: string): Promise<TestResult> {
     // Implementation logic
   }
-  
+
   async generateTestReport(pluginId: string): Promise<TestReport> {
     // Implementation logic
   }
@@ -1056,11 +1113,13 @@ export class PluginTestingService {
 ## 11. Deployment and Scaling
 
 ### Containerization
+
 - Create Docker containers for the plugin server
 - Implement Kubernetes manifests for deployment
 - Add horizontal scaling capabilities
 
 ### Multi-Region Support
+
 - Support for geographically distributed plugin servers
 - Implement edge caching for plugin assets
 - Add region-specific plugin availability
@@ -1082,35 +1141,37 @@ spec:
         app: plugin-server
     spec:
       containers:
-      - name: plugin-server
-        image: events-platform/plugin-server:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: plugin-server-secrets
-              key: mongodb-uri
-        - name: AWS_REGION
-          value: "eu-west-1"
-        resources:
-          limits:
-            cpu: "1"
-            memory: "1Gi"
-          requests:
-            cpu: "500m"
-            memory: "512Mi"
+        - name: plugin-server
+          image: events-platform/plugin-server:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: plugin-server-secrets
+                  key: mongodb-uri
+            - name: AWS_REGION
+              value: 'eu-west-1'
+          resources:
+            limits:
+              cpu: '1'
+              memory: '1Gi'
+            requests:
+              cpu: '500m'
+              memory: '512Mi'
 ```
 
 ## 12. Disaster Recovery and Data Management
 
 ### Backup Strategy
+
 - Implement automated backups for plugin data
 - Create plugin configuration export/import
 - Add tenant-specific backup policies
 
 ### Data Retention and Compliance
+
 - Implement data retention policies for plugin data
 - Add compliance features for regulated industries
 - Support GDPR and other privacy regulations
@@ -1119,11 +1180,17 @@ spec:
 // Backup service for plugins
 @Injectable()
 export class PluginBackupService {
-  async createBackup(tenantId: string, pluginIds?: string[]): Promise<BackupResult> {
+  async createBackup(
+    tenantId: string,
+    pluginIds?: string[],
+  ): Promise<BackupResult> {
     // Implementation logic
   }
-  
-  async restoreBackup(tenantId: string, backupId: string): Promise<RestoreResult> {
+
+  async restoreBackup(
+    tenantId: string,
+    backupId: string,
+  ): Promise<RestoreResult> {
     // Implementation logic
   }
 }
@@ -1168,16 +1235,19 @@ The transition was driven by the need to:
 ### Plugin Server Changes
 
 1. **Updated Data Model**
+
    - Modified `Plugin` schema to support `bundleUrl` instead of `remoteEntry`/`scope`
    - Added support for `extensionPoints` and `metadata` fields
    - Maintained backward compatibility for tenant-specific configuration
 
 2. **Bundle Service**
+
    - Created a new `BundleService` for generating plugin bundles
    - Implemented source code validation and analysis
    - Added support for bundling plugin code with ESBuild
 
 3. **API Enhancements**
+
    - Added endpoint to query plugins by extension point
    - Updated plugin creation/update endpoints to support the new structure
    - Maintained compatibility with existing plugin installation endpoints
@@ -1189,6 +1259,7 @@ The transition was driven by the need to:
 ### Client-Side Changes
 
 1. **Plugin Loading Utilities**
+
    - Created a new plugin loader utility for dynamic imports
    - Implemented React.lazy integration for extension points
    - Added error handling for plugin loading failures
@@ -1203,6 +1274,7 @@ The transition was driven by the need to:
 ### For Plugin Developers
 
 1. Convert Module Federation plugins to the new SDK format:
+
    - Remove webpack Module Federation configuration
    - Implement the `definePlugin` pattern
    - Register components with specific extension points
@@ -1214,6 +1286,7 @@ The transition was driven by the need to:
 ### For Platform Developers
 
 1. Update client code to use the new plugin loading approach:
+
    - Replace Module Federation loading code with dynamic imports
    - Use React.lazy for component rendering
    - Implement Suspense boundaries around plugin components
@@ -1225,17 +1298,20 @@ The transition was driven by the need to:
 ## Roadmap
 
 1. **Phase 1 (Current)**: Core infrastructure migration
+
    - ✅ Update plugin server data model
    - ✅ Implement bundle service
    - ✅ Enhance compatibility checks
    - ✅ Update API endpoints
 
 2. **Phase 2**: Client integration
+
    - Frontend integration with Next.js App Router
    - Extension point system implementation
    - Plugin SDK development
 
 3. **Phase 3**: Marketplace enhancements
+
    - Visual plugin marketplace
    - Analytics and usage tracking
    - Plugin versioning and updates

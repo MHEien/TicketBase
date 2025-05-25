@@ -20,7 +20,9 @@ import { RolesGuard } from './common/auth/guards/roles.guard';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI') || 'mongodb://root:example@localhost:27017/plugin-server',
+        uri:
+          configService.get<string>('MONGODB_URI') ||
+          'mongodb://root:example@localhost:27017/plugin-server',
       }),
       inject: [ConfigService],
     }),

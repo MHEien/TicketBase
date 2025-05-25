@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Event } from './event.entity';
 
 @Entity()
@@ -9,7 +15,7 @@ export class TicketType {
   @Column()
   eventId: string;
 
-  @ManyToOne(() => Event, event => event.ticketTypes)
+  @ManyToOne(() => Event, (event) => event.ticketTypes)
   @JoinColumn({ name: 'eventId' })
   event: Event;
 
@@ -54,4 +60,4 @@ export class TicketType {
 
   @Column('jsonb', { nullable: true })
   metadata?: Record<string, any>;
-} 
+}

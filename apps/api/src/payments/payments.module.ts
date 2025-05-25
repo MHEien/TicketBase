@@ -16,4 +16,4 @@ import { PluginsModule } from '../plugins/plugins.module';
   providers: [PaymentsService],
   exports: [PaymentsService],
 })
-export class PaymentsModule {} 
+export class PaymentsModule {}

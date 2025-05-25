@@ -12,12 +12,9 @@ import { TicketsController } from './tickets.controller';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Event, TicketType, Ticket]),
-    UsersModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Event, TicketType, Ticket]), UsersModule],
   controllers: [EventsController, TicketTypesController, TicketsController],
   providers: [EventsService, TicketTypesService, TicketsService],
   exports: [EventsService, TicketTypesService, TicketsService],
 })
-export class EventsModule {} 
+export class EventsModule {}

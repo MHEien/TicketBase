@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -48,7 +55,7 @@ export class UserSession {
   @Column({ default: false })
   isRevoked: boolean;
 
-  @ManyToOne(() => User, user => user.sessions)
+  @ManyToOne(() => User, (user) => user.sessions)
   @JoinColumn({ name: 'userId' })
   user: User;
-} 
+}

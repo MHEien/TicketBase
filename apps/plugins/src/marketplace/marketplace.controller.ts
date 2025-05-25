@@ -12,13 +12,13 @@ import {
 import { MarketplaceService } from './marketplace.service';
 import { AssetsService } from '../assets/assets.service';
 import { PublishPluginDto } from './dto/publish-plugin.dto';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiParam, 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
   ApiBody,
-  ApiQuery 
+  ApiQuery,
 } from '@nestjs/swagger';
 
 // In a real app, you would have proper auth guards
@@ -33,19 +33,19 @@ export class MarketplaceController {
   ) {}
 
   @ApiOperation({ summary: 'Get available plugins from the marketplace' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Returns a list of plugins available in the marketplace' 
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of plugins available in the marketplace',
   })
   @ApiQuery({
     name: 'category',
     description: 'Filter plugins by category',
-    required: false
+    required: false,
   })
   @ApiQuery({
     name: 'search',
     description: 'Search plugins by name or description',
-    required: false
+    required: false,
   })
   @Get()
   async getPlugins(
@@ -56,9 +56,9 @@ export class MarketplaceController {
   }
 
   @ApiOperation({ summary: 'Get all plugin categories' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Returns a list of all plugin categories' 
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of all plugin categories',
   })
   @Get('categories')
   async getCategories() {
@@ -66,18 +66,18 @@ export class MarketplaceController {
   }
 
   @ApiOperation({ summary: 'Get plugin details by ID' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Returns details of the specified plugin' 
+  @ApiResponse({
+    status: 200,
+    description: 'Returns details of the specified plugin',
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Plugin not found' 
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin not found',
   })
   @ApiParam({
     name: 'id',
     description: 'Plugin ID',
-    required: true
+    required: true,
   })
   @Get(':id')
   async getPluginById(@Param('id') id: string) {
@@ -89,9 +89,9 @@ export class MarketplaceController {
   }
 
   @ApiOperation({ summary: 'Publish a plugin to the marketplace' })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'Plugin successfully published' 
+  @ApiResponse({
+    status: 201,
+    description: 'Plugin successfully published',
   })
   @ApiBody({ type: PublishPluginDto })
   @Post()
@@ -101,27 +101,27 @@ export class MarketplaceController {
   }
 
   @ApiOperation({ summary: 'Remove a plugin from the marketplace' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Plugin successfully removed',
     schema: {
       type: 'object',
       properties: {
         success: {
           type: 'boolean',
-          example: true
-        }
-      }
-    }
+          example: true,
+        },
+      },
+    },
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Plugin not found' 
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin not found',
   })
   @ApiParam({
     name: 'id',
     description: 'Plugin ID',
-    required: true
+    required: true,
   })
   @Delete(':id')
   @UseGuards(AdminGuard)

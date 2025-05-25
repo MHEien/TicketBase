@@ -24,12 +24,14 @@ This NestJS-based plugin server provides the infrastructure for a dynamic import
 ### Setup
 
 1. Clone this repository:
+
    ```bash
    git clone <repository-url>
    cd tickets-plugin-server
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    # or
@@ -37,6 +39,7 @@ This NestJS-based plugin server provides the infrastructure for a dynamic import
    ```
 
 3. Create a `.env` file in the project root (see `.env.example` for reference):
+
    ```
    # Database Configuration
    MONGODB_URI=mongodb://localhost:27017/plugin-server
@@ -60,6 +63,7 @@ This NestJS-based plugin server provides the infrastructure for a dynamic import
    ```
 
 4. Set up MinIO:
+
    ```bash
    # Using Docker
    docker run -p 9000:9000 -p 9001:9001 --name minio \
@@ -68,6 +72,7 @@ This NestJS-based plugin server provides the infrastructure for a dynamic import
      -e "MINIO_ROOT_PASSWORD=minioadmin" \
      minio/minio server /data --console-address ":9001"
    ```
+
    Then access the MinIO Console at http://localhost:9001 and create a bucket named `plugin-bundles`.
 
 5. Start the development server:
@@ -84,6 +89,7 @@ This server uses JWT authentication that integrates with Next Auth in your Next.
 ### Setting up Next Auth in your Next.js app
 
 1. Install Next Auth in your Next.js application:
+
    ```bash
    npm install next-auth
    ```
@@ -111,9 +117,9 @@ This server uses JWT authentication that integrates with Next Auth in your Next.
              body: JSON.stringify(credentials),
              headers: { 'Content-Type': 'application/json' },
            });
-           
+
            const user = await response.json();
-           
+
            if (response.ok && user) {
              return user;
            }
@@ -160,32 +166,32 @@ This server uses JWT authentication that integrates with Next Auth in your Next.
 
    export async function apiClient(
      endpoint: string,
-     options: RequestInit = {}
+     options: RequestInit = {},
    ) {
      const session = await getSession();
-     
+
      if (!session?.accessToken) {
        // Handle unauthenticated state
        return null;
      }
-     
+
      const headers = {
        'Content-Type': 'application/json',
        Authorization: `Bearer ${session.accessToken}`,
        ...(options.headers || {}),
      };
-     
+
      const response = await fetch(`/api/plugins/${endpoint}`, {
        ...options,
        headers,
      });
-     
+
      if (response.status === 401) {
        // Token expired or invalid
        signOut();
        return null;
      }
-     
+
      return response;
    }
    ```
@@ -250,7 +256,8 @@ To use this plugin server with your Next.js App Router application, create an AP
 // lib/plugin-server-api.ts
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_PLUGIN_SERVER_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_PLUGIN_SERVER_URL || 'http://localhost:4000';
 
 export const pluginApi = {
   // Get available plugins
@@ -258,31 +265,32 @@ export const pluginApi = {
     const response = await axios.get(`${API_BASE_URL}/plugins/available`);
     return response.data;
   },
-  
+
   // Get installed plugins for a tenant
   getInstalledPlugins: async (tenantId: string) => {
     const response = await axios.get(`${API_BASE_URL}/plugins/installed`, {
-      headers: { 'x-tenant-id': tenantId }
+      headers: { 'x-tenant-id': tenantId },
     });
     return response.data;
   },
-  
+
   // Install a plugin
   installPlugin: async (tenantId: string, pluginId: string) => {
-    const response = await axios.post(`${API_BASE_URL}/plugins/install`, 
+    const response = await axios.post(
+      `${API_BASE_URL}/plugins/install`,
       { pluginId },
-      { headers: { 'x-tenant-id': tenantId } }
+      { headers: { 'x-tenant-id': tenantId } },
     );
     return response.data;
   },
-  
+
   // Get plugins by extension point
   getPluginsByExtensionPoint: async (extensionPoint: string) => {
     const response = await axios.get(
-      `${API_BASE_URL}/plugins/by-extension-point?point=${extensionPoint}`
+      `${API_BASE_URL}/plugins/by-extension-point?point=${extensionPoint}`,
     );
     return response.data;
-  }
+  },
 };
 ```
 
@@ -312,13 +320,18 @@ export async function loadPlugin(bundleUrl: string) {
   }
 }
 
-export function createPluginComponent(bundleUrl: string, extensionPoint: string) {
+export function createPluginComponent(
+  bundleUrl: string,
+  extensionPoint: string,
+) {
   return lazy(async () => {
     const plugin = await loadPlugin(bundleUrl);
     if (!plugin || !plugin.extensionPoints[extensionPoint]) {
-      throw new Error(`Plugin doesn't support extension point: ${extensionPoint}`);
+      throw new Error(
+        `Plugin doesn't support extension point: ${extensionPoint}`,
+      );
     }
-    
+
     const Component = plugin.extensionPoints[extensionPoint];
     return { default: Component };
   });

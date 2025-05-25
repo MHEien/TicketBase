@@ -1,16 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useOnboarding } from "@/lib/onboarding-context"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
-import { Slider } from "@/components/ui/slider"
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useOnboarding } from "@/lib/onboarding-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import { Slider } from "@/components/ui/slider";
 
 const paymentMethodOptions = [
   { id: "credit_card", label: "Credit/Debit Cards" },
@@ -18,65 +26,79 @@ const paymentMethodOptions = [
   { id: "bank_transfer", label: "Bank Transfer" },
   { id: "apple_pay", label: "Apple Pay" },
   { id: "google_pay", label: "Google Pay" },
-]
+];
 
 const feeStrategyOptions = [
   { value: "absorb", label: "Absorb all fees (you pay them)" },
-  { value: "pass-to-attendee", label: "Pass fees to attendees (they pay them)" },
+  {
+    value: "pass-to-attendee",
+    label: "Pass fees to attendees (they pay them)",
+  },
   { value: "split", label: "Split fees between you and attendees" },
-]
+];
 
 const paymentDetailsSchema = z.object({
-  preferredPaymentMethods: z.array(z.string()).min(1, { message: "Please select at least one payment method" }),
+  preferredPaymentMethods: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one payment method" }),
   defaultFeeStrategy: z.enum(["absorb", "pass-to-attendee", "split"]),
   customFeePercentage: z.number().min(0).max(100).optional(),
-})
+});
 
-type PaymentDetailsFormValues = z.infer<typeof paymentDetailsSchema>
+type PaymentDetailsFormValues = z.infer<typeof paymentDetailsSchema>;
 
 export default function PaymentDetailsForm() {
-  const { onboardingData, updateOnboardingData, goToNextStep, goToPreviousStep, completeOnboarding } = useOnboarding()
-  const [isLoading, setIsLoading] = useState(false)
+  const {
+    onboardingData,
+    updateOnboardingData,
+    goToNextStep,
+    goToPreviousStep,
+    completeOnboarding,
+  } = useOnboarding();
+  const [isLoading, setIsLoading] = useState(false);
   const [showFeeSlider, setShowFeeSlider] = useState(
-    onboardingData.paymentDetails.defaultFeeStrategy === "split"
-  )
-  
+    onboardingData.paymentDetails.defaultFeeStrategy === "split",
+  );
+
   const form = useForm<PaymentDetailsFormValues>({
     resolver: zodResolver(paymentDetailsSchema),
     defaultValues: {
-      preferredPaymentMethods: onboardingData.paymentDetails.preferredPaymentMethods || ["credit_card"],
-      defaultFeeStrategy: onboardingData.paymentDetails.defaultFeeStrategy || "pass-to-attendee",
-      customFeePercentage: onboardingData.paymentDetails.customFeePercentage || 50,
+      preferredPaymentMethods: onboardingData.paymentDetails
+        .preferredPaymentMethods || ["credit_card"],
+      defaultFeeStrategy:
+        onboardingData.paymentDetails.defaultFeeStrategy || "pass-to-attendee",
+      customFeePercentage:
+        onboardingData.paymentDetails.customFeePercentage || 50,
     },
-  })
-  
+  });
+
   // Update fee slider visibility when strategy changes
-  const watchFeeStrategy = form.watch("defaultFeeStrategy")
+  const watchFeeStrategy = form.watch("defaultFeeStrategy");
   if (watchFeeStrategy === "split" && !showFeeSlider) {
-    setShowFeeSlider(true)
+    setShowFeeSlider(true);
   } else if (watchFeeStrategy !== "split" && showFeeSlider) {
-    setShowFeeSlider(false)
+    setShowFeeSlider(false);
   }
-  
+
   async function onSubmit(data: PaymentDetailsFormValues) {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       // Update onboarding data
-      updateOnboardingData("paymentDetails", data)
-      
+      updateOnboardingData("paymentDetails", data);
+
       // Complete the onboarding process
-      await completeOnboarding()
-      
+      await completeOnboarding();
+
       // Move to the final step
-      goToNextStep()
+      goToNextStep();
     } catch (error) {
-      console.error("Error saving payment details:", error)
+      console.error("Error saving payment details:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -110,9 +132,9 @@ export default function PaymentDetailsForm() {
                                 const updatedMethods = checked
                                   ? [...field.value, option.id]
                                   : field.value?.filter(
-                                      (value) => value !== option.id
-                                    )
-                                field.onChange(updatedMethods)
+                                      (value) => value !== option.id,
+                                    );
+                                field.onChange(updatedMethods);
                               }}
                             />
                           </FormControl>
@@ -120,7 +142,7 @@ export default function PaymentDetailsForm() {
                             {option.label}
                           </FormLabel>
                         </FormItem>
-                      )
+                      );
                     }}
                   />
                 ))}
@@ -129,7 +151,7 @@ export default function PaymentDetailsForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="defaultFeeStrategy"
@@ -139,9 +161,9 @@ export default function PaymentDetailsForm() {
               <FormControl>
                 <RadioGroup
                   onValueChange={(value) => {
-                    field.onChange(value)
+                    field.onChange(value);
                     // Show fee slider if split option is selected
-                    setShowFeeSlider(value === "split")
+                    setShowFeeSlider(value === "split");
                   }}
                   defaultValue={field.value}
                   className="flex flex-col space-y-1"
@@ -165,7 +187,7 @@ export default function PaymentDetailsForm() {
             </FormItem>
           )}
         />
-        
+
         {showFeeSlider && (
           <FormField
             control={form.control}
@@ -186,9 +208,13 @@ export default function PaymentDetailsForm() {
                       onValueChange={(value) => field.onChange(value[0])}
                     />
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">You pay: {100 - (field.value || 0)}%</span>
+                      <span className="text-sm">
+                        You pay: {100 - (field.value || 0)}%
+                      </span>
                       <span className="font-medium">{field.value || 0}%</span>
-                      <span className="text-sm">Attendees pay: {field.value || 0}%</span>
+                      <span className="text-sm">
+                        Attendees pay: {field.value || 0}%
+                      </span>
                     </div>
                   </div>
                 </FormControl>
@@ -197,27 +223,24 @@ export default function PaymentDetailsForm() {
             )}
           />
         )}
-        
+
         <div className="border-t pt-4 mt-6">
           <FormDescription className="mb-4 text-center">
-            You'll be able to connect payment gateways and customize your payment settings later in the admin dashboard.
+            You'll be able to connect payment gateways and customize your
+            payment settings later in the admin dashboard.
           </FormDescription>
         </div>
-        
+
         <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={goToPreviousStep}
-          >
+          <Button type="button" variant="outline" onClick={goToPreviousStep}>
             Back
           </Button>
-          
+
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : "Complete Setup"}
           </Button>
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+}

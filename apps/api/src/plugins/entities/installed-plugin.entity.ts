@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Plugin } from './plugin.entity';
 import { Organization } from '../../users/entities/organization.entity';
@@ -6,7 +14,10 @@ import { User } from '../../users/entities/user.entity';
 
 @Entity('installed_plugins')
 export class InstalledPlugin {
-  @ApiProperty({ description: 'Unique identifier', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -14,7 +25,7 @@ export class InstalledPlugin {
   @Column({ name: 'plugin_id' })
   pluginId: string;
 
-  @ManyToOne(() => Plugin, plugin => plugin.installations)
+  @ManyToOne(() => Plugin, (plugin) => plugin.installations)
   @JoinColumn({ name: 'plugin_id' })
   plugin: Plugin;
 
@@ -53,4 +64,4 @@ export class InstalledPlugin {
   @ApiProperty({ description: 'Plugin version', example: '1.0.0' })
   @Column()
   version: string;
-} 
+}

@@ -8,7 +8,9 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('event/:eventId')
-  getEventAnalytics(@Param('eventId') eventId: string): Promise<EventAnalytics> {
+  getEventAnalytics(
+    @Param('eventId') eventId: string,
+  ): Promise<EventAnalytics> {
     return this.analyticsService.getEventAnalytics(eventId);
   }
 
@@ -23,4 +25,4 @@ export class AnalyticsController {
   }
 
   // Add more endpoints as needed for your application
-} 
+}

@@ -26,10 +26,10 @@ export class BundleService {
    */
   async generateBundle(pluginId: string, sourceCode: string): Promise<string> {
     this.logger.log(`Generating bundle for plugin: ${pluginId}`);
-    
+
     // First generate the bundle buffer
     const bundleBuffer = await this.generateBundleBuffer(pluginId, sourceCode);
-    
+
     // Then upload to storage using the existing AssetsService
     const bundleUrl = await this.assetsService.uploadPluginAsset(
       pluginId,
@@ -37,7 +37,7 @@ export class BundleService {
       bundleBuffer,
       'application/javascript',
     );
-    
+
     return bundleUrl;
   }
 
@@ -47,24 +47,27 @@ export class BundleService {
    * @param sourceCode - The plugin source code as a string
    * @returns Buffer containing the bundled plugin code
    */
-  async generateBundleBuffer(pluginId: string, sourceCode: string): Promise<Buffer> {
+  async generateBundleBuffer(
+    pluginId: string,
+    sourceCode: string,
+  ): Promise<Buffer> {
     this.logger.log(`Generating bundle buffer for plugin: ${pluginId}`);
-    
+
     // Create a temporary directory for processing
     const tempDir = await this.createTempDirectory();
     const pluginDir = path.join(tempDir, 'plugin');
-    
+
     try {
       // Set up a minimal project structure
       await this.setupPluginProject(pluginDir, sourceCode);
-      
+
       // Bundle the code
       await this.bundlePlugin(pluginDir);
-      
+
       // Read the bundle
       const bundlePath = path.join(pluginDir, 'dist', 'bundle.js');
       const bundleContent = await fs.promises.readFile(bundlePath);
-      
+
       return bundleContent;
     } finally {
       // Clean up temp directory
@@ -83,22 +86,26 @@ export class BundleService {
   }> {
     // Add an artificial await to satisfy the linter
     await Promise.resolve();
-    
+
     // Simple regex-based analysis to extract extension points and metadata
     // In a production environment, you might want to use a proper parser
-    
+
     const extensionPoints: string[] = [];
     const extensionPointRegex = /['"]([a-zA-Z0-9-]+)['"]\s*:/g;
     let match;
-    
+
     // Find all extension point names
-    const extensionPointSection = sourceCode.match(/extensionPoints\s*:\s*{([^}]*)}/);
+    const extensionPointSection = sourceCode.match(
+      /extensionPoints\s*:\s*{([^}]*)}/,
+    );
     if (extensionPointSection && extensionPointSection[1]) {
-      while ((match = extensionPointRegex.exec(extensionPointSection[1])) !== null) {
+      while (
+        (match = extensionPointRegex.exec(extensionPointSection[1])) !== null
+      ) {
         extensionPoints.push(match[1]);
       }
     }
-    
+
     // Extract metadata
     let metadata: Record<string, any> = {};
     const metadataMatch = sourceCode.match(/metadata\s*:\s*({[^}]*})/);
@@ -114,7 +121,7 @@ export class BundleService {
         metadata = {};
       }
     }
-    
+
     return { extensionPoints, metadata };
   }
 
@@ -126,12 +133,12 @@ export class BundleService {
   async validatePluginStructure(sourceCode: string): Promise<boolean> {
     // Add an artificial await to satisfy the linter
     await Promise.resolve();
-    
+
     // Check for required plugin structure elements
     const hasDefinePlugin = sourceCode.includes('definePlugin');
     const hasExtensionPoints = sourceCode.includes('extensionPoints:');
     const hasExportDefault = sourceCode.includes('export default');
-    
+
     return hasDefinePlugin && hasExtensionPoints && hasExportDefault;
   }
 
@@ -149,30 +156,34 @@ export class BundleService {
     }
   }
 
-  private async setupPluginProject(pluginDir: string, sourceCode: string): Promise<void> {
+  private async setupPluginProject(
+    pluginDir: string,
+    sourceCode: string,
+  ): Promise<void> {
     // Create directories
     await fs.promises.mkdir(pluginDir, { recursive: true });
     await fs.promises.mkdir(path.join(pluginDir, 'src'), { recursive: true });
-    
+
     // Write source code
     await fs.promises.writeFile(
       path.join(pluginDir, 'src', 'index.ts'),
       sourceCode,
     );
-    
+
     // Create package.json
     const packageJson = {
       name: 'plugin-bundle',
       version: '1.0.0',
       private: true,
       scripts: {
-        build: 'esbuild src/index.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser',
+        build:
+          'esbuild src/index.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser',
       },
       dependencies: {
         esbuild: '^0.19.2',
       },
     };
-    
+
     await fs.promises.writeFile(
       path.join(pluginDir, 'package.json'),
       JSON.stringify(packageJson, null, 2),
@@ -182,11 +193,11 @@ export class BundleService {
   private async bundlePlugin(pluginDir: string): Promise<void> {
     // Install dependencies
     await execPromise('npm install', { cwd: pluginDir });
-    
+
     // Create dist directory
     await fs.promises.mkdir(path.join(pluginDir, 'dist'), { recursive: true });
-    
+
     // Bundle the plugin
     await execPromise('npm run build', { cwd: pluginDir });
   }
-} 
+}

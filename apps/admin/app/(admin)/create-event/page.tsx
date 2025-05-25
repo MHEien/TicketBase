@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
-import { ChevronLeft, ChevronRight, Save, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { EventBasicDetails } from "@/components/event-creation/event-basic-details"
-import { EventDateTime } from "@/components/event-creation/event-date-time"
-import { EventLocation } from "@/components/event-creation/event-location"
-import { EventTickets } from "@/components/event-creation/event-tickets"
-import { EventMedia } from "@/components/event-creation/event-media"
-import { EventPreview } from "@/components/event-creation/event-preview"
-import { useToast } from "@/hooks/use-toast"
-import { useEventCreation } from "@/hooks/use-event-creation"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
+import { EventDateTime } from "@/components/event-creation/event-date-time";
+import { EventLocation } from "@/components/event-creation/event-location";
+import { EventTickets } from "@/components/event-creation/event-tickets";
+import { EventMedia } from "@/components/event-creation/event-media";
+import { EventPreview } from "@/components/event-creation/event-preview";
+import { useToast } from "@/hooks/use-toast";
+import { useEventCreation } from "@/hooks/use-event-creation";
 
 export default function CreateEventPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [currentStep, setCurrentStep] = useState(0)
-  const { eventData, isValid, resetEventData } = useEventCreation()
+  const router = useRouter();
+  const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState(0);
+  const { eventData, isValid, resetEventData } = useEventCreation();
 
   const steps = [
     { id: "basics", title: "Basic Details", component: EventBasicDetails },
@@ -27,42 +27,46 @@ export default function CreateEventPage() {
     { id: "tickets", title: "Tickets", component: EventTickets },
     { id: "media", title: "Media", component: EventMedia },
     { id: "preview", title: "Preview", component: EventPreview },
-  ]
+  ];
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
     }
-  }
+  };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(currentStep - 1);
     }
-  }
+  };
 
   const handleSave = () => {
     // In a real app, this would save to a database
-    console.log("Saving event:", eventData)
+    console.log("Saving event:", eventData);
 
     toast({
       title: "Event Created",
       description: `${eventData.title} has been created successfully.`,
-    })
+    });
 
     // Reset form and navigate back to dashboard
-    resetEventData()
-    router.push("/")
-  }
+    resetEventData();
+    router.push("/");
+  };
 
   const handleCancel = () => {
-    if (confirm("Are you sure you want to cancel? All your progress will be lost.")) {
-      resetEventData()
-      router.push("/")
+    if (
+      confirm(
+        "Are you sure you want to cancel? All your progress will be lost.",
+      )
+    ) {
+      resetEventData();
+      router.push("/");
     }
-  }
+  };
 
-  const CurrentStepComponent = steps[currentStep].component
+  const CurrentStepComponent = steps[currentStep].component;
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-background to-background/80">
@@ -70,13 +74,23 @@ export default function CreateEventPage() {
       <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => router.push("/")} className="rounded-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push("/")}
+              className="rounded-full"
+            >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl font-semibold">Create New Event</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleCancel} className="gap-1 rounded-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCancel}
+              className="gap-1 rounded-full"
+            >
               <X className="h-4 w-4" />
               <span>Cancel</span>
             </Button>
@@ -110,7 +124,7 @@ export default function CreateEventPage() {
                   onClick={() => {
                     // Only allow navigating to completed steps or the current step + 1
                     if (index <= currentStep + 1) {
-                      setCurrentStep(index)
+                      setCurrentStep(index);
                     }
                   }}
                   whileHover={{ scale: 1.05 }}
@@ -124,7 +138,9 @@ export default function CreateEventPage() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                     >
-                      <span className="text-sm font-medium text-primary-foreground">✓</span>
+                      <span className="text-sm font-medium text-primary-foreground">
+                        ✓
+                      </span>
                     </motion.div>
                   )}
                 </motion.button>
@@ -167,12 +183,21 @@ export default function CreateEventPage() {
           </Button>
 
           {currentStep < steps.length - 1 ? (
-            <Button variant="default" onClick={handleNext} className="gap-1 rounded-full">
+            <Button
+              variant="default"
+              onClick={handleNext}
+              className="gap-1 rounded-full"
+            >
               <span>Next</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button variant="default" onClick={handleSave} disabled={!isValid()} className="gap-1 rounded-full">
+            <Button
+              variant="default"
+              onClick={handleSave}
+              disabled={!isValid()}
+              className="gap-1 rounded-full"
+            >
               <Save className="h-4 w-4" />
               <span>Create Event</span>
             </Button>
@@ -180,5 +205,5 @@ export default function CreateEventPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

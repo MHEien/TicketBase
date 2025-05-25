@@ -12,7 +12,10 @@ import { Type } from 'class-transformer';
 import { PluginCategory } from '../entities/plugin.entity';
 
 export class CreatePluginDto {
-  @ApiProperty({ description: 'Plugin name', example: 'Stripe Payment Gateway' })
+  @ApiProperty({
+    description: 'Plugin name',
+    example: 'Stripe Payment Gateway',
+  })
   @IsString()
   name: string;
 
@@ -20,7 +23,10 @@ export class CreatePluginDto {
   @IsString()
   version: string;
 
-  @ApiProperty({ description: 'Plugin description', example: 'Integrates Stripe payment processing' })
+  @ApiProperty({
+    description: 'Plugin description',
+    example: 'Integrates Stripe payment processing',
+  })
   @IsString()
   description: string;
 
@@ -81,7 +87,7 @@ export class CreatePluginDto {
       author: 'Stripe Inc.',
       paymentProvider: 'stripe',
       supportedMethods: ['credit_card', 'ach'],
-      supportedCurrencies: ['USD', 'EUR']
+      supportedCurrencies: ['USD', 'EUR'],
     },
   })
   @IsObject()
@@ -97,4 +103,4 @@ export class CreatePluginDto {
   @IsString({ each: true })
   @IsOptional()
   requiredPermissions?: string[];
-} 
+}

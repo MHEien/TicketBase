@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export function EventsMap() {
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoaded(true)
-    }, 500)
+      setLoaded(true);
+    }, 500);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sample event locations
   const locations = [
@@ -26,13 +26,18 @@ export function EventsMap() {
     { id: 8, name: "Denver", x: 40, y: 42, size: 7, attendees: 320 },
     { id: 9, name: "Nashville", x: 70, y: 48, size: 6, attendees: 280 },
     { id: 10, name: "Portland", x: 15, y: 30, size: 5, attendees: 220 },
-  ]
+  ];
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-lg bg-background">
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%" viewBox="0 0 100 70">
-          <path d="M0,10 L100,10 L100,70 L0,70 Z" fill="none" stroke="currentColor" strokeWidth="0.1" />
+          <path
+            d="M0,10 L100,10 L100,70 L0,70 Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="0.1"
+          />
           {/* US outline - simplified */}
           <path
             d="M10,20 C15,15 20,15 25,20 C30,25 35,25 40,20 C45,15 50,15 55,20 C60,25 65,25 70,20 C75,15 80,15 85,20 C90,25 95,25 100,20 L100,30 C95,35 90,35 85,30 C80,25 75,25 70,30 C65,35 60,35 55,30 C50,25 45,25 40,30 C35,35 30,35 25,30 C20,25 15,25 10,30 L10,20 Z"
@@ -84,7 +89,11 @@ export function EventsMap() {
                 <motion.div
                   className="absolute -inset-1 rounded-full bg-primary/20"
                   animate={{ scale: [1, 1.5, 1] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "loop" }}
+                  transition={{
+                    duration: 2,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "loop",
+                  }}
                 />
                 <div
                   className="relative flex items-center justify-center rounded-full bg-primary text-primary-foreground"
@@ -105,8 +114,8 @@ export function EventsMap() {
           {/* Connection lines */}
           <svg className="absolute inset-0 h-full w-full">
             {locations.map((location, i) => {
-              if (i === locations.length - 1) return null
-              const nextLocation = locations[i + 1]
+              if (i === locations.length - 1) return null;
+              const nextLocation = locations[i + 1];
               return (
                 <motion.line
                   key={`line-${i}`}
@@ -122,11 +131,11 @@ export function EventsMap() {
                   animate={{ pathLength: 1, opacity: 0.2 }}
                   transition={{ duration: 1, delay: i * 0.2 }}
                 />
-              )
+              );
             })}
           </svg>
         </>
       )}
     </div>
-  )
+  );
 }

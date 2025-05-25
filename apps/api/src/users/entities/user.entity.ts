@@ -1,6 +1,14 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserSession } from './user-session.entity';
 import { Organization } from './organization.entity';
+import { Department } from './department.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum UserRole {
@@ -23,41 +31,48 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'User\'s full name' })
+  @ApiProperty({ description: "User's full name" })
   @Column()
   name: string;
 
-  @ApiProperty({ description: 'User\'s email address' })
+  @ApiProperty({ description: "User's email address" })
   @Column({ unique: true })
   email: string;
 
-  @ApiProperty({ description: 'User\'s hashed password' })
+  @ApiProperty({ description: "User's hashed password" })
   @Column()
   password: string;
 
-  @ApiProperty({ description: 'User\'s avatar URL', required: false })
+  @ApiProperty({ description: "User's avatar URL", required: false })
   @Column({ nullable: true })
   avatar?: string;
 
-  @ApiProperty({ 
-    description: 'User\'s role in the organization',
+  @ApiProperty({
+    description: "User's role in the organization",
     enum: UserRole,
-    default: UserRole.MANAGER
+    default: UserRole.MANAGER,
   })
   @Column({
     type: 'enum',
     enum: UserRole,
-    default: UserRole.MANAGER
+    default: UserRole.MANAGER,
   })
   role: UserRole;
 
-  @ApiProperty({ description: 'User\'s permissions' })
+  @ApiProperty({ description: "User's permissions" })
   @Column('simple-array')
   permissions: string[];
 
   @ApiProperty({ description: 'ID of the organization the user belongs to' })
   @Column()
   organizationId: string;
+
+  @ApiProperty({
+    description: 'ID of the department the user belongs to',
+    required: false,
+  })
+  @Column({ nullable: true })
+  departmentId?: string;
 
   @ApiProperty({ description: 'When the user was created' })
   @CreateDateColumn()
@@ -67,15 +82,15 @@ export class User {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   lastActive: Date;
 
-  @ApiProperty({ 
-    description: 'User\'s status',
+  @ApiProperty({
+    description: "User's status",
     enum: UserStatus,
-    default: UserStatus.PENDING
+    default: UserStatus.PENDING,
   })
   @Column({
     type: 'enum',
     enum: UserStatus,
-    default: UserStatus.PENDING
+    default: UserStatus.PENDING,
   })
   status: UserStatus;
 
@@ -83,13 +98,21 @@ export class User {
   @Column({ default: false })
   twoFactorEnabled: boolean;
 
-  @ApiProperty({ description: 'Two-factor authentication secret', required: false })
+  @ApiProperty({
+    description: 'Two-factor authentication secret',
+    required: false,
+  })
   @Column({ nullable: true })
   twoFactorSecret?: string;
 
-  @ManyToOne(() => Organization, organization => organization.users)
+  @ManyToOne(() => Organization, (organization) => organization.users)
   organization: Organization;
 
-  @OneToMany(() => UserSession, session => session.user)
+  @ManyToOne(() => Department, (department) => department.users, {
+    nullable: true,
+  })
+  department?: Department;
+
+  @OneToMany(() => UserSession, (session) => session.user)
   sessions?: UserSession[];
-} 
+}

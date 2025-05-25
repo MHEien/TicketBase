@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Department } from './department.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum PlanType {
@@ -141,4 +142,7 @@ export class Organization {
 
   @OneToMany(() => User, (user) => user.organization)
   users: User[];
+
+  @OneToMany(() => Department, (department) => department.organization)
+  departments: Department[];
 }

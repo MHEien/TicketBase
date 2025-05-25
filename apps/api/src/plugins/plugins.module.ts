@@ -10,12 +10,9 @@ import { BundleController } from './bundle.controller';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Plugin, InstalledPlugin]),
-    HttpModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Plugin, InstalledPlugin]), HttpModule],
   controllers: [PluginsController, PluginProxyController, BundleController],
   providers: [PluginsService, BundleService],
   exports: [PluginsService, BundleService],
 })
-export class PluginsModule {} 
+export class PluginsModule {}

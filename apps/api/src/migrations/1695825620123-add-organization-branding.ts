@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddOrganizationBranding1695825620123 implements MigrationInterface {
+export class AddOrganizationBranding1695825620123
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add new columns to organizations table
     await queryRunner.query(`
@@ -78,4 +80,4 @@ export class AddOrganizationBranding1695825620123 implements MigrationInterface 
 
     // We can't easily remove JSON fields, so we'll leave them in place
   }
-} 
+}

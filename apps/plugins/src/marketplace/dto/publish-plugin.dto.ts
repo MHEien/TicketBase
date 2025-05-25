@@ -1,10 +1,10 @@
-import { 
-  IsNotEmpty, 
-  IsString, 
-  IsOptional, 
-  IsObject, 
-  IsArray, 
-  ValidateNested 
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsObject,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -12,7 +12,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 class AdminComponentsDto {
   @ApiPropertyOptional({
     description: 'Settings component path in the plugin bundle',
-    example: './Settings'
+    example: './Settings',
   })
   @IsOptional()
   @IsString()
@@ -20,7 +20,7 @@ class AdminComponentsDto {
 
   @ApiPropertyOptional({
     description: 'Event creation component path in the plugin bundle',
-    example: './EventCreation'
+    example: './EventCreation',
   })
   @IsOptional()
   @IsString()
@@ -28,7 +28,7 @@ class AdminComponentsDto {
 
   @ApiPropertyOptional({
     description: 'Dashboard component path in the plugin bundle',
-    example: './Dashboard'
+    example: './Dashboard',
   })
   @IsOptional()
   @IsString()
@@ -38,7 +38,7 @@ class AdminComponentsDto {
 class StorefrontComponentsDto {
   @ApiPropertyOptional({
     description: 'Checkout component path in the plugin bundle',
-    example: './Checkout'
+    example: './Checkout',
   })
   @IsOptional()
   @IsString()
@@ -46,7 +46,7 @@ class StorefrontComponentsDto {
 
   @ApiPropertyOptional({
     description: 'Event detail component path in the plugin bundle',
-    example: './EventDetail'
+    example: './EventDetail',
   })
   @IsOptional()
   @IsString()
@@ -54,7 +54,7 @@ class StorefrontComponentsDto {
 
   @ApiPropertyOptional({
     description: 'Ticket selection component path in the plugin bundle',
-    example: './TicketSelection'
+    example: './TicketSelection',
   })
   @IsOptional()
   @IsString()
@@ -63,11 +63,11 @@ class StorefrontComponentsDto {
   @ApiPropertyOptional({
     description: 'Widget components mapping',
     example: {
-      'sidebar': './SidebarWidget',
-      'footer': './FooterWidget'
+      sidebar: './SidebarWidget',
+      footer: './FooterWidget',
     },
     type: 'object',
-    additionalProperties: { type: 'string' }
+    additionalProperties: { type: 'string' },
   })
   @IsOptional()
   @IsObject()
@@ -77,7 +77,7 @@ class StorefrontComponentsDto {
 export class PublishPluginDto {
   @ApiProperty({
     description: 'Unique identifier for the plugin',
-    example: 'payment-gateway'
+    example: 'payment-gateway',
   })
   @IsNotEmpty()
   @IsString()
@@ -85,7 +85,7 @@ export class PublishPluginDto {
 
   @ApiProperty({
     description: 'Display name of the plugin',
-    example: 'Payment Gateway Plugin'
+    example: 'Payment Gateway Plugin',
   })
   @IsNotEmpty()
   @IsString()
@@ -93,7 +93,7 @@ export class PublishPluginDto {
 
   @ApiProperty({
     description: 'Semantic version of the plugin',
-    example: '1.0.0'
+    example: '1.0.0',
   })
   @IsNotEmpty()
   @IsString()
@@ -101,7 +101,8 @@ export class PublishPluginDto {
 
   @ApiPropertyOptional({
     description: 'Detailed description of the plugin functionality',
-    example: 'Integrates with popular payment processors to enable credit card payments'
+    example:
+      'Integrates with popular payment processors to enable credit card payments',
   })
   @IsOptional()
   @IsString()
@@ -109,7 +110,7 @@ export class PublishPluginDto {
 
   @ApiProperty({
     description: 'Category the plugin belongs to',
-    example: 'payments'
+    example: 'payments',
   })
   @IsNotEmpty()
   @IsString()
@@ -117,7 +118,8 @@ export class PublishPluginDto {
 
   @ApiProperty({
     description: 'URL to the remote entry file for Module Federation',
-    example: 'https://cdn.example.com/plugins/payment-gateway/v1.0.0/remoteEntry.js'
+    example:
+      'https://cdn.example.com/plugins/payment-gateway/v1.0.0/remoteEntry.js',
   })
   @IsNotEmpty()
   @IsString()
@@ -125,7 +127,7 @@ export class PublishPluginDto {
 
   @ApiProperty({
     description: 'Module Federation scope name',
-    example: 'payment_gateway'
+    example: 'payment_gateway',
   })
   @IsNotEmpty()
   @IsString()
@@ -133,7 +135,7 @@ export class PublishPluginDto {
 
   @ApiPropertyOptional({
     description: 'Components for the admin panel',
-    type: AdminComponentsDto
+    type: AdminComponentsDto,
   })
   @IsOptional()
   @IsObject()
@@ -143,7 +145,7 @@ export class PublishPluginDto {
 
   @ApiPropertyOptional({
     description: 'Components for the storefront',
-    type: StorefrontComponentsDto
+    type: StorefrontComponentsDto,
   })
   @IsOptional()
   @IsObject()
@@ -154,10 +156,10 @@ export class PublishPluginDto {
   @ApiPropertyOptional({
     description: 'List of permissions required by the plugin',
     example: ['read:orders', 'write:transactions'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   requiredPermissions?: string[];
-} 
+}

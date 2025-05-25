@@ -23,19 +23,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(request: Request, payload: JwtPayload) {
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
     const session = await this.usersService.findSessionByToken(token);
-    
+
     if (!session || session.isRevoked) {
       throw new UnauthorizedException('Session has been revoked');
     }
-    
+
     const user = await this.usersService.findById(payload.sub);
     if (!user) {
       throw new UnauthorizedException();
     }
-    
+
     // Update session's last active time
     await this.usersService.updateLastActive(user.id);
-    
+
     return {
       id: payload.sub,
       email: payload.email,
@@ -45,4 +45,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       organizationId: payload.organizationId,
     };
   }
-} 
+}

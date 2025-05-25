@@ -1,4 +1,9 @@
-import { Controller, Get, Headers, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Headers,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -12,7 +17,9 @@ export class AuthController {
   @Get('me')
   async getUserInfo(@Headers('authorization') authHeader: string) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing or invalid authorization header');
+      throw new UnauthorizedException(
+        'Missing or invalid authorization header',
+      );
     }
 
     const token = authHeader.split(' ')[1];
@@ -30,4 +37,4 @@ export class AuthController {
       role: tokenInfo.role,
     };
   }
-} 
+}

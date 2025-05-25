@@ -14,6 +14,7 @@ The following entity models will be implemented using TypeORM with PostgreSQL as
 ## Core Entities
 
 ### User ✅ (Implemented)
+
 ```typescript
 export class User {
   id: string;
@@ -26,7 +27,7 @@ export class User {
   organizationId: string;
   createdAt: Date;
   lastActive: Date;
-  status: "active" | "inactive" | "pending";
+  status: 'active' | 'inactive' | 'pending';
   twoFactorEnabled: boolean;
   twoFactorSecret?: string;
   sessions?: UserSession[];
@@ -48,6 +49,7 @@ export class UserSession {
 ```
 
 ### Organization (Tenant) ✅ (Implemented)
+
 ```typescript
 export class Organization {
   id: string;
@@ -67,7 +69,7 @@ export class Organization {
   logo?: string;
   createdAt: Date;
   updatedAt: Date;
-  plan: "free" | "basic" | "pro" | "enterprise";
+  plan: 'free' | 'basic' | 'pro' | 'enterprise';
   settings: OrganizationSettings;
   subscriptionId?: string; // Reference to payment subscription
   customDomain?: string;
@@ -91,6 +93,7 @@ export class OrganizationSettings {
 ```
 
 ### Event ✅ (Implemented)
+
 ```typescript
 export class Event {
   id: string;
@@ -104,7 +107,7 @@ export class Event {
   startTime: string;
   endTime: string;
   timeZone: string;
-  locationType: "physical" | "virtual" | "hybrid";
+  locationType: 'physical' | 'virtual' | 'hybrid';
   venueName?: string;
   address?: string;
   city?: string;
@@ -114,8 +117,8 @@ export class Event {
   virtualEventUrl?: string;
   featuredImage?: string;
   galleryImages?: string[];
-  status: "draft" | "published" | "cancelled" | "completed";
-  visibility: "public" | "private" | "unlisted";
+  status: 'draft' | 'published' | 'cancelled' | 'completed';
+  visibility: 'public' | 'private' | 'unlisted';
   createdAt: Date;
   updatedAt: Date;
   createdBy: string; // User ID
@@ -152,6 +155,7 @@ export class TicketType {
 ```
 
 ### Cart and Orders
+
 ```typescript
 export class Cart {
   id: string;
@@ -171,7 +175,7 @@ export class Cart {
   createdAt: Date;
   updatedAt: Date;
   expiresAt: Date;
-  status: "active" | "abandoned" | "converted" | "expired";
+  status: 'active' | 'abandoned' | 'converted' | 'expired';
 }
 
 export class CartItem {
@@ -202,10 +206,10 @@ export class Order {
   currency: string;
   discountCode?: string;
   discountAmount?: number;
-  status: "pending" | "confirmed" | "cancelled" | "refunded" | "partial_refund";
+  status: 'pending' | 'confirmed' | 'cancelled' | 'refunded' | 'partial_refund';
   paymentId: string;
   paymentMethod: string;
-  paymentStatus: "pending" | "paid" | "failed" | "refunded" | "partial_refund";
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded' | 'partial_refund';
   createdAt: Date;
   updatedAt: Date;
   refundedAmount?: number;
@@ -244,6 +248,7 @@ export class Customer {
 ```
 
 ### Tickets ✅ (Implemented)
+
 ```typescript
 export class Ticket {
   id: string;
@@ -254,7 +259,7 @@ export class Ticket {
   orderItemId: string;
   code: string; // Unique ticket code
   qrCode: string; // Generated QR code data
-  status: "valid" | "used" | "cancelled" | "refunded";
+  status: 'valid' | 'used' | 'cancelled' | 'refunded';
   attendeeInfo?: {
     firstName: string;
     lastName: string;
@@ -273,19 +278,20 @@ export class Ticket {
 ```
 
 ### Transactions
+
 ```typescript
 export class Transaction {
   id: string;
   organizationId: string;
   orderId?: string;
   userId?: string; // Optional for guest checkout
-  type: "purchase" | "refund" | "chargeback" | "payout";
+  type: 'purchase' | 'refund' | 'chargeback' | 'payout';
   amount: number;
   currency: string;
   paymentMethod: string;
   paymentMethodId: string; // ID from payment provider
   paymentIntentId?: string; // ID from payment provider
-  status: "pending" | "completed" | "failed" | "cancelled";
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   gatewayFee?: number;
   platformFee?: number;
   metadata?: Record<string, any>;
@@ -298,13 +304,21 @@ export class Transaction {
 ## Plugin System
 
 ### Plugin
+
 ```typescript
 export class Plugin {
   id: string;
   name: string;
   version: string;
   description: string;
-  category: 'payment' | 'marketing' | 'analytics' | 'social' | 'ticketing' | 'layout' | 'seating';
+  category:
+    | 'payment'
+    | 'marketing'
+    | 'analytics'
+    | 'social'
+    | 'ticketing'
+    | 'layout'
+    | 'seating';
   bundleUrl: string; // URL to the plugin bundle
   extensionPoints: string[]; // List of extension points this plugin implements
   adminComponents: {
@@ -326,7 +340,7 @@ export class Plugin {
   requiredPermissions?: string[];
   createdAt: Date;
   updatedAt: Date;
-  status: "active" | "deprecated" | "removed";
+  status: 'active' | 'deprecated' | 'removed';
 }
 
 export class InstalledPlugin {
@@ -345,6 +359,7 @@ export class InstalledPlugin {
 ## Analytics Entities
 
 ### EventAnalytics
+
 ```typescript
 export class EventAnalytics {
   id: string;
@@ -357,21 +372,25 @@ export class EventAnalytics {
   ticketsSold: number;
   conversionRate: number;
   revenue: number;
-  ticketTypeBreakdown: Record<string, {
-    quantity: number;
-    revenue: number;
-  }>;
+  ticketTypeBreakdown: Record<
+    string,
+    {
+      quantity: number;
+      revenue: number;
+    }
+  >;
   refunds: number;
   referrers: Record<string, number>; // Source of traffic
 }
 ```
 
 ### SalesAnalytics
+
 ```typescript
 export class SalesAnalytics {
   id: string;
   organizationId: string;
-  dateRange: "daily" | "weekly" | "monthly";
+  dateRange: 'daily' | 'weekly' | 'monthly';
   date: Date;
   totalSales: number;
   totalRevenue: number;
@@ -379,21 +398,28 @@ export class SalesAnalytics {
   averageOrderValue: number;
   refundAmount: number;
   feesCollected: number;
-  eventBreakdown: Record<string, {
-    sales: number;
-    revenue: number;
-    tickets: number;
-  }>;
-  paymentMethodBreakdown: Record<string, {
-    sales: number;
-    revenue: number;
-  }>;
+  eventBreakdown: Record<
+    string,
+    {
+      sales: number;
+      revenue: number;
+      tickets: number;
+    }
+  >;
+  paymentMethodBreakdown: Record<
+    string,
+    {
+      sales: number;
+      revenue: number;
+    }
+  >;
 }
 ```
 
 ## Integration with Traefik
 
 ### TraefikRoute
+
 ```typescript
 export class TraefikRoute {
   id: string;
@@ -410,11 +436,18 @@ export class TraefikRoute {
 ```
 
 ### TraefikMiddleware
+
 ```typescript
 export class TraefikMiddleware {
   id: string;
   name: string;
-  type: "rateLimit" | "ipWhitelist" | "basicAuth" | "stripPrefix" | "headers" | "compress";
+  type:
+    | 'rateLimit'
+    | 'ipWhitelist'
+    | 'basicAuth'
+    | 'stripPrefix'
+    | 'headers'
+    | 'compress';
   configuration: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
@@ -451,6 +484,7 @@ export class TraefikMiddleware {
 ## Implementation Status
 
 ### Implemented Entities ✅
+
 - User and User Sessions
 - Organization and Organization Settings
 - Event
@@ -458,6 +492,7 @@ export class TraefikMiddleware {
 - Ticket
 
 ### Next Entities to Implement
+
 - Cart and CartItem
 - Order and OrderItem
 - Customer

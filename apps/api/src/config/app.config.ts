@@ -26,6 +26,9 @@ export default () => ({
     minioBucket: process.env.MINIO_BUCKET || 'plugins',
     minioAccessKey: process.env.MINIO_ACCESS_KEY || '',
     minioSecretKey: process.env.MINIO_SECRET_KEY || '',
-    allowedOrigins: (process.env.PLUGIN_ALLOWED_ORIGINS || 'http://localhost:3001,http://localhost:3000').split(','),
-  }
-}); 
+    allowedOrigins: (
+      process.env.PLUGIN_ALLOWED_ORIGINS ||
+      'http://localhost:3001,http://localhost:3000'
+    ).split(','),
+  },
+});

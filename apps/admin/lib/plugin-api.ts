@@ -1,7 +1,8 @@
-import { Plugin, InstalledPlugin } from './plugin-types';
+import { Plugin, InstalledPlugin } from "./plugin-types";
+import { apiClient } from "./api/api-client";
 
-// Base URL for the plugin service
-const PLUGIN_API_BASE = process.env.NEXT_PUBLIC_API_URL + '/plugins' || '/api/plugins';
+// Base URL for the plugin service - this will be appended to the apiClient baseURL
+const PLUGIN_API_PATH = "/plugins";
 
 // Interface for standard API responses
 export interface ApiResponse<T> {
@@ -15,27 +16,17 @@ export interface ApiResponse<T> {
  */
 export async function fetchAvailablePlugins(): Promise<ApiResponse<Plugin[]>> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}`);
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: [],
-        error: `Failed to fetch plugins: ${response.statusText}`
-      };
-    }
-    
-    const data = await response.json();
+    const response = await apiClient.get(PLUGIN_API_PATH);
     return {
       success: true,
-      data
+      data: response.data,
     };
-  } catch (error) {
-    console.error('Error fetching available plugins:', error);
+  } catch (error: any) {
+    console.error("Error fetching available plugins:", error);
     return {
       success: false,
       data: [],
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
 }
@@ -43,29 +34,21 @@ export async function fetchAvailablePlugins(): Promise<ApiResponse<Plugin[]>> {
 /**
  * Fetches all plugins installed for the current tenant
  */
-export async function getTenantPlugins(): Promise<ApiResponse<InstalledPlugin[]>> {
+export async function getTenantPlugins(): Promise<
+  ApiResponse<InstalledPlugin[]>
+> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}/installed`);
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: [],
-        error: `Failed to fetch installed plugins: ${response.statusText}`
-      };
-    }
-    
-    const data = await response.json();
+    const response = await apiClient.get(`${PLUGIN_API_PATH}/installed`);
     return {
       success: true,
-      data
+      data: response.data,
     };
-  } catch (error) {
-    console.error('Error fetching tenant plugins:', error);
+  } catch (error: any) {
+    console.error("Error fetching tenant plugins:", error);
     return {
       success: false,
       data: [],
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
 }
@@ -73,29 +56,21 @@ export async function getTenantPlugins(): Promise<ApiResponse<InstalledPlugin[]>
 /**
  * Fetches a specific plugin by ID
  */
-export async function getPlugin(pluginId: string): Promise<ApiResponse<InstalledPlugin>> {
+export async function getPlugin(
+  pluginId: string,
+): Promise<ApiResponse<InstalledPlugin>> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}/${pluginId}`);
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: null,
-        error: `Failed to fetch plugin: ${response.statusText}`
-      };
-    }
-    
-    const data = await response.json();
+    const response = await apiClient.get(`${PLUGIN_API_PATH}/${pluginId}`);
     return {
       success: true,
-      data
+      data: response.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error fetching plugin ${pluginId}:`, error);
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
 }
@@ -103,33 +78,23 @@ export async function getPlugin(pluginId: string): Promise<ApiResponse<Installed
 /**
  * Installs a plugin for the current tenant
  */
-export async function installPlugin(pluginId: string): Promise<ApiResponse<InstalledPlugin>> {
+export async function installPlugin(
+  pluginId: string,
+): Promise<ApiResponse<InstalledPlugin>> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}/install`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pluginId })
+    const response = await apiClient.post(`${PLUGIN_API_PATH}/install`, {
+      pluginId,
     });
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: null,
-        error: `Failed to install plugin: ${response.statusText}`
-      };
-    }
-    
-    const data = await response.json();
     return {
       success: true,
-      data
+      data: response.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error installing plugin ${pluginId}:`, error);
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
 }
@@ -137,32 +102,23 @@ export async function installPlugin(pluginId: string): Promise<ApiResponse<Insta
 /**
  * Uninstalls a plugin for the current tenant
  */
-export async function uninstallPlugin(pluginId: string): Promise<ApiResponse<void>> {
+export async function uninstallPlugin(
+  pluginId: string,
+): Promise<ApiResponse<void>> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}/uninstall`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pluginId })
+    await apiClient.post(`${PLUGIN_API_PATH}/uninstall`, {
+      pluginId,
     });
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: null,
-        error: `Failed to uninstall plugin: ${response.statusText}`
-      };
-    }
-    
     return {
       success: true,
-      data: null
+      data: null,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error uninstalling plugin ${pluginId}:`, error);
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
 }
@@ -170,33 +126,22 @@ export async function uninstallPlugin(pluginId: string): Promise<ApiResponse<voi
 /**
  * Updates the configuration for a plugin
  */
-export async function updatePluginConfig(pluginId: string, config: Record<string, any>): Promise<ApiResponse<InstalledPlugin>> {
+export async function updatePluginConfig(
+  pluginId: string,
+  config: Record<string, any>,
+): Promise<ApiResponse<InstalledPlugin>> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}/config`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    });
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: null,
-        error: `Failed to update plugin config: ${response.statusText}`
-      };
-    }
-    
-    const data = await response.json();
+    const response = await apiClient.put(`${PLUGIN_API_PATH}/config`, config);
     return {
       success: true,
-      data
+      data: response.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error updating config for plugin ${pluginId}:`, error);
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
 }
@@ -204,33 +149,24 @@ export async function updatePluginConfig(pluginId: string, config: Record<string
 /**
  * Enables or disables a plugin
  */
-export async function setPluginEnabled(pluginId: string, enabled: boolean): Promise<ApiResponse<InstalledPlugin>> {
+export async function setPluginEnabled(
+  pluginId: string,
+  enabled: boolean,
+): Promise<ApiResponse<InstalledPlugin>> {
   try {
-    const response = await fetch(`${PLUGIN_API_BASE}/status`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ enabled })
+    const response = await apiClient.put(`${PLUGIN_API_PATH}/status`, {
+      enabled,
     });
-    
-    if (!response.ok) {
-      return {
-        success: false,
-        data: null,
-        error: `Failed to update plugin status: ${response.statusText}`
-      };
-    }
-    
-    const data = await response.json();
     return {
       success: true,
-      data
+      data: response.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error updating status for plugin ${pluginId}:`, error);
     return {
       success: false,
       data: null,
-      error: error instanceof Error ? error.message : 'An unknown error occurred'
+      error: error.response?.data?.message || error.message || "An unknown error occurred",
     };
   }
-} 
+}

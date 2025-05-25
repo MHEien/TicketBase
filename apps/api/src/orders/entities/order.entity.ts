@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Event } from '../../events/entities/event.entity';
 import { Organization } from '../../users/entities/organization.entity';
@@ -10,7 +19,7 @@ export enum OrderStatus {
   CONFIRMED = 'confirmed',
   CANCELLED = 'cancelled',
   REFUNDED = 'refunded',
-  PARTIAL_REFUND = 'partial_refund'
+  PARTIAL_REFUND = 'partial_refund',
 }
 
 export enum PaymentStatus {
@@ -18,12 +27,15 @@ export enum PaymentStatus {
   PAID = 'paid',
   FAILED = 'failed',
   REFUNDED = 'refunded',
-  PARTIAL_REFUND = 'partial_refund'
+  PARTIAL_REFUND = 'partial_refund',
 }
 
 @Entity('orders')
 export class Order {
-  @ApiProperty({ description: 'Unique identifier', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -43,7 +55,10 @@ export class Order {
   @JoinColumn({ name: 'event_id' })
   event: Event;
 
-  @ApiProperty({ description: 'User ID (optional for guest checkout)', required: false })
+  @ApiProperty({
+    description: 'User ID (optional for guest checkout)',
+    required: false,
+  })
   @Column({ name: 'user_id', nullable: true })
   userId: string;
 
@@ -55,7 +70,10 @@ export class Order {
   @Column({ name: 'cart_id' })
   cartId: string;
 
-  @ApiProperty({ description: 'Human-readable order number', example: 'ORD-12345678' })
+  @ApiProperty({
+    description: 'Human-readable order number',
+    example: 'ORD-12345678',
+  })
   @Column({ name: 'order_number', unique: true })
   orderNumber: string;
 
@@ -64,7 +82,10 @@ export class Order {
   customer: any;
 
   @ApiProperty({ description: 'Order items', type: [OrderItem] })
-  @OneToMany(() => OrderItem, orderItem => orderItem.order, { cascade: true, eager: true })
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
+    cascade: true,
+    eager: true,
+  })
   items: OrderItem[];
 
   @ApiProperty({ description: 'Subtotal amount', example: 199.99 })
@@ -91,31 +112,50 @@ export class Order {
   @Column({ nullable: true })
   discountCode: string;
 
-  @ApiProperty({ description: 'Discount amount', required: false, example: 20.00 })
+  @ApiProperty({
+    description: 'Discount amount',
+    required: false,
+    example: 20.0,
+  })
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   discountAmount: number;
 
-  @ApiProperty({ description: 'Order status', enum: OrderStatus, enumName: 'OrderStatus' })
-  @Column({ 
-    type: 'enum', 
-    enum: OrderStatus, 
-    default: OrderStatus.PENDING 
+  @ApiProperty({
+    description: 'Order status',
+    enum: OrderStatus,
+    enumName: 'OrderStatus',
+  })
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
   })
   status: OrderStatus;
 
-  @ApiProperty({ description: 'Payment ID from payment provider', required: false })
+  @ApiProperty({
+    description: 'Payment ID from payment provider',
+    required: false,
+  })
   @Column({ nullable: true })
   paymentId: string;
 
-  @ApiProperty({ description: 'Payment method', example: 'credit_card', required: false })
+  @ApiProperty({
+    description: 'Payment method',
+    example: 'credit_card',
+    required: false,
+  })
   @Column({ nullable: true })
   paymentMethod: string;
 
-  @ApiProperty({ description: 'Payment status', enum: PaymentStatus, enumName: 'PaymentStatus' })
-  @Column({ 
-    type: 'enum', 
-    enum: PaymentStatus, 
-    default: PaymentStatus.PENDING 
+  @ApiProperty({
+    description: 'Payment status',
+    enum: PaymentStatus,
+    enumName: 'PaymentStatus',
+  })
+  @Column({
+    type: 'enum',
+    enum: PaymentStatus,
+    default: PaymentStatus.PENDING,
   })
   paymentStatus: PaymentStatus;
 
@@ -127,11 +167,15 @@ export class Order {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ApiProperty({ description: 'Refunded amount', required: false, example: 50.00 })
+  @ApiProperty({
+    description: 'Refunded amount',
+    required: false,
+    example: 50.0,
+  })
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   refundedAmount: number;
 
   @ApiProperty({ description: 'Order notes', required: false })
   @Column({ type: 'text', nullable: true })
   notes: string;
-} 
+}

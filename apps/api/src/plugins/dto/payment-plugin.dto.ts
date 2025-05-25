@@ -1,13 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsObject, IsArray, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsObject,
+  IsArray,
+  IsOptional,
+} from 'class-validator';
 import { CreatePluginDto } from './create-plugin.dto';
 import { PluginCategory } from '../entities/plugin.entity';
 
 export class RegisterPaymentPluginDto extends CreatePluginDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Payment provider name',
     example: 'stripe',
-    enum: ['stripe', 'paypal', 'authorize_net', 'square', 'braintree']
+    enum: ['stripe', 'paypal', 'authorize_net', 'square', 'braintree'],
   })
   @IsString()
   @IsNotEmpty()
@@ -15,7 +21,7 @@ export class RegisterPaymentPluginDto extends CreatePluginDto {
 
   @ApiProperty({
     description: 'Supported payment methods',
-    example: ['credit_card', 'ach', 'apple_pay', 'google_pay']
+    example: ['credit_card', 'ach', 'apple_pay', 'google_pay'],
   })
   @IsArray()
   @IsString({ each: true })
@@ -23,7 +29,7 @@ export class RegisterPaymentPluginDto extends CreatePluginDto {
 
   @ApiProperty({
     description: 'Supported currencies',
-    example: ['USD', 'EUR', 'GBP']
+    example: ['USD', 'EUR', 'GBP'],
   })
   @IsArray()
   @IsString({ each: true })
@@ -34,9 +40,9 @@ export class RegisterPaymentPluginDto extends CreatePluginDto {
     example: {
       properties: {
         apiKey: { type: 'string', required: true },
-        testMode: { type: 'boolean', default: false }
-      }
-    }
+        testMode: { type: 'boolean', default: false },
+      },
+    },
   })
   @IsObject()
   configurationSchema: Record<string, any>;
@@ -44,9 +50,9 @@ export class RegisterPaymentPluginDto extends CreatePluginDto {
   @ApiProperty({
     description: 'Default plugin configuration',
     example: {
-      testMode: true
+      testMode: true,
     },
-    required: false
+    required: false,
   })
   @IsObject()
   @IsOptional()
@@ -61,7 +67,7 @@ export class RegisterPaymentPluginDto extends CreatePluginDto {
     this.extensionPoints = this.extensionPoints || [
       'payment.gateway',
       'checkout.payment_method',
-      'order.payment_processor'
+      'order.payment_processor',
     ];
   }
-} 
+}

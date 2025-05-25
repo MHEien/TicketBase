@@ -12,10 +12,10 @@ export default function PluginsPage() {
           Discover and manage plugins to extend your event platform.
         </p>
       </div>
-      
+
       <Separator />
-      
+
       <PluginGallery />
     </div>
   );
-} 
+}

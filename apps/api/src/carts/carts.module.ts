@@ -7,12 +7,9 @@ import { CartItem } from './entities/cart-item.entity';
 import { EventsModule } from '../events/events.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Cart, CartItem]),
-    EventsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Cart, CartItem]), EventsModule],
   controllers: [CartsController],
   providers: [CartsService],
   exports: [CartsService],
 })
-export class CartsModule {} 
+export class CartsModule {}

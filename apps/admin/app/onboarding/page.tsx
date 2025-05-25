@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useOnboarding } from "@/lib/onboarding-context"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import OrganizationDetailsForm from "./steps/organization-details"
-import EventPreferencesForm from "./steps/event-preferences"
-import BrandSettingsForm from "./steps/brand-settings"
-import PaymentDetailsForm from "./steps/payment-details"
-import OnboardingComplete from "./steps/onboarding-complete"
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useOnboarding } from "@/lib/onboarding-context";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import OrganizationDetailsForm from "./steps/organization-details";
+import EventPreferencesForm from "./steps/event-preferences";
+import BrandSettingsForm from "./steps/brand-settings";
+import PaymentDetailsForm from "./steps/payment-details";
+import OnboardingComplete from "./steps/onboarding-complete";
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const { currentStep, totalSteps, goToStep, isCompleted } = useOnboarding()
-  
+  const router = useRouter();
+  const { currentStep, totalSteps, goToStep, isCompleted } = useOnboarding();
+
   // Redirect to dashboard if onboarding is already completed
   useEffect(() => {
     if (isCompleted) {
-      router.push("/")
+      router.push("/");
     }
-  }, [isCompleted, router])
-  
+  }, [isCompleted, router]);
+
   // Steps progression
   const steps = [
     {
@@ -48,15 +48,15 @@ export default function OnboardingPage() {
       description: "Set up how you'll get paid",
       component: <PaymentDetailsForm />,
     },
-  ]
-  
+  ];
+
   // If all steps are completed, show completion
   if (currentStep > totalSteps) {
-    return <OnboardingComplete />
+    return <OnboardingComplete />;
   }
-  
-  const currentStepData = steps.find((step) => step.id === currentStep)
-  
+
+  const currentStepData = steps.find((step) => step.id === currentStep);
+
   return (
     <div className="flex flex-col items-center">
       {/* Progress indicator */}
@@ -74,8 +74,8 @@ export default function OnboardingPage() {
                     step.id < currentStep
                       ? "bg-green-500 text-white"
                       : step.id === currentStep
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300"
                   }`}
               >
                 {step.id < currentStep ? (
@@ -110,10 +110,13 @@ export default function OnboardingPage() {
             </div>
           ))}
         </div>
-        
+
         {/* Progress line */}
         <div className="relative mt-4">
-          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+          <div
+            className="absolute inset-0 flex items-center"
+            aria-hidden="true"
+          >
             <div className="h-0.5 w-full bg-gray-200 dark:bg-gray-700"></div>
           </div>
           <div className="relative flex justify-between">
@@ -125,23 +128,24 @@ export default function OnboardingPage() {
                 }`}
                 style={{
                   width: `${100 / (steps.length - 1)}%`,
-                  marginLeft: step.id === 1 ? "0" : `-${100 / (steps.length * 2)}%`,
+                  marginLeft:
+                    step.id === 1 ? "0" : `-${100 / (steps.length * 2)}%`,
                 }}
               ></div>
             ))}
           </div>
         </div>
       </div>
-      
+
       {/* Current step content */}
       <Card className="w-full max-w-3xl p-6">
         <h2 className="text-2xl font-bold mb-2">{currentStepData?.title}</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-6">
           {currentStepData?.description}
         </p>
-        
+
         {currentStepData?.component}
       </Card>
     </div>
-  )
-} 
+  );
+}

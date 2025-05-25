@@ -10,13 +10,19 @@ export class CreateCartDto {
   @IsUUID()
   eventId: string;
 
-  @ApiProperty({ description: 'User ID (optional for guest checkout)', required: false })
+  @ApiProperty({
+    description: 'User ID (optional for guest checkout)',
+    required: false,
+  })
   @IsUUID()
   @IsOptional()
   userId?: string;
 
-  @ApiProperty({ description: 'Session ID for tracking anonymous carts', required: false })
+  @ApiProperty({
+    description: 'Session ID for tracking anonymous carts',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   sessionId?: string;
-} 
+}

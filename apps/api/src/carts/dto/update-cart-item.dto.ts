@@ -1,10 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsOptional, IsEnum, IsObject, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsEnum,
+  IsObject,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { CartItemType } from '../entities/cart-item.entity';
 
 export class UpdateCartItemDto {
-  @ApiProperty({ description: 'Item name', example: 'VIP Ticket', required: false })
+  @ApiProperty({
+    description: 'Item name',
+    example: 'VIP Ticket',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
@@ -23,7 +34,11 @@ export class UpdateCartItemDto {
   @IsOptional()
   unitPrice?: number;
 
-  @ApiProperty({ description: 'Item type', enum: CartItemType, required: false })
+  @ApiProperty({
+    description: 'Item type',
+    enum: CartItemType,
+    required: false,
+  })
   @IsEnum(CartItemType)
   @IsOptional()
   type?: CartItemType;
@@ -32,4 +47,4 @@ export class UpdateCartItemDto {
   @IsObject()
   @IsOptional()
   metadata?: Record<string, any>;
-} 
+}

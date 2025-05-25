@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TicketTypesService } from './ticket-types.service';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
@@ -13,17 +23,18 @@ export class TicketTypesController {
   create(
     @Request() req,
     @Param('eventId') eventId: string,
-    @Body() createTicketTypeDto: CreateTicketTypeDto
+    @Body() createTicketTypeDto: CreateTicketTypeDto,
   ) {
     const organizationId = req.user.organizationId;
-    return this.ticketTypesService.create(eventId, organizationId, createTicketTypeDto);
+    return this.ticketTypesService.create(
+      eventId,
+      organizationId,
+      createTicketTypeDto,
+    );
   }
 
   @Get()
-  findAll(
-    @Request() req,
-    @Param('eventId') eventId: string
-  ) {
+  findAll(@Request() req, @Param('eventId') eventId: string) {
     const organizationId = req.user.organizationId;
     return this.ticketTypesService.findAll(eventId, organizationId);
   }
@@ -32,7 +43,7 @@ export class TicketTypesController {
   findOne(
     @Request() req,
     @Param('eventId') eventId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ) {
     const organizationId = req.user.organizationId;
     return this.ticketTypesService.findOne(id, eventId, organizationId);
@@ -43,19 +54,24 @@ export class TicketTypesController {
     @Request() req,
     @Param('eventId') eventId: string,
     @Param('id') id: string,
-    @Body() updateTicketTypeDto: UpdateTicketTypeDto
+    @Body() updateTicketTypeDto: UpdateTicketTypeDto,
   ) {
     const organizationId = req.user.organizationId;
-    return this.ticketTypesService.update(id, eventId, organizationId, updateTicketTypeDto);
+    return this.ticketTypesService.update(
+      id,
+      eventId,
+      organizationId,
+      updateTicketTypeDto,
+    );
   }
 
   @Delete(':id')
   remove(
     @Request() req,
     @Param('eventId') eventId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ) {
     const organizationId = req.user.organizationId;
     return this.ticketTypesService.remove(id, eventId, organizationId);
   }
-} 
+}

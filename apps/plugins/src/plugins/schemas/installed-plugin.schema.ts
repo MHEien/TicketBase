@@ -27,6 +27,7 @@ export class InstalledPlugin {
   createdAt: Date;
 }
 
-export const InstalledPluginSchema = SchemaFactory.createForClass(InstalledPlugin);
+export const InstalledPluginSchema =
+  SchemaFactory.createForClass(InstalledPlugin);
 // Add compound index for tenantId + pluginId
-InstalledPluginSchema.index({ tenantId: 1, pluginId: 1 }, { unique: true }); 
+InstalledPluginSchema.index({ tenantId: 1, pluginId: 1 }, { unique: true });

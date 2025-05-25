@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, IsDateString, IsOptional, IsNumber, Min, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+  Min,
+  IsBoolean,
+} from 'class-validator';
 
 export class CreateTicketTypeDto {
   @IsString()
@@ -50,4 +58,4 @@ export class CreateTicketTypeDto {
   @IsNumber()
   @IsOptional()
   sortOrder?: number = 0;
-} 
+}

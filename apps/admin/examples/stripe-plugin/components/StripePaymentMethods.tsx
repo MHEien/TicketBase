@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
+import { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
   PaymentElement,
   useStripe,
   useElements,
-} from '@stripe/react-stripe-js';
+} from "@stripe/react-stripe-js";
 
 // This would be provided by the platform
-import { Card, CardContent, CardHeader, CardTitle } from 'host/ui';
+import { Card, CardContent, CardHeader, CardTitle } from "host/ui";
 
 interface StripePaymentMethodsProps {
   config: {
@@ -21,7 +21,10 @@ interface StripePaymentMethodsProps {
 }
 
 // This is the main component that will be loaded by the platform
-export default function StripePaymentMethods({ config, eventData }: StripePaymentMethodsProps) {
+export default function StripePaymentMethods({
+  config,
+  eventData,
+}: StripePaymentMethodsProps) {
   const [stripePromise, setStripePromise] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +35,7 @@ export default function StripePaymentMethods({ config, eventData }: StripePaymen
     if (config.publishableKey) {
       setStripePromise(loadStripe(config.publishableKey));
     } else {
-      setError('Stripe publishable key not configured');
+      setError("Stripe publishable key not configured");
       setLoading(false);
     }
   }, [config.publishableKey]);
@@ -43,24 +46,25 @@ export default function StripePaymentMethods({ config, eventData }: StripePaymen
     async function prepareStripeSession() {
       try {
         setLoading(true);
-        
+
         // This would be an actual API call in production
         // Example: fetch('/api/plugins/stripe/create-intent', {
         //   method: 'POST',
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({ eventId: eventData?.id }),
         // })
-        
+
         // Mock response for the example
-        const mockClientSecret = 'mock_secret_' + Math.random().toString(36).substring(2);
-        
+        const mockClientSecret =
+          "mock_secret_" + Math.random().toString(36).substring(2);
+
         // Small delay to simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         setClientSecret(mockClientSecret);
       } catch (err) {
-        setError('Failed to initialize payment methods');
-        console.error('Stripe initialization error:', err);
+        setError("Failed to initialize payment methods");
+        console.error("Stripe initialization error:", err);
       } finally {
         setLoading(false);
       }
@@ -107,13 +111,17 @@ export default function StripePaymentMethods({ config, eventData }: StripePaymen
       </CardHeader>
       <CardContent>
         {/* In a real implementation, we would pass the actual client secret */}
-        <Elements stripe={stripePromise} options={{ clientSecret: 'mock_secret_for_example' }}>
+        <Elements
+          stripe={stripePromise}
+          options={{ clientSecret: "mock_secret_for_example" }}
+        >
           <CheckoutForm />
         </Elements>
-        
+
         {config.testMode && (
           <div className="mt-4 rounded-md bg-yellow-50 p-3 text-xs text-yellow-800">
-            Stripe is in test mode. Use test card 4242 4242 4242 4242 with any future date and CVC.
+            Stripe is in test mode. Use test card 4242 4242 4242 4242 with any
+            future date and CVC.
           </div>
         )}
       </CardContent>
@@ -139,10 +147,10 @@ function CheckoutForm() {
 
     // Since this is just an example, we're not actually processing payments
     // In a real implementation, this would call stripe.confirmPayment() or similar
-    
+
     // Simulate payment processing
     setTimeout(() => {
-      setMessage('Payment method saved successfully');
+      setMessage("Payment method saved successfully");
       setIsProcessing(false);
     }, 1000);
   };
@@ -150,16 +158,16 @@ function CheckoutForm() {
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement />
-      
+
       <button
         disabled={isProcessing || !stripe || !elements}
         id="submit"
         className="mt-4 w-full rounded-md bg-primary px-4 py-2 font-medium text-white"
       >
-        {isProcessing ? 'Processing...' : 'Save Payment Method'}
+        {isProcessing ? "Processing..." : "Save Payment Method"}
       </button>
-      
+
       {message && <div className="mt-4 text-sm text-green-600">{message}</div>}
     </form>
   );
-} 
+}

@@ -1,7 +1,18 @@
-"use client"
+"use client";
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 // Sample data for the chart
 const data = [
@@ -19,7 +30,7 @@ const data = [
   { date: "May 21", revenue: 3100, tickets: 114 },
   { date: "May 22", revenue: 3400, tickets: 125 },
   { date: "May 23", revenue: 3200, tickets: 118 },
-]
+];
 
 export function SalesChart() {
   return (
@@ -37,19 +48,50 @@ export function SalesChart() {
       className="h-[300px]"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <AreaChart
+          data={data}
+          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+        >
           <defs>
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-revenue)" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="var(--color-revenue)" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor="var(--color-revenue)"
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor="var(--color-revenue)"
+                stopOpacity={0}
+              />
             </linearGradient>
             <linearGradient id="colorTickets" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--color-tickets)" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="var(--color-tickets)" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor="var(--color-tickets)"
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor="var(--color-tickets)"
+                stopOpacity={0}
+              />
             </linearGradient>
           </defs>
-          <XAxis dataKey="date" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} tickMargin={10} />
-          <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} tickMargin={10} />
+          <XAxis
+            dataKey="date"
+            tickLine={false}
+            axisLine={false}
+            tick={{ fontSize: 12 }}
+            tickMargin={10}
+          />
+          <YAxis
+            yAxisId="left"
+            tickLine={false}
+            axisLine={false}
+            tick={{ fontSize: 12 }}
+            tickMargin={10}
+          />
           <YAxis
             yAxisId="right"
             orientation="right"
@@ -79,5 +121,5 @@ export function SalesChart() {
         </AreaChart>
       </ResponsiveContainer>
     </ChartContainer>
-  )
+  );
 }

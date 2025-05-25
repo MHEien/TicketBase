@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { motion } from "framer-motion"
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   Home,
   BarChart3,
@@ -14,21 +14,20 @@ import {
   Bell,
   MessageSquare,
   Command,
-} from "lucide-react"
-import { AuthStatus } from "@/components/ui/auth-status"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useCommandMenu } from "@/hooks/use-command-menu"
-import { useRouter } from "next/navigation"
-import { useDashboardNav } from "@/hooks/useDashboardNav"
-
+} from "lucide-react";
+import { AuthStatus } from "@/components/ui/auth-status";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useCommandMenu } from "@/hooks/use-command-menu";
+import { useRouter } from "next/navigation";
+import { useDashboardNav } from "@/hooks/useDashboardNav";
 
 export function CommandHub() {
-  const [expanded, setExpanded] = useState(false)
-  const hubRef = useRef<HTMLDivElement>(null)
-  const { setIsOpen } = useCommandMenu()
-  const router = useRouter()
-  const { activeSection, setActiveSection } = useDashboardNav()
+  const [expanded, setExpanded] = useState(false);
+  const hubRef = useRef<HTMLDivElement>(null);
+  const { setIsOpen } = useCommandMenu();
+  const router = useRouter();
+  const { activeSection, setActiveSection } = useDashboardNav();
   const navItems = [
     { id: "overview", label: "Overview", icon: Home },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
@@ -36,39 +35,39 @@ export function CommandHub() {
     { id: "users", label: "Users", icon: Users },
     { id: "events", label: "Events", icon: Calendar },
     { id: "settings", label: "Settings", icon: Settings },
-  ]
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (hubRef.current && !hubRef.current.contains(event.target as Node)) {
-        setExpanded(false)
+        setExpanded(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleNewEvent = () => {
-    router.push("/events/new")
-  }
+    router.push("/events/new");
+  };
 
   const handleNavItemClick = (id: string) => {
     if (id === "events") {
-      router.push("/events")
+      router.push("/events");
     } else if (id === "users") {
-      router.push("/users")
+      router.push("/users");
     } else if (id === "settings") {
-      router.push("/settings")
+      router.push("/settings");
     } else if (id === "plugins") {
-      router.push("/settings/plugins")
+      router.push("/settings/plugins");
     } else {
-      setActiveSection(id)
+      setActiveSection(id);
     }
-    setExpanded(false)
-  }
+    setExpanded(false);
+  };
 
   return (
     <motion.div
@@ -91,7 +90,12 @@ export function CommandHub() {
         {/* Main Command Bar */}
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" onClick={() => setExpanded(!expanded)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={() => setExpanded(!expanded)}
+            >
               <Command className="h-5 w-5" />
             </Button>
 
@@ -111,22 +115,42 @@ export function CommandHub() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full" onClick={() => {}}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative h-9 w-9 rounded-full"
+              onClick={() => {}}
+            >
               <Bell className="h-5 w-5" />
               <Badge className="absolute right-0 top-0 h-2 w-2 rounded-full p-0" />
             </Button>
 
-            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" onClick={() => {}}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+              onClick={() => {}}
+            >
               <MessageSquare className="h-5 w-5" />
             </Button>
 
-            <Button variant="outline" className="h-9 gap-2 rounded-full px-3 text-sm" onClick={() => setIsOpen(true)}>
+            <Button
+              variant="outline"
+              className="h-9 gap-2 rounded-full px-3 text-sm"
+              onClick={() => setIsOpen(true)}
+            >
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Search...</span>
-              <span className="hidden text-xs text-muted-foreground md:inline">⌘K</span>
+              <span className="hidden text-xs text-muted-foreground md:inline">
+                ⌘K
+              </span>
             </Button>
 
-            <Button variant="default" className="h-9 gap-2 rounded-full px-3 text-sm" onClick={handleNewEvent}>
+            <Button
+              variant="default"
+              className="h-9 gap-2 rounded-full px-3 text-sm"
+              onClick={handleNewEvent}
+            >
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">New Event</span>
             </Button>
@@ -164,14 +188,18 @@ export function CommandHub() {
             <div className="space-y-2 rounded-lg border bg-background/50 p-3">
               <h3 className="text-sm font-medium">Recent Events</h3>
               <div className="space-y-2">
-                {["Summer Music Festival", "Tech Conference 2023", "Art Exhibition"].map((event, i) => (
+                {[
+                  "Summer Music Festival",
+                  "Tech Conference 2023",
+                  "Art Exhibition",
+                ].map((event, i) => (
                   <Button
                     key={i}
                     variant="ghost"
                     className="w-full justify-start text-sm"
                     onClick={() => {
-                      router.push("/events")
-                      setExpanded(false)
+                      router.push("/events");
+                      setExpanded(false);
                     }}
                   >
                     {event}
@@ -205,5 +233,5 @@ export function CommandHub() {
         )}
       </motion.div>
     </motion.div>
-  )
+  );
 }

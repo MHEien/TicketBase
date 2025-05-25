@@ -1,22 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { CalendarIcon, Clock } from "lucide-react"
-import { format } from "date-fns"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { useEventCreation } from "@/hooks/use-event-creation"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { CalendarIcon, Clock } from "lucide-react";
+import { format } from "date-fns";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventDateTime() {
-  const { eventData, updateEventData } = useEventCreation()
-  const [startDateOpen, setStartDateOpen] = useState(false)
-  const [endDateOpen, setEndDateOpen] = useState(false)
+  const { eventData, updateEventData } = useEventCreation();
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
 
   const timeZones = [
     { value: "America/New_York", label: "Eastern Time (ET)" },
@@ -29,7 +45,7 @@ export function EventDateTime() {
     { value: "Europe/Paris", label: "Central European Time (CET)" },
     { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
     { value: "Australia/Sydney", label: "Australian Eastern Time (AET)" },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
@@ -41,7 +57,9 @@ export function EventDateTime() {
         <Card>
           <CardHeader>
             <CardTitle>Date & Time</CardTitle>
-            <CardDescription>Set when your event will take place.</CardDescription>
+            <CardDescription>
+              Set when your event will take place.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -56,7 +74,9 @@ export function EventDateTime() {
                         !eventData.startDate && "text-muted-foreground",
                       )}
                     >
-                      {eventData.startDate ? format(eventData.startDate, "PPP") : "Select date"}
+                      {eventData.startDate
+                        ? format(eventData.startDate, "PPP")
+                        : "Select date"}
                       <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
                     </button>
                   </PopoverTrigger>
@@ -65,12 +85,16 @@ export function EventDateTime() {
                       mode="single"
                       selected={eventData.startDate || undefined}
                       onSelect={(date) => {
-                        updateEventData({ startDate: date })
-                        setStartDateOpen(false)
+                        updateEventData({ startDate: date });
+                        setStartDateOpen(false);
 
                         // If end date is before start date, update it
-                        if (eventData.endDate && date && eventData.endDate < date) {
-                          updateEventData({ endDate: date })
+                        if (
+                          eventData.endDate &&
+                          date &&
+                          eventData.endDate < date
+                        ) {
+                          updateEventData({ endDate: date });
                         }
                       }}
                       disabled={(date) => date < new Date()}
@@ -92,7 +116,9 @@ export function EventDateTime() {
                       )}
                       disabled={!eventData.startDate}
                     >
-                      {eventData.endDate ? format(eventData.endDate, "PPP") : "Select date"}
+                      {eventData.endDate
+                        ? format(eventData.endDate, "PPP")
+                        : "Select date"}
                       <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
                     </button>
                   </PopoverTrigger>
@@ -101,11 +127,14 @@ export function EventDateTime() {
                       mode="single"
                       selected={eventData.endDate || undefined}
                       onSelect={(date) => {
-                        updateEventData({ endDate: date })
-                        setEndDateOpen(false)
+                        updateEventData({ endDate: date });
+                        setEndDateOpen(false);
                       }}
                       disabled={(date) =>
-                        date < new Date() || (eventData.startDate ? date < eventData.startDate : false)
+                        date < new Date() ||
+                        (eventData.startDate
+                          ? date < eventData.startDate
+                          : false)
                       }
                       initialFocus
                     />
@@ -124,7 +153,9 @@ export function EventDateTime() {
                     type="time"
                     className="pl-10"
                     value={eventData.startTime}
-                    onChange={(e) => updateEventData({ startTime: e.target.value })}
+                    onChange={(e) =>
+                      updateEventData({ startTime: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -138,7 +169,9 @@ export function EventDateTime() {
                     type="time"
                     className="pl-10"
                     value={eventData.endTime}
-                    onChange={(e) => updateEventData({ endTime: e.target.value })}
+                    onChange={(e) =>
+                      updateEventData({ endTime: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -146,7 +179,10 @@ export function EventDateTime() {
 
             <div className="space-y-2">
               <Label htmlFor="timezone">Time Zone</Label>
-              <Select value={eventData.timeZone} onValueChange={(value) => updateEventData({ timeZone: value })}>
+              <Select
+                value={eventData.timeZone}
+                onValueChange={(value) => updateEventData({ timeZone: value })}
+              >
                 <SelectTrigger id="timezone">
                   <SelectValue placeholder="Select time zone" />
                 </SelectTrigger>
@@ -171,18 +207,21 @@ export function EventDateTime() {
         <Card>
           <CardHeader>
             <CardTitle>Duration & Schedule</CardTitle>
-            <CardDescription>Add additional schedule information for your event.</CardDescription>
+            <CardDescription>
+              Add additional schedule information for your event.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-lg border bg-muted/50 p-4">
               <p className="text-sm text-muted-foreground">
-                For multi-day events or events with complex schedules, you can add a detailed agenda in the event
-                description or create a custom schedule after saving the event.
+                For multi-day events or events with complex schedules, you can
+                add a detailed agenda in the event description or create a
+                custom schedule after saving the event.
               </p>
             </div>
           </CardContent>
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

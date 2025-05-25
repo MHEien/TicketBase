@@ -1,20 +1,21 @@
-import type { EventData } from "@/hooks/use-event-creation"
+import type { EventData } from "@/hooks/use-event-creation";
 
 export type EventWithId = EventData & {
-  id: string
-  createdAt: Date
-  updatedAt: Date
-  status: "draft" | "published" | "cancelled" | "completed"
-  totalTicketsSold: number
-  totalRevenue: number
-}
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: "draft" | "published" | "cancelled" | "completed";
+  totalTicketsSold: number;
+  totalRevenue: number;
+};
 
 // Sample events data
 export const sampleEvents: EventWithId[] = [
   {
     id: "evt-001",
     title: "Summer Music Festival",
-    description: "A three-day music festival featuring top artists from around the world.",
+    description:
+      "A three-day music festival featuring top artists from around the world.",
     category: "concert",
     startDate: new Date("2025-07-15T14:00:00"),
     endDate: new Date("2025-07-17T23:00:00"),
@@ -57,7 +58,8 @@ export const sampleEvents: EventWithId[] = [
   {
     id: "evt-002",
     title: "Tech Conference 2025",
-    description: "The premier tech conference for developers and entrepreneurs.",
+    description:
+      "The premier tech conference for developers and entrepreneurs.",
     category: "conference",
     startDate: new Date("2025-09-10T09:00:00"),
     endDate: new Date("2025-09-12T17:00:00"),
@@ -186,7 +188,8 @@ export const sampleEvents: EventWithId[] = [
   {
     id: "evt-005",
     title: "Marathon 2025",
-    description: "Annual city marathon with 5K, 10K, half and full marathon options.",
+    description:
+      "Annual city marathon with 5K, 10K, half and full marathon options.",
     category: "sports",
     startDate: new Date("2025-04-20T07:00:00"),
     endDate: new Date("2025-04-20T15:00:00"),
@@ -233,19 +236,21 @@ export const sampleEvents: EventWithId[] = [
     totalTicketsSold: 2800,
     totalRevenue: 189000,
   },
-]
+];
 
 // Function to get all events
 export function getAllEvents(): EventWithId[] {
-  return sampleEvents
+  return sampleEvents;
 }
 
 // Function to get an event by ID
 export function getEventById(id: string): EventWithId | undefined {
-  return sampleEvents.find((event) => event.id === id)
+  return sampleEvents.find((event) => event.id === id);
 }
 
 // Function to get events by status
-export function getEventsByStatus(status: EventWithId["status"]): EventWithId[] {
-  return sampleEvents.filter((event) => event.status === status)
+export function getEventsByStatus(
+  status: EventWithId["status"],
+): EventWithId[] {
+  return sampleEvents.filter((event) => event.status === status);
 }

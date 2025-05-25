@@ -1,22 +1,22 @@
-export type UserRole = "owner" | "admin" | "manager" | "support" | "analyst"
+export type UserRole = "owner" | "admin" | "manager" | "support" | "analyst";
 
 export interface Permission {
-  id: string
-  name: string
-  description: string
+  id: string;
+  name: string;
+  description: string;
 }
 
 export interface User {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-  role: UserRole
-  permissions: string[]
-  createdAt: Date
-  lastActive: Date
-  status: "active" | "inactive" | "pending"
-  twoFactorEnabled: boolean
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: UserRole;
+  permissions: string[];
+  createdAt: Date;
+  lastActive: Date;
+  status: "active" | "inactive" | "pending";
+  twoFactorEnabled: boolean;
 }
 
 // Available permissions in the system
@@ -71,7 +71,7 @@ export const availablePermissions: Permission[] = [
     name: "Manage Billing",
     description: "Can manage billing and subscriptions",
   },
-]
+];
 
 // Default permissions for each role
 export const rolePermissions: Record<UserRole, string[]> = {
@@ -87,10 +87,17 @@ export const rolePermissions: Record<UserRole, string[]> = {
     "analytics:view",
     "settings:edit",
   ],
-  manager: ["events:create", "events:edit", "events:publish", "tickets:manage", "tickets:view-sales", "analytics:view"],
+  manager: [
+    "events:create",
+    "events:edit",
+    "events:publish",
+    "tickets:manage",
+    "tickets:view-sales",
+    "analytics:view",
+  ],
   support: ["events:edit", "tickets:view-sales", "analytics:view"],
   analyst: ["tickets:view-sales", "analytics:view"],
-}
+};
 
 // Sample users data
 export const sampleUsers: User[] = [
@@ -190,29 +197,29 @@ export const sampleUsers: User[] = [
     status: "pending",
     twoFactorEnabled: false,
   },
-]
+];
 
 // Function to get all users
 export function getAllUsers(): User[] {
-  return sampleUsers
+  return sampleUsers;
 }
 
 // Function to get a user by ID
 export function getUserById(id: string): User | undefined {
-  return sampleUsers.find((user) => user.id === id)
+  return sampleUsers.find((user) => user.id === id);
 }
 
 // Function to get users by role
 export function getUsersByRole(role: UserRole): User[] {
-  return sampleUsers.filter((user) => user.role === role)
+  return sampleUsers.filter((user) => user.role === role);
 }
 
 // Function to get users by status
 export function getUsersByStatus(status: User["status"]): User[] {
-  return sampleUsers.filter((user) => user.status === status)
+  return sampleUsers.filter((user) => user.status === status);
 }
 
 // Function to check if a user has a specific permission
 export function hasPermission(user: User, permissionId: string): boolean {
-  return user.permissions.includes(permissionId)
+  return user.permissions.includes(permissionId);
 }

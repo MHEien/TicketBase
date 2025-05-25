@@ -10,22 +10,38 @@ import {
 import { PluginCategory } from '../entities/plugin.entity';
 
 export class UpdatePluginDto {
-  @ApiProperty({ description: 'Plugin name', example: 'Stripe Payment Gateway', required: false })
+  @ApiProperty({
+    description: 'Plugin name',
+    example: 'Stripe Payment Gateway',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ description: 'Plugin version', example: '1.0.1', required: false })
+  @ApiProperty({
+    description: 'Plugin version',
+    example: '1.0.1',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   version?: string;
 
-  @ApiProperty({ description: 'Plugin description', example: 'Integrates Stripe payment processing', required: false })
+  @ApiProperty({
+    description: 'Plugin description',
+    example: 'Integrates Stripe payment processing',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ description: 'Plugin category', enum: PluginCategory, required: false })
+  @ApiProperty({
+    description: 'Plugin category',
+    enum: PluginCategory,
+    required: false,
+  })
   @IsEnum(PluginCategory)
   @IsOptional()
   category?: PluginCategory;
@@ -109,4 +125,4 @@ export class UpdatePluginDto {
   @IsString({ each: true })
   @IsOptional()
   requiredPermissions?: string[];
-} 
+}

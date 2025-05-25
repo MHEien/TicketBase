@@ -1,13 +1,25 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('customers')
 export class Customer {
-  @ApiProperty({ description: 'Unique identifier', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'Email address', example: 'customer@example.com' })
+  @ApiProperty({
+    description: 'Email address',
+    example: 'customer@example.com',
+  })
   @Column({ unique: true })
   email: string;
 
@@ -19,11 +31,15 @@ export class Customer {
   @Column({ nullable: true })
   lastName: string;
 
-  @ApiProperty({ description: 'Phone number', example: '+1234567890', required: false })
+  @ApiProperty({
+    description: 'Phone number',
+    example: '+1234567890',
+    required: false,
+  })
   @Column({ nullable: true })
   phone: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Address information',
     required: false,
     example: {
@@ -31,8 +47,8 @@ export class Customer {
       city: 'San Francisco',
       state: 'CA',
       postalCode: '94105',
-      country: 'USA'
-    }
+      country: 'USA',
+    },
   })
   @Column({ type: 'jsonb', nullable: true })
   address: {
@@ -55,4 +71,4 @@ export class Customer {
   @ApiProperty({ description: 'Last update timestamp' })
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-} 
+}

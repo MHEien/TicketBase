@@ -20,7 +20,10 @@ export class PluginEventBus {
    * @param eventName The event name to listen for
    * @param handler The handler function
    */
-  on(eventName: string, handler: (data: { payload: any, source: string }) => void): void {
+  on(
+    eventName: string,
+    handler: (data: { payload: any; source: string }) => void,
+  ): void {
     this.eventEmitter.on(eventName, handler);
   }
 
@@ -29,7 +32,10 @@ export class PluginEventBus {
    * @param eventName The event name
    * @param handler The handler function to remove
    */
-  off(eventName: string, handler: (data: { payload: any, source: string }) => void): void {
+  off(
+    eventName: string,
+    handler: (data: { payload: any; source: string }) => void,
+  ): void {
     this.eventEmitter.off(eventName, handler);
   }
 
@@ -38,7 +44,10 @@ export class PluginEventBus {
    * @param eventName The event name to listen for
    * @param handler The handler function
    */
-  once(eventName: string, handler: (data: { payload: any, source: string }) => void): void {
+  once(
+    eventName: string,
+    handler: (data: { payload: any; source: string }) => void,
+  ): void {
     this.eventEmitter.once(eventName, handler);
   }
 
@@ -56,4 +65,4 @@ export class PluginEventBus {
   listenerCount(eventName: string): number {
     return this.eventEmitter.listenerCount(eventName);
   }
-} 
+}

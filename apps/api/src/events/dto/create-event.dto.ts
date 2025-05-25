@@ -1,4 +1,14 @@
-import { IsNotEmpty, IsString, IsDateString, IsEnum, IsOptional, IsArray, IsNumber, ValidateNested, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  IsArray,
+  IsNumber,
+  ValidateNested,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { EventLocationType, EventVisibility } from '../entities/event.entity';
 import { CreateTicketTypeDto } from './create-ticket-type.dto';
@@ -113,4 +123,4 @@ export class CreateEventDto {
   @Type(() => CreateTicketTypeDto)
   @IsOptional()
   ticketTypes?: CreateTicketTypeDto[];
-} 
+}

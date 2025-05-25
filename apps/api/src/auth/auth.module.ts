@@ -18,19 +18,14 @@ import { AuthController } from './auth.controller';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('jwt.secret'),
-        signOptions: { 
-          expiresIn: configService.get('jwt.expiresIn')
+        signOptions: {
+          expiresIn: configService.get('jwt.expiresIn'),
         },
       }),
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    JwtRefreshStrategy,
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

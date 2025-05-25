@@ -4,29 +4,31 @@
  */
 
 // Ensure React is available globally for plugins
-(function() {
+(function () {
   if (window.React) {
-    console.log('Plugin loader: React already available globally');
+    console.log("Plugin loader: React already available globally");
   } else {
-    console.error('Plugin loader: React not found globally. Plugins might not work correctly.');
+    console.error(
+      "Plugin loader: React not found globally. Plugins might not work correctly.",
+    );
   }
 
   // Create a global plugin registry if it doesn't exist
   window.__PLUGIN_REGISTRY = window.__PLUGIN_REGISTRY || {
     registered: {},
-    
+
     // Register a plugin
-    register: function(pluginId, pluginExports) {
+    register: function (pluginId, pluginExports) {
       this.registered[pluginId] = pluginExports;
       console.log(`Plugin registered: ${pluginId}`);
       return pluginExports;
     },
-    
+
     // Get a registered plugin
-    get: function(pluginId) {
+    get: function (pluginId) {
       return this.registered[pluginId];
-    }
+    },
   };
-  
-  console.log('Plugin loader initialized');
-})(); 
+
+  console.log("Plugin loader initialized");
+})();

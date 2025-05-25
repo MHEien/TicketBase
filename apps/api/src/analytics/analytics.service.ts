@@ -19,7 +19,10 @@ export class AnalyticsService {
     });
   }
 
-  async getSalesAnalytics(periodStart: Date, periodEnd: Date): Promise<SalesAnalytics[]> {
+  async getSalesAnalytics(
+    periodStart: Date,
+    periodEnd: Date,
+  ): Promise<SalesAnalytics[]> {
     return this.salesAnalyticsRepository.find({
       where: {
         date: Between(periodStart, periodEnd),
@@ -28,4 +31,4 @@ export class AnalyticsService {
   }
 
   // Add more methods as needed for your application
-} 
+}

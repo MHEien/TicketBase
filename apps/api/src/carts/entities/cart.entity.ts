@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Event } from '../../events/entities/event.entity';
 import { Organization } from '../../users/entities/organization.entity';
@@ -9,12 +18,15 @@ export enum CartStatus {
   ACTIVE = 'active',
   ABANDONED = 'abandoned',
   CONVERTED = 'converted',
-  EXPIRED = 'expired'
+  EXPIRED = 'expired',
 }
 
 @Entity('carts')
 export class Cart {
-  @ApiProperty({ description: 'Unique identifier', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -34,7 +46,10 @@ export class Cart {
   @JoinColumn({ name: 'event_id' })
   event: Event;
 
-  @ApiProperty({ description: 'User ID (optional for guest checkout)', required: false })
+  @ApiProperty({
+    description: 'User ID (optional for guest checkout)',
+    required: false,
+  })
   @Column({ name: 'user_id', nullable: true })
   userId: string;
 
@@ -47,7 +62,10 @@ export class Cart {
   sessionId: string;
 
   @ApiProperty({ description: 'Cart items', type: [CartItem] })
-  @OneToMany(() => CartItem, cartItem => cartItem.cart, { cascade: true, eager: true })
+  @OneToMany(() => CartItem, (cartItem) => cartItem.cart, {
+    cascade: true,
+    eager: true,
+  })
   items: CartItem[];
 
   @ApiProperty({ description: 'Customer information (JSON)', required: false })
@@ -78,7 +96,11 @@ export class Cart {
   @Column({ nullable: true })
   discountCode: string;
 
-  @ApiProperty({ description: 'Discount amount', required: false, example: 20.00 })
+  @ApiProperty({
+    description: 'Discount amount',
+    required: false,
+    example: 20.0,
+  })
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   discountAmount: number;
 
@@ -94,11 +116,15 @@ export class Cart {
   @Column({ name: 'expires_at' })
   expiresAt: Date;
 
-  @ApiProperty({ description: 'Cart status', enum: CartStatus, enumName: 'CartStatus' })
-  @Column({ 
-    type: 'enum', 
-    enum: CartStatus, 
-    default: CartStatus.ACTIVE 
+  @ApiProperty({
+    description: 'Cart status',
+    enum: CartStatus,
+    enumName: 'CartStatus',
+  })
+  @Column({
+    type: 'enum',
+    enum: CartStatus,
+    default: CartStatus.ACTIVE,
   })
   status: CartStatus;
-} 
+}

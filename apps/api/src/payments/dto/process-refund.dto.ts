@@ -1,11 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ProcessRefundDto {
-  @ApiProperty({ 
-    description: 'Organization ID', 
-    example: '123e4567-e89b-12d3-a456-426614174000' 
+  @ApiProperty({
+    description: 'Organization ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
   @IsNotEmpty()
@@ -22,10 +28,10 @@ export class ProcessRefundDto {
   @ApiProperty({
     description: 'Amount to refund (leave empty for full refund)',
     required: false,
-    example: 50.00,
+    example: 50.0,
   })
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
   amount?: number;
-} 
+}

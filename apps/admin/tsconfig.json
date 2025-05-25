@@ -24,9 +24,9 @@
     "typeRoots": ["./node_modules/@types", "./examples/stripe-plugin/types"]
   },
   "include": [
-    "next-env.d.ts", 
-    "**/*.ts", 
-    "**/*.tsx", 
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
     ".next/types/**/*.ts",
     "examples/stripe-plugin/types/**/*.d.ts"
   ],

@@ -21,41 +21,51 @@ export class CompatibilityService {
    */
   checkPluginCompatibility(
     pluginManifest: PluginManifest,
-    platformVersion?: string
+    platformVersion?: string,
   ): { compatible: boolean; issues: string[] } {
-    const currentPlatformVersion = 
-      platformVersion || this.configService.get<string>('PLATFORM_VERSION') || '1.0.0';
-    
+    const currentPlatformVersion =
+      platformVersion ||
+      this.configService.get<string>('PLATFORM_VERSION') ||
+      '1.0.0';
+
     const issues: string[] = [];
-    
+
     // Check minimum platform version requirement
-    if (pluginManifest.minPlatformVersion && 
-        !semver.gte(currentPlatformVersion, pluginManifest.minPlatformVersion)) {
+    if (
+      pluginManifest.minPlatformVersion &&
+      !semver.gte(currentPlatformVersion, pluginManifest.minPlatformVersion)
+    ) {
       issues.push(
         `Plugin requires platform version >= ${pluginManifest.minPlatformVersion}, ` +
-        `but current version is ${currentPlatformVersion}`
+          `but current version is ${currentPlatformVersion}`,
       );
     }
-    
+
     // Check maximum platform version requirement
-    if (pluginManifest.maxPlatformVersion && 
-        !semver.lte(currentPlatformVersion, pluginManifest.maxPlatformVersion)) {
+    if (
+      pluginManifest.maxPlatformVersion &&
+      !semver.lte(currentPlatformVersion, pluginManifest.maxPlatformVersion)
+    ) {
       issues.push(
         `Plugin requires platform version <= ${pluginManifest.maxPlatformVersion}, ` +
-        `but current version is ${currentPlatformVersion}`
+          `but current version is ${currentPlatformVersion}`,
       );
     }
-    
+
     // Check specific compatible versions
-    if (pluginManifest.compatibleVersions && 
-        pluginManifest.compatibleVersions.length > 0 &&
-        !pluginManifest.compatibleVersions.some(v => semver.satisfies(currentPlatformVersion, v))) {
+    if (
+      pluginManifest.compatibleVersions &&
+      pluginManifest.compatibleVersions.length > 0 &&
+      !pluginManifest.compatibleVersions.some((v) =>
+        semver.satisfies(currentPlatformVersion, v),
+      )
+    ) {
       issues.push(
         `Plugin is only compatible with platform versions: ${pluginManifest.compatibleVersions.join(', ')}, ` +
-        `but current version is ${currentPlatformVersion}`
+          `but current version is ${currentPlatformVersion}`,
       );
     }
-    
+
     return {
       compatible: issues.length === 0,
       issues,
@@ -68,18 +78,19 @@ export class CompatibilityService {
   getSupportedPlatformVersions(pluginVersion: string): string[] {
     // This is a simplistic implementation
     // In a real application, you'd have a more sophisticated compatibility matrix
-    
+
     // Example implementation: assume 1.x plugins are compatible with 1.x platform
     const majorVersion = semver.major(pluginVersion);
     return [`${majorVersion}.x`];
   }
-  
+
   /**
    * Verify that all extension points declared by the plugin are supported by the platform
    */
-  checkExtensionPointsSupport(
-    extensionPoints: string[]
-  ): { supported: boolean; unsupportedPoints: string[] } {
+  checkExtensionPointsSupport(extensionPoints: string[]): {
+    supported: boolean;
+    unsupportedPoints: string[];
+  } {
     // These are the extension points we support in our platform
     const supportedExtensionPoints = [
       'payment-methods',
@@ -93,14 +104,14 @@ export class CompatibilityService {
       'reporting',
       'marketing',
     ];
-    
+
     const unsupportedPoints = extensionPoints.filter(
-      point => !supportedExtensionPoints.includes(point)
+      (point) => !supportedExtensionPoints.includes(point),
     );
-    
+
     return {
       supported: unsupportedPoints.length === 0,
       unsupportedPoints,
     };
   }
-} 
+}

@@ -177,6 +177,44 @@ export class AuthController {
     return this.authService.refreshTokens(refreshTokenDto.refreshToken);
   }
 
+  // Add diagnostic endpoint for debugging token issues
+  @ApiOperation({ summary: 'Check refresh token status (diagnostics)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token status information',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid refresh token' })
+  @ApiBody({ type: RefreshTokenDto })
+  @Post('check-token')
+  @HttpCode(HttpStatus.OK)
+  async checkToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
+    return this.authService.checkTokenStatus(refreshTokenDto.refreshToken);
+  }
+
+  // Add endpoint for session diagnostic information
+  @ApiOperation({ summary: 'Get session diagnostic information' })
+  @ApiResponse({
+    status: 200,
+    description: 'Session diagnostic information',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('session-info')
+  async getSessionInfo(@Req() req): Promise<any> {
+    return this.authService.getSessionInfo(req.user);
+  }
+
+  // Add endpoint to clean up expired or abandoned sessions
+  @ApiOperation({ summary: 'Clean up expired sessions' })
+  @ApiResponse({
+    status: 200,
+    description: 'Session cleanup result',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Post('cleanup-sessions')
+  async cleanupSessions(): Promise<any> {
+    return this.authService.cleanupSessions();
+  }
+
   @ApiOperation({ summary: 'Logout (invalidate current session)' })
   @ApiResponse({ status: 204, description: 'Logged out successfully' })
   @ApiBearerAuth()

@@ -4,7 +4,7 @@ export interface CartItem {
   quantity: number;
   unitPrice: number;
   subtotal: number;
-  type: 'ticket' | 'merchandise' | 'fee';
+  type: "ticket" | "merchandise" | "fee";
   ticketType?: {
     id: string;
     name: string;
@@ -41,4 +41,4 @@ export interface Cart {
   createdAt: Date;
   updatedAt: Date;
   expiresAt: Date;
-} 
+}

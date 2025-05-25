@@ -11,35 +11,37 @@ export class MarketplaceService {
 
   async publishPlugin(pluginData: Partial<Plugin>): Promise<PluginDocument> {
     // Check if plugin already exists
-    const existing = await this.pluginModel.findOne({ id: pluginData.id }).exec();
-    
+    const existing = await this.pluginModel
+      .findOne({ id: pluginData.id })
+      .exec();
+
     if (existing) {
       // Update existing plugin
       Object.assign(existing, pluginData);
       return existing.save();
     }
-    
+
     // Create new plugin
     return this.pluginModel.create(pluginData);
   }
 
   async getMarketplacePlugins(
     category?: string,
-    search?: string
+    search?: string,
   ): Promise<PluginDocument[]> {
     let query = this.pluginModel.find();
-    
+
     if (category) {
       query = query.where('category').equals(category);
     }
-    
+
     if (search) {
       query = query.or([
         { name: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
       ]);
     }
-    
+
     return query.exec();
   }
 
@@ -56,4 +58,4 @@ export class MarketplaceService {
     const categories = await this.pluginModel.distinct('category').exec();
     return categories;
   }
-} 
+}

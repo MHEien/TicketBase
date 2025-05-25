@@ -21,6 +21,7 @@ This is a sample plugin that demonstrates how to integrate Stripe payments with 
 ### Building the Plugin
 
 1. Install dependencies:
+
    ```bash
    npm install
    # or
@@ -28,6 +29,7 @@ This is a sample plugin that demonstrates how to integrate Stripe payments with 
    ```
 
 2. Bundle the plugin:
+
    ```bash
    npm run bundle
    # or
@@ -81,10 +83,7 @@ This plugin follows the standard Events Platform plugin format:
       "footer": "./CheckoutConfirmation"
     }
   },
-  "requiredPermissions": [
-    "read:orders",
-    "write:transactions"
-  ]
+  "requiredPermissions": ["read:orders", "write:transactions"]
 }
 ```
 
@@ -101,4 +100,4 @@ For more information on plugin development, refer to the Events Platform documen
 
 ## License
 
-MIT 
+MIT

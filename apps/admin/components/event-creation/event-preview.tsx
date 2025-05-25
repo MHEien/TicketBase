@@ -1,16 +1,30 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { format } from "date-fns"
-import { Calendar, Clock, Globe, MapPin, Share2, Ticket, Users } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useEventCreation } from "@/hooks/use-event-creation"
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import {
+  Calendar,
+  Clock,
+  Globe,
+  MapPin,
+  Share2,
+  Ticket,
+  Users,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventPreview() {
-  const { eventData } = useEventCreation()
+  const { eventData } = useEventCreation();
 
   return (
     <div className="space-y-6">
@@ -22,7 +36,9 @@ export function EventPreview() {
         <Card>
           <CardHeader>
             <CardTitle>Event Preview</CardTitle>
-            <CardDescription>Review how your event will appear to attendees.</CardDescription>
+            <CardDescription>
+              Review how your event will appear to attendees.
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <Tabs defaultValue="desktop" className="w-full">
@@ -54,14 +70,18 @@ export function EventPreview() {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">
-                        <p className="text-muted-foreground">No featured image selected</p>
+                        <p className="text-muted-foreground">
+                          No featured image selected
+                        </p>
                       </div>
                     )}
 
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
                     <div className="absolute bottom-4 left-4">
-                      <Badge className="mb-2">{eventData.category || "Category"}</Badge>
+                      <Badge className="mb-2">
+                        {eventData.category || "Category"}
+                      </Badge>
                       <h1 className="text-2xl font-bold text-white drop-shadow-sm">
                         {eventData.title || "Event Title"}
                       </h1>
@@ -73,13 +93,19 @@ export function EventPreview() {
                       <div className="flex flex-wrap gap-4">
                         <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
                           <Calendar className="h-4 w-4 text-primary" />
-                          <span>{eventData.startDate ? format(eventData.startDate, "MMM d, yyyy") : "Date TBD"}</span>
+                          <span>
+                            {eventData.startDate
+                              ? format(eventData.startDate, "MMM d, yyyy")
+                              : "Date TBD"}
+                          </span>
                         </div>
 
                         <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
                           <Clock className="h-4 w-4 text-primary" />
                           <span>
-                            {eventData.startTime ? eventData.startTime : "Time TBD"}
+                            {eventData.startTime
+                              ? eventData.startTime
+                              : "Time TBD"}
                             {eventData.endTime ? ` - ${eventData.endTime}` : ""}
                           </span>
                         </div>
@@ -94,7 +120,9 @@ export function EventPreview() {
                             <>
                               <MapPin className="h-4 w-4 text-primary" />
                               <span>
-                                {eventData.venueName ? `${eventData.venueName}, ${eventData.city}` : "Location TBD"}
+                                {eventData.venueName
+                                  ? `${eventData.venueName}, ${eventData.city}`
+                                  : "Location TBD"}
                               </span>
                             </>
                           )}
@@ -102,22 +130,28 @@ export function EventPreview() {
                       </div>
 
                       <div className="space-y-2">
-                        <h2 className="text-lg font-medium">About This Event</h2>
-                        <p className="text-muted-foreground">{eventData.description || "No description provided."}</p>
+                        <h2 className="text-lg font-medium">
+                          About This Event
+                        </h2>
+                        <p className="text-muted-foreground">
+                          {eventData.description || "No description provided."}
+                        </p>
                       </div>
 
                       {eventData.galleryImages.length > 0 && (
                         <div className="space-y-2">
                           <h2 className="text-lg font-medium">Event Gallery</h2>
                           <div className="grid grid-cols-3 gap-2">
-                            {eventData.galleryImages.slice(0, 3).map((image, index) => (
-                              <img
-                                key={index}
-                                src={image || "/placeholder.svg"}
-                                alt={`Event gallery ${index + 1}`}
-                                className="aspect-square rounded-md object-cover"
-                              />
-                            ))}
+                            {eventData.galleryImages
+                              .slice(0, 3)
+                              .map((image, index) => (
+                                <img
+                                  key={index}
+                                  src={image || "/placeholder.svg"}
+                                  alt={`Event gallery ${index + 1}`}
+                                  className="aspect-square rounded-md object-cover"
+                                />
+                              ))}
                           </div>
                         </div>
                       )}
@@ -131,20 +165,31 @@ export function EventPreview() {
                         <CardContent className="space-y-3">
                           {eventData.ticketTypes.length > 0 ? (
                             eventData.ticketTypes.map((ticket, index) => (
-                              <div key={index} className="flex items-center justify-between">
+                              <div
+                                key={index}
+                                className="flex items-center justify-between"
+                              >
                                 <div>
-                                  <p className="font-medium">{ticket.name || "Unnamed Ticket"}</p>
-                                  <p className="text-sm text-muted-foreground">{ticket.quantity} available</p>
+                                  <p className="font-medium">
+                                    {ticket.name || "Unnamed Ticket"}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {ticket.quantity} available
+                                  </p>
                                 </div>
                                 <div className="text-right">
                                   <p className="font-bold">
-                                    {ticket.price > 0 ? `$${ticket.price.toFixed(2)}` : "Free"}
+                                    {ticket.price > 0
+                                      ? `$${ticket.price.toFixed(2)}`
+                                      : "Free"}
                                   </p>
                                 </div>
                               </div>
                             ))
                           ) : (
-                            <p className="text-sm text-muted-foreground">No tickets available</p>
+                            <p className="text-sm text-muted-foreground">
+                              No tickets available
+                            </p>
                           )}
 
                           <Button className="mt-2 w-full gap-2">
@@ -176,7 +221,9 @@ export function EventPreview() {
                           </div>
                           <div>
                             <p className="font-medium">Your Organization</p>
-                            <p className="text-sm text-muted-foreground">Event Organizer</p>
+                            <p className="text-sm text-muted-foreground">
+                              Event Organizer
+                            </p>
                           </div>
                         </CardContent>
                       </Card>
@@ -196,14 +243,18 @@ export function EventPreview() {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">
-                        <p className="text-muted-foreground">No featured image selected</p>
+                        <p className="text-muted-foreground">
+                          No featured image selected
+                        </p>
                       </div>
                     )}
 
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
                     <div className="absolute bottom-4 left-4">
-                      <Badge className="mb-2">{eventData.category || "Category"}</Badge>
+                      <Badge className="mb-2">
+                        {eventData.category || "Category"}
+                      </Badge>
                       <h1 className="text-xl font-bold text-white drop-shadow-sm">
                         {eventData.title || "Event Title"}
                       </h1>
@@ -214,7 +265,11 @@ export function EventPreview() {
                     <div className="flex flex-wrap gap-2">
                       <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs">
                         <Calendar className="h-3 w-3 text-primary" />
-                        <span>{eventData.startDate ? format(eventData.startDate, "MMM d, yyyy") : "Date TBD"}</span>
+                        <span>
+                          {eventData.startDate
+                            ? format(eventData.startDate, "MMM d, yyyy")
+                            : "Date TBD"}
+                        </span>
                       </div>
 
                       <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs">
@@ -226,7 +281,11 @@ export function EventPreview() {
                         ) : (
                           <>
                             <MapPin className="h-3 w-3 text-primary" />
-                            <span>{eventData.venueName ? `${eventData.venueName}` : "Location TBD"}</span>
+                            <span>
+                              {eventData.venueName
+                                ? `${eventData.venueName}`
+                                : "Location TBD"}
+                            </span>
                           </>
                         )}
                       </div>
@@ -238,20 +297,31 @@ export function EventPreview() {
                       </CardHeader>
                       <CardContent className="space-y-2">
                         {eventData.ticketTypes.length > 0 ? (
-                          eventData.ticketTypes.slice(0, 2).map((ticket, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                              <div>
-                                <p className="text-sm font-medium">{ticket.name || "Unnamed Ticket"}</p>
+                          eventData.ticketTypes
+                            .slice(0, 2)
+                            .map((ticket, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between"
+                              >
+                                <div>
+                                  <p className="text-sm font-medium">
+                                    {ticket.name || "Unnamed Ticket"}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-sm font-bold">
+                                    {ticket.price > 0
+                                      ? `$${ticket.price.toFixed(2)}`
+                                      : "Free"}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="text-sm font-bold">
-                                  {ticket.price > 0 ? `$${ticket.price.toFixed(2)}` : "Free"}
-                                </p>
-                              </div>
-                            </div>
-                          ))
+                            ))
                         ) : (
-                          <p className="text-xs text-muted-foreground">No tickets available</p>
+                          <p className="text-xs text-muted-foreground">
+                            No tickets available
+                          </p>
                         )}
 
                         <Button className="mt-2 w-full gap-2" size="sm">
@@ -262,7 +332,9 @@ export function EventPreview() {
                     </Card>
 
                     <div className="space-y-2">
-                      <h2 className="text-base font-medium">About This Event</h2>
+                      <h2 className="text-base font-medium">
+                        About This Event
+                      </h2>
                       <p className="text-sm text-muted-foreground line-clamp-3">
                         {eventData.description || "No description provided."}
                       </p>
@@ -296,7 +368,8 @@ export function EventPreview() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Make your event visible to the public immediately after saving.
+                    Make your event visible to the public immediately after
+                    saving.
                   </p>
                   <Button className="mt-4 w-full">Publish Event</Button>
                 </CardContent>
@@ -307,7 +380,9 @@ export function EventPreview() {
                   <CardTitle className="text-base">Save as Draft</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">Save your event as a draft to publish later.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Save your event as a draft to publish later.
+                  </p>
                   <Button variant="outline" className="mt-4 w-full">
                     Save as Draft
                   </Button>
@@ -317,13 +392,13 @@ export function EventPreview() {
 
             <div className="rounded-lg border bg-muted/50 p-4">
               <p className="text-sm text-muted-foreground">
-                You can edit your event details at any time after publishing. Attendees will be notified of any
-                significant changes.
+                You can edit your event details at any time after publishing.
+                Attendees will be notified of any significant changes.
               </p>
             </div>
           </CardContent>
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

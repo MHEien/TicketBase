@@ -54,7 +54,9 @@ export class CartsController {
     type: [Cart],
   })
   @ApiQuery({ name: 'organizationId', required: true, type: String })
-  async findAll(@Query('organizationId') organizationId: string): Promise<Cart[]> {
+  async findAll(
+    @Query('organizationId') organizationId: string,
+  ): Promise<Cart[]> {
     return this.cartsService.findAll(organizationId);
   }
 
@@ -72,7 +74,10 @@ export class CartsController {
     @Param('sessionId') sessionId: string,
     @Query('organizationId') organizationId: string,
   ): Promise<Cart> {
-    const cart = await this.cartsService.findBySession(sessionId, organizationId);
+    const cart = await this.cartsService.findBySession(
+      sessionId,
+      organizationId,
+    );
     if (!cart) {
       throw new BadRequestException('No active cart found for this session');
     }
@@ -103,7 +108,10 @@ export class CartsController {
     description: 'The item has been added to the cart.',
     type: Cart,
   })
-  @ApiResponse({ status: 400, description: 'Invalid input or cart is inactive.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input or cart is inactive.',
+  })
   @ApiResponse({ status: 404, description: 'Cart not found.' })
   @ApiParam({ name: 'id', required: true, type: String })
   @ApiQuery({ name: 'organizationId', required: true, type: String })
@@ -123,7 +131,10 @@ export class CartsController {
     description: 'The item has been updated.',
     type: Cart,
   })
-  @ApiResponse({ status: 400, description: 'Invalid input or cart is inactive.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input or cart is inactive.',
+  })
   @ApiResponse({ status: 404, description: 'Cart or item not found.' })
   @ApiParam({ name: 'id', required: true, type: String })
   @ApiParam({ name: 'itemId', required: true, type: String })
@@ -135,7 +146,12 @@ export class CartsController {
     @Body() updateItemDto: UpdateCartItemDto,
     @Query('organizationId') organizationId: string,
   ): Promise<Cart> {
-    return this.cartsService.updateItem(id, itemId, updateItemDto, organizationId);
+    return this.cartsService.updateItem(
+      id,
+      itemId,
+      updateItemDto,
+      organizationId,
+    );
   }
 
   @Delete(':id/items/:itemId')
@@ -174,7 +190,11 @@ export class CartsController {
     @Body() customerInfo: any,
     @Query('organizationId') organizationId: string,
   ): Promise<Cart> {
-    return this.cartsService.updateCustomerInfo(id, customerInfo, organizationId);
+    return this.cartsService.updateCustomerInfo(
+      id,
+      customerInfo,
+      organizationId,
+    );
   }
 
   @Post(':id/discount')
@@ -184,7 +204,10 @@ export class CartsController {
     description: 'The discount has been applied.',
     type: Cart,
   })
-  @ApiResponse({ status: 400, description: 'Invalid discount code or cart is inactive.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid discount code or cart is inactive.',
+  })
   @ApiResponse({ status: 404, description: 'Cart not found.' })
   @ApiParam({ name: 'id', required: true, type: String })
   @ApiQuery({ name: 'organizationId', required: true, type: String })
@@ -212,4 +235,4 @@ export class CartsController {
   ): Promise<Cart> {
     return this.cartsService.markAsAbandoned(id, organizationId);
   }
-} 
+}

@@ -54,40 +54,40 @@ Create a service to handle plugin bundle storage in MinIO:
 
 ```typescript
 // src/plugins/plugin-storage.service.ts
-import { Injectable } from '@nestjs/common';
-import { MinioService } from 'nestjs-minio-client';
-import { v4 as uuid } from 'uuid';
+import { Injectable } from "@nestjs/common";
+import { MinioService } from "nestjs-minio-client";
+import { v4 as uuid } from "uuid";
 
 @Injectable()
 export class PluginStorageService {
-  private readonly bucketName = 'plugin-bundles';
-  
+  private readonly bucketName = "plugin-bundles";
+
   constructor(private readonly minioService: MinioService) {}
-  
+
   async storePluginBundle(
-    pluginId: string, 
-    version: string, 
+    pluginId: string,
+    version: string,
     bundleBuffer: Buffer,
-    contentType = 'application/javascript'
+    contentType = "application/javascript",
   ): Promise<string> {
     const objectKey = `${pluginId}/v${version}/bundle.js`;
-    
+
     await this.minioService.client.putObject(
       this.bucketName,
       objectKey,
       bundleBuffer,
       {
-        'Content-Type': contentType,
-        'Cache-Control': 'max-age=31536000, immutable', // Long cache for versioned bundles
-      }
+        "Content-Type": contentType,
+        "Cache-Control": "max-age=31536000, immutable", // Long cache for versioned bundles
+      },
     );
-    
+
     // Generate public URL for the plugin bundle
     const bundleUrl = `${process.env.PLUGIN_SERVER_URL}/plugins/bundles/${pluginId}/v${version}/bundle.js`;
-    
+
     return bundleUrl;
   }
-  
+
   async getPluginBundleStream(pluginId: string, version: string) {
     const objectKey = `${pluginId}/v${version}/bundle.js`;
     return this.minioService.client.getObject(this.bucketName, objectKey);
@@ -101,29 +101,32 @@ Create a controller to serve plugin bundles:
 
 ```typescript
 // src/plugins/bundle.controller.ts
-import { Controller, Get, Param, Res, StreamableFile } from '@nestjs/common';
-import { Response } from 'express';
-import { PluginStorageService } from './plugin-storage.service';
+import { Controller, Get, Param, Res, StreamableFile } from "@nestjs/common";
+import { Response } from "express";
+import { PluginStorageService } from "./plugin-storage.service";
 
-@Controller('plugins/bundles')
+@Controller("plugins/bundles")
 export class PluginBundleController {
   constructor(private readonly pluginStorageService: PluginStorageService) {}
-  
-  @Get(':pluginId/v:version/bundle.js')
+
+  @Get(":pluginId/v:version/bundle.js")
   async servePluginBundle(
-    @Param('pluginId') pluginId: string,
-    @Param('version') version: string,
+    @Param("pluginId") pluginId: string,
+    @Param("version") version: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     // Set appropriate headers for JavaScript
     res.set({
-      'Content-Type': 'application/javascript',
-      'Cache-Control': 'max-age=31536000, immutable', // Long cache for versioned bundles
+      "Content-Type": "application/javascript",
+      "Cache-Control": "max-age=31536000, immutable", // Long cache for versioned bundles
     });
-    
+
     // Get bundle stream from MinIO
-    const stream = await this.pluginStorageService.getPluginBundleStream(pluginId, version);
-    
+    const stream = await this.pluginStorageService.getPluginBundleStream(
+      pluginId,
+      version,
+    );
+
     // Return the stream as a StreamableFile
     return new StreamableFile(stream);
   }
@@ -140,34 +143,35 @@ Update your plugin installation logic to handle the bundling process:
 export class PluginsService {
   constructor(
     private readonly pluginStorageService: PluginStorageService,
-    @InjectModel('Plugin') private readonly pluginModel: Model<Plugin>,
-    @InjectModel('TenantPlugin') private readonly tenantPluginModel: Model<TenantPlugin>,
+    @InjectModel("Plugin") private readonly pluginModel: Model<Plugin>,
+    @InjectModel("TenantPlugin")
+    private readonly tenantPluginModel: Model<TenantPlugin>,
   ) {}
-  
+
   async uploadPlugin(
-    file: Express.Multer.File, 
-    metadata: PluginMetadata
+    file: Express.Multer.File,
+    metadata: PluginMetadata,
   ): Promise<Plugin> {
     // Store the plugin bundle in MinIO
     const bundleUrl = await this.pluginStorageService.storePluginBundle(
       metadata.id,
       metadata.version,
-      file.buffer
+      file.buffer,
     );
-    
+
     // Create a new plugin document with the bundle URL
     const plugin = new this.pluginModel({
       ...metadata,
       bundleUrl, // URL to the plugin bundle
       createdAt: new Date(),
     });
-    
+
     // Save to MongoDB
     await plugin.save();
-    
+
     return plugin;
   }
-  
+
   // Other methods...
 }
 ```
@@ -201,12 +205,14 @@ The complete plugin installation process should:
 ## Example: Manually Testing a Plugin
 
 1. Build a test plugin:
+
    ```bash
    cd my-test-plugin
    npm run build
    ```
 
 2. Upload to your plugin server:
+
    ```bash
    curl -X POST http://localhost:4000/plugins/upload \
      -F "file=@dist/plugin.js" \
@@ -214,10 +220,11 @@ The complete plugin installation process should:
    ```
 
 3. Install the plugin for a tenant:
+
    ```bash
    curl -X POST http://localhost:4000/plugins/install \
      -H "x-tenant-id: your-tenant-id" \
      -d "{\"pluginId\":\"test-plugin\"}"
    ```
 
-4. Verify it works in your Next.js application by checking the extension point renders correctly 
+4. Verify it works in your Next.js application by checking the extension point renders correctly

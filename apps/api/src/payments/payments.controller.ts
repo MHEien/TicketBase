@@ -45,7 +45,11 @@ export class PaymentsController {
   @ApiBody({ type: CreatePaymentIntentDto })
   async createPaymentIntent(
     @Body() createPaymentIntentDto: CreatePaymentIntentDto,
-  ): Promise<{ clientSecret: string; paymentIntentId: string; providerName: string }> {
+  ): Promise<{
+    clientSecret: string;
+    paymentIntentId: string;
+    providerName: string;
+  }> {
     return this.paymentsService.createPaymentIntent(
       createPaymentIntentDto.organizationId,
       createPaymentIntentDto.amount,
@@ -103,7 +107,7 @@ export class PaymentsController {
       processRefundDto.paymentIntentId,
       processRefundDto.amount,
     );
-    
+
     return refund;
   }
 
@@ -146,4 +150,4 @@ export class PaymentsController {
       toDate,
     );
   }
-} 
+}

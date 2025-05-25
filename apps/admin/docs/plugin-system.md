@@ -18,6 +18,7 @@ The plugin system uses a dynamic runtime component loading approach, which loads
 ### Plugin Structure
 
 A plugin consists of:
+
 - Metadata (name, version, description, etc.)
 - One or more components that implement extension points
 - Configuration options
@@ -25,36 +26,38 @@ A plugin consists of:
 ### Example Plugin
 
 ```tsx
-import { definePlugin, registerExtensionPoint } from '@/lib/plugin-sdk';
+import { definePlugin, registerExtensionPoint } from "@/lib/plugin-sdk";
 
 // Define a component for the payment methods extension point
-const PaymentMethodComponent = registerExtensionPoint(({ context, configuration }) => {
-  const { cart } = context;
-  const { apiKey } = configuration;
-  
-  return (
-    <CustomPaymentForm 
-      amount={cart.total} 
-      apiKey={apiKey}
-      onSuccess={context.onSuccess}
-    />
-  );
-});
+const PaymentMethodComponent = registerExtensionPoint(
+  ({ context, configuration }) => {
+    const { cart } = context;
+    const { apiKey } = configuration;
+
+    return (
+      <CustomPaymentForm
+        amount={cart.total}
+        apiKey={apiKey}
+        onSuccess={context.onSuccess}
+      />
+    );
+  },
+);
 
 // Export the plugin definition
 export default definePlugin({
-  name: 'My Payment Plugin',
-  version: '1.0.0',
-  description: 'Custom payment processing',
-  category: 'payment',
+  name: "My Payment Plugin",
+  version: "1.0.0",
+  description: "Custom payment processing",
+  category: "payment",
   metadata: {
-    author: 'Your Company',
-    priority: 10 // Higher priority plugins are rendered first
+    author: "Your Company",
+    priority: 10, // Higher priority plugins are rendered first
   },
   extensionPoints: {
-    'payment-methods': PaymentMethodComponent,
-    'admin-settings': AdminSettingsComponent
-  }
+    "payment-methods": PaymentMethodComponent,
+    "admin-settings": AdminSettingsComponent,
+  },
 });
 ```
 
@@ -114,4 +117,4 @@ To develop a plugin:
 3. Package your plugin for distribution
 4. Submit to the marketplace for review
 
-See the [Plugin Development Guide](plugin-development.md) for detailed instructions. 
+See the [Plugin Development Guide](plugin-development.md) for detailed instructions.

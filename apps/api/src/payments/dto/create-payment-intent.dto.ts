@@ -1,9 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsOptional, IsObject, Min, IsUUID } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+  IsOptional,
+  IsObject,
+  Min,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreatePaymentIntentDto {
-  @ApiProperty({ description: 'Organization ID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({
+    description: 'Organization ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @IsUUID()
   organizationId: string;
 
@@ -26,4 +36,4 @@ export class CreatePaymentIntentDto {
   @IsObject()
   @IsOptional()
   metadata?: Record<string, any>;
-} 
+}

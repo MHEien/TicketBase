@@ -181,6 +181,7 @@ export class AuthService {
         );
 
         console.log('Token validated, user ID:', payload.sub);
+        console.log('Token expiration:', new Date(payload.exp * 1000));
 
         // Check if token is in the database
         const session =
@@ -188,10 +189,26 @@ export class AuthService {
 
         if (!session) {
           console.error('Session not found for token');
+          // Log the number of sessions for this user
+          if (payload && payload.sub) {
+            const userSessions = await this.usersService.findSessionsByUserId(
+              payload.sub,
+            );
+            console.error(
+              `User ${payload.sub} has ${userSessions.length} total sessions, ${userSessions.filter((s) => !s.isRevoked).length} active`,
+            );
+          }
           throw new UnauthorizedException(
             'Invalid refresh token - session not found',
           );
         }
+
+        console.log('Session found:', {
+          id: session.id,
+          userId: session.userId,
+          isRevoked: session.isRevoked,
+          expiresAt: session.expiresAt,
+        });
 
         if (session.isRevoked) {
           console.error('Session was revoked for token');
@@ -199,7 +216,12 @@ export class AuthService {
         }
 
         if (session.expiresAt < new Date()) {
-          console.error('Session expired at', session.expiresAt);
+          console.error(
+            'Session expired at',
+            session.expiresAt,
+            'current time is',
+            new Date(),
+          );
           await this.usersService.revokeSession(session.id);
           throw new UnauthorizedException('Refresh token expired');
         }
@@ -216,7 +238,9 @@ export class AuthService {
         console.log('Old session revoked, generating new tokens');
 
         // Generate new tokens and session
-        return this.login(user);
+        const newTokens = await this.login(user);
+        console.log('New tokens generated successfully');
+        return newTokens;
       } catch (jwtError) {
         console.error('JWT verification failed:', jwtError.message);
         throw new UnauthorizedException(
@@ -228,6 +252,110 @@ export class AuthService {
       throw new UnauthorizedException(
         `Invalid refresh token: ${error.message}`,
       );
+    }
+  }
+
+  // Add diagnostic method for checking token status
+  async checkTokenStatus(refreshToken: string): Promise<any> {
+    try {
+      // Attempt to decode the token without verification
+      const decodedToken = this.jwtService.decode(refreshToken);
+
+      // Get information about whether the token exists in the database
+      const session =
+        await this.usersService.findSessionByRefreshToken(refreshToken);
+
+      // Get all sessions for the user
+      let userSessions = [];
+      if (
+        decodedToken &&
+        typeof decodedToken === 'object' &&
+        'sub' in decodedToken
+      ) {
+        const userId = decodedToken.sub as string;
+        userSessions = await this.usersService.findSessionsByUserId(userId);
+      }
+
+      return {
+        tokenDecoded: decodedToken,
+        tokenValid: session ? true : false,
+        session: session
+          ? {
+              id: session.id,
+              userId: session.userId,
+              isRevoked: session.isRevoked,
+              expiresAt: session.expiresAt,
+              createdAt: session.createdAt,
+              lastActive: session.lastActive,
+            }
+          : null,
+        sessionCount: userSessions.length,
+        activeSessions: userSessions.filter((s) => !s.isRevoked).length,
+        revokedSessions: userSessions.filter((s) => s.isRevoked).length,
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+        tokenDecoded: null,
+        tokenValid: false,
+        session: null,
+      };
+    }
+  }
+
+  // Get diagnostic information about the user's session
+  async getSessionInfo(user: any): Promise<any> {
+    try {
+      const userId = user.id;
+
+      // Get all sessions for the user
+      const userSessions = await this.usersService.findSessionsByUserId(userId);
+
+      // Get the current user
+      const userDetails = await this.usersService.findById(userId);
+
+      return {
+        user: {
+          id: userDetails.id,
+          email: userDetails.email,
+          name: userDetails.name,
+          role: userDetails.role,
+          lastActive: userDetails.lastActive,
+        },
+        sessions: {
+          total: userSessions.length,
+          active: userSessions.filter((s) => !s.isRevoked).length,
+          revoked: userSessions.filter((s) => s.isRevoked).length,
+          sessionList: userSessions.map((s) => ({
+            id: s.id,
+            createdAt: s.createdAt,
+            expiresAt: s.expiresAt,
+            lastActive: s.lastActive,
+            isRevoked: s.isRevoked,
+          })),
+        },
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+      };
+    }
+  }
+
+  // Clean up expired or abandoned sessions
+  async cleanupSessions(): Promise<any> {
+    try {
+      const result = await this.usersService.cleanupSessions();
+      return {
+        success: true,
+        message: `Cleaned up ${result.removed} sessions`,
+        ...result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
     }
   }
 

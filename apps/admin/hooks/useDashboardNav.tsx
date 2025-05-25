@@ -3,10 +3,14 @@ import { createContext } from "react";
 
 export const DashboardNavContext = createContext({
   activeSection: "overview",
-  setActiveSection: (section: string) => {}
+  setActiveSection: (section: string) => {},
 });
 
-export const DashboardNavProvider = ({ children }: { children: React.ReactNode }) => {
+export const DashboardNavProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [activeSection, setActiveSection] = useState("overview");
 
   return (

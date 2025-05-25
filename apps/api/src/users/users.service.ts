@@ -33,7 +33,7 @@ export class UsersService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.findByEmail(email);
-    if (user && await this.comparePassword(password, user.password)) {
+    if (user && (await this.comparePassword(password, user.password))) {
       return user;
     }
     return null;
@@ -52,16 +52,25 @@ export class UsersService {
   }
 
   async findSessionByToken(token: string): Promise<UserSession | null> {
-    return this.sessionsRepository.findOne({ 
+    return this.sessionsRepository.findOne({
       where: { token, isRevoked: false },
-      relations: ['user']
+      relations: ['user'],
     });
   }
 
-  async findSessionByRefreshToken(refreshToken: string): Promise<UserSession | null> {
-    return this.sessionsRepository.findOne({ 
+  async findSessionByRefreshToken(
+    refreshToken: string,
+  ): Promise<UserSession | null> {
+    return this.sessionsRepository.findOne({
       where: { refreshToken, isRevoked: false },
-      relations: ['user']
+      relations: ['user'],
+    });
+  }
+
+  async findSessionsByUserId(userId: string): Promise<UserSession[]> {
+    return this.sessionsRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -72,23 +81,45 @@ export class UsersService {
   async revokeAllUserSessions(userId: string): Promise<void> {
     await this.sessionsRepository.update(
       { userId, isRevoked: false },
-      { isRevoked: true }
+      { isRevoked: true },
     );
   }
 
-  async cleanupExpiredSessions(): Promise<void> {
-    await this.sessionsRepository.update(
-      { expiresAt: LessThan(new Date()), isRevoked: false },
-      { isRevoked: true }
+  async cleanupSessions(): Promise<{ removed: number }> {
+    const now = new Date();
+
+    const expiredResult = await this.sessionsRepository.update(
+      {
+        expiresAt: LessThan(now),
+        isRevoked: false,
+      },
+      { isRevoked: true },
     );
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const oldSessionsResult = await this.sessionsRepository.delete({
+      createdAt: LessThan(thirtyDaysAgo),
+    });
+
+    return {
+      removed:
+        (expiredResult.affected || 0) + (oldSessionsResult.affected || 0),
+    };
   }
 
   private async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
-    return bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword as string;
   }
 
-  private async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
+  private async comparePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
+    return isMatch as boolean;
   }
-} 
+}

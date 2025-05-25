@@ -1,59 +1,91 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "@/components/ui/use-toast"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 const organizationSchema = z.object({
-  name: z.string().min(2, { message: "Organization name must be at least 2 characters" }),
-  website: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal("")),
+  name: z
+    .string()
+    .min(2, { message: "Organization name must be at least 2 characters" }),
+  website: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
   phone: z.string().optional(),
-  email: z.string().email({ message: "Please enter a valid email address" }).optional(),
+  email: z
+    .string()
+    .email({ message: "Please enter a valid email address" })
+    .optional(),
   logo: z.string().optional(),
   favicon: z.string().optional(),
   checkoutMessage: z.string().optional(),
-})
+});
 
 const brandingSchema = z.object({
   primaryColor: z.string().min(4),
   secondaryColor: z.string().optional(),
   buttonStyle: z.enum(["rounded", "square", "pill"]).default("rounded"),
   fontFamily: z.string().optional(),
-  headerStyle: z.enum(["centered", "left", "right", "full-width"]).default("centered"),
+  headerStyle: z
+    .enum(["centered", "left", "right", "full-width"])
+    .default("centered"),
   allowGuestCheckout: z.boolean().default(true),
   defaultCurrency: z.string().min(1),
   customStylesheet: z.string().optional(),
   customHeadHtml: z.string().optional(),
-})
+});
 
 const domainSchema = z.object({
   customDomain: z.string().optional(),
-})
+});
 
-type OrganizationFormValues = z.infer<typeof organizationSchema>
-type BrandingFormValues = z.infer<typeof brandingSchema>
-type DomainFormValues = z.infer<typeof domainSchema>
+type OrganizationFormValues = z.infer<typeof organizationSchema>;
+type BrandingFormValues = z.infer<typeof brandingSchema>;
+type DomainFormValues = z.infer<typeof domainSchema>;
 
 export default function SettingsPage() {
-  const router = useRouter()
-  const { data: session, update } = useSession()
-  const [activeTab, setActiveTab] = useState("organization")
-  const [isOrganizationLoading, setIsOrganizationLoading] = useState(false)
-  const [isBrandingLoading, setIsBrandingLoading] = useState(false)
-  const [isDomainLoading, setIsDomainLoading] = useState(false)
-  
+  const router = useRouter();
+  const { data: session, update } = useSession();
+  const [activeTab, setActiveTab] = useState("organization");
+  const [isOrganizationLoading, setIsOrganizationLoading] = useState(false);
+  const [isBrandingLoading, setIsBrandingLoading] = useState(false);
+  const [isDomainLoading, setIsDomainLoading] = useState(false);
+
   // Organization form
   const organizationForm = useForm<OrganizationFormValues>({
     resolver: zodResolver(organizationSchema),
@@ -66,8 +98,8 @@ export default function SettingsPage() {
       favicon: "",
       checkoutMessage: "",
     },
-  })
-  
+  });
+
   // Branding form
   const brandingForm = useForm<BrandingFormValues>({
     resolver: zodResolver(brandingSchema),
@@ -82,23 +114,23 @@ export default function SettingsPage() {
       customStylesheet: "",
       customHeadHtml: "",
     },
-  })
-  
+  });
+
   // Domain form
   const domainForm = useForm<DomainFormValues>({
     resolver: zodResolver(domainSchema),
     defaultValues: {
       customDomain: "",
     },
-  })
-  
+  });
+
   // Fetch organization settings on component mount
   useEffect(() => {
     if (session?.user) {
-      fetchOrganizationSettings()
+      fetchOrganizationSettings();
     }
-  }, [session])
-  
+  }, [session]);
+
   // Function to fetch organization settings
   const fetchOrganizationSettings = async () => {
     try {
@@ -107,11 +139,11 @@ export default function SettingsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-      })
-      
+      });
+
       if (response.ok) {
-        const data = await response.json()
-        
+        const data = await response.json();
+
         // Update organization form
         organizationForm.reset({
           name: data.name || "",
@@ -121,8 +153,8 @@ export default function SettingsPage() {
           logo: data.logo || "",
           favicon: data.favicon || "",
           checkoutMessage: data.checkoutMessage || "",
-        })
-        
+        });
+
         // Update branding form
         brandingForm.reset({
           primaryColor: data.settings?.primaryColor || "#3b82f6",
@@ -134,22 +166,22 @@ export default function SettingsPage() {
           defaultCurrency: data.settings?.defaultCurrency || "USD",
           customStylesheet: data.settings?.customStylesheet || "",
           customHeadHtml: data.settings?.customHeadHtml || "",
-        })
-        
+        });
+
         // Update domain form
         domainForm.reset({
           customDomain: data.customDomain || "",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error fetching organization settings:", error)
+      console.error("Error fetching organization settings:", error);
     }
-  }
-  
+  };
+
   // Save organization settings
   const saveOrganizationSettings = async (data: OrganizationFormValues) => {
-    setIsOrganizationLoading(true)
-    
+    setIsOrganizationLoading(true);
+
     try {
       const response = await fetch("/api/organizations/settings", {
         method: "PATCH",
@@ -165,36 +197,39 @@ export default function SettingsPage() {
           favicon: data.favicon,
           checkoutMessage: data.checkoutMessage,
         }),
-      })
-      
+      });
+
       if (response.ok) {
         toast({
           title: "Organization settings saved",
-          description: "Your organization settings have been updated successfully.",
-        })
+          description:
+            "Your organization settings have been updated successfully.",
+        });
       } else {
         toast({
           title: "Error saving settings",
-          description: "There was a problem saving your organization settings. Please try again.",
+          description:
+            "There was a problem saving your organization settings. Please try again.",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error saving organization settings:", error)
+      console.error("Error saving organization settings:", error);
       toast({
         title: "Error saving settings",
-        description: "There was a problem saving your organization settings. Please try again.",
+        description:
+          "There was a problem saving your organization settings. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsOrganizationLoading(false)
+      setIsOrganizationLoading(false);
     }
-  }
-  
+  };
+
   // Save branding settings
   const saveBrandingSettings = async (data: BrandingFormValues) => {
-    setIsBrandingLoading(true)
-    
+    setIsBrandingLoading(true);
+
     try {
       const response = await fetch("/api/organizations/branding", {
         method: "PATCH",
@@ -214,36 +249,38 @@ export default function SettingsPage() {
             customHeadHtml: data.customHeadHtml,
           },
         }),
-      })
-      
+      });
+
       if (response.ok) {
         toast({
           title: "Branding settings saved",
           description: "Your branding settings have been updated successfully.",
-        })
+        });
       } else {
         toast({
           title: "Error saving branding settings",
-          description: "There was a problem saving your branding settings. Please try again.",
+          description:
+            "There was a problem saving your branding settings. Please try again.",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error saving branding settings:", error)
+      console.error("Error saving branding settings:", error);
       toast({
         title: "Error saving branding settings",
-        description: "There was a problem saving your branding settings. Please try again.",
+        description:
+          "There was a problem saving your branding settings. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsBrandingLoading(false)
+      setIsBrandingLoading(false);
     }
-  }
-  
+  };
+
   // Save domain settings
   const saveDomainSettings = async (data: DomainFormValues) => {
-    setIsDomainLoading(true)
-    
+    setIsDomainLoading(true);
+
     try {
       const response = await fetch("/api/organizations/domain", {
         method: "PATCH",
@@ -253,43 +290,49 @@ export default function SettingsPage() {
         body: JSON.stringify({
           customDomain: data.customDomain,
         }),
-      })
-      
+      });
+
       if (response.ok) {
         toast({
           title: "Domain settings saved",
           description: "Your domain settings have been updated successfully.",
-        })
+        });
       } else {
         toast({
           title: "Error saving domain settings",
-          description: "There was a problem saving your domain settings. Please try again.",
+          description:
+            "There was a problem saving your domain settings. Please try again.",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error saving domain settings:", error)
+      console.error("Error saving domain settings:", error);
       toast({
         title: "Error saving domain settings",
-        description: "There was a problem saving your domain settings. Please try again.",
+        description:
+          "There was a problem saving your domain settings. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsDomainLoading(false)
+      setIsDomainLoading(false);
     }
-  }
-  
+  };
+
   return (
     <div className="container max-w-5xl py-8">
       <h1 className="text-3xl font-bold mb-6">Organization Settings</h1>
-      
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="space-y-4">
+
+      <Tabs
+        defaultValue={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList>
           <TabsTrigger value="organization">Organization</TabsTrigger>
           <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="domain">Domain</TabsTrigger>
         </TabsList>
-        
+
         {/* Organization Settings */}
         <TabsContent value="organization">
           <Card>
@@ -301,7 +344,12 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <Form {...organizationForm}>
-                <form onSubmit={organizationForm.handleSubmit(saveOrganizationSettings)} className="space-y-6">
+                <form
+                  onSubmit={organizationForm.handleSubmit(
+                    saveOrganizationSettings,
+                  )}
+                  className="space-y-6"
+                >
                   <FormField
                     control={organizationForm.control}
                     name="name"
@@ -315,7 +363,7 @@ export default function SettingsPage() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={organizationForm.control}
@@ -330,7 +378,7 @@ export default function SettingsPage() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={organizationForm.control}
                       name="phone"
@@ -345,7 +393,7 @@ export default function SettingsPage() {
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={organizationForm.control}
                     name="website"
@@ -359,7 +407,7 @@ export default function SettingsPage() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={organizationForm.control}
@@ -370,12 +418,14 @@ export default function SettingsPage() {
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
-                          <FormDescription>URL to your organization's logo</FormDescription>
+                          <FormDescription>
+                            URL to your organization's logo
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={organizationForm.control}
                       name="favicon"
@@ -385,13 +435,15 @@ export default function SettingsPage() {
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
-                          <FormDescription>URL to your browser tab icon</FormDescription>
+                          <FormDescription>
+                            URL to your browser tab icon
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={organizationForm.control}
                     name="checkoutMessage"
@@ -399,21 +451,25 @@ export default function SettingsPage() {
                       <FormItem>
                         <FormLabel>Checkout Message</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Thank you for your purchase!" 
+                          <Textarea
+                            placeholder="Thank you for your purchase!"
                             className="min-h-[100px]"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
-                        <FormDescription>Message displayed to attendees after checkout</FormDescription>
+                        <FormDescription>
+                          Message displayed to attendees after checkout
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="flex justify-end">
                     <Button type="submit" disabled={isOrganizationLoading}>
-                      {isOrganizationLoading ? "Saving..." : "Save Organization Settings"}
+                      {isOrganizationLoading
+                        ? "Saving..."
+                        : "Save Organization Settings"}
                     </Button>
                   </div>
                 </form>
@@ -421,7 +477,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Branding Settings */}
         <TabsContent value="branding">
           <Card>
@@ -433,7 +489,10 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <Form {...brandingForm}>
-                <form onSubmit={brandingForm.handleSubmit(saveBrandingSettings)} className="space-y-6">
+                <form
+                  onSubmit={brandingForm.handleSubmit(saveBrandingSettings)}
+                  className="space-y-6"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={brandingForm.control}
@@ -443,22 +502,21 @@ export default function SettingsPage() {
                           <FormLabel>Primary Color</FormLabel>
                           <FormControl>
                             <div className="flex items-center space-x-2">
-                              <div 
+                              <div
                                 className="w-6 h-6 rounded border"
                                 style={{ backgroundColor: field.value }}
                               ></div>
-                              <Input 
-                                placeholder="#3b82f6" 
-                                {...field} 
-                              />
+                              <Input placeholder="#3b82f6" {...field} />
                             </div>
                           </FormControl>
-                          <FormDescription>Main color for buttons and accents</FormDescription>
+                          <FormDescription>
+                            Main color for buttons and accents
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={brandingForm.control}
                       name="secondaryColor"
@@ -467,17 +525,18 @@ export default function SettingsPage() {
                           <FormLabel>Secondary Color</FormLabel>
                           <FormControl>
                             <div className="flex items-center space-x-2">
-                              <div 
+                              <div
                                 className="w-6 h-6 rounded border"
-                                style={{ backgroundColor: field.value || '#FFFFFF' }}
+                                style={{
+                                  backgroundColor: field.value || "#FFFFFF",
+                                }}
                               ></div>
-                              <Input 
-                                placeholder="#60a5fa" 
-                                {...field} 
-                              />
+                              <Input placeholder="#60a5fa" {...field} />
                             </div>
                           </FormControl>
-                          <FormDescription>Used for gradients and highlights</FormDescription>
+                          <FormDescription>
+                            Used for gradients and highlights
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -491,8 +550,8 @@ export default function SettingsPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Button Style</FormLabel>
-                          <Select 
-                            value={field.value} 
+                          <Select
+                            value={field.value}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
@@ -507,7 +566,9 @@ export default function SettingsPage() {
                               <SelectItem value="pill">Pill</SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormDescription>Shape of buttons throughout your site</FormDescription>
+                          <FormDescription>
+                            Shape of buttons throughout your site
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -520,12 +581,14 @@ export default function SettingsPage() {
                         <FormItem>
                           <FormLabel>Font Family</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="Inter, system-ui, sans-serif" 
-                              {...field} 
+                            <Input
+                              placeholder="Inter, system-ui, sans-serif"
+                              {...field}
                             />
                           </FormControl>
-                          <FormDescription>CSS font-family value</FormDescription>
+                          <FormDescription>
+                            CSS font-family value
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -539,8 +602,8 @@ export default function SettingsPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Header Layout</FormLabel>
-                          <Select 
-                            value={field.value} 
+                          <Select
+                            value={field.value}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
@@ -552,24 +615,30 @@ export default function SettingsPage() {
                             <SelectContent>
                               <SelectItem value="centered">Centered</SelectItem>
                               <SelectItem value="left">Left-aligned</SelectItem>
-                              <SelectItem value="right">Right-aligned</SelectItem>
-                              <SelectItem value="full-width">Full Width</SelectItem>
+                              <SelectItem value="right">
+                                Right-aligned
+                              </SelectItem>
+                              <SelectItem value="full-width">
+                                Full Width
+                              </SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormDescription>Layout style for the header navigation</FormDescription>
+                          <FormDescription>
+                            Layout style for the header navigation
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={brandingForm.control}
                       name="defaultCurrency"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Default Currency</FormLabel>
-                          <Select 
-                            value={field.value} 
+                          <Select
+                            value={field.value}
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
@@ -579,30 +648,45 @@ export default function SettingsPage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                              <SelectItem value="USD">
+                                US Dollar (USD)
+                              </SelectItem>
                               <SelectItem value="EUR">Euro (EUR)</SelectItem>
-                              <SelectItem value="GBP">British Pound (GBP)</SelectItem>
-                              <SelectItem value="CAD">Canadian Dollar (CAD)</SelectItem>
-                              <SelectItem value="AUD">Australian Dollar (AUD)</SelectItem>
-                              <SelectItem value="JPY">Japanese Yen (JPY)</SelectItem>
+                              <SelectItem value="GBP">
+                                British Pound (GBP)
+                              </SelectItem>
+                              <SelectItem value="CAD">
+                                Canadian Dollar (CAD)
+                              </SelectItem>
+                              <SelectItem value="AUD">
+                                Australian Dollar (AUD)
+                              </SelectItem>
+                              <SelectItem value="JPY">
+                                Japanese Yen (JPY)
+                              </SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormDescription>Default currency for tickets</FormDescription>
+                          <FormDescription>
+                            Default currency for tickets
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={brandingForm.control}
                     name="allowGuestCheckout"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
-                          <FormLabel className="text-base">Allow Guest Checkout</FormLabel>
+                          <FormLabel className="text-base">
+                            Allow Guest Checkout
+                          </FormLabel>
                           <FormDescription>
-                            Let attendees purchase tickets without creating an account
+                            Let attendees purchase tickets without creating an
+                            account
                           </FormDescription>
                         </div>
                         <FormControl>
@@ -614,7 +698,7 @@ export default function SettingsPage() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={brandingForm.control}
                     name="customStylesheet"
@@ -622,18 +706,20 @@ export default function SettingsPage() {
                       <FormItem>
                         <FormLabel>Custom CSS</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder=".custom-class { color: #ff0000; }" 
+                          <Textarea
+                            placeholder=".custom-class { color: #ff0000; }"
                             className="min-h-[150px] font-mono"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
-                        <FormDescription>Custom CSS to apply to your storefront</FormDescription>
+                        <FormDescription>
+                          Custom CSS to apply to your storefront
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={brandingForm.control}
                     name="customHeadHtml"
@@ -641,21 +727,26 @@ export default function SettingsPage() {
                       <FormItem>
                         <FormLabel>Custom HTML Head</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="<script>console.log('Custom script');</script>" 
+                          <Textarea
+                            placeholder="<script>console.log('Custom script');</script>"
                             className="min-h-[150px] font-mono"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
-                        <FormDescription>Custom HTML to add to the head tag (analytics, fonts, etc.)</FormDescription>
+                        <FormDescription>
+                          Custom HTML to add to the head tag (analytics, fonts,
+                          etc.)
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="flex justify-end">
                     <Button type="submit" disabled={isBrandingLoading}>
-                      {isBrandingLoading ? "Saving..." : "Save Branding Settings"}
+                      {isBrandingLoading
+                        ? "Saving..."
+                        : "Save Branding Settings"}
                     </Button>
                   </div>
                 </form>
@@ -663,7 +754,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Domain Settings */}
         <TabsContent value="domain">
           <Card>
@@ -675,7 +766,10 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <Form {...domainForm}>
-                <form onSubmit={domainForm.handleSubmit(saveDomainSettings)} className="space-y-6">
+                <form
+                  onSubmit={domainForm.handleSubmit(saveDomainSettings)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={domainForm.control}
                     name="customDomain"
@@ -683,26 +777,27 @@ export default function SettingsPage() {
                       <FormItem>
                         <FormLabel>Custom Domain</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="events.yourdomain.com" 
-                            {...field} 
+                          <Input
+                            placeholder="events.yourdomain.com"
+                            {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          Enter a domain or subdomain to use for your event storefront. 
-                          You'll need to set up DNS records to point this domain to our servers.
+                          Enter a domain or subdomain to use for your event
+                          storefront. You'll need to set up DNS records to point
+                          this domain to our servers.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="mt-6 space-y-4">
                     <h3 className="text-lg font-medium">DNS Configuration</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       To use your custom domain, add the following DNS records:
                     </p>
-                    
+
                     <div className="rounded-md bg-gray-50 dark:bg-gray-800 p-4">
                       <div className="flex items-center justify-between text-sm mb-2">
                         <span className="font-medium">Record Type</span>
@@ -710,21 +805,30 @@ export default function SettingsPage() {
                       </div>
                       <div className="flex items-center justify-between text-sm py-2 border-t">
                         <span>CNAME</span>
-                        <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">events.ticketsplatform.com</code>
+                        <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                          events.ticketsplatform.com
+                        </code>
                       </div>
                       <div className="flex items-center justify-between text-sm py-2 border-t">
                         <span>TXT</span>
-                        <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">ticketsplatform-verification={"{verification-token}"}</code>
+                        <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                          ticketsplatform-verification={"{verification-token}"}
+                        </code>
                       </div>
                     </div>
-                    
+
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                      After adding these records, click the verify button below. It may take up to 24 hours for DNS changes to propagate.
+                      After adding these records, click the verify button below.
+                      It may take up to 24 hours for DNS changes to propagate.
                     </p>
                   </div>
-                  
+
                   <div className="flex justify-between">
-                    <Button variant="outline" type="button" disabled={isDomainLoading}>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      disabled={isDomainLoading}
+                    >
                       Verify Domain
                     </Button>
                     <Button type="submit" disabled={isDomainLoading}>
@@ -738,5 +842,5 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

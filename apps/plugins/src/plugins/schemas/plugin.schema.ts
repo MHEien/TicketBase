@@ -39,4 +39,4 @@ export class Plugin {
   requiredPermissions: string[];
 }
 
-export const PluginSchema = SchemaFactory.createForClass(Plugin); 
+export const PluginSchema = SchemaFactory.createForClass(Plugin);

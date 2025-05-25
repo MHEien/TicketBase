@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   BarChart3,
   Calendar,
@@ -15,27 +15,36 @@ import {
   ArrowDownRight,
   MoreHorizontal,
   ChevronRight,
-} from "lucide-react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { SalesChart } from "@/components/sales-chart"
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { SalesChart } from "@/components/sales-chart";
 
 export function WidgetDashboard() {
-  const [activeWidget, setActiveWidget] = useState<string | null>(null)
+  const [activeWidget, setActiveWidget] = useState<string | null>(null);
 
   const handleWidgetClick = (widgetId: string) => {
-    setActiveWidget(activeWidget === widgetId ? null : widgetId)
-  }
+    setActiveWidget(activeWidget === widgetId ? null : widgetId);
+  };
 
   return (
     <div className="h-full space-y-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's what's happening with your events.</p>
+          <p className="text-muted-foreground">
+            Welcome back! Here's what's happening with your events.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" className="gap-2">
@@ -49,17 +58,51 @@ export function WidgetDashboard() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Key Metrics */}
         {[
-          { id: "revenue", title: "Total Revenue", value: "$124,521", change: "+12.5%", icon: DollarSign, trend: "up" },
-          { id: "tickets", title: "Tickets Sold", value: "3,856", change: "+24.3%", icon: Ticket, trend: "up" },
-          { id: "events", title: "Active Events", value: "12", change: "-2.1%", icon: Calendar, trend: "down" },
-          { id: "users", title: "New Users", value: "856", change: "+18.7%", icon: Users, trend: "up" },
+          {
+            id: "revenue",
+            title: "Total Revenue",
+            value: "$124,521",
+            change: "+12.5%",
+            icon: DollarSign,
+            trend: "up",
+          },
+          {
+            id: "tickets",
+            title: "Tickets Sold",
+            value: "3,856",
+            change: "+24.3%",
+            icon: Ticket,
+            trend: "up",
+          },
+          {
+            id: "events",
+            title: "Active Events",
+            value: "12",
+            change: "-2.1%",
+            icon: Calendar,
+            trend: "down",
+          },
+          {
+            id: "users",
+            title: "New Users",
+            value: "856",
+            change: "+18.7%",
+            icon: Users,
+            trend: "up",
+          },
         ].map((metric) => (
-          <motion.div key={metric.id} whileHover={{ y: -5, transition: { duration: 0.2 } }} className="group">
+          <motion.div
+            key={metric.id}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="group"
+          >
             <Card className="border-transparent bg-background/60 transition-all duration-300 hover:border-primary/20 hover:bg-background/80 hover:shadow-md">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">{metric.title}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {metric.title}
+                    </p>
                     <h3 className="mt-1 text-2xl font-bold">{metric.value}</h3>
                     <div className="mt-1 flex items-center gap-1">
                       {metric.trend === "up" ? (
@@ -67,10 +110,18 @@ export function WidgetDashboard() {
                       ) : (
                         <ArrowDownRight className="h-3 w-3 text-rose-500" />
                       )}
-                      <span className={metric.trend === "up" ? "text-xs text-emerald-500" : "text-xs text-rose-500"}>
+                      <span
+                        className={
+                          metric.trend === "up"
+                            ? "text-xs text-emerald-500"
+                            : "text-xs text-rose-500"
+                        }
+                      >
                         {metric.change}
                       </span>
-                      <span className="text-xs text-muted-foreground">vs last month</span>
+                      <span className="text-xs text-muted-foreground">
+                        vs last month
+                      </span>
                     </div>
                   </div>
                   <div className="rounded-full border border-primary/10 bg-background p-2 shadow-sm">
@@ -86,20 +137,30 @@ export function WidgetDashboard() {
       {/* Main Widgets */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Sales Chart Widget - Spans 2 columns */}
-        <motion.div className="lg:col-span-2" layoutId="sales-chart" onClick={() => handleWidgetClick("sales-chart")}>
+        <motion.div
+          className="lg:col-span-2"
+          layoutId="sales-chart"
+          onClick={() => handleWidgetClick("sales-chart")}
+        >
           <Card
             className={`cursor-pointer border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-md ${activeWidget === "sales-chart" ? "border-primary/20 shadow-md" : ""}`}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div>
                 <CardTitle>Sales Overview</CardTitle>
-                <CardDescription>Daily ticket sales and revenue</CardDescription>
+                <CardDescription>
+                  Daily ticket sales and revenue
+                </CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="rounded-full">
                   Last 30 days
                 </Badge>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </div>
@@ -127,7 +188,10 @@ export function WidgetDashboard() {
         </motion.div>
 
         {/* Upcoming Events */}
-        <motion.div layoutId="upcoming-events" onClick={() => handleWidgetClick("upcoming-events")}>
+        <motion.div
+          layoutId="upcoming-events"
+          onClick={() => handleWidgetClick("upcoming-events")}
+        >
           <Card
             className={`h-full cursor-pointer border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-md ${activeWidget === "upcoming-events" ? "border-primary/20 shadow-md" : ""}`}
           >
@@ -137,9 +201,24 @@ export function WidgetDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                { name: "Summer Music Festival", date: "Jun 15, 2025", tickets: 1245, sold: 876 },
-                { name: "Tech Conference 2025", date: "Jun 22, 2025", tickets: 500, sold: 342 },
-                { name: "Art Exhibition", date: "Jul 05, 2025", tickets: 300, sold: 89 },
+                {
+                  name: "Summer Music Festival",
+                  date: "Jun 15, 2025",
+                  tickets: 1245,
+                  sold: 876,
+                },
+                {
+                  name: "Tech Conference 2025",
+                  date: "Jun 22, 2025",
+                  tickets: 500,
+                  sold: 342,
+                },
+                {
+                  name: "Art Exhibition",
+                  date: "Jul 05, 2025",
+                  tickets: 300,
+                  sold: 89,
+                },
               ].map((event, i) => (
                 <div key={i} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -150,18 +229,27 @@ export function WidgetDashboard() {
                         <span>{event.date}</span>
                       </div>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full"
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Tickets Sold</span>
+                      <span className="text-muted-foreground">
+                        Tickets Sold
+                      </span>
                       <span className="font-medium">
                         {event.sold}/{event.tickets}
                       </span>
                     </div>
-                    <Progress value={(event.sold / event.tickets) * 100} className="h-2" />
+                    <Progress
+                      value={(event.sold / event.tickets) * 100}
+                      className="h-2"
+                    />
                   </div>
                 </div>
               ))}
@@ -179,7 +267,10 @@ export function WidgetDashboard() {
       {/* Bottom Row Widgets */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Recent Activity */}
-        <motion.div layoutId="recent-activity" onClick={() => handleWidgetClick("recent-activity")}>
+        <motion.div
+          layoutId="recent-activity"
+          onClick={() => handleWidgetClick("recent-activity")}
+        >
           <Card
             className={`cursor-pointer border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-md ${activeWidget === "recent-activity" ? "border-primary/20 shadow-md" : ""}`}
           >
@@ -216,12 +307,16 @@ export function WidgetDashboard() {
               ].map((activity, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={activity.avatar || "/placeholder.svg"} alt={activity.user} />
+                    <AvatarImage
+                      src={activity.avatar || "/placeholder.svg"}
+                      alt={activity.user}
+                    />
                     <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
                     <p className="text-sm">
-                      <span className="font-medium">{activity.user}</span> {activity.action}
+                      <span className="font-medium">{activity.user}</span>{" "}
+                      {activity.action}
                     </p>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
@@ -240,7 +335,10 @@ export function WidgetDashboard() {
         </motion.div>
 
         {/* Popular Plugins */}
-        <motion.div layoutId="popular-plugins" onClick={() => handleWidgetClick("popular-plugins")}>
+        <motion.div
+          layoutId="popular-plugins"
+          onClick={() => handleWidgetClick("popular-plugins")}
+        >
           <Card
             className={`cursor-pointer border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-md ${activeWidget === "popular-plugins" ? "border-primary/20 shadow-md" : ""}`}
           >
@@ -262,10 +360,16 @@ export function WidgetDashboard() {
                     </div>
                     <div>
                       <p className="font-medium">{plugin.name}</p>
-                      <p className="text-xs text-muted-foreground">{plugin.installs} installs</p>
+                      <p className="text-xs text-muted-foreground">
+                        {plugin.installs} installs
+                      </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="h-8 rounded-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-full"
+                  >
                     Install
                   </Button>
                 </div>
@@ -281,20 +385,45 @@ export function WidgetDashboard() {
         </motion.div>
 
         {/* Performance Metrics */}
-        <motion.div layoutId="performance-metrics" onClick={() => handleWidgetClick("performance-metrics")}>
+        <motion.div
+          layoutId="performance-metrics"
+          onClick={() => handleWidgetClick("performance-metrics")}
+        >
           <Card
             className={`cursor-pointer border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-md ${activeWidget === "performance-metrics" ? "border-primary/20 shadow-md" : ""}`}
           >
             <CardHeader>
               <CardTitle>Performance Metrics</CardTitle>
-              <CardDescription>Key indicators for your platform</CardDescription>
+              <CardDescription>
+                Key indicators for your platform
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                { name: "Conversion Rate", value: "24.8%", change: "+2.4%", icon: TrendingUp },
-                { name: "Avg. Ticket Price", value: "$85.50", change: "+$4.30", icon: Ticket },
-                { name: "User Retention", value: "68.2%", change: "+5.1%", icon: Users },
-                { name: "Plugin Usage", value: "12 active", change: "+3", icon: Layers },
+                {
+                  name: "Conversion Rate",
+                  value: "24.8%",
+                  change: "+2.4%",
+                  icon: TrendingUp,
+                },
+                {
+                  name: "Avg. Ticket Price",
+                  value: "$85.50",
+                  change: "+$4.30",
+                  icon: Ticket,
+                },
+                {
+                  name: "User Retention",
+                  value: "68.2%",
+                  change: "+5.1%",
+                  icon: Users,
+                },
+                {
+                  name: "Plugin Usage",
+                  value: "12 active",
+                  change: "+3",
+                  icon: Layers,
+                },
               ].map((metric, i) => (
                 <div key={i} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -304,7 +433,9 @@ export function WidgetDashboard() {
                     </div>
                     <Badge variant="outline" className="gap-1 rounded-full">
                       <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-                      <span className="text-xs text-emerald-500">{metric.change}</span>
+                      <span className="text-xs text-emerald-500">
+                        {metric.change}
+                      </span>
                     </Badge>
                   </div>
                   <p className="text-2xl font-bold">{metric.value}</p>
@@ -321,5 +452,5 @@ export function WidgetDashboard() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

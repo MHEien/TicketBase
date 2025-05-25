@@ -1,47 +1,47 @@
-"use client"
+"use client";
 
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type TicketType = {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  description: string
-}
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  description: string;
+};
 
 export type EventData = {
-  title: string
-  description: string
-  category: string
-  startDate: Date | null
-  endDate: Date | null
-  startTime: string
-  endTime: string
-  timeZone: string
-  locationType: "physical" | "virtual" | "hybrid"
-  venueName: string
-  address: string
-  city: string
-  state: string
-  zipCode: string
-  country: string
-  virtualEventUrl: string
-  ticketTypes: TicketType[]
-  featuredImage: string
-  galleryImages: string[]
-  isPublished: boolean
-}
+  title: string;
+  description: string;
+  category: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  startTime: string;
+  endTime: string;
+  timeZone: string;
+  locationType: "physical" | "virtual" | "hybrid";
+  venueName: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  virtualEventUrl: string;
+  ticketTypes: TicketType[];
+  featuredImage: string;
+  galleryImages: string[];
+  isPublished: boolean;
+};
 
 interface EventCreationState {
-  eventData: EventData
-  updateEventData: (data: Partial<EventData>) => void
-  updateTicketType: (id: string, data: Partial<TicketType>) => void
-  addTicketType: () => void
-  removeTicketType: (id: string) => void
-  resetEventData: () => void
-  isValid: () => boolean
+  eventData: EventData;
+  updateEventData: (data: Partial<EventData>) => void;
+  updateTicketType: (id: string, data: Partial<TicketType>) => void;
+  addTicketType: () => void;
+  removeTicketType: (id: string) => void;
+  resetEventData: () => void;
+  isValid: () => boolean;
 }
 
 const initialEventData: EventData = {
@@ -73,7 +73,7 @@ const initialEventData: EventData = {
   featuredImage: "",
   galleryImages: [],
   isPublished: false,
-}
+};
 
 export const useEventCreation = create<EventCreationState>()(
   persist(
@@ -86,7 +86,7 @@ export const useEventCreation = create<EventCreationState>()(
             ...state.eventData,
             ...data,
           },
-        }))
+        }));
       },
 
       updateTicketType: (id, data) => {
@@ -97,7 +97,7 @@ export const useEventCreation = create<EventCreationState>()(
               ticket.id === id ? { ...ticket, ...data } : ticket,
             ),
           },
-        }))
+        }));
       },
 
       addTicketType: () => {
@@ -115,56 +115,74 @@ export const useEventCreation = create<EventCreationState>()(
               },
             ],
           },
-        }))
+        }));
       },
 
       removeTicketType: (id) => {
         set((state) => ({
           eventData: {
             ...state.eventData,
-            ticketTypes: state.eventData.ticketTypes.filter((ticket) => ticket.id !== id),
+            ticketTypes: state.eventData.ticketTypes.filter(
+              (ticket) => ticket.id !== id,
+            ),
           },
-        }))
+        }));
       },
 
       resetEventData: () => {
-        set({ eventData: { ...initialEventData } })
+        set({ eventData: { ...initialEventData } });
       },
 
       isValid: () => {
-        const { eventData } = get()
+        const { eventData } = get();
 
         // Basic validation
         if (!eventData.title || !eventData.description || !eventData.category) {
-          return false
+          return false;
         }
 
         // Date validation
-        if (!eventData.startDate || !eventData.endDate || !eventData.startTime || !eventData.endTime) {
-          return false
+        if (
+          !eventData.startDate ||
+          !eventData.endDate ||
+          !eventData.startTime ||
+          !eventData.endTime
+        ) {
+          return false;
         }
 
         // Location validation
-        if (eventData.locationType === "physical" || eventData.locationType === "hybrid") {
-          if (!eventData.venueName || !eventData.address || !eventData.city || !eventData.country) {
-            return false
+        if (
+          eventData.locationType === "physical" ||
+          eventData.locationType === "hybrid"
+        ) {
+          if (
+            !eventData.venueName ||
+            !eventData.address ||
+            !eventData.city ||
+            !eventData.country
+          ) {
+            return false;
           }
         }
 
-        if (eventData.locationType === "virtual" || eventData.locationType === "hybrid") {
+        if (
+          eventData.locationType === "virtual" ||
+          eventData.locationType === "hybrid"
+        ) {
           if (!eventData.virtualEventUrl) {
-            return false
+            return false;
           }
         }
 
         // Ticket validation
         if (eventData.ticketTypes.length === 0) {
-          return false
+          return false;
         }
 
         for (const ticket of eventData.ticketTypes) {
           if (!ticket.name || ticket.quantity <= 0) {
-            return false
+            return false;
           }
         }
 
@@ -173,11 +191,11 @@ export const useEventCreation = create<EventCreationState>()(
         //   return false
         // }
 
-        return true
+        return true;
       },
     }),
     {
       name: "event-creation-storage",
     },
   ),
-)
+);

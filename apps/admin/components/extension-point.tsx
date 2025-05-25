@@ -23,12 +23,18 @@ interface ExtensionPointProps {
 /**
  * A component that renders an extension point where plugins can inject content
  */
-export function ExtensionPoint({ name, context = {}, fallback = null }: ExtensionPointProps) {
-  const [extensions, setExtensions] = useState<{
-    id: string;
-    component: React.ComponentType<any>;
-    plugin: InstalledPlugin;
-  }[]>([]);
+export function ExtensionPoint({
+  name,
+  context = {},
+  fallback = null,
+}: ExtensionPointProps) {
+  const [extensions, setExtensions] = useState<
+    {
+      id: string;
+      component: React.ComponentType<any>;
+      plugin: InstalledPlugin;
+    }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -55,47 +61,59 @@ export function ExtensionPoint({ name, context = {}, fallback = null }: Extensio
 
         for (const plugin of plugins) {
           if (!plugin.enabled) continue;
-          
+
           try {
             // Use the plugin loader utility to load the plugin module
             const componentModule = await loadPluginModule(plugin);
 
             // First check for globally defined extension points
-            if (typeof window !== 'undefined' && window[`devPlugin1`]) {
+            if (typeof window !== "undefined" && window[`devPlugin1`]) {
               const globalPlugin = window[`devPlugin1`];
               if (globalPlugin && globalPlugin.extensionPoints?.[name]) {
                 loadedExtensions.push({
                   id: plugin.id,
                   component: globalPlugin.extensionPoints[name],
-                  plugin
+                  plugin,
                 });
                 continue;
               }
             }
 
             // Check for extension points from dynamic imports
-            if (!componentModule.default?.extensionPoints?.[name] && !componentModule.extensionPoints?.[name]) {
-              console.warn(`Plugin ${plugin.id} does not properly implement extension point "${name}"`);
+            if (
+              !componentModule.default?.extensionPoints?.[name] &&
+              !componentModule.extensionPoints?.[name]
+            ) {
+              console.warn(
+                `Plugin ${plugin.id} does not properly implement extension point "${name}"`,
+              );
               continue;
             }
 
-            const Component = componentModule.default?.extensionPoints?.[name] || componentModule.extensionPoints?.[name];
+            const Component =
+              componentModule.default?.extensionPoints?.[name] ||
+              componentModule.extensionPoints?.[name];
 
             if (Component) {
               loadedExtensions.push({
                 id: plugin.id,
                 component: Component,
-                plugin
+                plugin,
               });
             }
           } catch (e) {
-            console.error(`Failed to load extension from plugin ${plugin.id} for "${name}":`, e);
+            console.error(
+              `Failed to load extension from plugin ${plugin.id} for "${name}":`,
+              e,
+            );
           }
         }
 
         // Sort by priority (higher numbers first)
-        loadedExtensions.sort((a, b) => 
-          (b.plugin.metadata?.priority || 0) - (a.plugin.metadata?.priority || 0)
+        loadedExtensions.sort(
+          (a, b) =>
+            (b.plugin.metadata?.priority || 0) -
+            (a.plugin.metadata?.priority || 0),
         );
 
         if (isMounted) {
@@ -135,11 +153,14 @@ export function ExtensionPoint({ name, context = {}, fallback = null }: Extensio
   return (
     <>
       {extensions.map(({ id, component: ExtensionComponent, plugin }) => (
-        <ErrorBoundary key={id} fallback={<div>Error loading plugin: {plugin.name}</div>}>
+        <ErrorBoundary
+          key={id}
+          fallback={<div>Error loading plugin: {plugin.name}</div>}
+        >
           <Suspense fallback={<LoadingIndicator />}>
-            <ExtensionComponent 
-              context={context} 
-              configuration={plugin.configuration} 
+            <ExtensionComponent
+              context={context}
+              configuration={plugin.configuration}
               plugin={plugin}
             />
           </Suspense>
@@ -147,4 +168,4 @@ export function ExtensionPoint({ name, context = {}, fallback = null }: Extensio
       ))}
     </>
   );
-} 
+}

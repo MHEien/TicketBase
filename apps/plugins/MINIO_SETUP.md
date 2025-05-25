@@ -84,4 +84,4 @@ To test that the MinIO integration is working:
 1. Start the plugin server
 2. Use the API to upload a plugin
 3. Verify that the bundle is stored in the MinIO bucket
-4. Check that the bundle URL is accessible 
+4. Check that the bundle URL is accessible

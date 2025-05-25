@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Organization } from '../../users/entities/organization.entity';
 import { User } from '../../users/entities/user.entity';
 import { TicketType } from './ticket-type.entity';
@@ -6,20 +15,20 @@ import { TicketType } from './ticket-type.entity';
 export enum EventLocationType {
   PHYSICAL = 'physical',
   VIRTUAL = 'virtual',
-  HYBRID = 'hybrid'
+  HYBRID = 'hybrid',
 }
 
 export enum EventStatus {
   DRAFT = 'draft',
   PUBLISHED = 'published',
   CANCELLED = 'cancelled',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
 }
 
 export enum EventVisibility {
   PUBLIC = 'public',
   PRIVATE = 'private',
-  UNLISTED = 'unlisted'
+  UNLISTED = 'unlisted',
 }
 
 @Entity()
@@ -64,7 +73,7 @@ export class Event {
   @Column({
     type: 'enum',
     enum: EventLocationType,
-    default: EventLocationType.PHYSICAL
+    default: EventLocationType.PHYSICAL,
   })
   locationType: EventLocationType;
 
@@ -98,14 +107,14 @@ export class Event {
   @Column({
     type: 'enum',
     enum: EventStatus,
-    default: EventStatus.DRAFT
+    default: EventStatus.DRAFT,
   })
   status: EventStatus;
 
   @Column({
     type: 'enum',
     enum: EventVisibility,
-    default: EventVisibility.PUBLIC
+    default: EventVisibility.PUBLIC,
   })
   visibility: EventVisibility;
 
@@ -129,7 +138,7 @@ export class Event {
   @JoinColumn({ name: 'updatedBy' })
   updater: User;
 
-  @OneToMany(() => TicketType, ticketType => ticketType.event)
+  @OneToMany(() => TicketType, (ticketType) => ticketType.event)
   ticketTypes: TicketType[];
 
   @Column('timestamp with time zone', { nullable: true })
@@ -155,4 +164,4 @@ export class Event {
 
   @Column({ default: 0 })
   capacity: number;
-} 
+}

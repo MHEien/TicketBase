@@ -4,9 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdatePluginStatusDto {
   @ApiProperty({
     description: 'Whether the plugin is enabled',
-    example: true
+    example: true,
   })
   @IsNotEmpty()
   @IsBoolean()
   enabled: boolean;
-} 
+}

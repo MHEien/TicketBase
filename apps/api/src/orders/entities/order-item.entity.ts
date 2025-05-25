@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Order } from './order.entity';
 import { Ticket } from '../../events/entities/ticket.entity';
@@ -6,12 +13,15 @@ import { Ticket } from '../../events/entities/ticket.entity';
 export enum OrderItemType {
   TICKET = 'ticket',
   MERCHANDISE = 'merchandise',
-  FEE = 'fee'
+  FEE = 'fee',
 }
 
 @Entity('order_items')
 export class OrderItem {
-  @ApiProperty({ description: 'Unique identifier', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -19,7 +29,7 @@ export class OrderItem {
   @Column({ name: 'order_id' })
   orderId: string;
 
-  @ManyToOne(() => Order, order => order.items, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Order, (order) => order.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'order_id' })
   order: Order;
 
@@ -43,19 +53,27 @@ export class OrderItem {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   subtotal: number;
 
-  @ApiProperty({ description: 'Item type', enum: OrderItemType, enumName: 'OrderItemType' })
+  @ApiProperty({
+    description: 'Item type',
+    enum: OrderItemType,
+    enumName: 'OrderItemType',
+  })
   @Column({
     type: 'enum',
     enum: OrderItemType,
-    default: OrderItemType.TICKET
+    default: OrderItemType.TICKET,
   })
   type: OrderItemType;
 
-  @ApiProperty({ description: 'Tickets associated with this order item', type: [Ticket], required: false })
-  @OneToMany(() => Ticket, ticket => ticket.orderItemId)
+  @ApiProperty({
+    description: 'Tickets associated with this order item',
+    type: [Ticket],
+    required: false,
+  })
+  @OneToMany(() => Ticket, (ticket) => ticket.orderItemId)
   tickets: Ticket[];
 
   @ApiProperty({ description: 'Additional metadata (JSON)', required: false })
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any>;
-} 
+}

@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Event } from './event.entity';
 import { TicketType } from './ticket-type.entity';
 import { Organization } from '../../users/entities/organization.entity';
@@ -8,7 +16,7 @@ export enum TicketStatus {
   VALID = 'valid',
   USED = 'used',
   CANCELLED = 'cancelled',
-  REFUNDED = 'refunded'
+  REFUNDED = 'refunded',
 }
 
 @Entity()
@@ -52,7 +60,7 @@ export class Ticket {
   @Column({
     type: 'enum',
     enum: TicketStatus,
-    default: TicketStatus.VALID
+    default: TicketStatus.VALID,
   })
   status: TicketStatus;
 
@@ -89,4 +97,4 @@ export class Ticket {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

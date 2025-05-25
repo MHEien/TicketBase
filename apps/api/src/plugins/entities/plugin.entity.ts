@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { InstalledPlugin } from './installed-plugin.entity';
 
@@ -9,22 +16,28 @@ export enum PluginCategory {
   SOCIAL = 'social',
   TICKETING = 'ticketing',
   LAYOUT = 'layout',
-  SEATING = 'seating'
+  SEATING = 'seating',
 }
 
 export enum PluginStatus {
   ACTIVE = 'active',
   DEPRECATED = 'deprecated',
-  REMOVED = 'removed'
+  REMOVED = 'removed',
 }
 
 @Entity('plugins')
 export class Plugin {
-  @ApiProperty({ description: 'Unique identifier', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'Plugin name', example: 'Stripe Payment Gateway' })
+  @ApiProperty({
+    description: 'Plugin name',
+    example: 'Stripe Payment Gateway',
+  })
   @Column()
   name: string;
 
@@ -32,14 +45,21 @@ export class Plugin {
   @Column()
   version: string;
 
-  @ApiProperty({ description: 'Plugin description', example: 'Integrates Stripe payment processing' })
+  @ApiProperty({
+    description: 'Plugin description',
+    example: 'Integrates Stripe payment processing',
+  })
   @Column({ type: 'text' })
   description: string;
 
-  @ApiProperty({ description: 'Plugin category', enum: PluginCategory, enumName: 'PluginCategory' })
+  @ApiProperty({
+    description: 'Plugin category',
+    enum: PluginCategory,
+    enumName: 'PluginCategory',
+  })
   @Column({
     type: 'enum',
-    enum: PluginCategory
+    enum: PluginCategory,
   })
   category: PluginCategory;
 
@@ -47,17 +67,20 @@ export class Plugin {
   @Column({ name: 'bundle_url' })
   bundleUrl: string;
 
-  @ApiProperty({ description: 'List of extension points this plugin implements', type: [String] })
+  @ApiProperty({
+    description: 'List of extension points this plugin implements',
+    type: [String],
+  })
   @Column({ type: 'jsonb', default: [] })
   extensionPoints: string[];
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Admin components provided by the plugin',
     example: {
       settings: 'StripeSettings',
       eventCreation: 'StripeEventOptions',
-      dashboard: 'StripeDashboard'
-    }
+      dashboard: 'StripeDashboard',
+    },
   })
   @Column({ type: 'jsonb', default: {} })
   adminComponents: {
@@ -66,14 +89,14 @@ export class Plugin {
     dashboard?: string;
   };
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Storefront components provided by the plugin',
     example: {
       checkout: 'StripeCheckout',
       widgets: {
-        paymentMethods: 'StripePaymentMethods'
-      }
-    }
+        paymentMethods: 'StripePaymentMethods',
+      },
+    },
   })
   @Column({ type: 'jsonb', default: {} })
   storefrontComponents: {
@@ -83,7 +106,7 @@ export class Plugin {
     widgets?: Record<string, string>;
   };
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Metadata about the plugin',
     example: {
       priority: 100,
@@ -91,13 +114,17 @@ export class Plugin {
       author: 'Stripe Inc.',
       paymentProvider: 'stripe',
       supportedMethods: ['credit_card', 'ach'],
-      supportedCurrencies: ['USD', 'EUR']
-    }
+      supportedCurrencies: ['USD', 'EUR'],
+    },
   })
   @Column({ type: 'jsonb', default: {} })
   metadata: Record<string, any>;
 
-  @ApiProperty({ description: 'Required permissions for this plugin', type: [String], required: false })
+  @ApiProperty({
+    description: 'Required permissions for this plugin',
+    type: [String],
+    required: false,
+  })
   @Column({ type: 'jsonb', nullable: true })
   requiredPermissions?: string[];
 
@@ -109,14 +136,18 @@ export class Plugin {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ApiProperty({ description: 'Plugin status', enum: PluginStatus, enumName: 'PluginStatus' })
+  @ApiProperty({
+    description: 'Plugin status',
+    enum: PluginStatus,
+    enumName: 'PluginStatus',
+  })
   @Column({
     type: 'enum',
     enum: PluginStatus,
-    default: PluginStatus.ACTIVE
+    default: PluginStatus.ACTIVE,
   })
   status: PluginStatus;
 
-  @OneToMany(() => InstalledPlugin, installedPlugin => installedPlugin.plugin)
+  @OneToMany(() => InstalledPlugin, (installedPlugin) => installedPlugin.plugin)
   installations: InstalledPlugin[];
-} 
+}

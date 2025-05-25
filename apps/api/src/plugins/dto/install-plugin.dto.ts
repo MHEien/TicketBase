@@ -16,4 +16,4 @@ export class InstallPluginDto {
   @IsUUID()
   @IsNotEmpty()
   userId: string;
-} 
+}

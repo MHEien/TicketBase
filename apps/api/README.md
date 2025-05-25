@@ -7,17 +7,20 @@ A comprehensive NestJS backend for a ticket sales platform with event management
 ### Implemented ✅
 
 - **Authentication & Authorization**
+
   - JWT-based authentication
   - Session management
   - NextAuth integration
   - Role-based permissions
 
 - **User Management**
+
   - User profiles and accounts
   - Organization/tenant management
   - Team roles and permissions
 
 - **Event Management**
+
   - CRUD operations for events
   - Support for physical, virtual, and hybrid events
   - Event categories and filtering

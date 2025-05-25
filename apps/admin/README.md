@@ -1,6 +1,6 @@
 # Ticket sales platform
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+_Automatically synced with your [v0.dev](https://v0.dev) deployments_
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/mheiens-projects/v0-ticket-sales-platform)
 [![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/thdPxNm00Zp)
@@ -34,11 +34,12 @@ Continue building your app on:
 The platform integrates with a separate plugin server for plugin management. To connect to the plugin server:
 
 1. Create a `.env.local` file with the following configuration:
+
    ```
    # Plugin Server Configuration
    PLUGIN_SERVER_URL=http://localhost:3001
    PLUGIN_SERVER_API_KEY=your-api-key-here
-   
+
    # Tenant ID for multi-tenant environments
    DEFAULT_TENANT_ID=tenant-001
    ```
@@ -49,6 +50,7 @@ The platform integrates with a separate plugin server for plugin management. To 
    - Fall back to local storage if the plugin server is not available
 
 The API integration points include:
+
 - Plugin upload: `POST ${PLUGIN_SERVER_URL}/plugins/bundles/upload`
 - Plugin publication: `POST ${PLUGIN_SERVER_URL}/marketplace`
 - Plugin installation: `POST ${PLUGIN_SERVER_URL}/plugins/install`

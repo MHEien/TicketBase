@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { OnboardingProvider } from "@/lib/onboarding-context"
+import { OnboardingProvider } from "@/lib/onboarding-context";
 
 export default function OnboardingLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <OnboardingProvider>
@@ -18,11 +18,9 @@ export default function OnboardingLayout({
             </h1>
           </div>
         </header>
-        
-        <main className="max-w-7xl mx-auto p-6">
-          {children}
-        </main>
+
+        <main className="max-w-7xl mx-auto p-6">{children}</main>
       </div>
     </OnboardingProvider>
-  )
-} 
+  );
+}

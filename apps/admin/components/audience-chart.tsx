@@ -1,7 +1,15 @@
-"use client"
+"use client";
 
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip } from "recharts"
-import { useState } from "react"
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Sector,
+  Tooltip,
+} from "recharts";
+import { useState } from "react";
 
 // Sample data for the chart
 const data = [
@@ -10,7 +18,7 @@ const data = [
   { name: "35-44", value: 20, color: "hsl(var(--chart-3))" },
   { name: "45-54", value: 12, color: "hsl(var(--chart-4))" },
   { name: "55+", value: 8, color: "hsl(var(--chart-5))" },
-]
+];
 
 const interestData = [
   { name: "Music", value: 40, color: "hsl(var(--chart-1))" },
@@ -18,10 +26,11 @@ const interestData = [
   { name: "Arts", value: 15, color: "hsl(var(--chart-3))" },
   { name: "Sports", value: 12, color: "hsl(var(--chart-4))" },
   { name: "Other", value: 8, color: "hsl(var(--chart-5))" },
-]
+];
 
 const renderActiveShape = (props: any) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
+    props;
 
   return (
     <g>
@@ -35,16 +44,16 @@ const renderActiveShape = (props: any) => {
         fill={fill}
       />
     </g>
-  )
-}
+  );
+};
 
 export function AudienceChart() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [activeChart, setActiveChart] = useState<"age" | "interests">("age")
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeChart, setActiveChart] = useState<"age" | "interests">("age");
 
   const onPieEnter = (_: any, index: number) => {
-    setActiveIndex(index)
-  }
+    setActiveIndex(index);
+  };
 
   return (
     <div className="h-full">
@@ -77,9 +86,11 @@ export function AudienceChart() {
             dataKey="value"
             onMouseEnter={onPieEnter}
           >
-            {(activeChart === "age" ? data : interestData).map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
+            {(activeChart === "age" ? data : interestData).map(
+              (entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ),
+            )}
           </Pie>
           <Tooltip
             content={({ active, payload }) => {
@@ -88,25 +99,34 @@ export function AudienceChart() {
                   <div className="rounded-lg border bg-background p-2 shadow-sm">
                     <div className="grid grid-cols-2 gap-2">
                       <div className="flex items-center gap-1">
-                        <div className="h-3 w-3 rounded-full" style={{ backgroundColor: payload[0].payload.color }} />
-                        <span className="text-sm font-medium">{payload[0].name}</span>
+                        <div
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: payload[0].payload.color }}
+                        />
+                        <span className="text-sm font-medium">
+                          {payload[0].name}
+                        </span>
                       </div>
-                      <div className="text-right text-sm font-medium">{payload[0].value}%</div>
+                      <div className="text-right text-sm font-medium">
+                        {payload[0].value}%
+                      </div>
                     </div>
                   </div>
-                )
+                );
               }
-              return null
+              return null;
             }}
           />
           <Legend
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
-            formatter={(value, entry, index) => <span className="text-xs">{value}</span>}
+            formatter={(value, entry, index) => (
+              <span className="text-xs">{value}</span>
+            )}
           />
         </PieChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

@@ -56,11 +56,13 @@ export class PluginsController {
     type: Plugin,
   })
   @ApiBody({ type: RegisterPaymentPluginDto })
-  async registerPaymentPlugin(@Body() registerPaymentPluginDto: RegisterPaymentPluginDto): Promise<Plugin> {
+  async registerPaymentPlugin(
+    @Body() registerPaymentPluginDto: RegisterPaymentPluginDto,
+  ): Promise<Plugin> {
     // Convert to CreatePluginDto and retain payment-specific metadata
     const createPluginDto = new CreatePluginDto();
     Object.assign(createPluginDto, registerPaymentPluginDto);
-    
+
     // Add payment-specific metadata
     createPluginDto.metadata = {
       ...createPluginDto.metadata,
@@ -70,7 +72,7 @@ export class PluginsController {
       configurationSchema: registerPaymentPluginDto.configurationSchema,
       defaultConfiguration: registerPaymentPluginDto.defaultConfiguration,
     };
-    
+
     return this.pluginsService.create(createPluginDto);
   }
 
@@ -302,7 +304,8 @@ export class PluginsController {
   @ApiOperation({ summary: 'Get plugins by type for an organization' })
   @ApiResponse({
     status: 200,
-    description: 'Returns all plugins of the specified type for the organization.',
+    description:
+      'Returns all plugins of the specified type for the organization.',
     type: [InstalledPlugin],
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
@@ -313,4 +316,4 @@ export class PluginsController {
   ): Promise<InstalledPlugin[]> {
     return this.pluginsService.getPluginsByType(organizationId, type);
   }
-} 
+}

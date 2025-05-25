@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState, Suspense } from "react"
-import { useRouter } from "next/navigation"
-import { format } from "date-fns"
+import { useEffect, useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 import {
   BarChart,
   Calendar,
@@ -17,87 +17,106 @@ import {
   Share2,
   Trash2,
   Users,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getEventById, type EventWithId } from "@/lib/event-data"
-import { useToast } from "@/hooks/use-toast"
-import { PluginWidgetArea } from "@/components/plugin-widget-area"
+} from "@/components/ui/dropdown-menu";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getEventById, type EventWithId } from "@/lib/event-data";
+import { useToast } from "@/hooks/use-toast";
+import { PluginWidgetArea } from "@/components/plugin-widget-area";
 
-export default function EventDetailsPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [event, setEvent] = useState<EventWithId | null>(null)
-  const [loading, setLoading] = useState(true)
+export default function EventDetailsPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [event, setEvent] = useState<EventWithId | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadEvent() {
       try {
-        const eventData = await getEventById(params.id)
-        setEvent(eventData || null)
+        const eventData = await getEventById(params.id);
+        setEvent(eventData || null);
       } catch (error) {
         toast({
           title: "Error",
           description: "Could not load event details",
           variant: "destructive",
-        })
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    loadEvent()
-  }, [params.id, toast])
+    loadEvent();
+  }, [params.id, toast]);
 
   const handleEditEvent = () => {
-    router.push(`/events/${params.id}/edit`)
-  }
+    router.push(`/events/${params.id}/edit`);
+  };
 
   const handleDeleteEvent = () => {
     // For now, just show a toast
     toast({
       title: "Not implemented",
       description: "Delete functionality will be added soon",
-    })
-  }
+    });
+  };
 
   const handleDuplicateEvent = () => {
     // For now, just show a toast
     toast({
       title: "Not implemented",
       description: "Duplicate functionality will be added soon",
-    })
-  }
+    });
+  };
 
   const handlePublishEvent = () => {
     // For now, just show a toast
     toast({
       title: "Not implemented",
       description: "Publish functionality will be added soon",
-    })
-  }
+    });
+  };
 
   if (loading || !event) {
-    return <div className="p-8 text-center">Loading event details...</div>
+    return <div className="p-8 text-center">Loading event details...</div>;
   }
 
-  const totalTickets = event.ticketTypes.reduce((sum, ticket) => sum + ticket.quantity, 0)
-  const ticketsSoldPercentage = Math.round((event.totalTicketsSold / totalTickets) * 100) || 0
-  const isPast = event.endDate ? new Date(event.endDate) < new Date() : false
+  const totalTickets = event.ticketTypes.reduce(
+    (sum, ticket) => sum + ticket.quantity,
+    0,
+  );
+  const ticketsSoldPercentage =
+    Math.round((event.totalTicketsSold / totalTickets) * 100) || 0;
+  const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
 
   return (
     <div className="container mx-auto p-6">
-      <Button variant="outline" className="mb-6" onClick={() => router.push("/events")}>
+      <Button
+        variant="outline"
+        className="mb-6"
+        onClick={() => router.push("/events")}
+      >
         ← Back to Events
       </Button>
 
@@ -127,7 +146,9 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Event
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDuplicateEvent}>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDuplicateEvent}>
+                Duplicate
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
@@ -137,7 +158,10 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 Export Attendees
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleDeleteEvent} className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                onClick={handleDeleteEvent}
+                className="text-destructive focus:text-destructive"
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete Event
               </DropdownMenuItem>
@@ -148,11 +172,10 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
 
       {/* Plugin integrations */}
       <div className="mb-8">
-        <Suspense fallback={<div className="h-20 animate-pulse rounded-lg bg-muted" />}>
-          <PluginWidgetArea 
-            areaName="event-detail-header" 
-            eventData={event} 
-          />
+        <Suspense
+          fallback={<div className="h-20 animate-pulse rounded-lg bg-muted" />}
+        >
+          <PluginWidgetArea areaName="event-detail-header" eventData={event} />
         </Suspense>
       </div>
 
@@ -169,13 +192,19 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
 
             <CardContent className="p-6">
               <div className="mb-4 flex flex-wrap gap-3">
-                <Badge variant="secondary">{event.category.charAt(0).toUpperCase() + event.category.slice(1)}</Badge>
+                <Badge variant="secondary">
+                  {event.category.charAt(0).toUpperCase() +
+                    event.category.slice(1)}
+                </Badge>
 
                 <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
                   <Calendar className="h-4 w-4 text-primary" />
                   <span>
-                    {event.startDate ? format(new Date(event.startDate), "MMM d, yyyy") : "No start date"}
-                    {event.startDate && event.endDate &&
+                    {event.startDate
+                      ? format(new Date(event.startDate), "MMM d, yyyy")
+                      : "No start date"}
+                    {event.startDate &&
+                      event.endDate &&
                       format(new Date(event.startDate), "MMM d, yyyy") !==
                         format(new Date(event.endDate), "MMM d, yyyy") &&
                       ` - ${format(new Date(event.endDate), "MMM d, yyyy")}`}
@@ -213,10 +242,14 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
 
               {/* Plugin integrations */}
               <div className="mt-6">
-                <Suspense fallback={<div className="h-20 animate-pulse rounded-lg bg-muted" />}>
-                  <PluginWidgetArea 
-                    areaName="event-detail-main" 
-                    eventData={event} 
+                <Suspense
+                  fallback={
+                    <div className="h-20 animate-pulse rounded-lg bg-muted" />
+                  }
+                >
+                  <PluginWidgetArea
+                    areaName="event-detail-main"
+                    eventData={event}
                   />
                 </Suspense>
               </div>
@@ -234,7 +267,9 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
               <Card>
                 <CardHeader>
                   <CardTitle>Ticket Types</CardTitle>
-                  <CardDescription>Manage your event's ticket types and pricing</CardDescription>
+                  <CardDescription>
+                    Manage your event's ticket types and pricing
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {event.ticketTypes.map((ticket, index) => (
@@ -242,12 +277,17 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium">{ticket.name}</h3>
-                          <p className="text-sm text-muted-foreground">{ticket.description}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {ticket.description}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">${ticket.price.toFixed(2)}</p>
+                          <p className="font-bold">
+                            ${ticket.price.toFixed(2)}
+                          </p>
                           <p className="text-sm text-muted-foreground">
-                            {Math.floor(ticket.quantity * 0.3)} sold / {ticket.quantity} total
+                            {Math.floor(ticket.quantity * 0.3)} sold /{" "}
+                            {ticket.quantity} total
                           </p>
                         </div>
                       </div>
@@ -256,10 +296,14 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                   ))}
 
                   {/* Plugin integrations for ticket types */}
-                  <Suspense fallback={<div className="h-16 animate-pulse rounded-lg bg-muted" />}>
-                    <PluginWidgetArea 
-                      areaName="ticket-options" 
-                      eventData={event} 
+                  <Suspense
+                    fallback={
+                      <div className="h-16 animate-pulse rounded-lg bg-muted" />
+                    }
+                  >
+                    <PluginWidgetArea
+                      areaName="ticket-options"
+                      eventData={event}
                     />
                   </Suspense>
                 </CardContent>
@@ -277,15 +321,20 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
               <Card>
                 <CardHeader>
                   <CardTitle>Attendees</CardTitle>
-                  <CardDescription>View and manage event attendees</CardDescription>
+                  <CardDescription>
+                    View and manage event attendees
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-lg border bg-muted/50 p-8 text-center">
                     <Users className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
-                    <h3 className="mb-2 text-lg font-medium">Attendee Management</h3>
+                    <h3 className="mb-2 text-lg font-medium">
+                      Attendee Management
+                    </h3>
                     <p className="mb-4 text-sm text-muted-foreground">
-                      Detailed attendee management will be available here. You'll be able to view, search, and export
-                      your attendee list.
+                      Detailed attendee management will be available here.
+                      You'll be able to view, search, and export your attendee
+                      list.
                     </p>
                     <Button variant="outline">Coming Soon</Button>
                   </div>
@@ -298,15 +347,19 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
               <Card>
                 <CardHeader>
                   <CardTitle>Analytics</CardTitle>
-                  <CardDescription>View detailed event analytics and insights</CardDescription>
+                  <CardDescription>
+                    View detailed event analytics and insights
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="rounded-lg border bg-muted/50 p-8 text-center">
                     <BarChart className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
-                    <h3 className="mb-2 text-lg font-medium">Analytics Dashboard</h3>
+                    <h3 className="mb-2 text-lg font-medium">
+                      Analytics Dashboard
+                    </h3>
                     <p className="mb-4 text-sm text-muted-foreground">
-                      Detailed analytics will be available here. You'll be able to track ticket sales, revenue, and
-                      attendee demographics.
+                      Detailed analytics will be available here. You'll be able
+                      to track ticket sales, revenue, and attendee demographics.
                     </p>
                     <Button variant="outline">Coming Soon</Button>
                   </div>
@@ -325,7 +378,9 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Status</span>
-                <Badge variant={event.status === "published" ? "default" : "outline"}>
+                <Badge
+                  variant={event.status === "published" ? "default" : "outline"}
+                >
                   {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                 </Badge>
               </div>
@@ -348,10 +403,14 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
           </Card>
 
           {/* Widget area for plugin integrations in sidebar */}
-          <Suspense fallback={<div className="h-16 animate-pulse rounded-lg bg-muted" />}>
-            <PluginWidgetArea 
-              areaName="event-detail-sidebar" 
-              eventData={event} 
+          <Suspense
+            fallback={
+              <div className="h-16 animate-pulse rounded-lg bg-muted" />
+            }
+          >
+            <PluginWidgetArea
+              areaName="event-detail-sidebar"
+              eventData={event}
             />
           </Suspense>
 
@@ -369,12 +428,16 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                   </span>
                 </div>
                 <Progress value={ticketsSoldPercentage} className="h-2" />
-                <p className="mt-1 text-right text-xs text-muted-foreground">{ticketsSoldPercentage}% sold</p>
+                <p className="mt-1 text-right text-xs text-muted-foreground">
+                  {ticketsSoldPercentage}% sold
+                </p>
               </div>
 
               <div className="flex items-center justify-between border-t pt-4">
                 <span className="text-muted-foreground">Total Revenue</span>
-                <span className="text-xl font-bold">${event.totalRevenue.toLocaleString()}</span>
+                <span className="text-xl font-bold">
+                  ${event.totalRevenue.toLocaleString()}
+                </span>
               </div>
             </CardContent>
             <CardFooter>
@@ -387,5 +450,5 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
         </div>
       </div>
     </div>
-  )
+  );
 }

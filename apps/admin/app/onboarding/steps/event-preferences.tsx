@@ -1,16 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useOnboarding } from "@/lib/onboarding-context"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Slider } from "@/components/ui/slider"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useOnboarding } from "@/lib/onboarding-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
 
 const eventCategoryOptions = [
   { id: "music", label: "Music & Concerts" },
@@ -21,7 +29,7 @@ const eventCategoryOptions = [
   { id: "networking", label: "Networking & Meetups" },
   { id: "festivals", label: "Festivals & Fairs" },
   { id: "fundraisers", label: "Fundraisers & Charity" },
-]
+];
 
 const frequencyOptions = [
   { value: "weekly", label: "Weekly" },
@@ -29,21 +37,34 @@ const frequencyOptions = [
   { value: "quarterly", label: "Quarterly" },
   { value: "yearly", label: "Yearly" },
   { value: "occasionally", label: "Occasionally" },
-]
+];
 
 const eventPreferencesSchema = z.object({
-  categories: z.array(z.string()).min(1, { message: "Please select at least one category" }),
+  categories: z
+    .array(z.string())
+    .min(1, { message: "Please select at least one category" }),
   typicalAttendees: z.number().min(1).max(100000),
-  frequency: z.enum(["weekly", "monthly", "quarterly", "yearly", "occasionally"]),
+  frequency: z.enum([
+    "weekly",
+    "monthly",
+    "quarterly",
+    "yearly",
+    "occasionally",
+  ]),
   primaryLocation: z.string().optional(),
-})
+});
 
-type EventPreferencesFormValues = z.infer<typeof eventPreferencesSchema>
+type EventPreferencesFormValues = z.infer<typeof eventPreferencesSchema>;
 
 export default function EventPreferencesForm() {
-  const { onboardingData, updateOnboardingData, goToNextStep, goToPreviousStep } = useOnboarding()
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const {
+    onboardingData,
+    updateOnboardingData,
+    goToNextStep,
+    goToPreviousStep,
+  } = useOnboarding();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<EventPreferencesFormValues>({
     resolver: zodResolver(eventPreferencesSchema),
     defaultValues: {
@@ -52,24 +73,24 @@ export default function EventPreferencesForm() {
       frequency: onboardingData.eventPreferences.frequency || "occasionally",
       primaryLocation: onboardingData.eventPreferences.primaryLocation || "",
     },
-  })
-  
+  });
+
   async function onSubmit(data: EventPreferencesFormValues) {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       // Update onboarding data
-      updateOnboardingData("eventPreferences", data)
-      
+      updateOnboardingData("eventPreferences", data);
+
       // Move to the next step
-      goToNextStep()
+      goToNextStep();
     } catch (error) {
-      console.error("Error saving event preferences:", error)
+      console.error("Error saving event preferences:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -103,9 +124,9 @@ export default function EventPreferencesForm() {
                                 const updatedCategories = checked
                                   ? [...field.value, option.id]
                                   : field.value?.filter(
-                                      (value) => value !== option.id
-                                    )
-                                field.onChange(updatedCategories)
+                                      (value) => value !== option.id,
+                                    );
+                                field.onChange(updatedCategories);
                               }}
                             />
                           </FormControl>
@@ -113,7 +134,7 @@ export default function EventPreferencesForm() {
                             {option.label}
                           </FormLabel>
                         </FormItem>
-                      )
+                      );
                     }}
                   />
                 ))}
@@ -122,7 +143,7 @@ export default function EventPreferencesForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="typicalAttendees"
@@ -140,7 +161,13 @@ export default function EventPreferencesForm() {
                   />
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-500">
-                      {field.value < 50 ? 'Small' : field.value < 250 ? 'Medium' : field.value < 500 ? 'Large' : 'Very large'}
+                      {field.value < 50
+                        ? "Small"
+                        : field.value < 250
+                          ? "Medium"
+                          : field.value < 500
+                            ? "Large"
+                            : "Very large"}
                     </span>
                     <span className="font-medium">{field.value}</span>
                   </div>
@@ -150,7 +177,7 @@ export default function EventPreferencesForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="frequency"
@@ -182,7 +209,7 @@ export default function EventPreferencesForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="primaryLocation"
@@ -193,30 +220,23 @@ export default function EventPreferencesForm() {
                 This helps us customize your experience (optional)
               </FormDescription>
               <FormControl>
-                <Input
-                  placeholder="City, Region, or Online"
-                  {...field}
-                />
+                <Input placeholder="City, Region, or Online" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={goToPreviousStep}
-          >
+          <Button type="button" variant="outline" onClick={goToPreviousStep}>
             Back
           </Button>
-          
+
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : "Next: Brand Settings"}
           </Button>
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+}

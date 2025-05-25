@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { CommandHub } from "@/components/command-hub";
 import { CommandMenu } from "@/components/command-menu";
 import { DataVisualization } from "@/components/data-visualization";
@@ -10,18 +10,22 @@ import { DashboardNavProvider, useDashboardNav } from "@/hooks/useDashboardNav";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { activeSection, setActiveSection } = useDashboardNav();
-  const [isLoading, setIsLoading] = useState(true)
-  const { isOpen, setIsOpen } = useCommandMenu()
+  const [isLoading, setIsLoading] = useState(true);
+  const { isOpen, setIsOpen } = useCommandMenu();
 
   useEffect(() => {
     // Simulate loading data
     const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [])
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <DashboardNavProvider>
@@ -44,7 +48,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <motion.div
                 className="absolute inset-0 rounded-full border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "linear",
+                }}
               />
             </div>
           </motion.div>
@@ -70,5 +78,5 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <CommandMenu isOpen={isOpen} setIsOpen={setIsOpen} />
       </div>
     </DashboardNavProvider>
-  )
+  );
 }

@@ -29,13 +29,16 @@ export class OrganizationsService {
         serviceFeeFixed: 0,
         ticketTransfersEnabled: true,
         ...data.settings,
-      }
+      },
     });
 
     return this.organizationsRepository.save(newOrganization);
   }
 
-  async updateOrganization(id: string, data: Partial<Organization>): Promise<Organization> {
+  async updateOrganization(
+    id: string,
+    data: Partial<Organization>,
+  ): Promise<Organization> {
     await this.organizationsRepository.update(id, data);
     return this.findById(id);
   }
@@ -45,9 +48,12 @@ export class OrganizationsService {
     return organization ? organization.settings : null;
   }
 
-  async updateOrganizationSettings(id: string, settings: any): Promise<Organization> {
+  async updateOrganizationSettings(
+    id: string,
+    settings: any,
+  ): Promise<Organization> {
     const organization = await this.findById(id);
-    
+
     if (!organization) {
       return null;
     }
@@ -60,8 +66,11 @@ export class OrganizationsService {
     return this.organizationsRepository.save(organization);
   }
 
-  async upgradeOrganizationPlan(id: string, plan: PlanType): Promise<Organization> {
+  async upgradeOrganizationPlan(
+    id: string,
+    plan: PlanType,
+  ): Promise<Organization> {
     await this.organizationsRepository.update(id, { plan });
     return this.findById(id);
   }
-} 
+}

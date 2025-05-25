@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useSession, signOut } from "next-auth/react"
-import { Button } from "./button"
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
+import { useSession, signOut } from "next-auth/react";
+import { Button } from "./button";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,24 +10,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdown-menu"
-import { UserIcon } from "lucide-react"
+} from "./dropdown-menu";
+import { UserIcon } from "lucide-react";
 
 interface AuthStatusProps {
   user?: {
-    name?: string | null
-    email?: string | null
-    image?: string | null
-    role?: string
-  } | null
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
+  } | null;
 }
 
 export function AuthStatus({ user }: AuthStatusProps) {
-  const { data: session } = useSession()
-  const sessionUser = session?.user || user
+  const { data: session } = useSession();
+  const sessionUser = session?.user || user;
 
   if (!sessionUser) {
-    return null
+    return null;
   }
 
   const initials = sessionUser.name
@@ -35,7 +35,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
         .split(" ")
         .map((n) => n[0])
         .join("")
-    : sessionUser.email?.charAt(0) || "U"
+    : sessionUser.email?.charAt(0) || "U";
 
   return (
     <DropdownMenu>
@@ -43,7 +43,10 @@ export function AuthStatus({ user }: AuthStatusProps) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             {sessionUser.image ? (
-              <AvatarImage src={sessionUser.image} alt={sessionUser.name || ""} />
+              <AvatarImage
+                src={sessionUser.image}
+                alt={sessionUser.name || ""}
+              />
             ) : null}
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
@@ -53,7 +56,9 @@ export function AuthStatus({ user }: AuthStatusProps) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             {sessionUser.name && (
-              <p className="text-sm font-medium leading-none">{sessionUser.name}</p>
+              <p className="text-sm font-medium leading-none">
+                {sessionUser.name}
+              </p>
             )}
             {sessionUser.email && (
               <p className="text-xs leading-none text-muted-foreground">
@@ -76,5 +81,5 @@ export function AuthStatus({ user }: AuthStatusProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-} 
+  );
+}

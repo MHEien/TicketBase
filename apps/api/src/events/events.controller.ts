@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -21,27 +33,27 @@ export class EventsController {
   findAll(@Request() req, @Query() query) {
     const organizationId = req.user.organizationId;
     const options = {};
-    
+
     if (query.status && Object.values(EventStatus).includes(query.status)) {
       options['status'] = query.status;
     }
-    
+
     if (query.category) {
       options['category'] = query.category;
     }
-    
+
     if (query.search) {
       options['search'] = query.search;
     }
-    
+
     if (query.startDate && !isNaN(new Date(query.startDate).getTime())) {
       options['startDate'] = new Date(query.startDate);
     }
-    
+
     if (query.endDate && !isNaN(new Date(query.endDate).getTime())) {
       options['endDate'] = new Date(query.endDate);
     }
-    
+
     return this.eventsService.findAll(organizationId, options);
   }
 
@@ -52,10 +64,19 @@ export class EventsController {
   }
 
   @Patch(':id')
-  update(@Request() req, @Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateEventDto: UpdateEventDto,
+  ) {
     const organizationId = req.user.organizationId;
     const userId = req.user.id;
-    return this.eventsService.update(id, organizationId, userId, updateEventDto);
+    return this.eventsService.update(
+      id,
+      organizationId,
+      userId,
+      updateEventDto,
+    );
   }
 
   @Delete(':id')
@@ -77,4 +98,4 @@ export class EventsController {
     const userId = req.user.id;
     return this.eventsService.cancel(id, organizationId, userId);
   }
-} 
+}

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Plugin, PluginCategory, PluginStatus } from './entities/plugin.entity';
@@ -37,42 +41,42 @@ export class PluginsService {
     const plugin = await this.pluginsRepository.findOne({
       where: { id },
     });
-    
+
     if (!plugin) {
       throw new NotFoundException(`Plugin with ID ${id} not found`);
     }
-    
+
     return plugin;
   }
 
   async update(id: string, updatePluginDto: UpdatePluginDto): Promise<Plugin> {
     const plugin = await this.findOne(id);
-    
+
     // Update the plugin
     Object.assign(plugin, updatePluginDto);
-    
+
     return this.pluginsRepository.save(plugin);
   }
 
   async deprecate(id: string): Promise<Plugin> {
     const plugin = await this.findOne(id);
-    
+
     plugin.status = PluginStatus.DEPRECATED;
-    
+
     return this.pluginsRepository.save(plugin);
   }
 
   async remove(id: string): Promise<Plugin> {
     const plugin = await this.findOne(id);
-    
+
     plugin.status = PluginStatus.REMOVED;
-    
+
     return this.pluginsRepository.save(plugin);
   }
 
   async findByCategory(category: string): Promise<Plugin[]> {
     return this.pluginsRepository.find({
-      where: { 
+      where: {
         category: category as PluginCategory,
         status: PluginStatus.ACTIVE,
       },
@@ -84,40 +88,46 @@ export class PluginsService {
     const plugins = await this.pluginsRepository.find({
       where: { status: PluginStatus.ACTIVE },
     });
-    
-    return plugins.filter(plugin => 
-      plugin.extensionPoints.includes(extensionPoint)
+
+    return plugins.filter((plugin) =>
+      plugin.extensionPoints.includes(extensionPoint),
     );
   }
 
-  async installPlugin(installPluginDto: InstallPluginDto): Promise<InstalledPlugin> {
+  async installPlugin(
+    installPluginDto: InstallPluginDto,
+  ): Promise<InstalledPlugin> {
     const { pluginId, organizationId, userId } = installPluginDto;
-    
+
     // Check if plugin exists and is active
     const plugin = await this.pluginsRepository.findOne({
       where: { id: pluginId },
     });
-    
+
     if (!plugin) {
       throw new NotFoundException(`Plugin with ID ${pluginId} not found`);
     }
-    
+
     if (plugin.status !== PluginStatus.ACTIVE) {
-      throw new BadRequestException(`Plugin is not active and cannot be installed`);
+      throw new BadRequestException(
+        `Plugin is not active and cannot be installed`,
+      );
     }
-    
+
     // Check if already installed
     const existing = await this.installedPluginsRepository.findOne({
-      where: { 
+      where: {
         pluginId,
         organizationId,
       },
     });
-    
+
     if (existing) {
-      throw new BadRequestException(`Plugin is already installed for this organization`);
+      throw new BadRequestException(
+        `Plugin is already installed for this organization`,
+      );
     }
-    
+
     // Install the plugin
     const installedPlugin = this.installedPluginsRepository.create({
       pluginId,
@@ -127,7 +137,7 @@ export class PluginsService {
       enabled: true,
       configuration: {},
     });
-    
+
     return this.installedPluginsRepository.save(installedPlugin);
   }
 
@@ -135,46 +145,54 @@ export class PluginsService {
     const installedPlugin = await this.installedPluginsRepository.findOne({
       where: { id },
     });
-    
+
     if (!installedPlugin) {
       throw new NotFoundException(`Installed plugin with ID ${id} not found`);
     }
-    
+
     await this.installedPluginsRepository.remove(installedPlugin);
   }
 
-  async togglePluginStatus(id: string, enabled: boolean): Promise<InstalledPlugin> {
+  async togglePluginStatus(
+    id: string,
+    enabled: boolean,
+  ): Promise<InstalledPlugin> {
     const installedPlugin = await this.installedPluginsRepository.findOne({
       where: { id },
     });
-    
+
     if (!installedPlugin) {
       throw new NotFoundException(`Installed plugin with ID ${id} not found`);
     }
-    
+
     installedPlugin.enabled = enabled;
-    
+
     return this.installedPluginsRepository.save(installedPlugin);
   }
 
-  async updatePluginConfiguration(id: string, configuration: Record<string, any>): Promise<InstalledPlugin> {
+  async updatePluginConfiguration(
+    id: string,
+    configuration: Record<string, any>,
+  ): Promise<InstalledPlugin> {
     const installedPlugin = await this.installedPluginsRepository.findOne({
       where: { id },
     });
-    
+
     if (!installedPlugin) {
       throw new NotFoundException(`Installed plugin with ID ${id} not found`);
     }
-    
+
     installedPlugin.configuration = {
       ...installedPlugin.configuration,
       ...configuration,
     };
-    
+
     return this.installedPluginsRepository.save(installedPlugin);
   }
 
-  async getInstalledPlugins(organizationId: string): Promise<InstalledPlugin[]> {
+  async getInstalledPlugins(
+    organizationId: string,
+  ): Promise<InstalledPlugin[]> {
     return this.installedPluginsRepository.find({
       where: { organizationId },
       relations: ['plugin'],
@@ -183,7 +201,7 @@ export class PluginsService {
 
   async getEnabledPlugins(organizationId: string): Promise<InstalledPlugin[]> {
     return this.installedPluginsRepository.find({
-      where: { 
+      where: {
         organizationId,
         enabled: true,
       },
@@ -191,11 +209,14 @@ export class PluginsService {
     });
   }
 
-  async getPluginsByType(organizationId: string, type: string): Promise<InstalledPlugin[]> {
+  async getPluginsByType(
+    organizationId: string,
+    type: string,
+  ): Promise<InstalledPlugin[]> {
     const allEnabled = await this.getEnabledPlugins(organizationId);
-    
-    return allEnabled.filter(installedPlugin => 
-      installedPlugin.plugin.category === type
+
+    return allEnabled.filter(
+      (installedPlugin) => installedPlugin.plugin.category === type,
     );
   }
 }

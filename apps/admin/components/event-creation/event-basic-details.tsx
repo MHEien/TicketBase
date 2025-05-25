@@ -1,25 +1,41 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Calendar, Clock, Tag } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useEventCreation } from "@/hooks/use-event-creation"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Calendar, Clock, Tag } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventBasicDetails() {
-  const { eventData, updateEventData } = useEventCreation()
-  const [characterCount, setCharacterCount] = useState(eventData.description.length)
+  const { eventData, updateEventData } = useEventCreation();
+  const [characterCount, setCharacterCount] = useState(
+    eventData.description.length,
+  );
 
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCharacterCount(e.target.value.length)
-    updateEventData({ description: e.target.value })
-  }
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setCharacterCount(e.target.value.length);
+    updateEventData({ description: e.target.value });
+  };
 
   return (
     <div className="space-y-6">
@@ -31,7 +47,9 @@ export function EventBasicDetails() {
         <Card>
           <CardHeader>
             <CardTitle>Event Details</CardTitle>
-            <CardDescription>Provide the basic information about your event.</CardDescription>
+            <CardDescription>
+              Provide the basic information about your event.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -47,7 +65,9 @@ export function EventBasicDetails() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="description">Event Description</Label>
-                <span className={`text-xs ${characterCount > 500 ? "text-destructive" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-xs ${characterCount > 500 ? "text-destructive" : "text-muted-foreground"}`}
+                >
                   {characterCount}/1000
                 </span>
               </div>
@@ -63,7 +83,10 @@ export function EventBasicDetails() {
 
             <div className="space-y-2">
               <Label htmlFor="category">Event Category</Label>
-              <Select value={eventData.category} onValueChange={(value) => updateEventData({ category: value })}>
+              <Select
+                value={eventData.category}
+                onValueChange={(value) => updateEventData({ category: value })}
+              >
                 <SelectTrigger id="category" className="w-full">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -112,7 +135,8 @@ export function EventBasicDetails() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              You'll be able to set the start and end times, as well as the time zone.
+              You'll be able to set the start and end times, as well as the time
+              zone.
             </p>
           </CardContent>
         </Card>
@@ -132,5 +156,5 @@ export function EventBasicDetails() {
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

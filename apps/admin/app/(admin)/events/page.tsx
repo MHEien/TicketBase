@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { format } from "date-fns"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 import {
   Calendar,
   ChevronDown,
@@ -15,77 +15,93 @@ import {
   Plus,
   Search,
   Trash2,
-} from "lucide-react"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getAllEvents, type EventWithId } from "@/lib/event-data"
-import { useToast } from "@/hooks/use-toast"
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getAllEvents, type EventWithId } from "@/lib/event-data";
+import { useToast } from "@/hooks/use-toast";
 
 export default function EventsPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterCategory, setFilterCategory] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<"date" | "title" | "sales">("date")
-  const [view, setView] = useState<"grid" | "list">("grid")
+  const router = useRouter();
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"date" | "title" | "sales">("date");
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   // Get all events
-  const allEvents = getAllEvents()
+  const allEvents = getAllEvents();
 
   // Filter events based on search query and category
   const filteredEvents = allEvents.filter((event) => {
     const matchesSearch =
       searchQuery === "" ||
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase())
+      event.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory = !filterCategory || event.category === filterCategory
+    const matchesCategory =
+      !filterCategory || event.category === filterCategory;
 
-    return matchesSearch && matchesCategory
-  })
+    return matchesSearch && matchesCategory;
+  });
 
   // Sort events
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     if (sortBy === "date") {
-      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
     } else if (sortBy === "title") {
-      return a.title.localeCompare(b.title)
+      return a.title.localeCompare(b.title);
     } else if (sortBy === "sales") {
-      return b.totalRevenue - a.totalRevenue
+      return b.totalRevenue - a.totalRevenue;
     }
-    return 0
-  })
+    return 0;
+  });
 
   // Group events by status
-  const publishedEvents = sortedEvents.filter((event) => event.status === "published")
-  const draftEvents = sortedEvents.filter((event) => event.status === "draft")
+  const publishedEvents = sortedEvents.filter(
+    (event) => event.status === "published",
+  );
+  const draftEvents = sortedEvents.filter((event) => event.status === "draft");
   const pastEvents = sortedEvents.filter(
-    (event) => event.status === "completed" || (event.status === "published" && new Date(event.endDate) < new Date()),
-  )
+    (event) =>
+      event.status === "completed" ||
+      (event.status === "published" && new Date(event.endDate) < new Date()),
+  );
 
   const handleCreateEvent = () => {
-    router.push("/events/new")
-  }
+    router.push("/events/new");
+  };
 
   const handleEditEvent = (eventId: string) => {
-    router.push(`/events/${eventId}/edit`)
+    router.push(`/events/${eventId}/edit`);
     // For now, just show a toast since we haven't implemented the edit page yet
     toast({
       title: "Edit Event",
       description: `Editing event ${eventId}`,
-    })
-  }
+    });
+  };
 
   const handleDeleteEvent = (eventId: string) => {
     // In a real app, this would delete the event from the database
@@ -93,34 +109,34 @@ export default function EventsPage() {
       title: "Delete Event",
       description: `Event ${eventId} has been deleted.`,
       variant: "destructive",
-    })
-  }
+    });
+  };
 
   const handleDuplicateEvent = (eventId: string) => {
     toast({
       title: "Duplicate Event",
       description: `Event ${eventId} has been duplicated.`,
-    })
-  }
+    });
+  };
 
   const handleViewEvent = (eventId: string) => {
-    router.push(`/events/${eventId}`)
+    router.push(`/events/${eventId}`);
     // For now, just show a toast since we haven't implemented the view page yet
     toast({
       title: "View Event",
       description: `Viewing event ${eventId}`,
-    })
-  }
+    });
+  };
 
   const handlePublishEvent = (eventId: string) => {
     toast({
       title: "Publish Event",
       description: `Event ${eventId} has been published.`,
-    })
-  }
+    });
+  };
 
   const renderEventCard = (event: EventWithId) => {
-    const isPast = new Date(event.endDate) < new Date()
+    const isPast = new Date(event.endDate) < new Date();
 
     return (
       <Card
@@ -139,13 +155,19 @@ export default function EventsPage() {
           </div>
 
           {event.status === "draft" && (
-            <Badge variant="outline" className="absolute left-3 top-3 bg-background">
+            <Badge
+              variant="outline"
+              className="absolute left-3 top-3 bg-background"
+            >
               Draft
             </Badge>
           )}
 
           {isPast && (
-            <Badge variant="outline" className="absolute left-3 top-3 bg-background">
+            <Badge
+              variant="outline"
+              className="absolute left-3 top-3 bg-background"
+            >
               Past
             </Badge>
           )}
@@ -161,14 +183,20 @@ export default function EventsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleViewEvent(event.id)}>View Details</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleViewEvent(event.id)}>
+                View Details
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleEditEvent(event.id)}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Event
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDuplicateEvent(event.id)}>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDuplicateEvent(event.id)}>
+                Duplicate
+              </DropdownMenuItem>
               {event.status === "draft" && (
-                <DropdownMenuItem onClick={() => handlePublishEvent(event.id)}>Publish</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handlePublishEvent(event.id)}>
+                  Publish
+                </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -184,11 +212,17 @@ export default function EventsPage() {
 
         <CardContent className="p-4">
           <div className="mb-2 flex items-center gap-2">
-            <Badge variant="secondary" className="rounded-full px-2 py-0 text-xs">
+            <Badge
+              variant="secondary"
+              className="rounded-full px-2 py-0 text-xs"
+            >
               {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
             </Badge>
             {event.totalTicketsSold > 0 && (
-              <Badge variant="outline" className="rounded-full px-2 py-0 text-xs">
+              <Badge
+                variant="outline"
+                className="rounded-full px-2 py-0 text-xs"
+              >
                 {event.totalTicketsSold} tickets sold
               </Badge>
             )}
@@ -227,16 +261,18 @@ export default function EventsPage() {
           {event.totalRevenue > 0 && (
             <div className="mt-3 flex justify-between border-t pt-3 text-sm">
               <span className="text-muted-foreground">Revenue</span>
-              <span className="font-medium">${event.totalRevenue.toLocaleString()}</span>
+              <span className="font-medium">
+                ${event.totalRevenue.toLocaleString()}
+              </span>
             </div>
           )}
         </CardContent>
       </Card>
-    )
-  }
+    );
+  };
 
   const renderEventList = (event: EventWithId) => {
-    const isPast = new Date(event.endDate) < new Date()
+    const isPast = new Date(event.endDate) < new Date();
 
     return (
       <Card
@@ -253,7 +289,10 @@ export default function EventsPage() {
               className="h-full w-full object-cover"
             />
             {event.status === "draft" && (
-              <Badge variant="outline" className="absolute left-1 top-1 bg-background/80 text-[10px]">
+              <Badge
+                variant="outline"
+                className="absolute left-1 top-1 bg-background/80 text-[10px]"
+              >
                 Draft
               </Badge>
             )}
@@ -289,26 +328,44 @@ export default function EventsPage() {
           <div className="flex items-center gap-2">
             {event.totalTicketsSold > 0 && (
               <div className="text-right">
-                <div className="text-sm font-medium">{event.totalTicketsSold} tickets</div>
-                <div className="text-sm text-muted-foreground">${event.totalRevenue.toLocaleString()}</div>
+                <div className="text-sm font-medium">
+                  {event.totalTicketsSold} tickets
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  ${event.totalRevenue.toLocaleString()}
+                </div>
               </div>
             )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleViewEvent(event.id)}>View Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleViewEvent(event.id)}>
+                  View Details
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleEditEvent(event.id)}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Event
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDuplicateEvent(event.id)}>Duplicate</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleDuplicateEvent(event.id)}
+                >
+                  Duplicate
+                </DropdownMenuItem>
                 {event.status === "draft" && (
-                  <DropdownMenuItem onClick={() => handlePublishEvent(event.id)}>Publish</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handlePublishEvent(event.id)}
+                  >
+                    Publish
+                  </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -323,15 +380,17 @@ export default function EventsPage() {
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    );
+  };
 
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-3xl font-bold">Events</h1>
-          <p className="text-muted-foreground">Manage your events and track ticket sales</p>
+          <p className="text-muted-foreground">
+            Manage your events and track ticket sales
+          </p>
         </div>
         <Button onClick={handleCreateEvent} className="gap-2 rounded-full">
           <Plus className="h-4 w-4" />
@@ -351,7 +410,10 @@ export default function EventsPage() {
         </div>
 
         <div className="flex gap-2">
-          <Select value={filterCategory || "all"} onValueChange={(value) => setFilterCategory(value || null)}>
+          <Select
+            value={filterCategory || "all"}
+            onValueChange={(value) => setFilterCategory(value || null)}
+          >
             <SelectTrigger className="w-[180px] gap-1">
               <Filter className="h-4 w-4" />
               <SelectValue placeholder="All Categories" />
@@ -366,7 +428,12 @@ export default function EventsPage() {
             </SelectContent>
           </Select>
 
-          <Select value={sortBy} onValueChange={(value: "date" | "title" | "sales") => setSortBy(value)}>
+          <Select
+            value={sortBy}
+            onValueChange={(value: "date" | "title" | "sales") =>
+              setSortBy(value)
+            }
+          >
             <SelectTrigger className="w-[180px] gap-1">
               <ChevronDown className="h-4 w-4" />
               <SelectValue placeholder="Sort by" />
@@ -426,15 +493,21 @@ export default function EventsPage() {
         <TabsList>
           <TabsTrigger value="active" className="relative">
             Active
-            <Badge className="ml-2 rounded-full px-1.5 py-0.5">{publishedEvents.length}</Badge>
+            <Badge className="ml-2 rounded-full px-1.5 py-0.5">
+              {publishedEvents.length}
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="drafts" className="relative">
             Drafts
-            <Badge className="ml-2 rounded-full px-1.5 py-0.5">{draftEvents.length}</Badge>
+            <Badge className="ml-2 rounded-full px-1.5 py-0.5">
+              {draftEvents.length}
+            </Badge>
           </TabsTrigger>
           <TabsTrigger value="past" className="relative">
             Past
-            <Badge className="ml-2 rounded-full px-1.5 py-0.5">{pastEvents.length}</Badge>
+            <Badge className="ml-2 rounded-full px-1.5 py-0.5">
+              {pastEvents.length}
+            </Badge>
           </TabsTrigger>
         </TabsList>
 
@@ -447,9 +520,13 @@ export default function EventsPage() {
                 </div>
                 <CardTitle className="mb-2">No active events</CardTitle>
                 <CardDescription className="mb-4 max-w-md">
-                  You don't have any active events yet. Create your first event to start selling tickets.
+                  You don't have any active events yet. Create your first event
+                  to start selling tickets.
                 </CardDescription>
-                <Button onClick={handleCreateEvent} className="gap-2 rounded-full">
+                <Button
+                  onClick={handleCreateEvent}
+                  className="gap-2 rounded-full"
+                >
                   <Plus className="h-4 w-4" />
                   <span>Create Event</span>
                 </Button>
@@ -458,10 +535,16 @@ export default function EventsPage() {
           ) : (
             <div
               className={
-                view === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "space-y-4"
+                view === "grid"
+                  ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "space-y-4"
               }
             >
-              {publishedEvents.map((event) => (view === "grid" ? renderEventCard(event) : renderEventList(event)))}
+              {publishedEvents.map((event) =>
+                view === "grid"
+                  ? renderEventCard(event)
+                  : renderEventList(event),
+              )}
             </div>
           )}
         </TabsContent>
@@ -475,9 +558,13 @@ export default function EventsPage() {
                 </div>
                 <CardTitle className="mb-2">No draft events</CardTitle>
                 <CardDescription className="mb-4 max-w-md">
-                  You don't have any draft events. Create an event and save it as a draft to work on it later.
+                  You don't have any draft events. Create an event and save it
+                  as a draft to work on it later.
                 </CardDescription>
-                <Button onClick={handleCreateEvent} className="gap-2 rounded-full">
+                <Button
+                  onClick={handleCreateEvent}
+                  className="gap-2 rounded-full"
+                >
                   <Plus className="h-4 w-4" />
                   <span>Create Event</span>
                 </Button>
@@ -486,10 +573,16 @@ export default function EventsPage() {
           ) : (
             <div
               className={
-                view === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "space-y-4"
+                view === "grid"
+                  ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "space-y-4"
               }
             >
-              {draftEvents.map((event) => (view === "grid" ? renderEventCard(event) : renderEventList(event)))}
+              {draftEvents.map((event) =>
+                view === "grid"
+                  ? renderEventCard(event)
+                  : renderEventList(event),
+              )}
             </div>
           )}
         </TabsContent>
@@ -503,21 +596,28 @@ export default function EventsPage() {
                 </div>
                 <CardTitle className="mb-2">No past events</CardTitle>
                 <CardDescription className="mb-4 max-w-md">
-                  You don't have any past events yet. Events that have ended will appear here.
+                  You don't have any past events yet. Events that have ended
+                  will appear here.
                 </CardDescription>
               </CardContent>
             </Card>
           ) : (
             <div
               className={
-                view === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "space-y-4"
+                view === "grid"
+                  ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "space-y-4"
               }
             >
-              {pastEvents.map((event) => (view === "grid" ? renderEventCard(event) : renderEventList(event)))}
+              {pastEvents.map((event) =>
+                view === "grid"
+                  ? renderEventCard(event)
+                  : renderEventList(event),
+              )}
             </div>
           )}
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

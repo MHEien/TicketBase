@@ -1,15 +1,15 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialSchema1684252800000 implements MigrationInterface {
-    name = 'InitialSchema1684252800000'
+  name = 'InitialSchema1684252800000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // Create organizations table
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create organizations table
+    await queryRunner.query(`
             CREATE TYPE "public"."organizations_plan_enum" AS ENUM('free', 'basic', 'pro', 'enterprise')
         `);
-        
-        await queryRunner.query(`
+
+    await queryRunner.query(`
             CREATE TABLE "organizations" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
@@ -30,16 +30,16 @@ export class InitialSchema1684252800000 implements MigrationInterface {
             )
         `);
 
-        // Create users table
-        await queryRunner.query(`
+    // Create users table
+    await queryRunner.query(`
             CREATE TYPE "public"."users_role_enum" AS ENUM('owner', 'admin', 'manager', 'support', 'analyst')
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TYPE "public"."users_status_enum" AS ENUM('active', 'inactive', 'pending')
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "users" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
@@ -59,8 +59,8 @@ export class InitialSchema1684252800000 implements MigrationInterface {
             )
         `);
 
-        // Create user_sessions table
-        await queryRunner.query(`
+    // Create user_sessions table
+    await queryRunner.query(`
             CREATE TABLE "user_sessions" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "user_id" uuid NOT NULL,
@@ -77,38 +77,38 @@ export class InitialSchema1684252800000 implements MigrationInterface {
             )
         `);
 
-        // Add foreign key constraints
-        await queryRunner.query(`
+    // Add foreign key constraints
+    await queryRunner.query(`
             ALTER TABLE "users" ADD CONSTRAINT "FK_users_organization"
             FOREIGN KEY ("organization_id") REFERENCES "organizations"("id")
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "user_sessions" ADD CONSTRAINT "FK_user_sessions_user"
             FOREIGN KEY ("user_id") REFERENCES "users"("id")
             ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        // Drop foreign key constraints
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Drop foreign key constraints
+    await queryRunner.query(`
             ALTER TABLE "user_sessions" DROP CONSTRAINT "FK_user_sessions_user"
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "users" DROP CONSTRAINT "FK_users_organization"
         `);
 
-        // Drop tables
-        await queryRunner.query(`DROP TABLE "user_sessions"`);
-        await queryRunner.query(`DROP TABLE "users"`);
-        await queryRunner.query(`DROP TABLE "organizations"`);
+    // Drop tables
+    await queryRunner.query(`DROP TABLE "user_sessions"`);
+    await queryRunner.query(`DROP TABLE "users"`);
+    await queryRunner.query(`DROP TABLE "organizations"`);
 
-        // Drop enum types
-        await queryRunner.query(`DROP TYPE "public"."users_status_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."organizations_plan_enum"`);
-    }
-} 
+    // Drop enum types
+    await queryRunner.query(`DROP TYPE "public"."users_status_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."organizations_plan_enum"`);
+  }
+}

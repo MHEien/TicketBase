@@ -11,7 +11,6 @@ import onlyWarn from "eslint-plugin-only-warn";
  * */
 export const config = [
   js.configs.recommended,
-  eslintConfigPrettier,
   ...tseslint.configs.recommended,
   {
     plugins: {
@@ -29,4 +28,6 @@ export const config = [
   {
     ignores: ["dist/**"],
   },
+  // Prettier config should be LAST to disable conflicting rules
+  eslintConfigPrettier,
 ];

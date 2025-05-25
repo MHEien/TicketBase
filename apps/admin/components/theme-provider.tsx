@@ -1,41 +1,56 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 
 interface ThemeContextProps {
-  theme: "light" | "dark"
-  setTheme: (theme: "light" | "dark") => void
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
   theme: "light",
   setTheme: () => {},
-})
+});
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null
+    const storedTheme = localStorage.getItem("theme") as
+      | "light"
+      | "dark"
+      | null;
     if (storedTheme) {
-      setTheme(storedTheme)
+      setTheme(storedTheme);
     } else {
       // Set default theme based on system preference
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-      setTheme(prefersDark ? "dark" : "light")
+      const prefersDark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("theme", theme)
+    localStorage.setItem("theme", theme);
     if (theme === "dark") {
-      document.documentElement.classList.add("dark")
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark")
+      document.documentElement.classList.remove("dark");
     }
-  }, [theme])
+  }, [theme]);
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
-}
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
-export const useTheme = () => useContext(ThemeContext)
+export const useTheme = () => useContext(ThemeContext);

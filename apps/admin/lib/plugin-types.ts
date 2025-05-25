@@ -3,7 +3,14 @@ export interface Plugin {
   name: string;
   version: string;
   description: string;
-  category: 'payment' | 'marketing' | 'analytics' | 'social' | 'ticketing' | 'layout' | 'seating';
+  category:
+    | "payment"
+    | "marketing"
+    | "analytics"
+    | "social"
+    | "ticketing"
+    | "layout"
+    | "seating";
   bundleUrl: string; // URL to the plugin bundle
   extensionPoints: string[]; // List of extension points this plugin implements
   adminComponents: {
@@ -41,4 +48,4 @@ export interface ExtensionComponentProps {
   context: ExtensionPointContext;
   configuration: Record<string, any>;
   plugin: InstalledPlugin;
-} 
+}

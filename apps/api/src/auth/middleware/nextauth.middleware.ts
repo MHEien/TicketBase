@@ -16,21 +16,22 @@ export class NextAuthMiddleware implements NestMiddleware {
     // Handle session endpoint for NextAuth
     if (req.path === '/api/auth/session') {
       try {
-        const authCookie = req.cookies['next-auth.session-token'] || 
-                           req.cookies['__Secure-next-auth.session-token'];
-                           
+        const authCookie =
+          req.cookies['next-auth.session-token'] ||
+          req.cookies['__Secure-next-auth.session-token'];
+
         if (!authCookie) {
           return res.json({ user: null });
         }
-        
+
         // Verify JWT using NextAuth secret
         const payload = await this.jwtService.verifyAsync(authCookie, {
-          secret: this.configService.get('nextAuth.secret')
+          secret: this.configService.get('nextAuth.secret'),
         });
-        
+
         // Find or create user in our database
         let user = await this.usersService.findByEmail(payload.email);
-        
+
         if (!user) {
           // Create user based on NextAuth data
           user = await this.usersService.createUser({
@@ -42,13 +43,13 @@ export class NextAuthMiddleware implements NestMiddleware {
             permissions: [],
           });
         }
-        
+
         return res.json({ user: payload });
       } catch (error) {
         return res.json({ user: null });
       }
     }
-    
+
     next();
   }
-} 
+}

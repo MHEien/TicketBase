@@ -7,4 +7,4 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   @IsEnum(EventStatus)
   @IsOptional()
   status?: EventStatus;
-} 
+}

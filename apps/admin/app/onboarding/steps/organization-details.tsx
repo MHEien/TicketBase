@@ -1,18 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useOnboarding } from "@/lib/onboarding-context"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useOnboarding } from "@/lib/onboarding-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const organizationSchema = z.object({
-  name: z.string().min(2, { message: "Organization name must be at least 2 characters" }),
-  website: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal("")),
+  name: z
+    .string()
+    .min(2, { message: "Organization name must be at least 2 characters" }),
+  website: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
   phone: z.string().optional(),
   addressLine1: z.string().optional(),
   addressLine2: z.string().optional(),
@@ -20,14 +33,15 @@ const organizationSchema = z.object({
   state: z.string().optional(),
   postalCode: z.string().optional(),
   country: z.string().optional(),
-})
+});
 
-type OrganizationFormValues = z.infer<typeof organizationSchema>
+type OrganizationFormValues = z.infer<typeof organizationSchema>;
 
 export default function OrganizationDetailsForm() {
-  const { onboardingData, updateOnboardingData, goToNextStep } = useOnboarding()
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const { onboardingData, updateOnboardingData, goToNextStep } =
+    useOnboarding();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<OrganizationFormValues>({
     resolver: zodResolver(organizationSchema),
     defaultValues: {
@@ -41,11 +55,11 @@ export default function OrganizationDetailsForm() {
       postalCode: onboardingData.organizationDetails.address?.postalCode || "",
       country: onboardingData.organizationDetails.address?.country || "",
     },
-  })
-  
+  });
+
   async function onSubmit(data: OrganizationFormValues) {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       // Update onboarding data
       updateOnboardingData("organizationDetails", {
@@ -60,17 +74,17 @@ export default function OrganizationDetailsForm() {
           postalCode: data.postalCode,
           country: data.country,
         },
-      })
-      
+      });
+
       // Move to the next step
-      goToNextStep()
+      goToNextStep();
     } catch (error) {
-      console.error("Error saving organization details:", error)
+      console.error("Error saving organization details:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -87,7 +101,7 @@ export default function OrganizationDetailsForm() {
             </FormItem>
           )}
         />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -102,7 +116,7 @@ export default function OrganizationDetailsForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="phone"
@@ -117,10 +131,10 @@ export default function OrganizationDetailsForm() {
             )}
           />
         </div>
-        
+
         <div className="border-t pt-4">
           <h3 className="text-lg font-medium mb-4">Address Information</h3>
-          
+
           <FormField
             control={form.control}
             name="addressLine1"
@@ -134,7 +148,7 @@ export default function OrganizationDetailsForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="addressLine2"
@@ -148,7 +162,7 @@ export default function OrganizationDetailsForm() {
               </FormItem>
             )}
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <FormField
               control={form.control}
@@ -163,7 +177,7 @@ export default function OrganizationDetailsForm() {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="state"
@@ -178,7 +192,7 @@ export default function OrganizationDetailsForm() {
               )}
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -193,7 +207,7 @@ export default function OrganizationDetailsForm() {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="country"
@@ -209,7 +223,7 @@ export default function OrganizationDetailsForm() {
             />
           </div>
         </div>
-        
+
         <div className="flex justify-end">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : "Next: Event Preferences"}
@@ -217,5 +231,5 @@ export default function OrganizationDetailsForm() {
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+}
