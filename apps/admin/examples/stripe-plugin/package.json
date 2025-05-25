@@ -1,0 +1,31 @@
+{
+  "name": "stripe-payment-plugin",
+  "version": "1.0.0",
+  "description": "Stripe payment gateway plugin for Events Platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "bundle": "node bundle.js",
+    "prepare-submission": "node bundle.js && echo 'Plugin is ready for submission. Use dist/remoteEntry.js as your bundle.'"
+  },
+  "dependencies": {
+    "@module-federation/nextjs-mf": "^8.8.26",
+    "@stripe/react-stripe-js": "^2.4.0",
+    "@stripe/stripe-js": "^2.4.0",
+    "next": "^13.4.12",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stripe": "^14.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "typescript": "^5.1.6"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+} 

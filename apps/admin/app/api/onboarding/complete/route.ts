@@ -1,0 +1,61 @@
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+
+// Configure API URL based on environment
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+
+export async function POST(request: Request) {
+  try {
+    const session = await auth()
+    
+    // Ensure the user is authenticated
+    if (!session?.user || !session.accessToken) {
+      return NextResponse.json(
+        { message: "Authentication required" },
+        { status: 401 }
+      )
+    }
+    
+    const body = await request.json()
+    
+    // Get the user details - we already have the user ID from the session
+    const userId = session.user.id
+    
+    // Update user profile with the onboarding settings using new endpoint
+    // This endpoint handles both user and organization settings
+    const userUpdateResponse = await fetch(`${apiBaseUrl}/auth/user-settings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.accessToken}`
+      },
+      body: JSON.stringify({
+        onboardingCompleted: true,
+        onboardingCompletedAt: new Date().toISOString(),
+        organizationSettings: {
+          details: body.organizationDetails,
+          brandSettings: body.brandSettings,
+          eventPreferences: body.eventPreferences,
+          paymentPreferences: body.paymentDetails
+        }
+      })
+    })
+    
+    if (!userUpdateResponse.ok) {
+      return NextResponse.json(
+        { message: "Failed to update user settings" },
+        { status: userUpdateResponse.status }
+      )
+    }
+    
+    return NextResponse.json({
+      message: "Onboarding completed successfully"
+    })
+  } catch (error) {
+    console.error("Error completing onboarding:", error)
+    return NextResponse.json(
+      { message: "Failed to complete onboarding" },
+      { status: 500 }
+    )
+  }
+} 

@@ -1,0 +1,5 @@
+# Ignore line ending issues
+**/*.ts
+**/*.tsx
+**/*.js
+**/*.jsx 
