@@ -1,0 +1,1356 @@
+{
+    "openapi": "3.0.0",
+    "paths": {
+        "/": {
+            "get": {
+                "operationId": "AppController_getHello",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "App"
+                ]
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "operationId": "AuthController_getUserInfo",
+                "parameters": [
+                    {
+                        "name": "authorization",
+                        "required": true,
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/plugins/available": {
+            "get": {
+                "operationId": "PluginsController_getAvailablePlugins",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of all plugins available in the system"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all available plugins",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/installed": {
+            "get": {
+                "operationId": "PluginsController_getInstalledPlugins",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of plugins installed for the tenant"
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all installed plugins for a tenant",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/install": {
+            "post": {
+                "operationId": "PluginsController_installPlugin",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InstallPluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plugin successfully installed"
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Install a plugin for a tenant",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/uninstall": {
+            "post": {
+                "operationId": "PluginsController_uninstallPlugin",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InstallPluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plugin successfully uninstalled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Uninstall a plugin for a tenant",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/{id}/config": {
+            "put": {
+                "operationId": "PluginsController_updatePluginConfig",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "Plugin configuration",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plugin configuration successfully updated"
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update plugin configuration",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/{id}/status": {
+            "put": {
+                "operationId": "PluginsController_setPluginEnabled",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePluginStatusDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plugin status successfully updated"
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Enable or disable a plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins": {
+            "post": {
+                "operationId": "PluginsController_createPlugin",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plugin successfully created"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Create a new plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/{id}": {
+            "put": {
+                "operationId": "PluginsController_updatePlugin",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plugin successfully updated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update an existing plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/by-extension-point": {
+            "get": {
+                "operationId": "PluginsController_getPluginsByExtensionPoint",
+                "parameters": [
+                    {
+                        "name": "point",
+                        "required": true,
+                        "in": "query",
+                        "description": "Extension point identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of plugins that implement the specified extension point"
+                    },
+                    "401": {
+                        "description": "Extension point parameter is required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get plugins by extension point",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/upload": {
+            "post": {
+                "operationId": "PluginsController_uploadPlugin",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Plugin bundle file (JavaScript)"
+                                    },
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Plugin ID"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Plugin name"
+                                    },
+                                    "version": {
+                                        "type": "string",
+                                        "description": "Plugin version"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Plugin description"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "description": "Plugin category"
+                                    },
+                                    "bundleUrl": {
+                                        "type": "string",
+                                        "description": "Optional: Direct URL to the bundle (if not uploading a file)"
+                                    },
+                                    "requiredPermissions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "description": "Required permissions"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plugin successfully created"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Upload a plugin bundle file",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/plugins/storage-health": {
+            "get": {
+                "operationId": "PluginsController_checkStorageHealth",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Storage health status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "isConnected": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Check MinIO storage health",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugin-proxy/{pluginId}/{pathSuffix}": {
+            "get": {
+                "operationId": "PluginProxyController_proxyRequest_get",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "post": {
+                "operationId": "PluginProxyController_proxyRequest_post",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "put": {
+                "operationId": "PluginProxyController_proxyRequest_put",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "delete": {
+                "operationId": "PluginProxyController_proxyRequest_delete",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "patch": {
+                "operationId": "PluginProxyController_proxyRequest_patch",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "options": {
+                "operationId": "PluginProxyController_proxyRequest_options",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "head": {
+                "operationId": "PluginProxyController_proxyRequest_head",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "search": {
+                "operationId": "PluginProxyController_proxyRequest_search",
+                "parameters": [
+                    {
+                        "name": "x-tenant-id",
+                        "required": true,
+                        "in": "header",
+                        "description": "Tenant identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pathSuffix",
+                        "required": false,
+                        "in": "path",
+                        "description": "The path to forward to the plugin service",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully proxied the request to the plugin service"
+                    },
+                    "401": {
+                        "description": "Tenant ID is required"
+                    },
+                    "404": {
+                        "description": "Plugin not found or not installed for this tenant"
+                    }
+                },
+                "summary": "Proxy requests to plugin services",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            }
+        },
+        "/webhooks/plugins/{pluginId}": {
+            "post": {
+                "operationId": "WebhookController_handleWebhook",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Webhook"
+                ]
+            }
+        },
+        "/plugins/bundles/{pluginId}/v{version}/{filename}": {
+            "get": {
+                "operationId": "PluginBundleController_servePluginBundle",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin version (without v prefix)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filename",
+                        "required": true,
+                        "in": "path",
+                        "description": "Bundle filename",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the plugin bundle JavaScript file"
+                    },
+                    "404": {
+                        "description": "Plugin bundle not found"
+                    }
+                },
+                "summary": "Serve plugin bundle with versioned path format",
+                "tags": [
+                    "plugin-bundles"
+                ]
+            }
+        },
+        "/plugins/bundles/{objectKey}": {
+            "get": {
+                "operationId": "PluginBundleController_servePluginBundleLegacy",
+                "parameters": [
+                    {
+                        "name": "objectKey",
+                        "required": true,
+                        "in": "path",
+                        "description": "Full path to the bundle file in storage",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the plugin bundle JavaScript file"
+                    },
+                    "404": {
+                        "description": "Plugin bundle not found"
+                    }
+                },
+                "summary": "Serve plugin bundle with legacy path format",
+                "tags": [
+                    "plugin-bundles"
+                ]
+            }
+        },
+        "/marketplace": {
+            "get": {
+                "operationId": "MarketplaceController_getPlugins",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter plugins by category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "Search plugins by name or description",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of plugins available in the marketplace"
+                    }
+                },
+                "summary": "Get available plugins from the marketplace",
+                "tags": [
+                    "marketplace"
+                ]
+            },
+            "post": {
+                "operationId": "MarketplaceController_publishPlugin",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PublishPluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plugin successfully published"
+                    }
+                },
+                "summary": "Publish a plugin to the marketplace",
+                "tags": [
+                    "marketplace"
+                ]
+            }
+        },
+        "/marketplace/categories": {
+            "get": {
+                "operationId": "MarketplaceController_getCategories",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of all plugin categories"
+                    }
+                },
+                "summary": "Get all plugin categories",
+                "tags": [
+                    "marketplace"
+                ]
+            }
+        },
+        "/marketplace/{id}": {
+            "get": {
+                "operationId": "MarketplaceController_getPluginById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns details of the specified plugin"
+                    },
+                    "404": {
+                        "description": "Plugin not found"
+                    }
+                },
+                "summary": "Get plugin details by ID",
+                "tags": [
+                    "marketplace"
+                ]
+            },
+            "delete": {
+                "operationId": "MarketplaceController_removePlugin",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plugin successfully removed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Plugin not found"
+                    }
+                },
+                "summary": "Remove a plugin from the marketplace",
+                "tags": [
+                    "marketplace"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Plugin Server API",
+        "description": "API documentation for the Plugin Server",
+        "version": "1.0",
+        "contact": {}
+    },
+    "tags": [
+        {
+            "name": "plugins",
+            "description": ""
+        },
+        {
+            "name": "marketplace",
+            "description": ""
+        },
+        {
+            "name": "auth",
+            "description": ""
+        }
+    ],
+    "servers": [],
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "type": "http"
+            }
+        },
+        "schemas": {
+            "InstallPluginDto": {
+                "type": "object",
+                "properties": {
+                    "pluginId": {
+                        "type": "string",
+                        "description": "ID of the plugin to install",
+                        "example": "payment-gateway"
+                    }
+                },
+                "required": [
+                    "pluginId"
+                ]
+            },
+            "UpdatePluginStatusDto": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Whether the plugin is enabled",
+                        "example": true
+                    }
+                },
+                "required": [
+                    "enabled"
+                ]
+            },
+            "CreatePluginDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier for the plugin",
+                        "example": "payment-gateway"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Display name of the plugin",
+                        "example": "Payment Gateway Plugin"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Semantic version of the plugin",
+                        "example": "1.0.0"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Detailed description of the plugin functionality",
+                        "example": "Integrates with popular payment processors to enable credit card payments"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Category the plugin belongs to",
+                        "example": "payments"
+                    },
+                    "sourceCode": {
+                        "type": "string",
+                        "description": "Plugin source code (JavaScript)",
+                        "example": "export default function() { /* plugin code */ }"
+                    },
+                    "bundleUrl": {
+                        "type": "string",
+                        "description": "URL to the plugin bundle (if already hosted)",
+                        "example": "https://example.com/plugins/payment-gateway/bundle.js"
+                    },
+                    "requiredPermissions": {
+                        "description": "List of permissions required by the plugin",
+                        "example": [
+                            "read:orders",
+                            "write:transactions"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "version",
+                    "category",
+                    "sourceCode"
+                ]
+            },
+            "UpdatePluginDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Display name of the plugin",
+                        "example": "Updated Payment Gateway Plugin"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Semantic version of the plugin",
+                        "example": "1.0.1"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Detailed description of the plugin functionality",
+                        "example": "Updated plugin that integrates with popular payment processors"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Category the plugin belongs to",
+                        "example": "payments"
+                    },
+                    "sourceCode": {
+                        "type": "string",
+                        "description": "Plugin source code (JavaScript)",
+                        "example": "export default function() { /* updated plugin code */ }"
+                    },
+                    "requiredPermissions": {
+                        "description": "List of permissions required by the plugin",
+                        "example": [
+                            "read:orders",
+                            "write:transactions",
+                            "read:customers"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "AdminComponentsDto": {
+                "type": "object",
+                "properties": {
+                    "settings": {
+                        "type": "string",
+                        "description": "Settings component path in the plugin bundle",
+                        "example": "./Settings"
+                    },
+                    "eventCreation": {
+                        "type": "string",
+                        "description": "Event creation component path in the plugin bundle",
+                        "example": "./EventCreation"
+                    },
+                    "dashboard": {
+                        "type": "string",
+                        "description": "Dashboard component path in the plugin bundle",
+                        "example": "./Dashboard"
+                    }
+                }
+            },
+            "StorefrontComponentsDto": {
+                "type": "object",
+                "properties": {
+                    "checkout": {
+                        "type": "string",
+                        "description": "Checkout component path in the plugin bundle",
+                        "example": "./Checkout"
+                    },
+                    "eventDetail": {
+                        "type": "string",
+                        "description": "Event detail component path in the plugin bundle",
+                        "example": "./EventDetail"
+                    },
+                    "ticketSelection": {
+                        "type": "string",
+                        "description": "Ticket selection component path in the plugin bundle",
+                        "example": "./TicketSelection"
+                    },
+                    "widgets": {
+                        "type": "object",
+                        "description": "Widget components mapping",
+                        "example": {
+                            "sidebar": "./SidebarWidget",
+                            "footer": "./FooterWidget"
+                        },
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "PublishPluginDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier for the plugin",
+                        "example": "payment-gateway"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Display name of the plugin",
+                        "example": "Payment Gateway Plugin"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Semantic version of the plugin",
+                        "example": "1.0.0"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Detailed description of the plugin functionality",
+                        "example": "Integrates with popular payment processors to enable credit card payments"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Category the plugin belongs to",
+                        "example": "payments"
+                    },
+                    "remoteEntry": {
+                        "type": "string",
+                        "description": "URL to the remote entry file for Module Federation",
+                        "example": "https://cdn.example.com/plugins/payment-gateway/v1.0.0/remoteEntry.js"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "description": "Module Federation scope name",
+                        "example": "payment_gateway"
+                    },
+                    "adminComponents": {
+                        "description": "Components for the admin panel",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/AdminComponentsDto"
+                            }
+                        ]
+                    },
+                    "storefrontComponents": {
+                        "description": "Components for the storefront",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StorefrontComponentsDto"
+                            }
+                        ]
+                    },
+                    "requiredPermissions": {
+                        "description": "List of permissions required by the plugin",
+                        "example": [
+                            "read:orders",
+                            "write:transactions"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "version",
+                    "category",
+                    "remoteEntry",
+                    "scope"
+                ]
+            }
+        }
+    }
+}

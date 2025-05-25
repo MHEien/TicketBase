@@ -1,0 +1,3395 @@
+{
+    "openapi": "3.0.0",
+    "paths": {
+        "/": {
+            "get": {
+                "operationId": "AppController_getHello",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "App"
+                ]
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "operationId": "AuthController_login",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                },
+                "summary": "Login with email and password",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "operationId": "AuthController_refreshToken",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token refreshed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid refresh token"
+                    }
+                },
+                "summary": "Refresh access token using refresh token",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "operationId": "AuthController_logout",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "Logged out successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Logout (invalidate current session)",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/logout-all": {
+            "post": {
+                "operationId": "AuthController_logoutAll",
+                "parameters": [],
+                "responses": {
+                    "204": {
+                        "description": "Logged out from all devices successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Logout from all devices (invalidate all sessions)",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/auth/session": {
+            "get": {
+                "operationId": "AuthController_getSession",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "User session info retrieved successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get current user session info",
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
+        "/api/events": {
+            "post": {
+                "operationId": "EventsController_create",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateEventDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            },
+            "get": {
+                "operationId": "EventsController_findAll",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            }
+        },
+        "/api/events/{id}": {
+            "get": {
+                "operationId": "EventsController_findOne",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            },
+            "patch": {
+                "operationId": "EventsController_update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateEventDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            },
+            "delete": {
+                "operationId": "EventsController_remove",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            }
+        },
+        "/api/events/{id}/publish": {
+            "post": {
+                "operationId": "EventsController_publish",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            }
+        },
+        "/api/events/{id}/cancel": {
+            "post": {
+                "operationId": "EventsController_cancel",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Events"
+                ]
+            }
+        },
+        "/api/events/{eventId}/ticket-types": {
+            "post": {
+                "operationId": "TicketTypesController_create",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTicketTypeDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "TicketTypes"
+                ]
+            },
+            "get": {
+                "operationId": "TicketTypesController_findAll",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "TicketTypes"
+                ]
+            }
+        },
+        "/api/events/{eventId}/ticket-types/{id}": {
+            "get": {
+                "operationId": "TicketTypesController_findOne",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "TicketTypes"
+                ]
+            },
+            "patch": {
+                "operationId": "TicketTypesController_update",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTicketTypeDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "TicketTypes"
+                ]
+            },
+            "delete": {
+                "operationId": "TicketTypesController_remove",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "TicketTypes"
+                ]
+            }
+        },
+        "/api/tickets/generate": {
+            "post": {
+                "operationId": "TicketsController_generateTickets",
+                "parameters": [],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Tickets"
+                ]
+            }
+        },
+        "/api/tickets/validate/{code}": {
+            "get": {
+                "operationId": "TicketsController_validateTicket",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Tickets"
+                ]
+            }
+        },
+        "/api/tickets/check-in/{code}": {
+            "post": {
+                "operationId": "TicketsController_checkInTicket",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Tickets"
+                ]
+            }
+        },
+        "/api/carts": {
+            "post": {
+                "operationId": "CartsController_create",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCartDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The cart has been successfully created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input."
+                    }
+                },
+                "summary": "Create a new cart",
+                "tags": [
+                    "carts"
+                ]
+            },
+            "get": {
+                "operationId": "CartsController_findAll",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all carts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Cart"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Find all carts for an organization",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/api/carts/session/{sessionId}": {
+            "get": {
+                "operationId": "CartsController_findBySession",
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the cart if found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cart not found."
+                    }
+                },
+                "summary": "Find cart by session ID",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/api/carts/{id}": {
+            "get": {
+                "operationId": "CartsController_findOne",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the cart if found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cart not found."
+                    }
+                },
+                "summary": "Find cart by ID",
+                "tags": [
+                    "carts"
+                ]
+            },
+            "delete": {
+                "operationId": "CartsController_abandon",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The cart has been marked as abandoned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cart not found."
+                    }
+                },
+                "summary": "Mark cart as abandoned",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/api/carts/{id}/items": {
+            "post": {
+                "operationId": "CartsController_addItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddCartItemDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The item has been added to the cart.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or cart is inactive."
+                    },
+                    "404": {
+                        "description": "Cart not found."
+                    }
+                },
+                "summary": "Add item to cart",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/api/carts/{id}/items/{itemId}": {
+            "patch": {
+                "operationId": "CartsController_updateItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "itemId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCartItemDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The item has been updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or cart is inactive."
+                    },
+                    "404": {
+                        "description": "Cart or item not found."
+                    }
+                },
+                "summary": "Update cart item",
+                "tags": [
+                    "carts"
+                ]
+            },
+            "delete": {
+                "operationId": "CartsController_removeItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "itemId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The item has been removed from the cart.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cart is inactive."
+                    },
+                    "404": {
+                        "description": "Cart or item not found."
+                    }
+                },
+                "summary": "Remove item from cart",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/api/carts/{id}/customer": {
+            "patch": {
+                "operationId": "CartsController_updateCustomer",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The customer information has been updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cart is inactive."
+                    },
+                    "404": {
+                        "description": "Cart not found."
+                    }
+                },
+                "summary": "Update customer information",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/api/carts/{id}/discount": {
+            "post": {
+                "operationId": "CartsController_applyDiscount",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The discount has been applied.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cart"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid discount code or cart is inactive."
+                    },
+                    "404": {
+                        "description": "Cart not found."
+                    }
+                },
+                "summary": "Apply discount code to cart",
+                "tags": [
+                    "carts"
+                ]
+            }
+        },
+        "/orders": {
+            "get": {
+                "operationId": "OrdersController_findAll",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Orders"
+                ]
+            }
+        },
+        "/orders/{id}": {
+            "get": {
+                "operationId": "OrdersController_findOne",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Orders"
+                ]
+            }
+        },
+        "/api/payments/intent": {
+            "post": {
+                "operationId": "PaymentsController_createPaymentIntent",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePaymentIntentDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Returns client secret and payment provider information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "clientSecret": {
+                                            "type": "string"
+                                        },
+                                        "paymentIntentId": {
+                                            "type": "string"
+                                        },
+                                        "providerName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Create a payment intent",
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/api/payments/confirm": {
+            "post": {
+                "operationId": "PaymentsController_confirmPayment",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConfirmPaymentDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the status of the payment intent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "paymentData": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Confirm a payment",
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/api/payments/refund": {
+            "post": {
+                "operationId": "PaymentsController_processRefund",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessRefundDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the refund details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "amount": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Process a refund",
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/api/payments/transactions/order/{orderId}": {
+            "get": {
+                "operationId": "PaymentsController_getTransactionsByOrder",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all transactions for the order",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Transaction"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get transactions by order ID",
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/api/payments/transactions/organization/{organizationId}": {
+            "get": {
+                "operationId": "PaymentsController_getTransactionsByOrganization",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "fromDate",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "toDate",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all transactions for the organization",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Transaction"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get transactions by organization ID",
+                "tags": [
+                    "payments"
+                ]
+            }
+        },
+        "/api/plugins": {
+            "post": {
+                "operationId": "PluginsController_create",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The plugin has been successfully created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Create a new plugin",
+                "tags": [
+                    "plugins"
+                ]
+            },
+            "get": {
+                "operationId": "PluginsController_findAll",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "enum": [
+                                "active",
+                                "deprecated",
+                                "removed"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all plugins.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Plugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get all plugins",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/payment": {
+            "post": {
+                "operationId": "PluginsController_registerPaymentPlugin",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterPaymentPluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The payment plugin has been successfully registered.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Register a new payment plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/{id}": {
+            "get": {
+                "operationId": "PluginsController_findOne",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the plugin if found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get plugin by ID",
+                "tags": [
+                    "plugins"
+                ]
+            },
+            "patch": {
+                "operationId": "PluginsController_update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdatePluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The plugin has been successfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update a plugin",
+                "tags": [
+                    "plugins"
+                ]
+            },
+            "delete": {
+                "operationId": "PluginsController_remove",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The plugin has been marked as removed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Remove a plugin (mark as removed)",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/{id}/deprecate": {
+            "patch": {
+                "operationId": "PluginsController_deprecate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The plugin has been deprecated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Plugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Deprecate a plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/category/{category}": {
+            "get": {
+                "operationId": "PluginsController_findByCategory",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all plugins in the category.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Plugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get plugins by category",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/extension-point/{extensionPoint}": {
+            "get": {
+                "operationId": "PluginsController_findByExtensionPoint",
+                "parameters": [
+                    {
+                        "name": "extensionPoint",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all plugins implementing the extension point.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Plugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get plugins by extension point",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/install": {
+            "post": {
+                "operationId": "PluginsController_install",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InstallPluginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The plugin has been successfully installed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InstalledPlugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Install a plugin for an organization",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/installed/{id}": {
+            "delete": {
+                "operationId": "PluginsController_uninstall",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The plugin has been successfully uninstalled."
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Uninstall a plugin from an organization",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/installed/{id}/enable": {
+            "patch": {
+                "operationId": "PluginsController_enable",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The plugin has been enabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InstalledPlugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Enable an installed plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/installed/{id}/disable": {
+            "patch": {
+                "operationId": "PluginsController_disable",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The plugin has been disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InstalledPlugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Disable an installed plugin",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/installed/{id}/configure": {
+            "patch": {
+                "operationId": "PluginsController_configure",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The plugin configuration has been updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InstalledPlugin"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update plugin configuration",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/organization/{organizationId}": {
+            "get": {
+                "operationId": "PluginsController_getInstalledPlugins",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all installed plugins for the organization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InstalledPlugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all installed plugins for an organization",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/organization/{organizationId}/enabled": {
+            "get": {
+                "operationId": "PluginsController_getEnabledPlugins",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all enabled plugins for the organization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InstalledPlugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all enabled plugins for an organization",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/organization/{organizationId}/payment": {
+            "get": {
+                "operationId": "PluginsController_getPaymentPlugins",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all enabled payment plugins for the organization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InstalledPlugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get payment plugins for an organization",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/organization/{organizationId}/type/{type}": {
+            "get": {
+                "operationId": "PluginsController_getPluginsByType",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all plugins of the specified type for the organization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InstalledPlugin"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get plugins by type for an organization",
+                "tags": [
+                    "plugins"
+                ]
+            }
+        },
+        "/api/plugins/proxy/{pluginId}/{path}": {
+            "get": {
+                "operationId": "PluginProxyController_proxyRequest_get",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "post": {
+                "operationId": "PluginProxyController_proxyRequest_post",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "put": {
+                "operationId": "PluginProxyController_proxyRequest_put",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "delete": {
+                "operationId": "PluginProxyController_proxyRequest_delete",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "patch": {
+                "operationId": "PluginProxyController_proxyRequest_patch",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "options": {
+                "operationId": "PluginProxyController_proxyRequest_options",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "head": {
+                "operationId": "PluginProxyController_proxyRequest_head",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            },
+            "search": {
+                "operationId": "PluginProxyController_proxyRequest_search",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to route the request to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Proxy requests to the plugin server",
+                "tags": [
+                    "plugin-proxy"
+                ]
+            }
+        },
+        "/api/plugins/bundles/{pluginId}": {
+            "get": {
+                "operationId": "BundleController_serveBundle",
+                "parameters": [
+                    {
+                        "name": "pluginId",
+                        "required": true,
+                        "in": "path",
+                        "description": "Plugin ID to serve",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "accept-encoding",
+                        "required": true,
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "summary": "Serve a plugin bundle",
+                "tags": [
+                    "plugin-bundles"
+                ]
+            }
+        },
+        "/customers": {
+            "get": {
+                "operationId": "CustomersController_findAll",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Customers"
+                ]
+            }
+        },
+        "/customers/search": {
+            "get": {
+                "operationId": "CustomersController_findByEmail",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Customers"
+                ]
+            }
+        },
+        "/customers/{id}": {
+            "get": {
+                "operationId": "CustomersController_findOne",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Customers"
+                ]
+            }
+        },
+        "/analytics/event/{eventId}": {
+            "get": {
+                "operationId": "AnalyticsController_getEventAnalytics",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Analytics"
+                ]
+            }
+        },
+        "/analytics/sales": {
+            "get": {
+                "operationId": "AnalyticsController_getSalesAnalytics",
+                "parameters": [
+                    {
+                        "name": "start",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "end",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Analytics"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "eTickets Platform API",
+        "description": "The eTickets Platform API documentation",
+        "version": "1.0",
+        "contact": {}
+    },
+    "tags": [],
+    "servers": [],
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "type": "http"
+            }
+        },
+        "schemas": {
+            "LoginDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "TokenResponseDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "RefreshTokenDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "CreateEventDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "UpdateEventDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "CreateTicketTypeDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "UpdateTicketTypeDto": {
+                "type": "object",
+                "properties": {}
+            },
+            "CreateCartDto": {
+                "type": "object",
+                "properties": {
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID"
+                    },
+                    "eventId": {
+                        "type": "string",
+                        "description": "Event ID"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "User ID (optional for guest checkout)"
+                    },
+                    "sessionId": {
+                        "type": "string",
+                        "description": "Session ID for tracking anonymous carts"
+                    }
+                },
+                "required": [
+                    "organizationId",
+                    "eventId"
+                ]
+            },
+            "CartItemType": {
+                "type": "string",
+                "enum": [
+                    "ticket",
+                    "merchandise",
+                    "fee"
+                ],
+                "description": "Item type"
+            },
+            "CartItem": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "cartId": {
+                        "type": "string",
+                        "description": "Cart ID"
+                    },
+                    "ticketTypeId": {
+                        "type": "string",
+                        "description": "Ticket type ID"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Item name",
+                        "example": "VIP Ticket"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "description": "Quantity",
+                        "example": 2
+                    },
+                    "unitPrice": {
+                        "type": "number",
+                        "description": "Unit price",
+                        "example": 99.99
+                    },
+                    "subtotal": {
+                        "type": "number",
+                        "description": "Subtotal",
+                        "example": 199.98
+                    },
+                    "type": {
+                        "description": "Item type",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CartItemType"
+                            }
+                        ]
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Additional metadata (JSON)"
+                    }
+                },
+                "required": [
+                    "id",
+                    "cartId",
+                    "name",
+                    "quantity",
+                    "unitPrice",
+                    "subtotal",
+                    "type"
+                ]
+            },
+            "CartStatus": {
+                "type": "string",
+                "enum": [
+                    "active",
+                    "abandoned",
+                    "converted",
+                    "expired"
+                ],
+                "description": "Cart status"
+            },
+            "Cart": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID"
+                    },
+                    "eventId": {
+                        "type": "string",
+                        "description": "Event ID"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "User ID (optional for guest checkout)"
+                    },
+                    "sessionId": {
+                        "type": "string",
+                        "description": "Session ID for tracking anonymous carts"
+                    },
+                    "items": {
+                        "description": "Cart items",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CartItem"
+                        }
+                    },
+                    "customer": {
+                        "type": "object",
+                        "description": "Customer information (JSON)"
+                    },
+                    "subtotal": {
+                        "type": "number",
+                        "description": "Subtotal amount",
+                        "example": 199.99
+                    },
+                    "fees": {
+                        "type": "number",
+                        "description": "Service fees amount",
+                        "example": 19.99
+                    },
+                    "taxes": {
+                        "type": "number",
+                        "description": "Tax amount",
+                        "example": 15.99
+                    },
+                    "total": {
+                        "type": "number",
+                        "description": "Total amount",
+                        "example": 235.97
+                    },
+                    "currency": {
+                        "type": "string",
+                        "description": "Currency",
+                        "example": "USD"
+                    },
+                    "discountCode": {
+                        "type": "string",
+                        "description": "Discount code (if applied)"
+                    },
+                    "discountAmount": {
+                        "type": "number",
+                        "description": "Discount amount",
+                        "example": 20
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Creation timestamp"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Last update timestamp"
+                    },
+                    "expiresAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Expiration timestamp"
+                    },
+                    "status": {
+                        "description": "Cart status",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CartStatus"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "organizationId",
+                    "eventId",
+                    "sessionId",
+                    "items",
+                    "subtotal",
+                    "fees",
+                    "taxes",
+                    "total",
+                    "currency",
+                    "createdAt",
+                    "updatedAt",
+                    "expiresAt",
+                    "status"
+                ]
+            },
+            "AddCartItemDto": {
+                "type": "object",
+                "properties": {
+                    "ticketTypeId": {
+                        "type": "string",
+                        "description": "Ticket type ID (for ticket items)"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Item name",
+                        "example": "VIP Ticket"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "description": "Quantity",
+                        "example": 2,
+                        "default": 1
+                    },
+                    "unitPrice": {
+                        "type": "number",
+                        "description": "Unit price",
+                        "example": 99.99
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Item type",
+                        "enum": [
+                            "ticket",
+                            "merchandise",
+                            "fee"
+                        ],
+                        "default": "ticket"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Additional metadata (JSON)"
+                    }
+                },
+                "required": [
+                    "name",
+                    "quantity",
+                    "unitPrice",
+                    "type"
+                ]
+            },
+            "UpdateCartItemDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Item name",
+                        "example": "VIP Ticket"
+                    },
+                    "quantity": {
+                        "type": "number",
+                        "description": "Quantity",
+                        "example": 2
+                    },
+                    "unitPrice": {
+                        "type": "number",
+                        "description": "Unit price",
+                        "example": 99.99
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Item type",
+                        "enum": [
+                            "ticket",
+                            "merchandise",
+                            "fee"
+                        ]
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Additional metadata (JSON)"
+                    }
+                }
+            },
+            "CreatePaymentIntentDto": {
+                "type": "object",
+                "properties": {
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Amount to charge",
+                        "example": 99.99
+                    },
+                    "currency": {
+                        "type": "string",
+                        "description": "Currency code",
+                        "example": "usd",
+                        "default": "usd"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Additional metadata for the payment intent",
+                        "example": {
+                            "orderId": "123e4567-e89b-12d3-a456-426614174000"
+                        }
+                    }
+                },
+                "required": [
+                    "organizationId",
+                    "amount",
+                    "currency"
+                ]
+            },
+            "ConfirmPaymentDto": {
+                "type": "object",
+                "properties": {
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "paymentIntentId": {
+                        "type": "string",
+                        "description": "Payment intent ID",
+                        "example": "pi_3NtX5ELkdIwHu7ix0SjgrdUm"
+                    }
+                },
+                "required": [
+                    "organizationId",
+                    "paymentIntentId"
+                ]
+            },
+            "ProcessRefundDto": {
+                "type": "object",
+                "properties": {
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "paymentIntentId": {
+                        "type": "string",
+                        "description": "Payment intent ID",
+                        "example": "pi_3NtX5ELkdIwHu7ix0SjgrdUm"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Amount to refund (leave empty for full refund)",
+                        "example": 50
+                    }
+                },
+                "required": [
+                    "organizationId",
+                    "paymentIntentId"
+                ]
+            },
+            "TransactionType": {
+                "type": "string",
+                "enum": [
+                    "purchase",
+                    "refund",
+                    "chargeback",
+                    "payout"
+                ],
+                "description": "Transaction type"
+            },
+            "TransactionStatus": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "completed",
+                    "failed",
+                    "cancelled"
+                ],
+                "description": "Transaction status"
+            },
+            "Transaction": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID"
+                    },
+                    "orderId": {
+                        "type": "string",
+                        "description": "Order ID"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "User ID (optional for guest checkout)"
+                    },
+                    "type": {
+                        "description": "Transaction type",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TransactionType"
+                            }
+                        ]
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "Transaction amount",
+                        "example": 235.97
+                    },
+                    "currency": {
+                        "type": "string",
+                        "description": "Currency",
+                        "example": "USD"
+                    },
+                    "paymentMethod": {
+                        "type": "string",
+                        "description": "Payment method",
+                        "example": "credit_card"
+                    },
+                    "paymentMethodId": {
+                        "type": "string",
+                        "description": "Payment method ID from provider",
+                        "example": "pm_1234567890"
+                    },
+                    "paymentIntentId": {
+                        "type": "string",
+                        "description": "Payment intent ID from provider",
+                        "example": "pi_1234567890"
+                    },
+                    "status": {
+                        "description": "Transaction status",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TransactionStatus"
+                            }
+                        ]
+                    },
+                    "gatewayFee": {
+                        "type": "number",
+                        "description": "Gateway fee",
+                        "example": 5.99
+                    },
+                    "platformFee": {
+                        "type": "number",
+                        "description": "Platform fee",
+                        "example": 10.99
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Additional metadata (JSON)"
+                    },
+                    "errorMessage": {
+                        "type": "string",
+                        "description": "Error message (if transaction failed)"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Creation timestamp"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Last update timestamp"
+                    }
+                },
+                "required": [
+                    "id",
+                    "organizationId",
+                    "type",
+                    "amount",
+                    "currency",
+                    "paymentMethod",
+                    "paymentMethodId",
+                    "status",
+                    "createdAt",
+                    "updatedAt"
+                ]
+            },
+            "CreatePluginDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Plugin name",
+                        "example": "Stripe Payment Gateway"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Plugin version",
+                        "example": "1.0.0"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Plugin description",
+                        "example": "Integrates Stripe payment processing"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Plugin category",
+                        "enum": [
+                            "payment",
+                            "marketing",
+                            "analytics",
+                            "social",
+                            "ticketing",
+                            "layout",
+                            "seating"
+                        ]
+                    },
+                    "bundleUrl": {
+                        "type": "string",
+                        "description": "URL to the plugin bundle"
+                    },
+                    "extensionPoints": {
+                        "description": "List of extension points this plugin implements",
+                        "example": [
+                            "payment.gateway",
+                            "checkout.form"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "adminComponents": {
+                        "type": "object",
+                        "description": "Admin components provided by the plugin",
+                        "example": {
+                            "settings": "StripeSettings",
+                            "eventCreation": "StripeEventOptions",
+                            "dashboard": "StripeDashboard"
+                        }
+                    },
+                    "storefrontComponents": {
+                        "type": "object",
+                        "description": "Storefront components provided by the plugin",
+                        "example": {
+                            "checkout": "StripeCheckout",
+                            "widgets": {
+                                "paymentMethods": "StripePaymentMethods"
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Metadata about the plugin",
+                        "example": {
+                            "priority": 100,
+                            "displayName": "Stripe Payments",
+                            "author": "Stripe Inc.",
+                            "paymentProvider": "stripe",
+                            "supportedMethods": [
+                                "credit_card",
+                                "ach"
+                            ],
+                            "supportedCurrencies": [
+                                "USD",
+                                "EUR"
+                            ]
+                        }
+                    },
+                    "requiredPermissions": {
+                        "description": "Required permissions for this plugin",
+                        "example": [
+                            "payments.read",
+                            "payments.write"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "version",
+                    "description",
+                    "category",
+                    "bundleUrl",
+                    "extensionPoints",
+                    "adminComponents",
+                    "storefrontComponents",
+                    "metadata"
+                ]
+            },
+            "PluginCategory": {
+                "type": "string",
+                "enum": [
+                    "payment",
+                    "marketing",
+                    "analytics",
+                    "social",
+                    "ticketing",
+                    "layout",
+                    "seating"
+                ],
+                "description": "Plugin category"
+            },
+            "PluginStatus": {
+                "type": "string",
+                "enum": [
+                    "active",
+                    "deprecated",
+                    "removed"
+                ],
+                "description": "Plugin status"
+            },
+            "Plugin": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Plugin name",
+                        "example": "Stripe Payment Gateway"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Plugin version",
+                        "example": "1.0.0"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Plugin description",
+                        "example": "Integrates Stripe payment processing"
+                    },
+                    "category": {
+                        "description": "Plugin category",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/PluginCategory"
+                            }
+                        ]
+                    },
+                    "bundleUrl": {
+                        "type": "string",
+                        "description": "URL to the plugin bundle"
+                    },
+                    "extensionPoints": {
+                        "description": "List of extension points this plugin implements",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "adminComponents": {
+                        "type": "object",
+                        "description": "Admin components provided by the plugin",
+                        "example": {
+                            "settings": "StripeSettings",
+                            "eventCreation": "StripeEventOptions",
+                            "dashboard": "StripeDashboard"
+                        }
+                    },
+                    "storefrontComponents": {
+                        "type": "object",
+                        "description": "Storefront components provided by the plugin",
+                        "example": {
+                            "checkout": "StripeCheckout",
+                            "widgets": {
+                                "paymentMethods": "StripePaymentMethods"
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Metadata about the plugin",
+                        "example": {
+                            "priority": 100,
+                            "displayName": "Stripe Payments",
+                            "author": "Stripe Inc.",
+                            "paymentProvider": "stripe",
+                            "supportedMethods": [
+                                "credit_card",
+                                "ach"
+                            ],
+                            "supportedCurrencies": [
+                                "USD",
+                                "EUR"
+                            ]
+                        }
+                    },
+                    "requiredPermissions": {
+                        "description": "Required permissions for this plugin",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Creation timestamp"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Last update timestamp"
+                    },
+                    "status": {
+                        "description": "Plugin status",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/PluginStatus"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "version",
+                    "description",
+                    "category",
+                    "bundleUrl",
+                    "extensionPoints",
+                    "adminComponents",
+                    "storefrontComponents",
+                    "metadata",
+                    "createdAt",
+                    "updatedAt",
+                    "status"
+                ]
+            },
+            "RegisterPaymentPluginDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Plugin name",
+                        "example": "Stripe Payment Gateway"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Plugin version",
+                        "example": "1.0.0"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Plugin description",
+                        "example": "Integrates Stripe payment processing"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Plugin category",
+                        "enum": [
+                            "payment",
+                            "marketing",
+                            "analytics",
+                            "social",
+                            "ticketing",
+                            "layout",
+                            "seating"
+                        ]
+                    },
+                    "bundleUrl": {
+                        "type": "string",
+                        "description": "URL to the plugin bundle"
+                    },
+                    "extensionPoints": {
+                        "description": "List of extension points this plugin implements",
+                        "example": [
+                            "payment.gateway",
+                            "checkout.form"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "adminComponents": {
+                        "type": "object",
+                        "description": "Admin components provided by the plugin",
+                        "example": {
+                            "settings": "StripeSettings",
+                            "eventCreation": "StripeEventOptions",
+                            "dashboard": "StripeDashboard"
+                        }
+                    },
+                    "storefrontComponents": {
+                        "type": "object",
+                        "description": "Storefront components provided by the plugin",
+                        "example": {
+                            "checkout": "StripeCheckout",
+                            "widgets": {
+                                "paymentMethods": "StripePaymentMethods"
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Metadata about the plugin",
+                        "example": {
+                            "priority": 100,
+                            "displayName": "Stripe Payments",
+                            "author": "Stripe Inc.",
+                            "paymentProvider": "stripe",
+                            "supportedMethods": [
+                                "credit_card",
+                                "ach"
+                            ],
+                            "supportedCurrencies": [
+                                "USD",
+                                "EUR"
+                            ]
+                        }
+                    },
+                    "requiredPermissions": {
+                        "description": "Required permissions for this plugin",
+                        "example": [
+                            "payments.read",
+                            "payments.write"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "provider": {
+                        "type": "string",
+                        "description": "Payment provider name",
+                        "example": "stripe",
+                        "enum": [
+                            "stripe",
+                            "paypal",
+                            "authorize_net",
+                            "square",
+                            "braintree"
+                        ]
+                    },
+                    "supportedMethods": {
+                        "description": "Supported payment methods",
+                        "example": [
+                            "credit_card",
+                            "ach",
+                            "apple_pay",
+                            "google_pay"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "supportedCurrencies": {
+                        "description": "Supported currencies",
+                        "example": [
+                            "USD",
+                            "EUR",
+                            "GBP"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "configurationSchema": {
+                        "type": "object",
+                        "description": "Gateway-specific configuration schema",
+                        "example": {
+                            "properties": {
+                                "apiKey": {
+                                    "type": "string",
+                                    "required": true
+                                },
+                                "testMode": {
+                                    "type": "boolean",
+                                    "default": false
+                                }
+                            }
+                        }
+                    },
+                    "defaultConfiguration": {
+                        "type": "object",
+                        "description": "Default plugin configuration",
+                        "example": {
+                            "testMode": true
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "version",
+                    "description",
+                    "category",
+                    "bundleUrl",
+                    "extensionPoints",
+                    "adminComponents",
+                    "storefrontComponents",
+                    "metadata",
+                    "provider",
+                    "supportedMethods",
+                    "supportedCurrencies",
+                    "configurationSchema"
+                ]
+            },
+            "UpdatePluginDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Plugin name",
+                        "example": "Stripe Payment Gateway"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Plugin version",
+                        "example": "1.0.1"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Plugin description",
+                        "example": "Integrates Stripe payment processing"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Plugin category",
+                        "enum": [
+                            "payment",
+                            "marketing",
+                            "analytics",
+                            "social",
+                            "ticketing",
+                            "layout",
+                            "seating"
+                        ]
+                    },
+                    "bundleUrl": {
+                        "type": "string",
+                        "description": "URL to the plugin bundle"
+                    },
+                    "extensionPoints": {
+                        "description": "List of extension points this plugin implements",
+                        "example": [
+                            "payment.gateway",
+                            "checkout.form"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "adminComponents": {
+                        "type": "object",
+                        "description": "Admin components provided by the plugin",
+                        "example": {
+                            "settings": "StripeSettings",
+                            "eventCreation": "StripeEventOptions",
+                            "dashboard": "StripeDashboard"
+                        }
+                    },
+                    "storefrontComponents": {
+                        "type": "object",
+                        "description": "Storefront components provided by the plugin",
+                        "example": {
+                            "checkout": "StripeCheckout",
+                            "widgets": {
+                                "paymentMethods": "StripePaymentMethods"
+                            }
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Metadata about the plugin",
+                        "example": {
+                            "priority": 100,
+                            "displayName": "Stripe Payments",
+                            "author": "Stripe Inc."
+                        }
+                    },
+                    "requiredPermissions": {
+                        "description": "Required permissions for this plugin",
+                        "example": [
+                            "payments.read",
+                            "payments.write"
+                        ],
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "InstallPluginDto": {
+                "type": "object",
+                "properties": {
+                    "pluginId": {
+                        "type": "string",
+                        "description": "Plugin ID to install"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "User ID who is installing the plugin"
+                    }
+                },
+                "required": [
+                    "pluginId",
+                    "organizationId",
+                    "userId"
+                ]
+            },
+            "InstalledPlugin": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "pluginId": {
+                        "type": "string",
+                        "description": "Plugin ID"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID"
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Is the plugin enabled"
+                    },
+                    "configuration": {
+                        "type": "object",
+                        "description": "Plugin configuration"
+                    },
+                    "installedAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Installation timestamp"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Last update timestamp"
+                    },
+                    "installedBy": {
+                        "type": "string",
+                        "description": "User ID who installed the plugin"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Plugin version",
+                        "example": "1.0.0"
+                    }
+                },
+                "required": [
+                    "id",
+                    "pluginId",
+                    "organizationId",
+                    "enabled",
+                    "installedAt",
+                    "updatedAt",
+                    "installedBy",
+                    "version"
+                ]
+            }
+        }
+    }
+}
