@@ -14,6 +14,7 @@ import {
   Request,
   NotFoundException,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PluginsService } from './plugins.service';
@@ -68,9 +69,48 @@ export class PluginsController {
   })
   @Get('installed')
   async getInstalledPlugins(@Request() req) {
+    const logger = new Logger('PluginsController.getInstalledPlugins');
+    
+    logger.debug('🔍 Request received for installed plugins');
+    logger.debug('📋 Request headers:', {
+      authorization: req.headers.authorization ? '[PRESENT]' : '[MISSING]',
+      'content-type': req.headers['content-type'],
+      'user-agent': req.headers['user-agent'],
+    });
+    
+    if (!req.user) {
+      logger.error('❌ No user found in request - authentication failed');
+      throw new UnauthorizedException('Authentication required');
+    }
+    
+    logger.debug('👤 Authenticated user:', {
+      userId: req.user.userId,
+      email: req.user.email,
+      tenantId: req.user.tenantId,
+      role: req.user.role,
+    });
+
     // Tenant ID is now automatically extracted from the JWT token
     const tenantId = req.user.tenantId;
-    return this.pluginsService.getInstalledPlugins(tenantId);
+    
+    if (!tenantId) {
+      logger.error('❌ No tenant ID found in user context');
+      throw new UnauthorizedException('Tenant ID required');
+    }
+    
+    logger.debug('🏢 Using tenant ID:', tenantId);
+    
+    try {
+      const result = await this.pluginsService.getInstalledPlugins(tenantId);
+      logger.debug('✅ Successfully retrieved plugins:', {
+        count: result.length,
+        tenantId: tenantId,
+      });
+      return result;
+    } catch (error) {
+      logger.error('❌ Failed to get installed plugins:', error.message);
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: 'Install a plugin for a tenant' })

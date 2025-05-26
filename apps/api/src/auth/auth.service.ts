@@ -18,6 +18,7 @@ export interface JwtPayload {
   role: string;
   permissions: string[];
   organizationId: string;
+  tenantId?: string; // Optional for backward compatibility
   iat?: number;
   exp?: number;
 }
@@ -497,6 +498,7 @@ export class AuthService {
       role: user.role,
       permissions: user.permissions,
       organizationId: user.organizationId,
+      tenantId: user.organizationId,
     };
 
     const accessToken = this.jwtService.sign(payload, {

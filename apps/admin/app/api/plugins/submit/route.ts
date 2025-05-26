@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     // Submit to the plugin server's marketplace endpoint
     // Use either environment variable or default to localhost during development
     const PLUGIN_SERVER_URL =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
     try {
       const response = await fetch(`${PLUGIN_SERVER_URL}/marketplace`, {

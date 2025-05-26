@@ -4,7 +4,7 @@ import { handleTokenRefreshFailure, isTokenRefreshError } from "../auth-utils";
 
 // Create axios instance with base URL from environment variable
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
   headers: {
     "Content-Type": "application/json",
   },
@@ -45,6 +45,18 @@ apiClient.interceptors.request.use(
     // Try to get the session
     const session = await getSession();
 
+    debugLog("Session Check", {
+      sessionExists: !!session,
+      sessionKeys: session ? Object.keys(session) : [],
+      hasAccessToken: !!(session?.accessToken),
+      accessTokenLength: session?.accessToken?.length,
+      user: session?.user ? {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+      } : null,
+    });
+
     // If we have a session with an access token, add it to the headers
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
@@ -52,11 +64,17 @@ apiClient.interceptors.request.use(
       debugLog("Auth Token Added", {
         hasToken: true,
         tokenLength: session.accessToken.length,
+        tokenPreview: session.accessToken.substring(0, 20) + "...",
       });
     } else {
-      debugLog("Auth Token", {
+      debugLog("Auth Token Missing", {
         hasToken: false,
         sessionExists: !!session,
+        sessionData: session ? {
+          keys: Object.keys(session),
+          hasUser: !!session.user,
+          hasAccessToken: !!session.accessToken,
+        } : null,
       });
     }
 

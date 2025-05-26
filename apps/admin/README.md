@@ -37,7 +37,7 @@ The platform integrates with a separate plugin server for plugin management. To 
 
    ```
    # Plugin Server Configuration
-   PLUGIN_SERVER_URL=http://localhost:3001
+   PLUGIN_SERVER_URL=http://localhost:4000
    PLUGIN_SERVER_API_KEY=your-api-key-here
 
    # Tenant ID for multi-tenant environments

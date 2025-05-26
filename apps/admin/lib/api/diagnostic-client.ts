@@ -5,7 +5,7 @@ import { getSession } from "next-auth/react";
  * Special API client for diagnostics that doesn't redirect on auth failures
  */
 const diagnosticClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
   headers: {
     "Content-Type": "application/json",
   },

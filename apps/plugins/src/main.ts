@@ -21,7 +21,7 @@ async function bootstrap() {
   // Enable CORS for the NextJS frontends
   const allowedOrigins = [
     configService.get('NEXT_PUBLIC_STOREFRONT_URL', 'http://localhost:3000'),
-    configService.get('NEXT_PUBLIC_ADMIN_URL', 'http://localhost:3001'),
+    configService.get('NEXT_PUBLIC_ADMIN_URL', 'http://localhost:4000'),
   ];
 
   logger.log(`Configured CORS for origins: ${allowedOrigins.join(', ')}`);

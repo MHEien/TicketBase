@@ -23,7 +23,7 @@ export default () => ({
     serverUrl: process.env.PLUGIN_SERVER_URL || 'http://localhost:4001',
     allowedOrigins: (
       process.env.PLUGIN_ALLOWED_ORIGINS ||
-      'http://localhost:3001,http://localhost:3000'
+      'http://localhost:4000,http://localhost:3000'
     ).split(','),
   },
 });

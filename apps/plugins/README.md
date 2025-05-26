@@ -50,7 +50,7 @@ This NestJS-based plugin server provides the infrastructure for a dynamic import
    PLUGIN_SERVER_URL=http://localhost:4000
 
    # CORS Configuration
-   ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+   ALLOWED_ORIGINS=http://localhost:3000,http://localhost:4000
 
    # Storage Configuration (MinIO)
    AWS_REGION=us-east-1

@@ -710,7 +710,7 @@ export const config = {
 export default async function handler(req: NextRequest) {
   const path = req.nextUrl.pathname.replace('/api/plugins', '');
   const pluginServiceUrl =
-    process.env.PLUGIN_SERVICE_URL || 'http://localhost:3001';
+    process.env.PLUGIN_SERVICE_URL || 'http://localhost:4000';
 
   // Forward request to plugin service
   const response = await fetch(`${pluginServiceUrl}/plugins${path}`, {

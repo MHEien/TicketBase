@@ -21,6 +21,7 @@ const nextConfig = {
     urlImports: [
       // Development environment
       "http://localhost:4000", // Plugin server
+      "http://localhost:5000", // API server
       "https://minio-m4o4k40o80os0wc84k44skcc.heien.dev", // MinIO storage
 
       // Add production URLs when ready

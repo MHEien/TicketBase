@@ -348,6 +348,18 @@ export class PluginsProxyService {
     try {
       const url = `${this.getPluginServerUrl()}/plugins/installed`;
       const headers = this.createAuthHeaders(authToken);
+
+      this.logger.debug('🔍 Fetching installed plugins from plugin server:', {
+        url,
+        organizationId,
+        hasAuthToken: !!authToken,
+        authTokenLength: authToken?.length,
+        headers: {
+          ...headers,
+          Authorization: headers.Authorization ? '[REDACTED]' : undefined,
+        },
+      });
+
       const response = await firstValueFrom(
         this.httpService
           .get<InstalledPlugin[]>(url, {
@@ -356,6 +368,14 @@ export class PluginsProxyService {
           })
           .pipe(
             catchError((error: AxiosError) => {
+              this.logger.error('❌ Plugin server request failed:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message,
+                url,
+                organizationId,
+              });
               this.handleHttpError(
                 error,
                 `Get installed plugins for organization ${organizationId}`,
@@ -364,8 +384,19 @@ export class PluginsProxyService {
             }),
           ),
       );
+
+      this.logger.debug('✅ Plugin server response received:', {
+        status: response.status,
+        dataLength: response.data?.length || 0,
+        organizationId,
+      });
       return response.data;
     } catch (error) {
+      this.logger.error('❌ Failed to get installed plugins:', {
+        error: error.message,
+        organizationId,
+        hasAuthToken: !!authToken,
+      });
       if (error instanceof AxiosError) {
         this.handleHttpError(
           error,
