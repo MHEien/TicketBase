@@ -30,7 +30,11 @@ export class RolesGuard implements CanActivate {
     }
 
     // Check if user role matches any of the required roles
-    const hasRequiredRole = requiredRoles.includes(user.role);
+    // Also allow 'owner' role to access 'admin' endpoints since owners have admin privileges
+    const userRole = user.role;
+    const hasRequiredRole =
+      requiredRoles.includes(userRole) ||
+      (requiredRoles.includes('admin') && userRole === 'owner');
 
     if (!hasRequiredRole) {
       throw new ForbiddenException(

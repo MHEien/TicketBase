@@ -248,14 +248,47 @@ export class PluginsProxyService {
 
   async installPlugin(
     installPluginDto: InstallPluginDto,
+    authToken?: string,
   ): Promise<PluginInstallationResponse> {
     try {
       const url = `${this.getPluginServerUrl()}/plugins/install`;
+      const headers = this.createAuthHeaders(authToken);
+
+      // Only send pluginId to the plugins server - it gets tenant info from JWT
+      const pluginServerPayload = {
+        pluginId: installPluginDto.pluginId,
+      };
+
+      this.logger.debug('🔧 Installing plugin on plugin server:', {
+        url,
+        originalPluginId: installPluginDto.pluginId,
+        pluginIdType: typeof installPluginDto.pluginId,
+        pluginIdLength: installPluginDto.pluginId?.length,
+        organizationId: installPluginDto.organizationId,
+        hasAuthToken: !!authToken,
+        payload: pluginServerPayload,
+        payloadStringified: JSON.stringify(pluginServerPayload),
+        headers: {
+          ...headers,
+          Authorization: headers.Authorization ? '[REDACTED]' : undefined,
+        },
+      });
+
       const response = await firstValueFrom(
         this.httpService
-          .post<PluginInstallationResponse>(url, installPluginDto)
+          .post<PluginInstallationResponse>(url, pluginServerPayload, {
+            headers,
+          })
           .pipe(
             catchError((error: AxiosError) => {
+              this.logger.error('❌ Plugin installation failed:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message,
+                url,
+                pluginId: installPluginDto.pluginId,
+              });
               this.handleHttpError(
                 error,
                 `Install plugin ${installPluginDto.pluginId}`,
@@ -264,6 +297,13 @@ export class PluginsProxyService {
             }),
           ),
       );
+
+      this.logger.debug('✅ Plugin installation successful:', {
+        status: response.status,
+        pluginId: installPluginDto.pluginId,
+        organizationId: installPluginDto.organizationId,
+      });
+
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -276,11 +316,16 @@ export class PluginsProxyService {
     }
   }
 
-  async uninstallPlugin(id: string): Promise<void> {
+  async uninstallPlugin(id: string, authToken?: string): Promise<void> {
     try {
       const url = `${this.getPluginServerUrl()}/plugins/uninstall`;
+      const headers = this.createAuthHeaders(authToken);
+
+      // Only send pluginId to the plugins server - it gets tenant info from JWT
+      const pluginServerPayload = { pluginId: id };
+
       await firstValueFrom(
-        this.httpService.post(url, { pluginId: id }).pipe(
+        this.httpService.post(url, pluginServerPayload, { headers }).pipe(
           catchError((error: AxiosError) => {
             this.handleHttpError(error, `Uninstall plugin ${id}`);
             throw error;
@@ -298,16 +343,20 @@ export class PluginsProxyService {
   async togglePluginStatus(
     id: string,
     enabled: boolean,
+    authToken?: string,
   ): Promise<InstalledPlugin> {
     try {
       const url = `${this.getPluginServerUrl()}/plugins/${id}/status`;
+      const headers = this.createAuthHeaders(authToken);
       const response = await firstValueFrom(
-        this.httpService.put<InstalledPlugin>(url, { enabled }).pipe(
-          catchError((error: AxiosError) => {
-            this.handleHttpError(error, `Toggle plugin status ${id}`);
-            throw error;
-          }),
-        ),
+        this.httpService
+          .put<InstalledPlugin>(url, { enabled }, { headers })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(error, `Toggle plugin status ${id}`);
+              throw error;
+            }),
+          ),
       );
       return response.data;
     } catch (error) {
@@ -321,16 +370,20 @@ export class PluginsProxyService {
   async updatePluginConfiguration(
     id: string,
     configuration: Record<string, unknown>,
+    authToken?: string,
   ): Promise<InstalledPlugin> {
     try {
       const url = `${this.getPluginServerUrl()}/plugins/${id}/config`;
+      const headers = this.createAuthHeaders(authToken);
       const response = await firstValueFrom(
-        this.httpService.put<InstalledPlugin>(url, configuration).pipe(
-          catchError((error: AxiosError) => {
-            this.handleHttpError(error, `Update plugin configuration ${id}`);
-            throw error;
-          }),
-        ),
+        this.httpService
+          .put<InstalledPlugin>(url, configuration, { headers })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(error, `Update plugin configuration ${id}`);
+              throw error;
+            }),
+          ),
       );
       return response.data;
     } catch (error) {

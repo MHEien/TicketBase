@@ -48,13 +48,15 @@ apiClient.interceptors.request.use(
     debugLog("Session Check", {
       sessionExists: !!session,
       sessionKeys: session ? Object.keys(session) : [],
-      hasAccessToken: !!(session?.accessToken),
+      hasAccessToken: !!session?.accessToken,
       accessTokenLength: session?.accessToken?.length,
-      user: session?.user ? {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-      } : null,
+      user: session?.user
+        ? {
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.name,
+          }
+        : null,
     });
 
     // If we have a session with an access token, add it to the headers
@@ -70,11 +72,13 @@ apiClient.interceptors.request.use(
       debugLog("Auth Token Missing", {
         hasToken: false,
         sessionExists: !!session,
-        sessionData: session ? {
-          keys: Object.keys(session),
-          hasUser: !!session.user,
-          hasAccessToken: !!session.accessToken,
-        } : null,
+        sessionData: session
+          ? {
+              keys: Object.keys(session),
+              hasUser: !!session.user,
+              hasAccessToken: !!session.accessToken,
+            }
+          : null,
       });
     }
 

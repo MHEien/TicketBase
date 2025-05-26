@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Plugin, PluginDocument, AdminComponents, StorefrontComponents } from '../plugins/schemas/plugin.schema';
+import {
+  Plugin,
+  PluginDocument,
+  AdminComponents,
+  StorefrontComponents,
+} from '../plugins/schemas/plugin.schema';
 import { PublishPluginDto } from './dto/publish-plugin.dto';
 
 @Injectable()
@@ -23,7 +28,8 @@ export class MarketplaceService {
       bundleUrl: pluginData.remoteEntry, // Use remoteEntry as bundleUrl for backward compatibility
       extensionPoints: [], // Default empty array
       adminComponents: (pluginData.adminComponents || {}) as AdminComponents,
-      storefrontComponents: (pluginData.storefrontComponents || {}) as StorefrontComponents,
+      storefrontComponents: (pluginData.storefrontComponents ||
+        {}) as StorefrontComponents,
       requiredPermissions: pluginData.requiredPermissions || [],
       metadata: pluginData.metadata || {},
     };

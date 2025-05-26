@@ -11,6 +11,7 @@ import {
   Req,
   Logger,
 } from '@nestjs/common';
+import { IsNotEmpty, IsString } from 'class-validator';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -46,6 +47,8 @@ interface RequestWithUser extends Request {
 // Simplified DTO for plugin installation that only requires pluginId
 export class SimpleInstallPluginDto {
   @ApiProperty({ description: 'Plugin ID to install' })
+  @IsNotEmpty()
+  @IsString()
   pluginId: string;
 }
 
@@ -409,6 +412,10 @@ export class PluginsController {
     try {
       this.debugLog(operation, {
         pluginId: body.pluginId,
+        pluginIdType: typeof body.pluginId,
+        pluginIdLength: body.pluginId?.length,
+        bodyKeys: Object.keys(body),
+        fullBody: body,
         userId: req.user.id,
         organizationId: req.user.organizationId,
         description: 'Installing plugin for organization',
@@ -421,7 +428,14 @@ export class PluginsController {
         userId: req.user.id,
       };
 
-      const result = await this.pluginsService.installPlugin(installPluginDto);
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.installPlugin(
+        installPluginDto,
+        authToken,
+      );
 
       this.debugLog(`${operation} - Success`, {
         pluginId: body.pluginId,
@@ -464,7 +478,11 @@ export class PluginsController {
         description: 'Uninstalling plugin from organization',
       });
 
-      await this.pluginsService.uninstallPlugin(id);
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      await this.pluginsService.uninstallPlugin(id, authToken);
 
       this.debugLog(`${operation} - Success`, {
         installedPluginId: id,
@@ -505,7 +523,15 @@ export class PluginsController {
         description: 'Enabling plugin',
       });
 
-      const result = await this.pluginsService.togglePluginStatus(id, true);
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.togglePluginStatus(
+        id,
+        true,
+        authToken,
+      );
 
       this.debugLog(`${operation} - Success`, {
         installedPluginId: id,
@@ -549,7 +575,15 @@ export class PluginsController {
         description: 'Disabling plugin',
       });
 
-      const result = await this.pluginsService.togglePluginStatus(id, false);
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.togglePluginStatus(
+        id,
+        false,
+        authToken,
+      );
 
       this.debugLog(`${operation} - Success`, {
         installedPluginId: id,
@@ -595,9 +629,14 @@ export class PluginsController {
         description: 'Updating plugin configuration',
       });
 
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
       const result = await this.pluginsService.updatePluginConfiguration(
         id,
         configuration,
+        authToken,
       );
 
       this.debugLog(`${operation} - Success`, {

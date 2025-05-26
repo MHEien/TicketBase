@@ -135,9 +135,24 @@ export class BundleService {
     await Promise.resolve();
 
     // Check for required plugin structure elements
-    const hasDefinePlugin = sourceCode.includes('definePlugin');
-    const hasExtensionPoints = sourceCode.includes('extensionPoints:');
-    const hasExportDefault = sourceCode.includes('export default');
+    // Be more flexible with bundled code that may have been transformed
+    const hasDefinePlugin =
+      sourceCode.includes('definePlugin') ||
+      (sourceCode.includes('name:') && sourceCode.includes('version:'));
+    const hasExtensionPoints =
+      sourceCode.includes('extensionPoints:') ||
+      sourceCode.includes('extensionPoints');
+    const hasExportDefault =
+      sourceCode.includes('export default') ||
+      sourceCode.includes('export {') ||
+      sourceCode.includes('as default');
+
+    this.logger.debug('Plugin validation:', {
+      hasDefinePlugin,
+      hasExtensionPoints,
+      hasExportDefault,
+      sourceLength: sourceCode.length,
+    });
 
     return hasDefinePlugin && hasExtensionPoints && hasExportDefault;
   }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
 // Define a type for the plugin submission
 interface PluginSubmission {
@@ -52,6 +53,15 @@ interface PublishPluginDto {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication first
+    const session = await auth();
+    if (!session?.accessToken) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
+    }
+
     // Parse JSON from the request
     const data = (await request.json()) as PluginSubmission;
 
@@ -117,7 +127,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate a unique plugin ID
-    const pluginId = data.name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+    const pluginId = data.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
     const uniquePluginId = `${pluginId}-${Date.now()}`;
 
     // Prepare data for the plugin server API
@@ -144,14 +158,15 @@ export async function POST(request: NextRequest) {
     };
 
     // Submit to the plugin server's marketplace endpoint
-    const PLUGIN_SERVER_URL = process.env.PLUGIN_SERVER_URL || "http://localhost:5000";
+    const PLUGIN_SERVER_URL =
+      process.env.PLUGIN_SERVER_URL || "http://localhost:5000";
 
     try {
       const response = await fetch(`${PLUGIN_SERVER_URL}/marketplace`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.PLUGIN_SERVER_API_KEY || ""}`,
+          Authorization: `Bearer ${session.accessToken}`,
         },
         body: JSON.stringify(pluginDto),
       });
@@ -159,7 +174,7 @@ export async function POST(request: NextRequest) {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Failed to submit to plugin server:", errorText);
-        
+
         // Try to parse error message
         let errorMessage = "Failed to submit plugin to server";
         try {
@@ -168,7 +183,7 @@ export async function POST(request: NextRequest) {
         } catch {
           // Use default message if parsing fails
         }
-        
+
         return NextResponse.json(
           { error: errorMessage },
           { status: response.status },
@@ -187,7 +202,9 @@ export async function POST(request: NextRequest) {
     } catch (serverError) {
       console.error("Error connecting to plugin server:", serverError);
       return NextResponse.json(
-        { error: "Failed to connect to plugin server. Please try again later." },
+        {
+          error: "Failed to connect to plugin server. Please try again later.",
+        },
         { status: 503 },
       );
     }

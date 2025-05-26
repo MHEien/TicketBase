@@ -46,9 +46,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // Use tenantId if available, otherwise fall back to organizationId
     const tenantId = payload.tenantId || payload.organizationId;
-    
+
     if (!tenantId) {
-      this.logger.warn('⚠️ JWT Validation: No tenantId or organizationId found in token');
+      this.logger.warn(
+        '⚠️ JWT Validation: No tenantId or organizationId found in token',
+      );
     } else {
       this.logger.debug('✅ JWT Validation: Using tenant ID:', tenantId);
       // Set the tenant context

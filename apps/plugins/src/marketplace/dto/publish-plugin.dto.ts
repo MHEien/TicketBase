@@ -233,7 +233,8 @@ export class PublishPluginDto {
   requiredPermissions?: string[];
 
   @ApiPropertyOptional({
-    description: 'Plugin metadata including author information and submission details',
+    description:
+      'Plugin metadata including author information and submission details',
     type: PluginMetadataDto,
   })
   @IsOptional()

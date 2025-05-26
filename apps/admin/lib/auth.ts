@@ -55,15 +55,15 @@ export const authConfig: NextAuthConfig = {
         const lastRefreshAttempt = Number(token.lastRefreshAttempt) || 0;
         const now = Math.floor(Date.now() / 1000);
         const timeSinceLastAttempt = now - lastRefreshAttempt;
-        
+
         // Only retry after 30 seconds
         if (timeSinceLastAttempt < 30) {
           console.log(
-            `InvalidRefreshToken: waiting ${30 - timeSinceLastAttempt}s before retry`
+            `InvalidRefreshToken: waiting ${30 - timeSinceLastAttempt}s before retry`,
           );
           return token;
         }
-        
+
         console.log("InvalidRefreshToken: retrying after backoff period");
         // Clear the error to allow retry
         token.error = undefined;
@@ -229,7 +229,7 @@ async function refreshAccessToken(token: any) {
         `Failed to refresh token: ${response.status} ${response.statusText}`,
         errorText,
       );
-      
+
       // Add more detailed debugging for 401 errors
       if (response.status === 401) {
         console.error("Refresh token details:", {
