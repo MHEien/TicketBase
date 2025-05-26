@@ -7,38 +7,38 @@ import { signOut } from "next-auth/react";
 export async function resetAuthState(): Promise<void> {
   try {
     // Clear any debug tokens from localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('debug_refresh_token');
-      localStorage.removeItem('nextauth.message');
-      
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("debug_refresh_token");
+      localStorage.removeItem("nextauth.message");
+
       // Clear any other auth-related items
-      Object.keys(localStorage).forEach(key => {
-        if (key.includes('auth') || key.includes('token')) {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.includes("auth") || key.includes("token")) {
           localStorage.removeItem(key);
         }
       });
-      
+
       // Clear session storage as well
       sessionStorage.clear();
     }
-    
+
     // Sign out from NextAuth
-    await signOut({ 
+    await signOut({
       redirect: false,
-      callbackUrl: "/login"
+      callbackUrl: "/login",
     });
-    
+
     console.log("Authentication state reset successfully");
-    
+
     // Force a page reload to ensure clean state
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.location.href = "/login?reset=true";
     }
   } catch (error) {
     console.error("Error resetting auth state:", error);
-    
+
     // Force reload even if there's an error
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.location.href = "/login?reset=error";
     }
   }
@@ -49,12 +49,12 @@ export async function resetAuthState(): Promise<void> {
  */
 export function shouldResetAuth(session: any): boolean {
   if (!session) return false;
-  
+
   const errorStates = [
     "MaxRefreshAttemptsExceeded",
     "InvalidRefreshToken",
-    "RefreshAccessTokenError"
+    "RefreshAccessTokenError",
   ];
-  
+
   return errorStates.includes(session.error);
-} 
+}

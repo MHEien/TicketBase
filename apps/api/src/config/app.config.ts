@@ -20,12 +20,7 @@ export default () => ({
     secret: process.env.NEXTAUTH_SECRET || 'nextauth-secret-key',
   },
   plugins: {
-    serverUrl: process.env.PLUGIN_SERVER_URL || 'http://localhost:4000',
-    minioEndpoint: process.env.MINIO_ENDPOINT || 'localhost',
-    minioPort: parseInt(process.env.MINIO_PORT, 10) || 9000,
-    minioBucket: process.env.MINIO_BUCKET || 'plugins',
-    minioAccessKey: process.env.MINIO_ACCESS_KEY || '',
-    minioSecretKey: process.env.MINIO_SECRET_KEY || '',
+    serverUrl: process.env.PLUGIN_SERVER_URL || 'http://localhost:4001',
     allowedOrigins: (
       process.env.PLUGIN_ALLOWED_ORIGINS ||
       'http://localhost:3001,http://localhost:3000'

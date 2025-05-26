@@ -2,7 +2,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
@@ -24,14 +24,19 @@ import appConfig from './config/app.config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        ...configService.get('database'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-        migrationsRun: true,
-        logging:
-          process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
-      }),
+      useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
+        const databaseConfig = configService.get('database');
+        return {
+          ...databaseConfig,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+          migrationsRun: true,
+          logging:
+            process.env.NODE_ENV === 'production'
+              ? ['error']
+              : ['error', 'warn'],
+        } as TypeOrmModuleOptions;
+      },
     }),
     AuthModule,
     UsersModule,

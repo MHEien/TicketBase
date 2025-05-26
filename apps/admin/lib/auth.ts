@@ -37,8 +37,14 @@ export const authConfig: NextAuthConfig = {
       }
 
       // If there's an error from previous refresh attempts, don't try again
-      if (token.error === "MaxRefreshAttemptsExceeded" || token.error === "RefreshAccessTokenError") {
-        console.log("Token has permanent error, not attempting refresh:", token.error);
+      if (
+        token.error === "MaxRefreshAttemptsExceeded" ||
+        token.error === "RefreshAccessTokenError"
+      ) {
+        console.log(
+          "Token has permanent error, not attempting refresh:",
+          token.error,
+        );
         return token;
       }
 
@@ -188,7 +194,7 @@ async function refreshAccessToken(token: any) {
         `Failed to refresh token: ${response.status} ${response.statusText}`,
         errorText,
       );
-      
+
       // If it's a 401, the refresh token is invalid and we shouldn't retry
       if (response.status === 401) {
         console.error("Refresh token is invalid, marking as permanent error");
@@ -197,7 +203,7 @@ async function refreshAccessToken(token: any) {
           error: "InvalidRefreshToken",
         };
       }
-      
+
       // For other errors, increment retry count
       return {
         ...token,

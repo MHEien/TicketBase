@@ -16,19 +16,19 @@ diagnosticClient.interceptors.request.use(
   async (config) => {
     // Try to get the session
     const session = await getSession();
-    
+
     // If we have a session with an access token, add it to the headers
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
-    
+
     return config;
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // No response interceptor for redirects - just pass through errors
 
-export { diagnosticClient }; 
+export { diagnosticClient };

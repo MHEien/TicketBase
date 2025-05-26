@@ -12,6 +12,8 @@ import {
   UploadedFile,
   BadRequestException,
   Request,
+  NotFoundException,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PluginsService } from './plugins.service';
@@ -32,12 +34,17 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '../common/auth/decorators/public.decorator';
 import { Roles } from '../common/auth/decorators/roles.decorator';
+import { Response } from 'express';
+import { PluginStorageService } from './services/plugin-storage.service';
 
 @ApiTags('plugins')
 @Controller('plugins')
 @ApiBearerAuth()
 export class PluginsController {
-  constructor(private readonly pluginsService: PluginsService) {}
+  constructor(
+    private readonly pluginsService: PluginsService,
+    private readonly pluginStorageService: PluginStorageService,
+  ) {}
 
   @ApiOperation({ summary: 'Get all available plugins' })
   @ApiResponse({
@@ -352,5 +359,58 @@ export class PluginsController {
   @Get('storage-health')
   async checkStorageHealth() {
     return this.pluginsService.checkStorageHealth();
+  }
+
+  @ApiOperation({ summary: 'Get plugin bundle' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the plugin bundle file',
+    content: {
+      'application/javascript': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin not found',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Plugin ID',
+    required: true,
+  })
+  @Get(':id/bundle')
+  async getPluginBundle(@Param('id') id: string, @Res() res: Response) {
+    const plugin = await this.pluginsService.findById(id);
+
+    if (!plugin.bundleUrl) {
+      throw new NotFoundException('Plugin bundle not found');
+    }
+
+    // If it's a MinIO URL, serve from storage
+    if (plugin.bundleUrl.includes('minio') || plugin.bundleUrl.includes('s3')) {
+      try {
+        const stream = await this.pluginStorageService.getPluginBundleStream(
+          plugin.bundleUrl.split('/').slice(-3).join('/'), // Extract object key from URL
+        );
+
+        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename="${plugin.name}-${plugin.version}.js"`,
+        );
+
+        stream.pipe(res);
+      } catch (error) {
+        throw new NotFoundException('Plugin bundle not found in storage');
+      }
+    } else {
+      // If it's an external URL, redirect
+      res.redirect(plugin.bundleUrl);
+    }
   }
 }

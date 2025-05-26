@@ -27,11 +27,11 @@ export function usePlugins() {
       setError(null);
 
       const response = await getTenantPlugins();
-      
+
       if (!response.success) {
         throw new Error(response.error || "Failed to load plugins");
       }
-      
+
       setPlugins(response.data || []);
 
       // Also update the plugin registry
@@ -53,11 +53,11 @@ export function usePlugins() {
   const install = useCallback(async (pluginId: string) => {
     try {
       const response = await installPlugin(pluginId);
-      
+
       if (!response.success) {
         throw new Error(response.error || "Failed to install plugin");
       }
-      
+
       const installedPlugin = response.data;
       if (!installedPlugin) {
         throw new Error("No plugin data returned from installation");
@@ -87,7 +87,7 @@ export function usePlugins() {
   const uninstall = useCallback(async (pluginId: string) => {
     try {
       const response = await uninstallPlugin(pluginId);
-      
+
       if (!response.success) {
         throw new Error(response.error || "Failed to uninstall plugin");
       }
@@ -108,11 +108,11 @@ export function usePlugins() {
     async (pluginId: string, config: Record<string, any>) => {
       try {
         const response = await updatePluginConfig(pluginId, config);
-        
+
         if (!response.success) {
           throw new Error(response.error || "Failed to update plugin config");
         }
-        
+
         const updatedPlugin = response.data;
         if (!updatedPlugin) {
           throw new Error("No plugin data returned from config update");
@@ -140,11 +140,11 @@ export function usePlugins() {
     async (pluginId: string, enabled: boolean) => {
       try {
         const response = await setPluginEnabled(pluginId, enabled);
-        
+
         if (!response.success) {
           throw new Error(response.error || "Failed to update plugin status");
         }
-        
+
         const updatedPlugin = response.data;
         if (!updatedPlugin) {
           throw new Error("No plugin data returned from status update");

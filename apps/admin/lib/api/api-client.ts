@@ -14,7 +14,7 @@ const apiClient = axios.create({
 const noRedirectPaths = [
   "/auth/check-token",
   "/auth/session-info",
-  "/auth/cleanup-sessions"
+  "/auth/cleanup-sessions",
 ];
 
 // Add request interceptor to include auth token
@@ -43,10 +43,10 @@ apiClient.interceptors.response.use(
   async (error) => {
     // Check if the request URL is in the noRedirectPaths list
     const requestPath = error.config?.url;
-    const shouldRedirect = !noRedirectPaths.some(path => 
-      requestPath && requestPath.includes(path)
+    const shouldRedirect = !noRedirectPaths.some(
+      (path) => requestPath && requestPath.includes(path),
     );
-    
+
     // Check if this is a token refresh error
     if (
       error.response?.status === 401 &&

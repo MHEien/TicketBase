@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { 
-  checkRefreshToken, 
-  getSessionDiagnostics, 
-  cleanupSessions, 
+import {
+  checkRefreshToken,
+  getSessionDiagnostics,
+  cleanupSessions,
   getRefreshTokenBackup,
-  saveRefreshTokenBackup
+  saveRefreshTokenBackup,
 } from "@/lib/api/auth-api";
 import { resetAuthState, shouldResetAuth } from "@/lib/auth-reset";
 
@@ -25,8 +25,13 @@ export default function AuthDiagnosticsPage() {
   useEffect(() => {
     // Check if we need to auto-reset due to auth errors
     if (session && shouldResetAuth(session)) {
-      console.log("Auto-resetting auth due to error state:", (session as any).error);
-      setError(`Authentication error detected: ${(session as any).error}. Auto-resetting...`);
+      console.log(
+        "Auto-resetting auth due to error state:",
+        (session as any).error,
+      );
+      setError(
+        `Authentication error detected: ${(session as any).error}. Auto-resetting...`,
+      );
       setTimeout(() => {
         resetAuthState();
       }, 3000);
@@ -37,7 +42,7 @@ export default function AuthDiagnosticsPage() {
     if (session && (session as any).refreshToken) {
       saveRefreshTokenBackup((session as any).refreshToken);
     }
-    
+
     // Load backup token
     setBackupToken(getRefreshTokenBackup());
   }, [session]);
@@ -46,16 +51,19 @@ export default function AuthDiagnosticsPage() {
     async function fetchSessionDiagnostics() {
       // Prevent infinite loops by only trying once per session change
       if (hasAttemptedFetch) return;
-      
+
       // Don't fetch if session has errors
       if ((session as any)?.error) {
-        console.log("Session has error, skipping diagnostics fetch:", (session as any).error);
+        console.log(
+          "Session has error, skipping diagnostics fetch:",
+          (session as any).error,
+        );
         setError(`Session error: ${(session as any).error}`);
         return;
       }
-      
+
       setHasAttemptedFetch(true);
-      
+
       try {
         setLoading(true);
         const data = await getSessionDiagnostics();
@@ -98,7 +106,7 @@ export default function AuthDiagnosticsPage() {
       setLoading(false);
     }
   }
-  
+
   async function handleCheckCustomToken() {
     try {
       if (!customToken.trim()) {
@@ -127,10 +135,10 @@ export default function AuthDiagnosticsPage() {
       setLoading(true);
       const result = await cleanupSessions();
       setCleanupResult(result);
-      
+
       // Allow fetching session info again
       setHasAttemptedFetch(false);
-      
+
       // Try to fetch updated session info
       try {
         const data = await getSessionDiagnostics();
@@ -138,7 +146,7 @@ export default function AuthDiagnosticsPage() {
       } catch (refreshErr) {
         console.error("Error refreshing session info:", refreshErr);
       }
-      
+
       setError(null);
     } catch (err: any) {
       setError(err.message || "Failed to clean up sessions");
@@ -146,15 +154,15 @@ export default function AuthDiagnosticsPage() {
       setLoading(false);
     }
   }
-  
+
   function handleSignOut() {
     signOut({ redirect: true, callbackUrl: "/login" });
   }
-  
+
   function handleForceSignOut() {
     // Clear all local storage and force sign out
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('debug_refresh_token');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("debug_refresh_token");
     }
     signOut({ redirect: true, callbackUrl: "/login" });
   }
@@ -204,8 +212,7 @@ export default function AuthDiagnosticsPage() {
               {(session as any).refreshToken ? "Yes" : "No"}
             </p>
             <p>
-              <strong>Has Backup Token:</strong>{" "}
-              {backupToken ? "Yes" : "No"}
+              <strong>Has Backup Token:</strong> {backupToken ? "Yes" : "No"}
             </p>
             <p>
               <strong>Session Status:</strong> {status}
@@ -257,21 +264,21 @@ export default function AuthDiagnosticsPage() {
         >
           {loading ? "Loading..." : "Clean Up Expired Sessions"}
         </button>
-        
+
         <button
           onClick={handleSignOut}
           className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
         >
           Sign Out
         </button>
-        
+
         <button
           onClick={handleForceSignOut}
           className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded"
         >
           Force Sign Out & Clear
         </button>
-        
+
         <button
           onClick={handleResetAuth}
           className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"

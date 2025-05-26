@@ -18,19 +18,24 @@ import {
   ApiQuery,
   ApiBody,
 } from '@nestjs/swagger';
-import { PluginsService } from './plugins.service';
+import { PluginsProxyService } from './plugins-proxy.service';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import { InstallPluginDto } from './dto/install-plugin.dto';
-import { Plugin, PluginStatus } from './entities/plugin.entity';
-import { InstalledPlugin } from './entities/installed-plugin.entity';
+import {
+  Plugin,
+  PluginStatus,
+  PluginCategory,
+  InstalledPlugin,
+} from './types/plugin.types';
+import { InstalledPluginDto } from './dto/installed-plugin.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RegisterPaymentPluginDto } from './dto/payment-plugin.dto';
 
 @ApiTags('plugins')
 @Controller('api/plugins')
 export class PluginsController {
-  constructor(private readonly pluginsService: PluginsService) {}
+  constructor(private readonly pluginsService: PluginsProxyService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -159,7 +164,7 @@ export class PluginsController {
   })
   @ApiParam({ name: 'category', required: true, type: String })
   async findByCategory(@Param('category') category: string): Promise<Plugin[]> {
-    return this.pluginsService.findByCategory(category);
+    return this.pluginsService.findByCategory(category as PluginCategory);
   }
 
   @Get('extension-point/:extensionPoint')
@@ -183,12 +188,10 @@ export class PluginsController {
   @ApiResponse({
     status: 201,
     description: 'The plugin has been successfully installed.',
-    type: InstalledPlugin,
+    type: InstalledPluginDto,
   })
   @ApiBody({ type: InstallPluginDto })
-  async install(
-    @Body() installPluginDto: InstallPluginDto,
-  ): Promise<InstalledPlugin> {
+  async install(@Body() installPluginDto: InstallPluginDto): Promise<any> {
     return this.pluginsService.installPlugin(installPluginDto);
   }
 
@@ -212,7 +215,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'The plugin has been enabled.',
-    type: InstalledPlugin,
+    type: InstalledPluginDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async enable(@Param('id') id: string): Promise<InstalledPlugin> {
@@ -226,7 +229,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'The plugin has been disabled.',
-    type: InstalledPlugin,
+    type: InstalledPluginDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async disable(@Param('id') id: string): Promise<InstalledPlugin> {
@@ -240,7 +243,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'The plugin configuration has been updated.',
-    type: InstalledPlugin,
+    type: InstalledPluginDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async configure(
@@ -257,7 +260,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns all installed plugins for the organization.',
-    type: [InstalledPlugin],
+    type: [InstalledPluginDto],
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   async getInstalledPlugins(
@@ -273,7 +276,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns all enabled plugins for the organization.',
-    type: [InstalledPlugin],
+    type: [InstalledPluginDto],
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   async getEnabledPlugins(
@@ -289,13 +292,16 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns all enabled payment plugins for the organization.',
-    type: [InstalledPlugin],
+    type: [InstalledPluginDto],
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   async getPaymentPlugins(
     @Param('organizationId') organizationId: string,
   ): Promise<InstalledPlugin[]> {
-    return this.pluginsService.getPluginsByType(organizationId, 'payment');
+    return this.pluginsService.getPluginsByType(
+      organizationId,
+      PluginCategory.PAYMENT,
+    );
   }
 
   @Get('organization/:organizationId/type/:type')
@@ -306,7 +312,7 @@ export class PluginsController {
     status: 200,
     description:
       'Returns all plugins of the specified type for the organization.',
-    type: [InstalledPlugin],
+    type: [InstalledPluginDto],
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   @ApiParam({ name: 'type', required: true, type: String })
@@ -314,6 +320,9 @@ export class PluginsController {
     @Param('organizationId') organizationId: string,
     @Param('type') type: string,
   ): Promise<InstalledPlugin[]> {
-    return this.pluginsService.getPluginsByType(organizationId, type);
+    return this.pluginsService.getPluginsByType(
+      organizationId,
+      type as PluginCategory,
+    );
   }
 }

@@ -26,7 +26,10 @@ export async function fetchAvailablePlugins(): Promise<ApiResponse<Plugin[]>> {
     return {
       success: false,
       data: [],
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }
@@ -48,7 +51,10 @@ export async function getTenantPlugins(): Promise<
     return {
       success: false,
       data: [],
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }
@@ -70,7 +76,10 @@ export async function getPlugin(
     return {
       success: false,
       data: null,
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }
@@ -94,7 +103,10 @@ export async function installPlugin(
     return {
       success: false,
       data: null,
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }
@@ -118,7 +130,10 @@ export async function uninstallPlugin(
     return {
       success: false,
       data: null,
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }
@@ -141,7 +156,10 @@ export async function updatePluginConfig(
     return {
       success: false,
       data: null,
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }
@@ -166,7 +184,10 @@ export async function setPluginEnabled(
     return {
       success: false,
       data: null,
-      error: error.response?.data?.message || error.message || "An unknown error occurred",
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "An unknown error occurred",
     };
   }
 }

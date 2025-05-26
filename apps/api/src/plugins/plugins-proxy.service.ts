@@ -17,11 +17,13 @@ import {
   InstalledPlugin,
   PluginStatus,
   PluginCategory,
+  PluginInstallationResponse,
+  PluginHealthStatus,
 } from './types/plugin.types';
 
 @Injectable()
-export class PluginsService {
-  private readonly logger = new Logger(PluginsService.name);
+export class PluginsProxyService {
+  private readonly logger = new Logger(PluginsProxyService.name);
 
   constructor(
     private readonly configService: ConfigService,
@@ -144,74 +146,187 @@ export class PluginsService {
     }
   }
 
-  async deprecate(id: string): Promise<any> {
-    const url = `${this.getPluginServerUrl()}/api/plugins/${id}/deprecate`;
-    const response = await firstValueFrom(this.httpService.patch(url));
-    return response.data;
-  }
-
-  async remove(id: string): Promise<any> {
-    const url = `${this.getPluginServerUrl()}/api/plugins/${id}`;
-    const response = await firstValueFrom(this.httpService.delete(url));
-    return response.data;
-  }
-
-  async findByCategory(category: string): Promise<Plugin[]> {
-    const url = `${this.getPluginServerUrl()}/api/plugins`;
-    const response = await firstValueFrom(
-      this.httpService.get<Plugin[]>(url, { params: { category } }),
-    );
-    return response.data;
-  }
-
-  async findByExtensionPoint(extensionPoint: string): Promise<Plugin[]> {
-    const url = `${this.getPluginServerUrl()}/api/plugins`;
-    const response = await firstValueFrom(
-      this.httpService.get<Plugin[]>(url, { params: { extensionPoint } }),
-    );
-    return response.data;
-  }
-
-  async installPlugin(installPluginDto: InstallPluginDto): Promise<any> {
-    const url = `${this.getPluginServerUrl()}/api/plugins/install`;
+  async deprecate(id: string): Promise<Plugin> {
     try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/${id}/deprecate`;
       const response = await firstValueFrom(
-        this.httpService.post(url, installPluginDto),
+        this.httpService.patch<Plugin>(url).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Deprecate plugin ${id}`);
+            throw error;
+          }),
+        ),
       );
       return response.data;
     } catch (error) {
-      if (error.response?.status === 400) {
-        throw new BadRequestException(error.response.data.message);
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Deprecate plugin ${id}`);
       }
-      if (error.response?.status === 404) {
-        throw new NotFoundException(error.response.data.message);
+      throw error;
+    }
+  }
+
+  async remove(id: string): Promise<Plugin> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/${id}`;
+      const response = await firstValueFrom(
+        this.httpService.delete<Plugin>(url).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Remove plugin ${id}`);
+            throw error;
+          }),
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Remove plugin ${id}`);
+      }
+      throw error;
+    }
+  }
+
+  async findByCategory(category: PluginCategory): Promise<Plugin[]> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins`;
+      const response = await firstValueFrom(
+        this.httpService.get<Plugin[]>(url, { params: { category } }).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Find plugins by category ${category}`);
+            throw error;
+          }),
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Find plugins by category ${category}`);
+      }
+      throw error;
+    }
+  }
+
+  async findByExtensionPoint(extensionPoint: string): Promise<Plugin[]> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins`;
+      const response = await firstValueFrom(
+        this.httpService
+          .get<Plugin[]>(url, { params: { extensionPoint } })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(
+                error,
+                `Find plugins by extension point ${extensionPoint}`,
+              );
+              throw error;
+            }),
+          ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(
+          error,
+          `Find plugins by extension point ${extensionPoint}`,
+        );
+      }
+      throw error;
+    }
+  }
+
+  async installPlugin(
+    installPluginDto: InstallPluginDto,
+  ): Promise<PluginInstallationResponse> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/install`;
+      const response = await firstValueFrom(
+        this.httpService
+          .post<PluginInstallationResponse>(url, installPluginDto)
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(
+                error,
+                `Install plugin ${installPluginDto.pluginId}`,
+              );
+              throw error;
+            }),
+          ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(
+          error,
+          `Install plugin ${installPluginDto.pluginId}`,
+        );
       }
       throw error;
     }
   }
 
   async uninstallPlugin(id: string): Promise<void> {
-    const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}`;
-    await firstValueFrom(this.httpService.delete(url));
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}`;
+      await firstValueFrom(
+        this.httpService.delete(url).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Uninstall plugin ${id}`);
+            throw error;
+          }),
+        ),
+      );
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Uninstall plugin ${id}`);
+      }
+      throw error;
+    }
   }
 
-  async togglePluginStatus(id: string, enabled: boolean): Promise<any> {
-    const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}/toggle`;
-    const response = await firstValueFrom(
-      this.httpService.patch(url, { enabled }),
-    );
-    return response.data;
+  async togglePluginStatus(
+    id: string,
+    enabled: boolean,
+  ): Promise<InstalledPlugin> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}/toggle`;
+      const response = await firstValueFrom(
+        this.httpService.patch<InstalledPlugin>(url, { enabled }).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Toggle plugin status ${id}`);
+            throw error;
+          }),
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Toggle plugin status ${id}`);
+      }
+      throw error;
+    }
   }
 
   async updatePluginConfiguration(
     id: string,
-    configuration: Record<string, any>,
-  ): Promise<any> {
-    const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}/config`;
-    const response = await firstValueFrom(
-      this.httpService.patch(url, { configuration }),
-    );
-    return response.data;
+    configuration: Record<string, unknown>,
+  ): Promise<InstalledPlugin> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}/config`;
+      const response = await firstValueFrom(
+        this.httpService.patch<InstalledPlugin>(url, { configuration }).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Update plugin configuration ${id}`);
+            throw error;
+          }),
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Update plugin configuration ${id}`);
+      }
+      throw error;
+    }
   }
 
   async getInstalledPlugins(
@@ -302,6 +417,39 @@ export class PluginsService {
         );
       }
       throw error;
+    }
+  }
+
+  async checkPluginServerHealth(): Promise<PluginHealthStatus> {
+    try {
+      const url = `${this.getPluginServerUrl()}/api/plugins/storage-health`;
+      const response = await firstValueFrom(
+        this.httpService.get<PluginHealthStatus>(url).pipe(
+          catchError((error: AxiosError) => {
+            this.logger.warn(
+              'Plugin server health check failed:',
+              error.message,
+            );
+            return Promise.resolve({
+              data: {
+                isConnected: false,
+                message: `Plugin server unreachable: ${error.message}`,
+                timestamp: new Date(),
+              },
+            } as any);
+          }),
+        ),
+      );
+      return {
+        ...response.data,
+        timestamp: new Date(),
+      } as PluginHealthStatus;
+    } catch (error) {
+      return {
+        isConnected: false,
+        message: `Plugin server health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        timestamp: new Date(),
+      };
     }
   }
 }

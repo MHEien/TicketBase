@@ -2,7 +2,6 @@ import {
   Injectable,
   InternalServerErrorException,
   BadRequestException,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,13 +12,27 @@ import {
   TransactionStatus,
 } from './entities/transaction.entity';
 import { PluginsService } from '../plugins/plugins.service';
-import { PluginCategory } from '../plugins/entities/plugin.entity';
+import { PluginCategory } from '../plugins/types/plugin.types';
 
 // Payment provider interface - defines what methods a payment plugin must implement
 export interface PaymentProviderResponse {
   success: boolean;
   data?: any;
   error?: string;
+}
+
+// Fee structure interface for payment plugins
+export interface PaymentFeeStructure {
+  gatewayFeePercent?: number;
+  gatewayFeeFixed?: number;
+  platformFeePercent?: number;
+  calculateGatewayFee?: (amount: number) => number;
+}
+
+// Plugin configuration interface for payment plugins
+export interface PaymentPluginConfiguration {
+  feeStructure?: PaymentFeeStructure;
+  [key: string]: unknown;
 }
 
 @Injectable()
@@ -60,7 +73,8 @@ export class PaymentsService {
       // Use the first enabled payment plugin (in the future, could allow selection)
       const paymentPlugin = paymentPlugins[0];
       const providerName =
-        paymentPlugin.plugin.metadata?.paymentProvider || 'unknown';
+        (paymentPlugin.plugin?.metadata?.paymentProvider as string) ||
+        'unknown';
 
       // Make the plugin request through the plugin proxy service
       // This would call the plugin's createPaymentIntent method
@@ -197,29 +211,26 @@ export class PaymentsService {
    * Helper method to make requests to payment plugins
    * This would use your plugin system's method of calling plugin methods
    */
-  private async makePluginRequest(
-    pluginId: string,
-    method: string,
-    params: any,
+  private makePluginRequest(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _pluginId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _method: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _params: any,
   ): Promise<PaymentProviderResponse> {
     // In a real implementation, this would use your plugin system's API to call the method
     // This is a placeholder that would need to be implemented based on your plugin architecture
 
     // Example implementation using a hypothetical plugin proxy service:
-    try {
-      // This would be replaced with your actual plugin proxy mechanism
-      // const response = await this.pluginProxyService.callPluginMethod(pluginId, method, params);
-      // return response;
+    // const response = await this.pluginProxyService.callPluginMethod(pluginId, method, params);
+    // return response;
 
-      // For now, we'll throw an error to indicate this needs implementation
-      throw new Error('Plugin proxy method not implemented');
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error.message || 'Unknown error occurred when calling payment plugin',
-      };
-    }
+    // For now, we'll return a promise that rejects to indicate this needs implementation
+    return Promise.resolve({
+      success: false,
+      error: 'Plugin proxy method not implemented',
+    });
   }
 
   async createTransaction(
@@ -247,23 +258,23 @@ export class PaymentsService {
       // If we have a payment plugin, get the fee structure from its configuration
       if (paymentPlugins && paymentPlugins.length > 0) {
         const paymentPlugin = paymentPlugins[0];
-        const pluginConfig = paymentPlugin.configuration || {};
+        const pluginConfig =
+          (paymentPlugin.configuration as PaymentPluginConfiguration) || {};
 
         // Override with plugin-provided fee structure if available
         if (pluginConfig.feeStructure) {
-          if (
-            typeof pluginConfig.feeStructure.calculateGatewayFee === 'function'
-          ) {
-            gatewayFee = pluginConfig.feeStructure.calculateGatewayFee(amount);
-          } else if (pluginConfig.feeStructure.gatewayFeePercent) {
+          const feeStructure = pluginConfig.feeStructure;
+
+          if (typeof feeStructure.calculateGatewayFee === 'function') {
+            gatewayFee = feeStructure.calculateGatewayFee(amount);
+          } else if (feeStructure.gatewayFeePercent) {
             gatewayFee =
-              (amount * pluginConfig.feeStructure.gatewayFeePercent) / 100 +
-              (pluginConfig.feeStructure.gatewayFeeFixed || 0);
+              (amount * feeStructure.gatewayFeePercent) / 100 +
+              (feeStructure.gatewayFeeFixed || 0);
           }
 
-          if (pluginConfig.feeStructure.platformFeePercent) {
-            platformFee =
-              (amount * pluginConfig.feeStructure.platformFeePercent) / 100;
+          if (feeStructure.platformFeePercent) {
+            platformFee = (amount * feeStructure.platformFeePercent) / 100;
           }
         }
       }

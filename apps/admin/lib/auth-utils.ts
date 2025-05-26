@@ -55,10 +55,10 @@ export async function handleTokenRefreshFailure(
   console.error("Token refresh failed:", error);
 
   // Don't redirect on diagnostic pages
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const currentPath = window.location.pathname;
-    if (currentPath.includes('/auth-diagnostics')) {
-      console.log('On diagnostics page, not redirecting');
+    if (currentPath.includes("/auth-diagnostics")) {
+      console.log("On diagnostics page, not redirecting");
       return;
     }
   }
