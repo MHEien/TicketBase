@@ -22,11 +22,12 @@ import { PluginsProxyService } from './plugins-proxy.service';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import { InstallPluginDto } from './dto/install-plugin.dto';
+import { PluginResponseDto } from './dto/plugin.dto';
 import {
   Plugin,
+  InstalledPlugin,
   PluginStatus,
   PluginCategory,
-  InstalledPlugin,
 } from './types/plugin.types';
 import { InstalledPluginDto } from './dto/installed-plugin.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -44,7 +45,7 @@ export class PluginsController {
   @ApiResponse({
     status: 201,
     description: 'The plugin has been successfully created.',
-    type: Plugin,
+    type: PluginResponseDto,
   })
   @ApiBody({ type: CreatePluginDto })
   async create(@Body() createPluginDto: CreatePluginDto): Promise<Plugin> {
@@ -58,7 +59,7 @@ export class PluginsController {
   @ApiResponse({
     status: 201,
     description: 'The payment plugin has been successfully registered.',
-    type: Plugin,
+    type: PluginResponseDto,
   })
   @ApiBody({ type: RegisterPaymentPluginDto })
   async registerPaymentPlugin(
@@ -86,7 +87,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns all plugins.',
-    type: [Plugin],
+    type: [PluginResponseDto],
   })
   @ApiQuery({
     name: 'status',
@@ -102,7 +103,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns the plugin if found.',
-    type: Plugin,
+    type: PluginResponseDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async findOne(@Param('id') id: string): Promise<Plugin> {
@@ -116,7 +117,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'The plugin has been successfully updated.',
-    type: Plugin,
+    type: PluginResponseDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   @ApiBody({ type: UpdatePluginDto })
@@ -134,7 +135,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'The plugin has been deprecated.',
-    type: Plugin,
+    type: PluginResponseDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async deprecate(@Param('id') id: string): Promise<Plugin> {
@@ -148,7 +149,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'The plugin has been marked as removed.',
-    type: Plugin,
+    type: PluginResponseDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async remove(@Param('id') id: string): Promise<Plugin> {
@@ -160,7 +161,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns all plugins in the category.',
-    type: [Plugin],
+    type: [PluginResponseDto],
   })
   @ApiParam({ name: 'category', required: true, type: String })
   async findByCategory(@Param('category') category: string): Promise<Plugin[]> {
@@ -172,7 +173,7 @@ export class PluginsController {
   @ApiResponse({
     status: 200,
     description: 'Returns all plugins implementing the extension point.',
-    type: [Plugin],
+    type: [PluginResponseDto],
   })
   @ApiParam({ name: 'extensionPoint', required: true, type: String })
   async findByExtensionPoint(
