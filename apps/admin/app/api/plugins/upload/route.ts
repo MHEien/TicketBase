@@ -1,8 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
-import { v4 as uuidv4 } from "uuid";
 
 // Allowed extensions
 const allowedExtensions = [".js", ".mjs"];
@@ -52,81 +48,59 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate a version-friendly unique ID (removing hyphens)
-    const uniqueId = uuidv4().replace(/-/g, "");
-    const safeFileName = `${uniqueId}${fileExtension}`;
+    // Generate a unique plugin ID for the upload
+    const pluginId = `plugin-${Date.now()}`;
 
-    // Create the plugins directory if it doesn't exist
-    const uploadDir = join(process.cwd(), "public", "plugins");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
+    // Get plugin server URL from environment (corrected port)
+    const PLUGIN_SERVER_URL = process.env.NEXT_PUBLIC_PLUGIN_SERVER_URL || process.env.PLUGIN_SERVER_URL || "http://localhost:5000";
+    
+    try {
+      // Create a new FormData object for the plugin server
+      const serverFormData = new FormData();
+      serverFormData.append("file", file);
+      serverFormData.append("id", pluginId);
+      serverFormData.append("name", "Temporary Plugin");
+      serverFormData.append("version", "1.0.0");
+      serverFormData.append("description", "Uploaded plugin bundle");
+      serverFormData.append("category", "payments"); // Default category
 
-    // Define the path where the file will be saved
-    const filePath = join(uploadDir, safeFileName);
-
-    // Convert the file to an ArrayBuffer and then to a Buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    // Write the file to disk
-    await writeFile(filePath, buffer);
-
-    // Calculate the public URL for the file
-    const publicUrl = `/plugins/${safeFileName}`;
-
-    // Check if we should upload to plugin server's storage
-    // This would be done if a MinIO or other storage service is available
-    const PLUGIN_SERVER_URL = process.env.PLUGIN_SERVER_URL;
-    let remoteUrl = publicUrl;
-
-    if (PLUGIN_SERVER_URL) {
-      try {
-        // Create a new FormData object for the plugin server
-        const serverFormData = new FormData();
-        serverFormData.append("file", file);
-        serverFormData.append("pluginId", uniqueId);
-
-        // Upload to plugin server storage
-        const response = await fetch(
-          `${PLUGIN_SERVER_URL}/plugins/bundles/upload`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${process.env.PLUGIN_SERVER_API_KEY || ""}`,
-            },
-            body: serverFormData,
+      // Upload to plugin server storage
+      const response = await fetch(
+        `${PLUGIN_SERVER_URL}/plugins/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.PLUGIN_SERVER_API_KEY || ""}`,
           },
-        );
+          body: serverFormData,
+        },
+      );
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.url) {
-            remoteUrl = data.url; // Use the URL from the plugin server
-          }
-        } else {
-          console.error(
-            "Failed to upload to plugin server storage:",
-            await response.text(),
-          );
-          // Continue using the local URL
-        }
-      } catch (serverError) {
-        console.error(
-          "Error connecting to plugin server for upload:",
-          serverError,
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Failed to upload to plugin server storage:", errorText);
+        return NextResponse.json(
+          { error: "Failed to upload to plugin server" },
+          { status: 500 },
         );
-        // Continue using the local URL
       }
-    }
 
-    // Return the URL to the uploaded file
-    return NextResponse.json({
-      success: true,
-      bundleUrl: remoteUrl,
-      fileName: safeFileName,
-      pluginId: uniqueId,
-    });
+      const data = await response.json();
+      
+      // Return the URL from the plugin server
+      return NextResponse.json({
+        success: true,
+        bundleUrl: data.bundleUrl || data.url,
+        fileName: fileName,
+        pluginId: pluginId,
+      });
+    } catch (serverError) {
+      console.error("Error connecting to plugin server for upload:", serverError);
+      return NextResponse.json(
+        { error: "Failed to connect to plugin server" },
+        { status: 500 },
+      );
+    }
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(

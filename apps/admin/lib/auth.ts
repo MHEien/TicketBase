@@ -37,15 +37,36 @@ export const authConfig: NextAuthConfig = {
       }
 
       // If there's an error from previous refresh attempts, don't try again
+      // BUT allow retry for InvalidRefreshToken after some time
       if (
         token.error === "MaxRefreshAttemptsExceeded" ||
-        token.error === "RefreshAccessTokenError"
+        token.error === "RefreshAccessTokenError" ||
+        token.error === "NoRefreshToken"
       ) {
         console.log(
           "Token has permanent error, not attempting refresh:",
           token.error,
         );
         return token;
+      }
+
+      // For InvalidRefreshToken, allow retry but with backoff
+      if (token.error === "InvalidRefreshToken") {
+        const lastRefreshAttempt = Number(token.lastRefreshAttempt) || 0;
+        const now = Math.floor(Date.now() / 1000);
+        const timeSinceLastAttempt = now - lastRefreshAttempt;
+        
+        // Only retry after 30 seconds
+        if (timeSinceLastAttempt < 30) {
+          console.log(
+            `InvalidRefreshToken: waiting ${30 - timeSinceLastAttempt}s before retry`
+          );
+          return token;
+        }
+        
+        console.log("InvalidRefreshToken: retrying after backoff period");
+        // Clear the error to allow retry
+        token.error = undefined;
       }
 
       // Return previous token if the access token has not expired yet
@@ -208,6 +229,17 @@ async function refreshAccessToken(token: any) {
         `Failed to refresh token: ${response.status} ${response.statusText}`,
         errorText,
       );
+      
+      // Add more detailed debugging for 401 errors
+      if (response.status === 401) {
+        console.error("Refresh token details:", {
+          tokenLength: token.refreshToken?.length,
+          tokenPreview: token.refreshToken?.substring(0, 20) + "...",
+          hasToken: !!token.refreshToken,
+          retryCount,
+          apiUrl: `${apiBaseUrl}/auth/refresh`,
+        });
+      }
 
       // If it's a 401, the refresh token is invalid and we shouldn't retry
       if (response.status === 401) {
@@ -215,6 +247,7 @@ async function refreshAccessToken(token: any) {
         return {
           ...token,
           error: "InvalidRefreshToken",
+          lastRefreshAttempt: Math.floor(Date.now() / 1000),
         };
       }
 

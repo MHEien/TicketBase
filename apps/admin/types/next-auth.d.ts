@@ -15,6 +15,7 @@ declare module "next-auth" {
       organizationId: string;
     } & Partial<User>;
     accessToken: string;
+    error?: string;
   }
 
   interface User {
@@ -36,5 +37,6 @@ declare module "next-auth/jwt" {
     refreshToken: string;
     expiresAt: number;
     error?: string;
+    lastRefreshAttempt?: number;
   }
 }

@@ -5,6 +5,9 @@ import {
   IsObject,
   IsArray,
   ValidateNested,
+  IsEmail,
+  IsUrl,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -72,6 +75,72 @@ class StorefrontComponentsDto {
   @IsOptional()
   @IsObject()
   widgets?: Record<string, string>;
+}
+
+class PluginMetadataDto {
+  @ApiPropertyOptional({
+    description: 'Plugin author name',
+    example: 'John Doe',
+  })
+  @IsOptional()
+  @IsString()
+  author?: string;
+
+  @ApiPropertyOptional({
+    description: 'Plugin author email',
+    example: 'john.doe@example.com',
+  })
+  @IsOptional()
+  @IsEmail()
+  authorEmail?: string;
+
+  @ApiPropertyOptional({
+    description: 'Repository URL for the plugin source code',
+    example: 'https://github.com/johndoe/payment-plugin',
+  })
+  @IsOptional()
+  @IsUrl()
+  repositoryUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'Plugin submission timestamp',
+    example: '2023-12-01T10:00:00Z',
+  })
+  @IsOptional()
+  @IsString()
+  submittedAt?: string;
+
+  @ApiPropertyOptional({
+    description: 'Plugin submission status',
+    example: 'pending',
+    enum: ['pending', 'approved', 'rejected'],
+  })
+  @IsOptional()
+  @IsIn(['pending', 'approved', 'rejected'])
+  status?: string;
+
+  @ApiPropertyOptional({
+    description: 'Plugin priority for ordering',
+    example: 100,
+  })
+  @IsOptional()
+  priority?: number;
+
+  @ApiPropertyOptional({
+    description: 'Display name for the plugin',
+    example: 'Stripe Payments',
+  })
+  @IsOptional()
+  @IsString()
+  displayName?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL to the plugin icon',
+    example: 'https://example.com/icon.svg',
+  })
+  @IsOptional()
+  @IsUrl()
+  iconUrl?: string;
 }
 
 export class PublishPluginDto {
@@ -162,4 +231,14 @@ export class PublishPluginDto {
   @IsArray()
   @IsString({ each: true })
   requiredPermissions?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Plugin metadata including author information and submission details',
+    type: PluginMetadataDto,
+  })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => PluginMetadataDto)
+  metadata?: PluginMetadataDto;
 }

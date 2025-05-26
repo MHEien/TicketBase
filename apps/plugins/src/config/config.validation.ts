@@ -13,7 +13,7 @@ export class EnvironmentVariables {
 
   @IsOptional()
   @IsString()
-  PLUGIN_SERVER_URL?: string = 'http://localhost:4000';
+  PLUGIN_SERVER_URL?: string = 'http://localhost:5000';
 
   @IsOptional()
   @IsString()

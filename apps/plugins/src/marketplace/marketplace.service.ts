@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Plugin, PluginDocument } from '../plugins/schemas/plugin.schema';
+import { Plugin, PluginDocument, AdminComponents, StorefrontComponents } from '../plugins/schemas/plugin.schema';
+import { PublishPluginDto } from './dto/publish-plugin.dto';
 
 @Injectable()
 export class MarketplaceService {
@@ -9,7 +10,24 @@ export class MarketplaceService {
     @InjectModel(Plugin.name) private pluginModel: Model<PluginDocument>,
   ) {}
 
-  async publishPlugin(pluginData: Partial<Plugin>): Promise<PluginDocument> {
+  async publishPlugin(pluginData: PublishPluginDto): Promise<PluginDocument> {
+    // Convert PublishPluginDto to Plugin schema format
+    const pluginDocument: Partial<Plugin> = {
+      id: pluginData.id,
+      name: pluginData.name,
+      version: pluginData.version,
+      description: pluginData.description,
+      category: pluginData.category,
+      remoteEntry: pluginData.remoteEntry,
+      scope: pluginData.scope,
+      bundleUrl: pluginData.remoteEntry, // Use remoteEntry as bundleUrl for backward compatibility
+      extensionPoints: [], // Default empty array
+      adminComponents: (pluginData.adminComponents || {}) as AdminComponents,
+      storefrontComponents: (pluginData.storefrontComponents || {}) as StorefrontComponents,
+      requiredPermissions: pluginData.requiredPermissions || [],
+      metadata: pluginData.metadata || {},
+    };
+
     // Check if plugin already exists
     const existing = await this.pluginModel
       .findOne({ id: pluginData.id })
@@ -17,12 +35,12 @@ export class MarketplaceService {
 
     if (existing) {
       // Update existing plugin
-      Object.assign(existing, pluginData);
+      Object.assign(existing, pluginDocument);
       return existing.save();
     }
 
     // Create new plugin
-    return this.pluginModel.create(pluginData);
+    return this.pluginModel.create(pluginDocument);
   }
 
   async getMarketplacePlugins(

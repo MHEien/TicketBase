@@ -20,7 +20,7 @@ export default () => ({
     secret: process.env.NEXTAUTH_SECRET || 'nextauth-secret-key',
   },
   plugins: {
-    serverUrl: process.env.PLUGIN_SERVER_URL || 'http://localhost:4001',
+    serverUrl: process.env.PLUGIN_SERVER_URL || 'http://localhost:5000',
     allowedOrigins: (
       process.env.PLUGIN_ALLOWED_ORIGINS ||
       'http://localhost:4000,http://localhost:3000'

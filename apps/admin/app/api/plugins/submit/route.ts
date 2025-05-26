@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
 
 // Define a type for the plugin submission
 interface PluginSubmission {
@@ -13,6 +10,7 @@ interface PluginSubmission {
   repositoryUrl?: string;
   authorName: string;
   authorEmail: string;
+  termsAgreed: boolean;
 }
 
 // Define the marketplace API DTO based on the provided example
@@ -42,6 +40,14 @@ interface PublishPluginDto {
     [key: string]: string | object | undefined;
   };
   requiredPermissions?: string[];
+  metadata?: {
+    author?: string;
+    authorEmail?: string;
+    repositoryUrl?: string;
+    submittedAt?: string;
+    status?: string;
+    [key: string]: any;
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -58,6 +64,7 @@ export async function POST(request: NextRequest) {
       "bundleUrl",
       "authorName",
       "authorEmail",
+      "termsAgreed",
     ];
     for (const field of requiredFields) {
       if (!data[field as keyof PluginSubmission]) {
@@ -66,6 +73,14 @@ export async function POST(request: NextRequest) {
           { status: 400 },
         );
       }
+    }
+
+    // Validate terms agreement
+    if (!data.termsAgreed) {
+      return NextResponse.json(
+        { error: "You must agree to the terms and conditions" },
+        { status: 400 },
+      );
     }
 
     // Validate category
@@ -101,47 +116,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create a unique ID for the submission
-    const submissionId = Date.now().toString();
-
-    // Add additional fields for the local submission record
-    const submission = {
-      ...data,
-      id: submissionId,
-      submittedAt: new Date().toISOString(),
-      status: "pending", // pending, approved, rejected
-    };
-
-    // Create the submissions directory if it doesn't exist
-    const submissionsDir = join(process.cwd(), "data", "plugin-submissions");
-    if (!existsSync(submissionsDir)) {
-      await mkdir(submissionsDir, { recursive: true });
-    }
-
-    // Save the submission data to a JSON file (locally for tracking)
-    const filePath = join(submissionsDir, `${submissionId}.json`);
-    await writeFile(filePath, JSON.stringify(submission, null, 2));
+    // Generate a unique plugin ID
+    const pluginId = data.name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+    const uniquePluginId = `${pluginId}-${Date.now()}`;
 
     // Prepare data for the plugin server API
     const pluginDto: PublishPluginDto = {
-      id: data.name.toLowerCase().replace(/\s+/g, "-"), // generate an id from the name
+      id: uniquePluginId,
       name: data.name,
       description: data.description,
       version: data.version,
       category: data.category,
-      remoteEntry: data.bundleUrl, // use bundleUrl as remoteEntry
-      scope: data.name.toLowerCase().replace(/\s+/g, "_"), // generate a scope from the name
+      remoteEntry: data.bundleUrl,
+      scope: data.name.toLowerCase().replace(/\s+/g, "_"),
       adminComponents: {
         settings: "./Settings",
       },
       storefrontComponents: {},
       requiredPermissions: [],
+      metadata: {
+        author: data.authorName,
+        authorEmail: data.authorEmail,
+        repositoryUrl: data.repositoryUrl || "",
+        submittedAt: new Date().toISOString(),
+        status: "pending",
+      },
     };
 
     // Submit to the plugin server's marketplace endpoint
-    // Use either environment variable or default to localhost during development
-    const PLUGIN_SERVER_URL =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const PLUGIN_SERVER_URL = process.env.PLUGIN_SERVER_URL || "http://localhost:5000";
 
     try {
       const response = await fetch(`${PLUGIN_SERVER_URL}/marketplace`, {
@@ -154,24 +157,40 @@ export async function POST(request: NextRequest) {
       });
 
       if (!response.ok) {
-        console.error(
-          "Failed to submit to plugin server:",
-          await response.text(),
+        const errorText = await response.text();
+        console.error("Failed to submit to plugin server:", errorText);
+        
+        // Try to parse error message
+        let errorMessage = "Failed to submit plugin to server";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          // Use default message if parsing fails
+        }
+        
+        return NextResponse.json(
+          { error: errorMessage },
+          { status: response.status },
         );
-        // Still return success to the client but log the error
-        // In production, you might want to actually return an error to the client
       }
+
+      const result = await response.json();
+
+      // Return success response to the client
+      return NextResponse.json({
+        success: true,
+        message: "Plugin submitted successfully. It will be reviewed shortly.",
+        submissionId: uniquePluginId,
+        plugin: result,
+      });
     } catch (serverError) {
       console.error("Error connecting to plugin server:", serverError);
-      // Consider this a non-critical error for now - plugin was saved locally
+      return NextResponse.json(
+        { error: "Failed to connect to plugin server. Please try again later." },
+        { status: 503 },
+      );
     }
-
-    // Return success response to the client
-    return NextResponse.json({
-      success: true,
-      message: "Plugin submitted successfully. It will be reviewed shortly.",
-      submissionId,
-    });
   } catch (error) {
     console.error("Error processing plugin submission:", error);
     return NextResponse.json(

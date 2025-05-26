@@ -3,6 +3,26 @@ import { Document } from 'mongoose';
 
 export type PluginDocument = Plugin & Document;
 
+// Define the component types to match the DTOs
+export interface AdminComponents {
+  settings?: string;
+  eventCreation?: string;
+  dashboard?: string;
+  [key: string]: string | undefined;
+}
+
+export interface StorefrontComponents {
+  checkout?: string;
+  eventDetail?: string;
+  ticketSelection?: string;
+  widgets?: {
+    sidebar?: string;
+    footer?: string;
+    [key: string]: string | undefined;
+  };
+  [key: string]: string | object | undefined;
+}
+
 @Schema({ timestamps: true })
 export class Plugin {
   @Prop({ required: true, unique: true })
@@ -23,12 +43,28 @@ export class Plugin {
   @Prop({ required: false })
   bundleUrl: string;
 
+  @Prop({ required: false })
+  remoteEntry: string;
+
+  @Prop({ required: false })
+  scope: string;
+
   @Prop([String])
   extensionPoints: string[];
 
   @Prop({ type: Object, default: {} })
+  adminComponents: AdminComponents;
+
+  @Prop({ type: Object, default: {} })
+  storefrontComponents: StorefrontComponents;
+
+  @Prop({ type: Object, default: {} })
   metadata: {
     author?: string;
+    authorEmail?: string;
+    repositoryUrl?: string;
+    submittedAt?: string;
+    status?: string; // pending, approved, rejected
     priority?: number;
     displayName?: string;
     iconUrl?: string;
