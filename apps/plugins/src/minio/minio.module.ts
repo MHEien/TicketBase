@@ -9,6 +9,27 @@ import { MinioModule as NestMinioModule } from 'nestjs-minio-client';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const endpoint = configService.get('S3_ENDPOINT');
+
+        // Validate required environment variables
+        if (!endpoint) {
+          throw new Error(
+            'S3_ENDPOINT environment variable is required for MinIO configuration. ' +
+              'Please check your .env file and ensure it includes all required MinIO settings. ' +
+              'See MINIO_SETUP.md for configuration details.',
+          );
+        }
+
+        const accessKey = configService.get('AWS_ACCESS_KEY_ID');
+        const secretKey = configService.get('AWS_SECRET_ACCESS_KEY');
+
+        if (!accessKey || !secretKey) {
+          throw new Error(
+            'AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables are required for MinIO configuration. ' +
+              'Please check your .env file and ensure it includes all required MinIO settings. ' +
+              'See MINIO_SETUP.md for configuration details.',
+          );
+        }
+
         // Parse the endpoint to extract domain without protocol
         const endPointWithoutProtocol = endpoint.replace(/^https?:\/\//, '');
 
@@ -31,9 +52,9 @@ import { MinioModule as NestMinioModule } from 'nestjs-minio-client';
           useSSL:
             endpoint.startsWith('https://') ||
             configService.get('S3_USE_SSL', 'false') === 'true',
-          accessKey: configService.get('AWS_ACCESS_KEY_ID'),
-          secretKey: configService.get('AWS_SECRET_ACCESS_KEY'),
-          region: configService.get('AWS_REGION'),
+          accessKey,
+          secretKey,
+          region: configService.get('AWS_REGION', 'us-east-1'),
         };
       },
     }),

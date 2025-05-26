@@ -12,9 +12,9 @@ export default () => ({
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'secret-key',
-    expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+    expiresIn: process.env.JWT_EXPIRES_IN || '900', // 15 minutes in seconds
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'refresh-secret-key',
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '604800', // 7 days in seconds
   },
   nextAuth: {
     secret: process.env.NEXTAUTH_SECRET || 'nextauth-secret-key',

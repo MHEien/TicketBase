@@ -40,6 +40,18 @@ export class PluginsProxyService {
     return url;
   }
 
+  private createAuthHeaders(authToken?: string): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+
+    return headers;
+  }
+
   private handleHttpError(error: AxiosError, operation: string): never {
     this.logger.error(`${operation} failed:`, error.message);
 
@@ -67,7 +79,7 @@ export class PluginsProxyService {
 
   async create(createPluginDto: CreatePluginDto): Promise<Plugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins`;
+      const url = `${this.getPluginServerUrl()}/plugins`;
       const response = await firstValueFrom(
         this.httpService.post<Plugin>(url, createPluginDto).pipe(
           catchError((error: AxiosError) => {
@@ -87,7 +99,7 @@ export class PluginsProxyService {
 
   async findAll(status?: PluginStatus): Promise<Plugin[]> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins`;
+      const url = `${this.getPluginServerUrl()}/plugins/available`;
       const params = status ? { status } : {};
       const response = await firstValueFrom(
         this.httpService.get<Plugin[]>(url, { params }).pipe(
@@ -108,7 +120,7 @@ export class PluginsProxyService {
 
   async findOne(id: string): Promise<Plugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/${id}`;
+      const url = `${this.getPluginServerUrl()}/plugins/${id}`;
       const response = await firstValueFrom(
         this.httpService.get<Plugin>(url).pipe(
           catchError((error: AxiosError) => {
@@ -128,7 +140,7 @@ export class PluginsProxyService {
 
   async update(id: string, updatePluginDto: UpdatePluginDto): Promise<Plugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/${id}`;
+      const url = `${this.getPluginServerUrl()}/plugins/${id}`;
       const response = await firstValueFrom(
         this.httpService.patch<Plugin>(url, updatePluginDto).pipe(
           catchError((error: AxiosError) => {
@@ -148,7 +160,7 @@ export class PluginsProxyService {
 
   async deprecate(id: string): Promise<Plugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/${id}/deprecate`;
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/deprecate`;
       const response = await firstValueFrom(
         this.httpService.patch<Plugin>(url).pipe(
           catchError((error: AxiosError) => {
@@ -168,7 +180,7 @@ export class PluginsProxyService {
 
   async remove(id: string): Promise<Plugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/${id}`;
+      const url = `${this.getPluginServerUrl()}/plugins/${id}`;
       const response = await firstValueFrom(
         this.httpService.delete<Plugin>(url).pipe(
           catchError((error: AxiosError) => {
@@ -188,7 +200,7 @@ export class PluginsProxyService {
 
   async findByCategory(category: PluginCategory): Promise<Plugin[]> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins`;
+      const url = `${this.getPluginServerUrl()}/plugins/available`;
       const response = await firstValueFrom(
         this.httpService.get<Plugin[]>(url, { params: { category } }).pipe(
           catchError((error: AxiosError) => {
@@ -208,7 +220,7 @@ export class PluginsProxyService {
 
   async findByExtensionPoint(extensionPoint: string): Promise<Plugin[]> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins`;
+      const url = `${this.getPluginServerUrl()}/plugins/available`;
       const response = await firstValueFrom(
         this.httpService
           .get<Plugin[]>(url, { params: { extensionPoint } })
@@ -238,7 +250,7 @@ export class PluginsProxyService {
     installPluginDto: InstallPluginDto,
   ): Promise<PluginInstallationResponse> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/install`;
+      const url = `${this.getPluginServerUrl()}/plugins/install`;
       const response = await firstValueFrom(
         this.httpService
           .post<PluginInstallationResponse>(url, installPluginDto)
@@ -266,9 +278,9 @@ export class PluginsProxyService {
 
   async uninstallPlugin(id: string): Promise<void> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}`;
+      const url = `${this.getPluginServerUrl()}/plugins/uninstall`;
       await firstValueFrom(
-        this.httpService.delete(url).pipe(
+        this.httpService.post(url, { pluginId: id }).pipe(
           catchError((error: AxiosError) => {
             this.handleHttpError(error, `Uninstall plugin ${id}`);
             throw error;
@@ -288,9 +300,9 @@ export class PluginsProxyService {
     enabled: boolean,
   ): Promise<InstalledPlugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}/toggle`;
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/status`;
       const response = await firstValueFrom(
-        this.httpService.patch<InstalledPlugin>(url, { enabled }).pipe(
+        this.httpService.put<InstalledPlugin>(url, { enabled }).pipe(
           catchError((error: AxiosError) => {
             this.handleHttpError(error, `Toggle plugin status ${id}`);
             throw error;
@@ -311,9 +323,9 @@ export class PluginsProxyService {
     configuration: Record<string, unknown>,
   ): Promise<InstalledPlugin> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/installed/${id}/config`;
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/config`;
       const response = await firstValueFrom(
-        this.httpService.patch<InstalledPlugin>(url, { configuration }).pipe(
+        this.httpService.put<InstalledPlugin>(url, configuration).pipe(
           catchError((error: AxiosError) => {
             this.handleHttpError(error, `Update plugin configuration ${id}`);
             throw error;
@@ -331,12 +343,17 @@ export class PluginsProxyService {
 
   async getInstalledPlugins(
     organizationId: string,
+    authToken?: string,
   ): Promise<InstalledPlugin[]> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/installed`;
+      const url = `${this.getPluginServerUrl()}/plugins/installed`;
+      const headers = this.createAuthHeaders(authToken);
       const response = await firstValueFrom(
         this.httpService
-          .get<InstalledPlugin[]>(url, { params: { organizationId } })
+          .get<InstalledPlugin[]>(url, {
+            params: { organizationId },
+            headers,
+          })
           .pipe(
             catchError((error: AxiosError) => {
               this.handleHttpError(
@@ -359,13 +376,18 @@ export class PluginsProxyService {
     }
   }
 
-  async getEnabledPlugins(organizationId: string): Promise<InstalledPlugin[]> {
+  async getEnabledPlugins(
+    organizationId: string,
+    authToken?: string,
+  ): Promise<InstalledPlugin[]> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/installed`;
+      const url = `${this.getPluginServerUrl()}/plugins/installed`;
+      const headers = this.createAuthHeaders(authToken);
       const response = await firstValueFrom(
         this.httpService
           .get<InstalledPlugin[]>(url, {
             params: { organizationId, enabled: true },
+            headers,
           })
           .pipe(
             catchError((error: AxiosError) => {
@@ -392,12 +414,17 @@ export class PluginsProxyService {
   async getPluginsByType(
     organizationId: string,
     type: PluginCategory,
+    authToken?: string,
   ): Promise<InstalledPlugin[]> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/installed`;
+      const url = `${this.getPluginServerUrl()}/plugins/installed`;
+      const headers = this.createAuthHeaders(authToken);
       const response = await firstValueFrom(
         this.httpService
-          .get<InstalledPlugin[]>(url, { params: { organizationId, type } })
+          .get<InstalledPlugin[]>(url, {
+            params: { organizationId, type },
+            headers,
+          })
           .pipe(
             catchError((error: AxiosError) => {
               this.handleHttpError(
@@ -422,7 +449,7 @@ export class PluginsProxyService {
 
   async checkPluginServerHealth(): Promise<PluginHealthStatus> {
     try {
-      const url = `${this.getPluginServerUrl()}/api/plugins/storage-health`;
+      const url = `${this.getPluginServerUrl()}/plugins/storage-health`;
       const response = await firstValueFrom(
         this.httpService.get<PluginHealthStatus>(url).pipe(
           catchError((error: AxiosError) => {

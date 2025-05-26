@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan } from 'typeorm';
+import { Repository, LessThan, MoreThan } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UserSession } from './entities/user-session.entity';
 import * as bcrypt from 'bcrypt';
@@ -88,6 +88,7 @@ export class UsersService {
   async cleanupSessions(): Promise<{ removed: number }> {
     const now = new Date();
 
+    // Mark expired sessions as revoked
     const expiredResult = await this.sessionsRepository.update(
       {
         expiresAt: LessThan(now),
@@ -96,17 +97,33 @@ export class UsersService {
       { isRevoked: true },
     );
 
+    // Delete old revoked sessions (older than 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const oldSessionsResult = await this.sessionsRepository.delete({
       createdAt: LessThan(thirtyDaysAgo),
+      isRevoked: true,
     });
 
     return {
       removed:
         (expiredResult.affected || 0) + (oldSessionsResult.affected || 0),
     };
+  }
+
+  async findActiveSessionByRefreshToken(
+    refreshToken: string,
+  ): Promise<UserSession | null> {
+    const now = new Date();
+    return this.sessionsRepository.findOne({
+      where: {
+        refreshToken,
+        isRevoked: false,
+        expiresAt: MoreThan(now), // Only return non-expired sessions
+      },
+      relations: ['user'],
+    });
   }
 
   private async hashPassword(password: string): Promise<string> {

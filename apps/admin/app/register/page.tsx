@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,8 +82,21 @@ export default function RegisterPage() {
       });
 
       if (response.ok) {
-        // On successful registration, redirect to the onboarding flow
-        router.push("/onboarding");
+        // On successful registration, sign the user in with NextAuth
+        const result = await signIn("credentials", {
+          email: data.email,
+          password: data.password,
+          redirect: false,
+        });
+
+        if (result?.ok) {
+          // On successful sign-in, redirect to the onboarding flow
+          router.push("/onboarding");
+        } else {
+          setError(
+            "Registration successful but sign-in failed. Please try logging in.",
+          );
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Registration failed. Please try again.");

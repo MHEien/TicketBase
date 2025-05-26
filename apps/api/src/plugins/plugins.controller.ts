@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,7 +19,9 @@ import {
   ApiParam,
   ApiQuery,
   ApiBody,
+  ApiProperty,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { PluginsProxyService } from './plugins-proxy.service';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
@@ -32,11 +36,39 @@ import {
 import { InstalledPluginDto } from './dto/installed-plugin.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RegisterPaymentPluginDto } from './dto/payment-plugin.dto';
+import { User } from '../users/entities/user.entity';
+
+// Interface for request with authenticated user
+interface RequestWithUser extends Request {
+  user: User;
+}
+
+// Simplified DTO for plugin installation that only requires pluginId
+export class SimpleInstallPluginDto {
+  @ApiProperty({ description: 'Plugin ID to install' })
+  pluginId: string;
+}
 
 @ApiTags('plugins')
 @Controller('api/plugins')
 export class PluginsController {
+  private readonly logger = new Logger(PluginsController.name);
+
   constructor(private readonly pluginsService: PluginsProxyService) {}
+
+  // Debug logging helper
+  private debugLog(operation: string, details: any) {
+    this.logger.debug(`🔌 Plugin Controller Debug: ${operation}`, details);
+  }
+
+  // Error logging helper
+  private errorLog(operation: string, error: any, context?: any) {
+    this.logger.error(`❌ Plugin Controller Error: ${operation}`, {
+      error: error.message || error,
+      context,
+      stack: error.stack,
+    });
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -49,7 +81,26 @@ export class PluginsController {
   })
   @ApiBody({ type: CreatePluginDto })
   async create(@Body() createPluginDto: CreatePluginDto): Promise<Plugin> {
-    return this.pluginsService.create(createPluginDto);
+    const operation = 'create';
+
+    try {
+      this.debugLog(operation, {
+        pluginData: createPluginDto,
+        description: 'Creating new plugin',
+      });
+
+      const result = await this.pluginsService.create(createPluginDto);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: result.id,
+        pluginName: result.name,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { createPluginDto });
+      throw error;
+    }
   }
 
   @Post('payment')
@@ -65,21 +116,41 @@ export class PluginsController {
   async registerPaymentPlugin(
     @Body() registerPaymentPluginDto: RegisterPaymentPluginDto,
   ): Promise<Plugin> {
-    // Convert to CreatePluginDto and retain payment-specific metadata
-    const createPluginDto = new CreatePluginDto();
-    Object.assign(createPluginDto, registerPaymentPluginDto);
+    const operation = 'registerPaymentPlugin';
 
-    // Add payment-specific metadata
-    createPluginDto.metadata = {
-      ...createPluginDto.metadata,
-      paymentProvider: registerPaymentPluginDto.provider,
-      supportedMethods: registerPaymentPluginDto.supportedMethods,
-      supportedCurrencies: registerPaymentPluginDto.supportedCurrencies,
-      configurationSchema: registerPaymentPluginDto.configurationSchema,
-      defaultConfiguration: registerPaymentPluginDto.defaultConfiguration,
-    };
+    try {
+      this.debugLog(operation, {
+        pluginData: registerPaymentPluginDto,
+        description: 'Registering payment plugin',
+      });
 
-    return this.pluginsService.create(createPluginDto);
+      // Convert to CreatePluginDto and retain payment-specific metadata
+      const createPluginDto = new CreatePluginDto();
+      Object.assign(createPluginDto, registerPaymentPluginDto);
+
+      // Add payment-specific metadata
+      createPluginDto.metadata = {
+        ...createPluginDto.metadata,
+        paymentProvider: registerPaymentPluginDto.provider,
+        supportedMethods: registerPaymentPluginDto.supportedMethods,
+        supportedCurrencies: registerPaymentPluginDto.supportedCurrencies,
+        configurationSchema: registerPaymentPluginDto.configurationSchema,
+        defaultConfiguration: registerPaymentPluginDto.defaultConfiguration,
+      };
+
+      const result = await this.pluginsService.create(createPluginDto);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: result.id,
+        pluginName: result.name,
+        provider: registerPaymentPluginDto.provider,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { registerPaymentPluginDto });
+      throw error;
+    }
   }
 
   @Get()
@@ -95,7 +166,26 @@ export class PluginsController {
     required: false,
   })
   async findAll(@Query('status') status?: PluginStatus): Promise<Plugin[]> {
-    return this.pluginsService.findAll(status);
+    const operation = 'findAll';
+
+    try {
+      this.debugLog(operation, {
+        status,
+        description: 'Fetching all available plugins',
+      });
+
+      const result = await this.pluginsService.findAll(status);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginCount: result.length,
+        status,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { status });
+      throw error;
+    }
   }
 
   @Get(':id')
@@ -107,7 +197,26 @@ export class PluginsController {
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async findOne(@Param('id') id: string): Promise<Plugin> {
-    return this.pluginsService.findOne(id);
+    const operation = 'findOne';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: id,
+        description: 'Fetching plugin by ID',
+      });
+
+      const result = await this.pluginsService.findOne(id);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: id,
+        pluginName: result.name,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { pluginId: id });
+      throw error;
+    }
   }
 
   @Patch(':id')
@@ -125,7 +234,27 @@ export class PluginsController {
     @Param('id') id: string,
     @Body() updatePluginDto: UpdatePluginDto,
   ): Promise<Plugin> {
-    return this.pluginsService.update(id, updatePluginDto);
+    const operation = 'update';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: id,
+        updateData: updatePluginDto,
+        description: 'Updating plugin',
+      });
+
+      const result = await this.pluginsService.update(id, updatePluginDto);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: id,
+        pluginName: result.name,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { pluginId: id, updatePluginDto });
+      throw error;
+    }
   }
 
   @Patch(':id/deprecate')
@@ -139,7 +268,26 @@ export class PluginsController {
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async deprecate(@Param('id') id: string): Promise<Plugin> {
-    return this.pluginsService.deprecate(id);
+    const operation = 'deprecate';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: id,
+        description: 'Deprecating plugin',
+      });
+
+      const result = await this.pluginsService.deprecate(id);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: id,
+        pluginName: result.name,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { pluginId: id });
+      throw error;
+    }
   }
 
   @Delete(':id')
@@ -153,7 +301,26 @@ export class PluginsController {
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async remove(@Param('id') id: string): Promise<Plugin> {
-    return this.pluginsService.remove(id);
+    const operation = 'remove';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: id,
+        description: 'Removing plugin',
+      });
+
+      const result = await this.pluginsService.remove(id);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: id,
+        pluginName: result.name,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { pluginId: id });
+      throw error;
+    }
   }
 
   @Get('category/:category')
@@ -165,7 +332,28 @@ export class PluginsController {
   })
   @ApiParam({ name: 'category', required: true, type: String })
   async findByCategory(@Param('category') category: string): Promise<Plugin[]> {
-    return this.pluginsService.findByCategory(category as PluginCategory);
+    const operation = 'findByCategory';
+
+    try {
+      this.debugLog(operation, {
+        category,
+        description: 'Fetching plugins by category',
+      });
+
+      const result = await this.pluginsService.findByCategory(
+        category as PluginCategory,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        category,
+        pluginCount: result.length,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { category });
+      throw error;
+    }
   }
 
   @Get('extension-point/:extensionPoint')
@@ -179,7 +367,27 @@ export class PluginsController {
   async findByExtensionPoint(
     @Param('extensionPoint') extensionPoint: string,
   ): Promise<Plugin[]> {
-    return this.pluginsService.findByExtensionPoint(extensionPoint);
+    const operation = 'findByExtensionPoint';
+
+    try {
+      this.debugLog(operation, {
+        extensionPoint,
+        description: 'Fetching plugins by extension point',
+      });
+
+      const result =
+        await this.pluginsService.findByExtensionPoint(extensionPoint);
+
+      this.debugLog(`${operation} - Success`, {
+        extensionPoint,
+        pluginCount: result.length,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, { extensionPoint });
+      throw error;
+    }
   }
 
   @Post('install')
@@ -191,9 +399,46 @@ export class PluginsController {
     description: 'The plugin has been successfully installed.',
     type: InstalledPluginDto,
   })
-  @ApiBody({ type: InstallPluginDto })
-  async install(@Body() installPluginDto: InstallPluginDto): Promise<any> {
-    return this.pluginsService.installPlugin(installPluginDto);
+  @ApiBody({ type: SimpleInstallPluginDto })
+  async install(
+    @Req() req: RequestWithUser,
+    @Body() body: SimpleInstallPluginDto,
+  ): Promise<any> {
+    const operation = 'install';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: body.pluginId,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        description: 'Installing plugin for organization',
+      });
+
+      // Create the full InstallPluginDto with user info from JWT
+      const installPluginDto: InstallPluginDto = {
+        pluginId: body.pluginId,
+        organizationId: req.user.organizationId,
+        userId: req.user.id,
+      };
+
+      const result = await this.pluginsService.installPlugin(installPluginDto);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: body.pluginId,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        result,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        pluginId: body.pluginId,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Delete('installed/:id')
@@ -205,8 +450,35 @@ export class PluginsController {
     description: 'The plugin has been successfully uninstalled.',
   })
   @ApiParam({ name: 'id', required: true, type: String })
-  async uninstall(@Param('id') id: string): Promise<void> {
-    return this.pluginsService.uninstallPlugin(id);
+  async uninstall(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<void> {
+    const operation = 'uninstall';
+
+    try {
+      this.debugLog(operation, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        description: 'Uninstalling plugin from organization',
+      });
+
+      await this.pluginsService.uninstallPlugin(id);
+
+      this.debugLog(`${operation} - Success`, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+      });
+    } catch (error) {
+      this.errorLog(operation, error, {
+        installedPluginId: id,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Patch('installed/:id/enable')
@@ -219,8 +491,38 @@ export class PluginsController {
     type: InstalledPluginDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
-  async enable(@Param('id') id: string): Promise<InstalledPlugin> {
-    return this.pluginsService.togglePluginStatus(id, true);
+  async enable(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<InstalledPlugin> {
+    const operation = 'enable';
+
+    try {
+      this.debugLog(operation, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        description: 'Enabling plugin',
+      });
+
+      const result = await this.pluginsService.togglePluginStatus(id, true);
+
+      this.debugLog(`${operation} - Success`, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        result,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        installedPluginId: id,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Patch('installed/:id/disable')
@@ -233,8 +535,38 @@ export class PluginsController {
     type: InstalledPluginDto,
   })
   @ApiParam({ name: 'id', required: true, type: String })
-  async disable(@Param('id') id: string): Promise<InstalledPlugin> {
-    return this.pluginsService.togglePluginStatus(id, false);
+  async disable(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<InstalledPlugin> {
+    const operation = 'disable';
+
+    try {
+      this.debugLog(operation, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        description: 'Disabling plugin',
+      });
+
+      const result = await this.pluginsService.togglePluginStatus(id, false);
+
+      this.debugLog(`${operation} - Success`, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        result,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        installedPluginId: id,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Patch('installed/:id/configure')
@@ -248,10 +580,43 @@ export class PluginsController {
   })
   @ApiParam({ name: 'id', required: true, type: String })
   async configure(
+    @Req() req: RequestWithUser,
     @Param('id') id: string,
     @Body() configuration: Record<string, any>,
   ): Promise<InstalledPlugin> {
-    return this.pluginsService.updatePluginConfiguration(id, configuration);
+    const operation = 'configure';
+
+    try {
+      this.debugLog(operation, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        configuration,
+        description: 'Updating plugin configuration',
+      });
+
+      const result = await this.pluginsService.updatePluginConfiguration(
+        id,
+        configuration,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        installedPluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        result,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        installedPluginId: id,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+        configuration,
+      });
+      throw error;
+    }
   }
 
   @Get('organization/:organizationId')
@@ -265,9 +630,48 @@ export class PluginsController {
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   async getInstalledPlugins(
+    @Req() req: RequestWithUser,
     @Param('organizationId') organizationId: string,
   ): Promise<InstalledPlugin[]> {
-    return this.pluginsService.getInstalledPlugins(organizationId);
+    const operation = 'getInstalledPlugins';
+
+    try {
+      // Allow "current" as a special value to use the authenticated user's organization
+      const targetOrgId =
+        organizationId === 'current' ? req.user.organizationId : organizationId;
+
+      this.debugLog(operation, {
+        requestedOrgId: organizationId,
+        targetOrgId,
+        userId: req.user.id,
+        userOrgId: req.user.organizationId,
+        description: 'Fetching installed plugins for organization',
+      });
+
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.getInstalledPlugins(
+        targetOrgId,
+        authToken,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        organizationId: targetOrgId,
+        pluginCount: result.length,
+        userId: req.user.id,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        organizationId,
+        userId: req.user?.id,
+        userOrgId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Get('organization/:organizationId/enabled')
@@ -281,9 +685,48 @@ export class PluginsController {
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   async getEnabledPlugins(
+    @Req() req: RequestWithUser,
     @Param('organizationId') organizationId: string,
   ): Promise<InstalledPlugin[]> {
-    return this.pluginsService.getEnabledPlugins(organizationId);
+    const operation = 'getEnabledPlugins';
+
+    try {
+      // Allow "current" as a special value to use the authenticated user's organization
+      const targetOrgId =
+        organizationId === 'current' ? req.user.organizationId : organizationId;
+
+      this.debugLog(operation, {
+        requestedOrgId: organizationId,
+        targetOrgId,
+        userId: req.user.id,
+        userOrgId: req.user.organizationId,
+        description: 'Fetching enabled plugins for organization',
+      });
+
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.getEnabledPlugins(
+        targetOrgId,
+        authToken,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        organizationId: targetOrgId,
+        pluginCount: result.length,
+        userId: req.user.id,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        organizationId,
+        userId: req.user?.id,
+        userOrgId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Get('organization/:organizationId/payment')
@@ -297,12 +740,49 @@ export class PluginsController {
   })
   @ApiParam({ name: 'organizationId', required: true, type: String })
   async getPaymentPlugins(
+    @Req() req: RequestWithUser,
     @Param('organizationId') organizationId: string,
   ): Promise<InstalledPlugin[]> {
-    return this.pluginsService.getPluginsByType(
-      organizationId,
-      PluginCategory.PAYMENT,
-    );
+    const operation = 'getPaymentPlugins';
+
+    try {
+      // Allow "current" as a special value to use the authenticated user's organization
+      const targetOrgId =
+        organizationId === 'current' ? req.user.organizationId : organizationId;
+
+      this.debugLog(operation, {
+        requestedOrgId: organizationId,
+        targetOrgId,
+        userId: req.user.id,
+        userOrgId: req.user.organizationId,
+        description: 'Fetching payment plugins for organization',
+      });
+
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.getPluginsByType(
+        targetOrgId,
+        PluginCategory.PAYMENT,
+        authToken,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        organizationId: targetOrgId,
+        pluginCount: result.length,
+        userId: req.user.id,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        organizationId,
+        userId: req.user?.id,
+        userOrgId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 
   @Get('organization/:organizationId/type/:type')
@@ -318,12 +798,52 @@ export class PluginsController {
   @ApiParam({ name: 'organizationId', required: true, type: String })
   @ApiParam({ name: 'type', required: true, type: String })
   async getPluginsByType(
+    @Req() req: RequestWithUser,
     @Param('organizationId') organizationId: string,
     @Param('type') type: string,
   ): Promise<InstalledPlugin[]> {
-    return this.pluginsService.getPluginsByType(
-      organizationId,
-      type as PluginCategory,
-    );
+    const operation = 'getPluginsByType';
+
+    try {
+      // Allow "current" as a special value to use the authenticated user's organization
+      const targetOrgId =
+        organizationId === 'current' ? req.user.organizationId : organizationId;
+
+      this.debugLog(operation, {
+        requestedOrgId: organizationId,
+        targetOrgId,
+        type,
+        userId: req.user.id,
+        userOrgId: req.user.organizationId,
+        description: 'Fetching plugins by type for organization',
+      });
+
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.getPluginsByType(
+        targetOrgId,
+        type as PluginCategory,
+        authToken,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        organizationId: targetOrgId,
+        type,
+        pluginCount: result.length,
+        userId: req.user.id,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        organizationId,
+        type,
+        userId: req.user?.id,
+        userOrgId: req.user?.organizationId,
+      });
+      throw error;
+    }
   }
 }

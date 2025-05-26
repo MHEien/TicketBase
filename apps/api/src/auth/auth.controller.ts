@@ -9,7 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService, TokenPair } from './auth.service';
+import { AuthService, TokenPair, LoginResponse } from './auth.service';
 import {
   ApiTags,
   ApiOperation,
@@ -117,6 +117,35 @@ export class TokenResponseDto implements TokenPair {
   expiresIn: number;
 }
 
+export class LoginResponseDto implements LoginResponse {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  role: string;
+
+  @ApiProperty()
+  permissions: string[];
+
+  @ApiProperty()
+  organizationId: string;
+
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  refreshToken: string;
+
+  @ApiProperty()
+  expiresIn: number;
+}
+
 interface RequestWithUser extends Request {
   user: User;
 }
@@ -130,14 +159,14 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Login successful',
-    type: TokenResponseDto,
+    type: LoginResponseDto,
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @ApiBody({ type: LoginDto })
   @UseGuards(AuthGuard('local'))
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Req() req: RequestWithUser): Promise<TokenPair> {
+  async login(@Req() req: RequestWithUser): Promise<LoginResponse> {
     return this.authService.login(req.user);
   }
 

@@ -5,11 +5,22 @@ import { auth } from "@/lib/auth";
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export async function POST(request: Request) {
+  console.log("=== ONBOARDING COMPLETION STARTED ===");
+
   try {
     const session = await auth();
 
+    console.log("Session data:", {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      hasAccessToken: !!session?.accessToken,
+      userId: session?.user?.id,
+      fullSession: session,
+    });
+
     // Ensure the user is authenticated
     if (!session?.user || !session.accessToken) {
+      console.error("Authentication failed - missing session or token");
       return NextResponse.json(
         { message: "Authentication required" },
         { status: 401 },
@@ -42,8 +53,10 @@ export async function POST(request: Request) {
     });
 
     if (!userUpdateResponse.ok) {
+      const errorText = await userUpdateResponse.text();
+      console.error("Backend error:", userUpdateResponse.status, errorText);
       return NextResponse.json(
-        { message: "Failed to update user settings" },
+        { message: "Failed to update user settings", error: errorText },
         { status: userUpdateResponse.status },
       );
     }

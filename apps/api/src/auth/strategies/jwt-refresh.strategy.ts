@@ -64,6 +64,14 @@ export class JwtRefreshStrategy extends PassportStrategy(
 
       if (!session) {
         this.logger.error(`Session not found for token`);
+
+        // Log additional debugging info
+        const userSessions = await this.usersService.findSessionsByUserId(
+          payload.sub,
+        );
+        this.logger.error(
+          `User ${payload.sub} has ${userSessions.length} total sessions, ${userSessions.filter((s) => !s.isRevoked).length} active`,
+        );
         throw new UnauthorizedException('Refresh token has been revoked');
       }
 

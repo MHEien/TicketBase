@@ -63,6 +63,13 @@ export const authConfig: NextAuthConfig = {
       return refreshAccessToken(token);
     },
     async session({ session, token }) {
+      console.log("Session callback - token data:", {
+        hasToken: !!token,
+        hasAccessToken: !!token?.accessToken,
+        hasError: !!token?.error,
+        tokenError: token?.error,
+      });
+
       // If token has an error, return a minimal session to avoid breaking the app
       if (token.error) {
         console.log("Token has error, returning minimal session:", token.error);
@@ -90,6 +97,13 @@ export const authConfig: NextAuthConfig = {
           (session as any).refreshToken = token.refreshToken;
         }
       }
+
+      console.log("Session callback - final session:", {
+        hasUser: !!session.user,
+        hasAccessToken: !!session.accessToken,
+        userId: session.user?.id,
+      });
+
       return session;
     },
   },

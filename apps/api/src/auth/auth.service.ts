@@ -28,6 +28,18 @@ export interface TokenPair {
   expiresIn: number;
 }
 
+export interface LoginResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  permissions: string[];
+  organizationId: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
 interface UpdateUserSettingsDto {
   onboardingCompleted?: boolean;
   onboardingCompletedAt?: Date;
@@ -51,7 +63,7 @@ export class AuthService {
     return this.usersService.validateUser(email, password);
   }
 
-  async login(user: User): Promise<TokenPair> {
+  async login(user: User): Promise<LoginResponse> {
     const tokens = this.generateTokens(user);
 
     // Create session record
@@ -74,7 +86,16 @@ export class AuthService {
     // Update user's last active timestamp
     await this.usersService.updateLastActive(user.id);
 
-    return tokens;
+    // Return user information AND tokens for NextAuth compatibility
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      permissions: user.permissions,
+      organizationId: user.organizationId,
+      ...tokens,
+    };
   }
 
   async register(registerDto: RegisterDto): Promise<any> {
@@ -197,6 +218,14 @@ export class AuthService {
             console.error(
               `User ${payload.sub} has ${userSessions.length} total sessions, ${userSessions.filter((s) => !s.isRevoked).length} active`,
             );
+
+            // If user has no active sessions, this might be a cleanup issue
+            const activeSessions = userSessions.filter((s) => !s.isRevoked);
+            if (activeSessions.length === 0) {
+              console.error(
+                'User has no active sessions - possible cleanup issue',
+              );
+            }
           }
           throw new UnauthorizedException(
             'Invalid refresh token - session not found',
@@ -233,13 +262,34 @@ export class AuthService {
           throw new UnauthorizedException('User not found');
         }
 
-        // Invalidate old session
-        await this.usersService.revokeSession(session.id);
-        console.log('Old session revoked, generating new tokens');
+        // Generate new tokens first
+        const newTokens = this.generateTokens(user);
+        console.log('New tokens generated');
 
-        // Generate new tokens and session
-        const newTokens = await this.login(user);
-        console.log('New tokens generated successfully');
+        // Create new session
+        const expiresAt = new Date();
+        expiresAt.setSeconds(
+          expiresAt.getSeconds() +
+            parseInt(
+              this.configService.get('jwt.refreshExpiresIn') || '604800',
+              10,
+            ),
+        );
+
+        await this.usersService.createSession({
+          userId: user.id,
+          token: newTokens.accessToken,
+          refreshToken: newTokens.refreshToken,
+          expiresAt,
+        });
+
+        // Only revoke old session after new one is successfully created
+        await this.usersService.revokeSession(session.id);
+        console.log('Old session revoked after new session created');
+
+        // Update user's last active timestamp
+        await this.usersService.updateLastActive(user.id);
+
         return newTokens;
       } catch (jwtError) {
         console.error('JWT verification failed:', jwtError.message);
@@ -451,12 +501,15 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('jwt.secret'),
-      expiresIn: this.configService.get('jwt.expiresIn'),
+      expiresIn: parseInt(this.configService.get('jwt.expiresIn') || '900', 10),
     });
 
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get('jwt.refreshSecret'),
-      expiresIn: this.configService.get('jwt.refreshExpiresIn'),
+      expiresIn: parseInt(
+        this.configService.get('jwt.refreshExpiresIn') || '604800',
+        10,
+      ),
     });
 
     return {
