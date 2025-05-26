@@ -6,6 +6,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom, catchError } from 'rxjs';
+import { AxiosError } from 'axios';
 import {
   Transaction,
   TransactionType,
@@ -42,6 +45,7 @@ export class PaymentsService {
     private transactionsRepository: Repository<Transaction>,
     private configService: ConfigService,
     private pluginsService: PluginsService,
+    private httpService: HttpService,
   ) {}
 
   /**
@@ -208,29 +212,47 @@ export class PaymentsService {
   }
 
   /**
-   * Helper method to make requests to payment plugins
-   * This would use your plugin system's method of calling plugin methods
+   * Helper method to make requests to payment plugins through the plugin proxy
    */
-  private makePluginRequest(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _pluginId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _method: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _params: any,
+  private async makePluginRequest(
+    pluginId: string,
+    method: string,
+    params: any,
   ): Promise<PaymentProviderResponse> {
-    // In a real implementation, this would use your plugin system's API to call the method
-    // This is a placeholder that would need to be implemented based on your plugin architecture
+    try {
+      // Get the plugin server URL from configuration
+      const pluginServerUrl =
+        this.configService.get<string>('plugins.serverUrl');
+      if (!pluginServerUrl) {
+        throw new InternalServerErrorException(
+          'Plugin server URL not configured',
+        );
+      }
 
-    // Example implementation using a hypothetical plugin proxy service:
-    // const response = await this.pluginProxyService.callPluginMethod(pluginId, method, params);
-    // return response;
+      // Make request to the plugin proxy endpoint
+      const url = `${pluginServerUrl}/api/plugin-proxy/${pluginId}/${method}`;
 
-    // For now, we'll return a promise that rejects to indicate this needs implementation
-    return Promise.resolve({
-      success: false,
-      error: 'Plugin proxy method not implemented',
-    });
+      const response = await firstValueFrom(
+        this.httpService.post(url, params).pipe(
+          catchError((error: AxiosError) => {
+            throw new InternalServerErrorException(
+              `Plugin request failed: ${error.message}`,
+            );
+          }),
+        ),
+      );
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error.message || 'Unknown error occurred when calling payment plugin',
+      };
+    }
   }
 
   async createTransaction(
