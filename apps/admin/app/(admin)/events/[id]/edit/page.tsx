@@ -16,16 +16,13 @@ import { useEventCreation } from "@/hooks/use-event-creation";
 import { useEvent } from "@/hooks/use-events";
 import { updateEvent } from "@/lib/api/events-api";
 
-export default function EditEventPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditEventPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { eventData, isValid, resetEventData, updateEventData } = useEventCreation();
+  const { eventData, isValid, resetEventData, updateEventData } =
+    useEventCreation();
   const { event, loading, error } = useEvent(params.id);
 
   const steps = [
@@ -59,13 +56,14 @@ export default function EditEventPage({
         virtualEventUrl: event.virtualEventUrl || "",
         featuredImage: event.featuredImage || "",
         galleryImages: event.galleryImages || [],
-        ticketTypes: event.ticketTypes?.map(ticket => ({
-          id: ticket.id,
-          name: ticket.name,
-          price: ticket.price,
-          quantity: ticket.quantity,
-          description: ticket.description || "",
-        })) || [],
+        ticketTypes:
+          event.ticketTypes?.map((ticket) => ({
+            id: ticket.id,
+            name: ticket.name,
+            price: ticket.price,
+            quantity: ticket.quantity,
+            description: ticket.description || "",
+          })) || [],
       });
     }
   }, [event, loading, updateEventData]);
@@ -115,7 +113,10 @@ export default function EditEventPage({
         virtualEventUrl: eventData.virtualEventUrl,
         featuredImage: eventData.featuredImage,
         galleryImages: eventData.galleryImages,
-        capacity: eventData.ticketTypes.reduce((sum, ticket) => sum + ticket.quantity, 0),
+        capacity: eventData.ticketTypes.reduce(
+          (sum, ticket) => sum + ticket.quantity,
+          0,
+        ),
       });
 
       toast({
@@ -139,9 +140,7 @@ export default function EditEventPage({
 
   const handleCancel = () => {
     if (
-      confirm(
-        "Are you sure you want to cancel? All your changes will be lost.",
-      )
+      confirm("Are you sure you want to cancel? All your changes will be lost.")
     ) {
       router.push(`/events/${params.id}`);
     }
@@ -165,9 +164,7 @@ export default function EditEventPage({
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-destructive">Error loading event data</p>
-          <Button onClick={() => router.push("/events")}>
-            Back to Events
-          </Button>
+          <Button onClick={() => router.push("/events")}>Back to Events</Button>
         </div>
       </div>
     );
@@ -313,4 +310,4 @@ export default function EditEventPage({
       </div>
     </div>
   );
-} 
+}

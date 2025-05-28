@@ -80,4 +80,4 @@ function EventsLoading({ view = "grid", count = 8 }: EventsLoadingProps) {
   );
 }
 
-export { Skeleton, EventCardSkeleton, EventsLoading }; 
+export { Skeleton, EventCardSkeleton, EventsLoading };

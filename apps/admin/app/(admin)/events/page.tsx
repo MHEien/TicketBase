@@ -53,13 +53,13 @@ export default function EventsPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
 
   // Fetch events with real API
-  const { 
-    events, 
-    loading, 
-    error, 
-    deleteEventMutation, 
-    publishEventMutation, 
-    cancelEventMutation 
+  const {
+    events,
+    loading,
+    error,
+    deleteEventMutation,
+    publishEventMutation,
+    cancelEventMutation,
   } = useEvents();
 
   // Filter and sort events
@@ -95,13 +95,15 @@ export default function EventsPage() {
   const publishedEvents = filteredAndSortedEvents.filter(
     (event) => event.status === "published",
   );
-  const draftEvents = filteredAndSortedEvents.filter((event) => event.status === "draft");
+  const draftEvents = filteredAndSortedEvents.filter(
+    (event) => event.status === "draft",
+  );
   const pastEvents = filteredAndSortedEvents.filter(
     (event) =>
       event.status === "completed" ||
-      (event.status === "published" && 
-       event.endDate && 
-       new Date(event.endDate) < new Date()),
+      (event.status === "published" &&
+        event.endDate &&
+        new Date(event.endDate) < new Date()),
   );
 
   const handleCreateEvent = () => {
@@ -113,7 +115,11 @@ export default function EventsPage() {
   };
 
   const handleDeleteEvent = async (eventId: string) => {
-    if (confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this event? This action cannot be undone.",
+      )
+    ) {
       await deleteEventMutation(eventId);
     }
   };
@@ -137,9 +143,12 @@ export default function EventsPage() {
     }
   };
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value || "");
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value || "");
+    },
+    [],
+  );
 
   const renderEventCard = (event: Event) => {
     const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
@@ -245,10 +254,9 @@ export default function EventsPage() {
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>
-                {event.startDate 
+                {event.startDate
                   ? format(new Date(event.startDate), "MMM d, yyyy")
-                  : "Date TBD"
-                }
+                  : "Date TBD"}
               </span>
             </div>
 
@@ -321,10 +329,9 @@ export default function EventsPage() {
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <span>
-                  {event.startDate 
+                  {event.startDate
                     ? format(new Date(event.startDate), "MMM d, yyyy")
-                    : "Date TBD"
-                  }
+                    : "Date TBD"}
                 </span>
               </div>
 
@@ -429,11 +436,7 @@ export default function EventsPage() {
         <div className="mb-6 flex flex-col gap-4 md:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search events..."
-              className="pl-9"
-              disabled
-            />
+            <Input placeholder="Search events..." className="pl-9" disabled />
           </div>
           <div className="flex gap-2">
             <Select disabled>
@@ -473,26 +476,20 @@ export default function EventsPage() {
             </Button>
           </div>
         </div>
-        
+
         <Tabs defaultValue="active" className="space-y-6">
           <TabsList>
             <TabsTrigger value="active" className="relative">
               Active
-              <Badge className="ml-2 rounded-full px-1.5 py-0.5">
-                -
-              </Badge>
+              <Badge className="ml-2 rounded-full px-1.5 py-0.5">-</Badge>
             </TabsTrigger>
             <TabsTrigger value="drafts" className="relative">
               Drafts
-              <Badge className="ml-2 rounded-full px-1.5 py-0.5">
-                -
-              </Badge>
+              <Badge className="ml-2 rounded-full px-1.5 py-0.5">-</Badge>
             </TabsTrigger>
             <TabsTrigger value="past" className="relative">
               Past
-              <Badge className="ml-2 rounded-full px-1.5 py-0.5">
-                -
-              </Badge>
+              <Badge className="ml-2 rounded-full px-1.5 py-0.5">-</Badge>
             </TabsTrigger>
           </TabsList>
 
@@ -520,19 +517,15 @@ export default function EventsPage() {
             <span>Create Event</span>
           </Button>
         </div>
-        
+
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 rounded-full bg-destructive/10 p-3">
               <Clock className="h-6 w-6 text-destructive" />
             </div>
             <CardTitle className="mb-2">Error loading events</CardTitle>
-            <CardDescription className="mb-4 max-w-md">
-              {error}
-            </CardDescription>
-            <Button onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
+            <CardDescription className="mb-4 max-w-md">{error}</CardDescription>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
           </CardContent>
         </Card>
       </div>
@@ -568,7 +561,9 @@ export default function EventsPage() {
         <div className="flex gap-2">
           <Select
             value={filterCategory || "all"}
-            onValueChange={(value) => setFilterCategory(value === "all" ? null : value)}
+            onValueChange={(value) =>
+              setFilterCategory(value === "all" ? null : value)
+            }
           >
             <SelectTrigger className="w-[180px] gap-1">
               <Filter className="h-4 w-4" />

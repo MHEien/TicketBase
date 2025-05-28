@@ -70,11 +70,13 @@ FRONTEND_URL=http://localhost:3000
 The events page now includes the following production-ready features:
 
 ### ✅ Real API Integration
+
 - Fetches events from the NestJS API backend
 - Proper error handling and loading states
 - Real-time data updates
 
 ### ✅ CRUD Operations
+
 - **Create**: Navigate to event creation (route ready)
 - **Read**: Display all events with filtering and sorting
 - **Update**: Edit events (route ready)
@@ -83,6 +85,7 @@ The events page now includes the following production-ready features:
 - **Cancel**: Cancel published events
 
 ### ✅ Advanced Features
+
 - **Search**: Real-time search through event titles and descriptions
 - **Filtering**: Filter by event category
 - **Sorting**: Sort by date, title, or sales revenue
@@ -90,6 +93,7 @@ The events page now includes the following production-ready features:
 - **Status Management**: Separate tabs for active, draft, and past events
 
 ### ✅ User Experience
+
 - Loading skeletons for better perceived performance
 - Error states with retry functionality
 - Confirmation dialogs for destructive actions
@@ -223,4 +227,4 @@ For production deployment:
 5. **Backup**: Set up automated database backups
 6. **CDN**: Use a CDN for static assets and images
 
-The events page is now production-ready with real API integration, proper error handling, and a great user experience! 
+The events page is now production-ready with real API integration, proper error handling, and a great user experience!

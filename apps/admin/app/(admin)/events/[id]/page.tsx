@@ -41,11 +41,7 @@ import { useEvent } from "@/hooks/use-events";
 import { type Event } from "@/lib/api/events-api";
 import { useToast } from "@/hooks/use-toast";
 import { PluginWidgetArea } from "@/components/plugin-widget-area";
-import { 
-  deleteEvent, 
-  publishEvent, 
-  cancelEvent 
-} from "@/lib/api/events-api";
+import { deleteEvent, publishEvent, cancelEvent } from "@/lib/api/events-api";
 
 export default function EventDetailsPage({
   params,
@@ -61,7 +57,11 @@ export default function EventDetailsPage({
   };
 
   const handleDeleteEvent = async () => {
-    if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this event? This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
@@ -129,18 +129,21 @@ export default function EventDetailsPage({
   const handleShareEvent = () => {
     // Copy event URL to clipboard
     const eventUrl = `${window.location.origin}/events/${params.id}`;
-    navigator.clipboard.writeText(eventUrl).then(() => {
-      toast({
-        title: "Success",
-        description: "Event URL copied to clipboard",
+    navigator.clipboard
+      .writeText(eventUrl)
+      .then(() => {
+        toast({
+          title: "Success",
+          description: "Event URL copied to clipboard",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Failed to copy URL to clipboard",
+          variant: "destructive",
+        });
       });
-    }).catch(() => {
-      toast({
-        title: "Error",
-        description: "Failed to copy URL to clipboard",
-        variant: "destructive",
-      });
-    });
   };
 
   const handleExportAttendees = () => {
@@ -197,9 +200,13 @@ export default function EventDetailsPage({
               Publish Event
             </Button>
           )}
-          
+
           {event.status === "published" && (
-            <Button onClick={handleCancelEvent} variant="destructive" className="gap-2">
+            <Button
+              onClick={handleCancelEvent}
+              variant="destructive"
+              className="gap-2"
+            >
               Cancel Event
             </Button>
           )}
@@ -343,9 +350,12 @@ export default function EventDetailsPage({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {event.ticketTypes.map((ticket: any, index: number) => {
-                    const soldQuantity = ticket.quantity - (ticket.availableQuantity || ticket.quantity);
-                    const soldPercentage = Math.round((soldQuantity / ticket.quantity) * 100) || 0;
-                    
+                    const soldQuantity =
+                      ticket.quantity -
+                      (ticket.availableQuantity || ticket.quantity);
+                    const soldPercentage =
+                      Math.round((soldQuantity / ticket.quantity) * 100) || 0;
+
                     return (
                       <div key={ticket.id} className="space-y-2">
                         <div className="flex items-center justify-between">

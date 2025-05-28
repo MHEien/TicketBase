@@ -14,8 +14,19 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-// Sample data for the chart
-const data = [
+interface SalesData {
+  date: string;
+  revenue: number;
+  tickets: number;
+  sales?: number;
+}
+
+interface SalesChartProps {
+  data?: SalesData[];
+}
+
+// Sample data for the chart (fallback)
+const defaultData = [
   { date: "May 10", revenue: 1200, tickets: 45 },
   { date: "May 11", revenue: 1800, tickets: 67 },
   { date: "May 12", revenue: 1400, tickets: 53 },
@@ -32,7 +43,7 @@ const data = [
   { date: "May 23", revenue: 3200, tickets: 118 },
 ];
 
-export function SalesChart() {
+export function SalesChart({ data = defaultData }: SalesChartProps) {
   return (
     <ChartContainer
       config={{

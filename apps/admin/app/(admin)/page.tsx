@@ -12,6 +12,8 @@ import { CommandMenu } from "@/components/command-menu";
 import { useCommandMenu } from "@/hooks/use-command-menu";
 import { useDashboardNav } from "@/hooks/useDashboardNav";
 
+type DashboardSection = "overview" | "analytics" | "plugins";
+
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const { theme } = useTheme();
@@ -26,7 +28,7 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
-  const sections = {
+  const sections: Record<DashboardSection, React.ReactElement> = {
     overview: <WidgetDashboard />,
     analytics: <DataVisualization />,
     plugins: <PluginGallery />,
@@ -42,7 +44,7 @@ export default function Dashboard() {
         transition={{ duration: 0.3 }}
         className="h-full"
       >
-        {sections[activeSection]}
+        {sections[activeSection as DashboardSection]}
       </motion.div>
     </AnimatePresence>
   );

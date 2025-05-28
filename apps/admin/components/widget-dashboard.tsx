@@ -15,6 +15,7 @@ import {
   ArrowDownRight,
   MoreHorizontal,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
 import {
   Card,
@@ -29,13 +30,157 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SalesChart } from "@/components/sales-chart";
+import { DashboardLoading } from "@/components/dashboard-loading";
+import { useDashboard } from "@/hooks/use-dashboard";
+import { useEvents } from "@/hooks/use-events";
 
 export function WidgetDashboard() {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
+  const { data, loading, error, refresh } = useDashboard();
+  const { events, loading: eventsLoading } = useEvents();
 
   const handleWidgetClick = (widgetId: string) => {
     setActiveWidget(activeWidget === widgetId ? null : widgetId);
   };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat("en-US").format(num);
+  };
+
+  const formatPercentage = (num: number) => {
+    return `${num.toFixed(1)}%`;
+  };
+
+  // Show loading state
+  if (loading) {
+    return <DashboardLoading />;
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center space-y-4">
+          <h3 className="text-lg font-semibold">Failed to load dashboard</h3>
+          <p className="text-muted-foreground">{error}</p>
+          <Button onClick={refresh} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Get upcoming events from the events hook
+  const upcomingEvents = events
+    .filter((event) => new Date(event.startDate) > new Date())
+    .sort(
+      (a, b) =>
+        new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+    )
+    .slice(0, 3);
+
+  // Prepare metrics with real percentage changes
+  const metrics = [
+    {
+      title: "Total Revenue",
+      value: formatCurrency(data.metrics?.totalRevenue || 0),
+      change: data.metrics?.changes?.revenue || "0%",
+      trend: data.metrics?.changes?.revenue?.startsWith('+') ? "up" : "down",
+      icon: DollarSign,
+    },
+    {
+      title: "Tickets Sold",
+      value: formatNumber(data.metrics?.ticketsSold || 0),
+      change: data.metrics?.changes?.tickets || "0%",
+      trend: data.metrics?.changes?.tickets?.startsWith('+') ? "up" : "down",
+      icon: Ticket,
+    },
+    {
+      title: "Active Events",
+      value: formatNumber(data.metrics?.activeEvents || 0),
+      change: data.metrics?.changes?.activeEvents || "0%",
+      trend: data.metrics?.changes?.activeEvents?.startsWith('+') ? "up" : "down",
+      icon: Calendar,
+    },
+    {
+      title: "New Users",
+      value: formatNumber(data.metrics?.newUsers || 0),
+      change: data.metrics?.changes?.newUsers || "0%",
+      trend: data.metrics?.changes?.newUsers?.startsWith('+') ? "up" : "down",
+      icon: Users,
+    },
+  ];
+
+  const keyMetrics = [
+    {
+      id: "revenue",
+      title: "Total Revenue",
+      value: formatCurrency(data.metrics?.totalRevenue || 0),
+      change: data.metrics?.changes?.revenue || "0%",
+      icon: DollarSign,
+      trend: data.metrics?.changes?.revenue?.startsWith('+') ? "up" : "down",
+    },
+    {
+      id: "tickets",
+      title: "Tickets Sold",
+      value: formatNumber(data.metrics?.ticketsSold || 0),
+      change: data.metrics?.changes?.tickets || "0%",
+      icon: Ticket,
+      trend: data.metrics?.changes?.tickets?.startsWith('+') ? "up" : "down",
+    },
+    {
+      id: "events",
+      title: "Active Events",
+      value: formatNumber(data.metrics?.activeEvents || 0),
+      change: data.metrics?.changes?.activeEvents || "0%",
+      icon: Calendar,
+      trend: data.metrics?.changes?.activeEvents?.startsWith('+') ? "up" : "down",
+    },
+    {
+      id: "users",
+      title: "New Users",
+      value: formatNumber(data.metrics?.newUsers || 0),
+      change: data.metrics?.changes?.newUsers || "0%",
+      icon: Users,
+      trend: data.metrics?.changes?.newUsers?.startsWith('+') ? "up" : "down",
+    },
+  ];
+
+  const performanceMetrics = [
+    {
+      name: "Conversion Rate",
+      value: formatPercentage(data.metrics?.conversionRate || 0),
+      change: data.metrics?.changes?.conversionRate || "0%",
+      icon: TrendingUp,
+    },
+    {
+      name: "Avg. Order Value",
+      value: formatCurrency(data.metrics?.averageOrderValue || 0),
+      change: data.metrics?.changes?.averageOrderValue || "$0",
+      icon: Ticket,
+    },
+    {
+      name: "User Retention",
+      value: formatPercentage(data.metrics?.userRetention || 0),
+      change: data.metrics?.changes?.userRetention || "0%",
+      icon: Users,
+    },
+    {
+      name: "Plugin Usage",
+      value: `${data.metrics?.pluginUsage || 0} active`,
+      change: data.metrics?.changes?.pluginUsage || "+0",
+      icon: Layers,
+    },
+  ];
 
   return (
     <div className="h-full space-y-6 overflow-y-auto">
@@ -49,48 +194,17 @@ export function WidgetDashboard() {
         <div className="flex items-center gap-2">
           <Button variant="outline" className="gap-2">
             <Calendar className="h-4 w-4" />
-            <span>May 9 - June 9, 2025</span>
+            <span>Last 30 days</span>
+          </Button>
+          <Button variant="outline" size="icon" onClick={refresh}>
+            <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* Fluid Widget Layout */}
+      {/* Key Metrics */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Key Metrics */}
-        {[
-          {
-            id: "revenue",
-            title: "Total Revenue",
-            value: "$124,521",
-            change: "+12.5%",
-            icon: DollarSign,
-            trend: "up",
-          },
-          {
-            id: "tickets",
-            title: "Tickets Sold",
-            value: "3,856",
-            change: "+24.3%",
-            icon: Ticket,
-            trend: "up",
-          },
-          {
-            id: "events",
-            title: "Active Events",
-            value: "12",
-            change: "-2.1%",
-            icon: Calendar,
-            trend: "down",
-          },
-          {
-            id: "users",
-            title: "New Users",
-            value: "856",
-            change: "+18.7%",
-            icon: Users,
-            trend: "up",
-          },
-        ].map((metric) => (
+        {keyMetrics.map((metric) => (
           <motion.div
             key={metric.id}
             whileHover={{ y: -5, transition: { duration: 0.2 } }}
@@ -166,7 +280,7 @@ export function WidgetDashboard() {
               </div>
             </CardHeader>
             <CardContent className="pb-4">
-              <SalesChart />
+              <SalesChart data={data.salesData} />
             </CardContent>
             <CardFooter className="flex items-center justify-between pt-0">
               <div className="flex items-center gap-4">
@@ -197,62 +311,62 @@ export function WidgetDashboard() {
           >
             <CardHeader>
               <CardTitle>Upcoming Events</CardTitle>
-              <CardDescription>Your next 3 scheduled events</CardDescription>
+              <CardDescription>Your next scheduled events</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                {
-                  name: "Summer Music Festival",
-                  date: "Jun 15, 2025",
-                  tickets: 1245,
-                  sold: 876,
-                },
-                {
-                  name: "Tech Conference 2025",
-                  date: "Jun 22, 2025",
-                  tickets: 500,
-                  sold: 342,
-                },
-                {
-                  name: "Art Exhibition",
-                  date: "Jul 05, 2025",
-                  tickets: 300,
-                  sold: 89,
-                },
-              ].map((event, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">{event.name}</h4>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        <span>{event.date}</span>
-                      </div>
+              {eventsLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-4 bg-muted rounded animate-pulse" />
+                      <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
+                      <div className="h-2 bg-muted rounded animate-pulse" />
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-full"
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Tickets Sold
-                      </span>
-                      <span className="font-medium">
-                        {event.sold}/{event.tickets}
-                      </span>
-                    </div>
-                    <Progress
-                      value={(event.sold / event.tickets) * 100}
-                      className="h-2"
-                    />
-                  </div>
+                  ))}
                 </div>
-              ))}
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents.map((event) => (
+                  <div key={event.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">{event.title}</h4>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {new Date(event.startDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Revenue</span>
+                        <span className="font-medium">
+                          {formatCurrency(event.totalRevenue)}
+                        </span>
+                      </div>
+                      <Progress
+                        value={Math.min(
+                          (event.totalRevenue / 10000) * 100,
+                          100,
+                        )}
+                        className="h-2"
+                      />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">No upcoming events</p>
+                </div>
+              )}
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full gap-1">
@@ -279,52 +393,33 @@ export function WidgetDashboard() {
               <CardDescription>Latest actions on your platform</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                {
-                  user: "Sarah Johnson",
-                  action: "purchased 2 tickets",
-                  time: "5 minutes ago",
-                  avatar: "/abstract-geometric-shapes.png",
-                },
-                {
-                  user: "Michael Chen",
-                  action: "created a new event",
-                  time: "2 hours ago",
-                  avatar: "/number-two-graphic.png",
-                },
-                {
-                  user: "Emma Williams",
-                  action: "installed a new plugin",
-                  time: "Yesterday",
-                  avatar: "/abstract-geometric-shapes.png",
-                },
-                {
-                  user: "James Wilson",
-                  action: "updated event details",
-                  time: "2 days ago",
-                  avatar: "/abstract-geometric-shapes.png",
-                },
-              ].map((activity, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={activity.avatar || "/placeholder.svg"}
-                      alt={activity.user}
-                    />
-                    <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1">
-                    <p className="text-sm">
-                      <span className="font-medium">{activity.user}</span>{" "}
-                      {activity.action}
-                    </p>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>{activity.time}</span>
+              {data.recentActivity.length > 0 ? (
+                data.recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={activity.avatar || "/placeholder.svg"}
+                        alt={activity.user}
+                      />
+                      <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        <span className="font-medium">{activity.user}</span>{" "}
+                        {activity.action}
+                      </p>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        <span>{activity.time}</span>
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">No recent activity</p>
                 </div>
-              ))}
+              )}
             </CardContent>
             <CardFooter>
               <Button variant="ghost" size="sm" className="w-full">
@@ -347,33 +442,44 @@ export function WidgetDashboard() {
               <CardDescription>Most installed extensions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                { name: "Payment Gateway", installs: "2.4k", icon: DollarSign },
-                { name: "Analytics Suite", installs: "1.8k", icon: BarChart3 },
-                { name: "Social Sharing", installs: "1.2k", icon: Users },
-                { name: "Event Templates", installs: "950", icon: Layers },
-              ].map((plugin, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                      <plugin.icon className="h-5 w-5 text-primary" />
+              {data.popularPlugins.length > 0 ? (
+                data.popularPlugins.map((plugin, i) => (
+                  <div key={plugin.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                        <img 
+                          src={plugin.icon} 
+                          alt={plugin.name}
+                          className="h-5 w-5 rounded"
+                          onError={(e) => {
+                            // Fallback to a default icon if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <Layers className="h-5 w-5 text-primary hidden" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{plugin.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatNumber(plugin.installs)} installs
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{plugin.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {plugin.installs} installs
-                      </p>
-                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 rounded-full"
+                    >
+                      Install
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 rounded-full"
-                  >
-                    Install
-                  </Button>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">No plugins available</p>
                 </div>
-              ))}
+              )}
             </CardContent>
             <CardFooter>
               <Button variant="ghost" size="sm" className="w-full gap-1">
@@ -399,32 +505,7 @@ export function WidgetDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                {
-                  name: "Conversion Rate",
-                  value: "24.8%",
-                  change: "+2.4%",
-                  icon: TrendingUp,
-                },
-                {
-                  name: "Avg. Ticket Price",
-                  value: "$85.50",
-                  change: "+$4.30",
-                  icon: Ticket,
-                },
-                {
-                  name: "User Retention",
-                  value: "68.2%",
-                  change: "+5.1%",
-                  icon: Users,
-                },
-                {
-                  name: "Plugin Usage",
-                  value: "12 active",
-                  change: "+3",
-                  icon: Layers,
-                },
-              ].map((metric, i) => (
+              {performanceMetrics.map((metric, i) => (
                 <div key={i} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

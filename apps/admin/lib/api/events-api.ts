@@ -100,10 +100,12 @@ export interface EventsQueryParams {
 /**
  * Fetch all events for the current organization
  */
-export async function fetchEvents(params?: EventsQueryParams): Promise<Event[]> {
+export async function fetchEvents(
+  params?: EventsQueryParams,
+): Promise<Event[]> {
   try {
     const queryParams = new URLSearchParams();
-    
+
     if (params?.status) {
       queryParams.append("status", params.status);
     }
@@ -122,7 +124,7 @@ export async function fetchEvents(params?: EventsQueryParams): Promise<Event[]> 
 
     const url = `/api/events${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
     const response = await apiClient.get(url);
-    
+
     // Transform date strings back to Date objects
     return response.data.map((event: any) => ({
       ...event,
@@ -130,8 +132,12 @@ export async function fetchEvents(params?: EventsQueryParams): Promise<Event[]> 
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : undefined,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : undefined,
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : undefined,
+      salesEndDate: event.salesEndDate
+        ? new Date(event.salesEndDate)
+        : undefined,
     }));
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -146,7 +152,7 @@ export async function fetchEvent(id: string): Promise<Event> {
   try {
     const response = await apiClient.get(`/api/events/${id}`);
     const event = response.data;
-    
+
     // Transform date strings back to Date objects
     return {
       ...event,
@@ -154,8 +160,12 @@ export async function fetchEvent(id: string): Promise<Event> {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : undefined,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : undefined,
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : undefined,
+      salesEndDate: event.salesEndDate
+        ? new Date(event.salesEndDate)
+        : undefined,
     };
   } catch (error) {
     console.error("Error fetching event:", error);
@@ -170,7 +180,7 @@ export async function createEvent(eventData: CreateEventDto): Promise<Event> {
   try {
     const response = await apiClient.post("/api/events", eventData);
     const event = response.data;
-    
+
     // Transform date strings back to Date objects
     return {
       ...event,
@@ -178,8 +188,12 @@ export async function createEvent(eventData: CreateEventDto): Promise<Event> {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : undefined,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : undefined,
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : undefined,
+      salesEndDate: event.salesEndDate
+        ? new Date(event.salesEndDate)
+        : undefined,
     };
   } catch (error) {
     console.error("Error creating event:", error);
@@ -190,11 +204,14 @@ export async function createEvent(eventData: CreateEventDto): Promise<Event> {
 /**
  * Update an existing event
  */
-export async function updateEvent(id: string, eventData: UpdateEventDto): Promise<Event> {
+export async function updateEvent(
+  id: string,
+  eventData: UpdateEventDto,
+): Promise<Event> {
   try {
     const response = await apiClient.patch(`/api/events/${id}`, eventData);
     const event = response.data;
-    
+
     // Transform date strings back to Date objects
     return {
       ...event,
@@ -202,8 +219,12 @@ export async function updateEvent(id: string, eventData: UpdateEventDto): Promis
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : undefined,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : undefined,
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : undefined,
+      salesEndDate: event.salesEndDate
+        ? new Date(event.salesEndDate)
+        : undefined,
     };
   } catch (error) {
     console.error("Error updating event:", error);
@@ -230,7 +251,7 @@ export async function publishEvent(id: string): Promise<Event> {
   try {
     const response = await apiClient.post(`/api/events/${id}/publish`);
     const event = response.data;
-    
+
     // Transform date strings back to Date objects
     return {
       ...event,
@@ -238,8 +259,12 @@ export async function publishEvent(id: string): Promise<Event> {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : undefined,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : undefined,
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : undefined,
+      salesEndDate: event.salesEndDate
+        ? new Date(event.salesEndDate)
+        : undefined,
     };
   } catch (error) {
     console.error("Error publishing event:", error);
@@ -254,7 +279,7 @@ export async function cancelEvent(id: string): Promise<Event> {
   try {
     const response = await apiClient.post(`/api/events/${id}/cancel`);
     const event = response.data;
-    
+
     // Transform date strings back to Date objects
     return {
       ...event,
@@ -262,11 +287,15 @@ export async function cancelEvent(id: string): Promise<Event> {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : undefined,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : undefined,
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : undefined,
+      salesEndDate: event.salesEndDate
+        ? new Date(event.salesEndDate)
+        : undefined,
     };
   } catch (error) {
     console.error("Error cancelling event:", error);
     throw error;
   }
-} 
+}

@@ -10,9 +10,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/auth/login": {
@@ -45,9 +43,7 @@
           }
         },
         "summary": "Login with email and password",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/register": {
@@ -80,9 +76,7 @@
           }
         },
         "summary": "Register a new user with organization",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/refresh": {
@@ -115,9 +109,7 @@
           }
         },
         "summary": "Refresh access token using refresh token",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/check-token": {
@@ -143,9 +135,7 @@
           }
         },
         "summary": "Check refresh token status (diagnostics)",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/session-info": {
@@ -158,9 +148,7 @@
           }
         },
         "summary": "Get session diagnostic information",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/cleanup-sessions": {
@@ -173,9 +161,7 @@
           }
         },
         "summary": "Clean up expired sessions",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/logout": {
@@ -193,9 +179,7 @@
           }
         ],
         "summary": "Logout (invalidate current session)",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/logout-all": {
@@ -213,9 +197,7 @@
           }
         ],
         "summary": "Logout from all devices (invalidate all sessions)",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/session": {
@@ -233,9 +215,7 @@
           }
         ],
         "summary": "Get current user session info",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/user-settings": {
@@ -256,9 +236,7 @@
           }
         ],
         "summary": "Update user and organization settings",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/departments": {
@@ -305,9 +283,7 @@
           }
         ],
         "summary": "Create a new department",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       },
       "get": {
         "operationId": "DepartmentsController_findAll",
@@ -345,9 +321,7 @@
           }
         ],
         "summary": "Get all departments for an organization",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       }
     },
     "/departments/hierarchy": {
@@ -387,9 +361,7 @@
           }
         ],
         "summary": "Get department hierarchy for an organization",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       }
     },
     "/departments/with-users": {
@@ -429,9 +401,7 @@
           }
         ],
         "summary": "Get all departments with users for an organization",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       }
     },
     "/departments/{id}": {
@@ -479,9 +449,7 @@
           }
         ],
         "summary": "Get a department by ID",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       },
       "put": {
         "operationId": "DepartmentsController_update",
@@ -546,9 +514,7 @@
           }
         ],
         "summary": "Update a department",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       },
       "delete": {
         "operationId": "DepartmentsController_remove",
@@ -596,9 +562,7 @@
           }
         ],
         "summary": "Delete a department",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       }
     },
     "/departments/by-slug/{slug}": {
@@ -646,9 +610,7 @@
           }
         ],
         "summary": "Get a department by slug",
-        "tags": [
-          "Departments"
-        ]
+        "tags": ["Departments"]
       }
     },
     "/api/events": {
@@ -670,9 +632,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       },
       "get": {
         "operationId": "EventsController_findAll",
@@ -682,9 +642,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       }
     },
     "/api/events/{id}": {
@@ -705,9 +663,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       },
       "patch": {
         "operationId": "EventsController_update",
@@ -736,9 +692,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       },
       "delete": {
         "operationId": "EventsController_remove",
@@ -757,9 +711,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       }
     },
     "/api/events/{id}/publish": {
@@ -780,9 +732,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       }
     },
     "/api/events/{id}/cancel": {
@@ -803,9 +753,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Events"
-        ]
+        "tags": ["Events"]
       }
     },
     "/api/events/{eventId}/ticket-types": {
@@ -836,9 +784,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "TicketTypes"
-        ]
+        "tags": ["TicketTypes"]
       },
       "get": {
         "operationId": "TicketTypesController_findAll",
@@ -857,9 +803,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "TicketTypes"
-        ]
+        "tags": ["TicketTypes"]
       }
     },
     "/api/events/{eventId}/ticket-types/{id}": {
@@ -888,9 +832,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "TicketTypes"
-        ]
+        "tags": ["TicketTypes"]
       },
       "patch": {
         "operationId": "TicketTypesController_update",
@@ -927,9 +869,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "TicketTypes"
-        ]
+        "tags": ["TicketTypes"]
       },
       "delete": {
         "operationId": "TicketTypesController_remove",
@@ -956,9 +896,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "TicketTypes"
-        ]
+        "tags": ["TicketTypes"]
       }
     },
     "/api/tickets/generate": {
@@ -970,9 +908,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Tickets"
-        ]
+        "tags": ["Tickets"]
       }
     },
     "/api/tickets/validate/{code}": {
@@ -993,9 +929,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Tickets"
-        ]
+        "tags": ["Tickets"]
       }
     },
     "/api/tickets/check-in/{code}": {
@@ -1016,9 +950,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Tickets"
-        ]
+        "tags": ["Tickets"]
       }
     },
     "/api/carts": {
@@ -1051,9 +983,7 @@
           }
         },
         "summary": "Create a new cart",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       },
       "get": {
         "operationId": "CartsController_findAll",
@@ -1088,9 +1018,7 @@
           }
         ],
         "summary": "Find all carts for an organization",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/api/carts/session/{sessionId}": {
@@ -1130,9 +1058,7 @@
           }
         },
         "summary": "Find cart by session ID",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/api/carts/{id}": {
@@ -1172,9 +1098,7 @@
           }
         },
         "summary": "Find cart by ID",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       },
       "delete": {
         "operationId": "CartsController_abandon",
@@ -1212,9 +1136,7 @@
           }
         },
         "summary": "Mark cart as abandoned",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/api/carts/{id}/items": {
@@ -1267,9 +1189,7 @@
           }
         },
         "summary": "Add item to cart",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/api/carts/{id}/items/{itemId}": {
@@ -1330,9 +1250,7 @@
           }
         },
         "summary": "Update cart item",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       },
       "delete": {
         "operationId": "CartsController_removeItem",
@@ -1381,9 +1299,7 @@
           }
         },
         "summary": "Remove item from cart",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/api/carts/{id}/customer": {
@@ -1426,9 +1342,7 @@
           }
         },
         "summary": "Update customer information",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/api/carts/{id}/discount": {
@@ -1471,9 +1385,7 @@
           }
         },
         "summary": "Apply discount code to cart",
-        "tags": [
-          "carts"
-        ]
+        "tags": ["carts"]
       }
     },
     "/orders": {
@@ -1485,9 +1397,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Orders"
-        ]
+        "tags": ["Orders"]
       }
     },
     "/orders/{id}": {
@@ -1508,9 +1418,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Orders"
-        ]
+        "tags": ["Orders"]
       }
     },
     "/api/payments/intent": {
@@ -1551,9 +1459,7 @@
           }
         },
         "summary": "Create a payment intent",
-        "tags": [
-          "payments"
-        ]
+        "tags": ["payments"]
       }
     },
     "/api/payments/confirm": {
@@ -1591,9 +1497,7 @@
           }
         },
         "summary": "Confirm a payment",
-        "tags": [
-          "payments"
-        ]
+        "tags": ["payments"]
       }
     },
     "/api/payments/refund": {
@@ -1639,9 +1543,7 @@
           }
         ],
         "summary": "Process a refund",
-        "tags": [
-          "payments"
-        ]
+        "tags": ["payments"]
       }
     },
     "/api/payments/transactions/order/{orderId}": {
@@ -1678,9 +1580,7 @@
           }
         ],
         "summary": "Get transactions by order ID",
-        "tags": [
-          "payments"
-        ]
+        "tags": ["payments"]
       }
     },
     "/api/payments/transactions/organization/{organizationId}": {
@@ -1735,9 +1635,7 @@
           }
         ],
         "summary": "Get transactions by organization ID",
-        "tags": [
-          "payments"
-        ]
+        "tags": ["payments"]
       }
     },
     "/api/plugins": {
@@ -1772,9 +1670,7 @@
           }
         ],
         "summary": "Create a new plugin",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       },
       "get": {
         "operationId": "PluginsController_findAll",
@@ -1784,12 +1680,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": [
-                "active",
-                "inactive",
-                "deprecated",
-                "removed"
-              ],
+              "enum": ["active", "inactive", "deprecated", "removed"],
               "type": "string"
             }
           }
@@ -1810,9 +1701,7 @@
           }
         },
         "summary": "Get all plugins",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/payment": {
@@ -1847,9 +1736,7 @@
           }
         ],
         "summary": "Register a new payment plugin",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/{id}": {
@@ -1878,9 +1765,7 @@
           }
         },
         "summary": "Get plugin by ID",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       },
       "patch": {
         "operationId": "PluginsController_update",
@@ -1922,9 +1807,7 @@
           }
         ],
         "summary": "Update a plugin",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       },
       "delete": {
         "operationId": "PluginsController_remove",
@@ -1956,9 +1839,7 @@
           }
         ],
         "summary": "Remove a plugin (mark as removed)",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/{id}/deprecate": {
@@ -1992,9 +1873,7 @@
           }
         ],
         "summary": "Deprecate a plugin",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/category/{category}": {
@@ -2026,9 +1905,7 @@
           }
         },
         "summary": "Get plugins by category",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/extension-point/{extensionPoint}": {
@@ -2060,9 +1937,7 @@
           }
         },
         "summary": "Get plugins by extension point",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/install": {
@@ -2097,9 +1972,7 @@
           }
         ],
         "summary": "Install a plugin for an organization",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/installed/{id}": {
@@ -2126,9 +1999,7 @@
           }
         ],
         "summary": "Uninstall a plugin from an organization",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/installed/{id}/enable": {
@@ -2162,9 +2033,7 @@
           }
         ],
         "summary": "Enable an installed plugin",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/installed/{id}/disable": {
@@ -2198,9 +2067,7 @@
           }
         ],
         "summary": "Disable an installed plugin",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/installed/{id}/configure": {
@@ -2234,9 +2101,7 @@
           }
         ],
         "summary": "Update plugin configuration",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/organization/{organizationId}": {
@@ -2273,9 +2138,7 @@
           }
         ],
         "summary": "Get all installed plugins for an organization",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/organization/{organizationId}/enabled": {
@@ -2312,9 +2175,7 @@
           }
         ],
         "summary": "Get all enabled plugins for an organization",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/organization/{organizationId}/payment": {
@@ -2351,9 +2212,7 @@
           }
         ],
         "summary": "Get payment plugins for an organization",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/organization/{organizationId}/type/{type}": {
@@ -2398,9 +2257,7 @@
           }
         ],
         "summary": "Get plugins by type for an organization",
-        "tags": [
-          "plugins"
-        ]
+        "tags": ["plugins"]
       }
     },
     "/api/plugins/proxy/{pluginId}/{path}": {
@@ -2428,9 +2285,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "post": {
         "operationId": "PluginProxyController_proxyRequest_post",
@@ -2456,9 +2311,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "put": {
         "operationId": "PluginProxyController_proxyRequest_put",
@@ -2484,9 +2337,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "delete": {
         "operationId": "PluginProxyController_proxyRequest_delete",
@@ -2512,9 +2363,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "patch": {
         "operationId": "PluginProxyController_proxyRequest_patch",
@@ -2540,9 +2389,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "options": {
         "operationId": "PluginProxyController_proxyRequest_options",
@@ -2568,9 +2415,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "head": {
         "operationId": "PluginProxyController_proxyRequest_head",
@@ -2596,9 +2441,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       },
       "search": {
         "operationId": "PluginProxyController_proxyRequest_search",
@@ -2624,9 +2467,7 @@
           }
         ],
         "summary": "Proxy requests to the plugin server",
-        "tags": [
-          "plugin-proxy"
-        ]
+        "tags": ["plugin-proxy"]
       }
     },
     "/api/plugins/bundles/{pluginId}": {
@@ -2657,9 +2498,7 @@
           }
         },
         "summary": "Serve a plugin bundle",
-        "tags": [
-          "plugin-bundles"
-        ]
+        "tags": ["plugin-bundles"]
       }
     },
     "/customers": {
@@ -2671,9 +2510,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Customers"
-        ]
+        "tags": ["Customers"]
       }
     },
     "/customers/search": {
@@ -2694,9 +2531,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Customers"
-        ]
+        "tags": ["Customers"]
       }
     },
     "/customers/{id}": {
@@ -2717,9 +2552,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Customers"
-        ]
+        "tags": ["Customers"]
       }
     },
     "/analytics/event/{eventId}": {
@@ -2740,9 +2573,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     },
     "/analytics/sales": {
@@ -2771,9 +2602,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     }
   },
@@ -2808,10 +2637,7 @@
             "description": "User password"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "LoginResponseDto": {
         "type": "object",
@@ -2893,12 +2719,7 @@
             "description": "User role within the organization"
           }
         },
-        "required": [
-          "name",
-          "email",
-          "password",
-          "organizationName"
-        ]
+        "required": ["name", "email", "password", "organizationName"]
       },
       "TokenResponseDto": {
         "type": "object",
@@ -2913,11 +2734,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "accessToken",
-          "refreshToken",
-          "expiresIn"
-        ]
+        "required": ["accessToken", "refreshToken", "expiresIn"]
       },
       "RefreshTokenDto": {
         "type": "object",
@@ -2927,9 +2744,7 @@
             "description": "Refresh token received from login or registration"
           }
         },
-        "required": [
-          "refreshToken"
-        ]
+        "required": ["refreshToken"]
       },
       "DepartmentNotificationPreferencesDto": {
         "type": "object",
@@ -2966,13 +2781,7 @@
           "type": {
             "type": "string",
             "description": "Field type",
-            "enum": [
-              "text",
-              "number",
-              "date",
-              "boolean",
-              "select"
-            ]
+            "enum": ["text", "number", "date", "boolean", "select"]
           },
           "options": {
             "description": "Field options for select type",
@@ -2986,11 +2795,7 @@
             "description": "Whether the field is required"
           }
         },
-        "required": [
-          "key",
-          "label",
-          "type"
-        ]
+        "required": ["key", "label", "type"]
       },
       "DepartmentSettingsDto": {
         "type": "object",
@@ -3084,11 +2889,7 @@
             "description": "Whether the department is active"
           }
         },
-        "required": [
-          "name",
-          "slug",
-          "organizationId"
-        ]
+        "required": ["name", "slug", "organizationId"]
       },
       "Department": {
         "type": "object",
@@ -3236,18 +3037,11 @@
             "description": "Session ID for tracking anonymous carts"
           }
         },
-        "required": [
-          "organizationId",
-          "eventId"
-        ]
+        "required": ["organizationId", "eventId"]
       },
       "CartItemType": {
         "type": "string",
-        "enum": [
-          "ticket",
-          "merchandise",
-          "fee"
-        ],
+        "enum": ["ticket", "merchandise", "fee"],
         "description": "Item type"
       },
       "CartItem": {
@@ -3311,12 +3105,7 @@
       },
       "CartStatus": {
         "type": "string",
-        "enum": [
-          "active",
-          "abandoned",
-          "converted",
-          "expired"
-        ],
+        "enum": ["active", "abandoned", "converted", "expired"],
         "description": "Cart status"
       },
       "Cart": {
@@ -3455,11 +3244,7 @@
           "type": {
             "type": "string",
             "description": "Item type",
-            "enum": [
-              "ticket",
-              "merchandise",
-              "fee"
-            ],
+            "enum": ["ticket", "merchandise", "fee"],
             "default": "ticket"
           },
           "metadata": {
@@ -3467,12 +3252,7 @@
             "description": "Additional metadata (JSON)"
           }
         },
-        "required": [
-          "name",
-          "quantity",
-          "unitPrice",
-          "type"
-        ]
+        "required": ["name", "quantity", "unitPrice", "type"]
       },
       "UpdateCartItemDto": {
         "type": "object",
@@ -3495,11 +3275,7 @@
           "type": {
             "type": "string",
             "description": "Item type",
-            "enum": [
-              "ticket",
-              "merchandise",
-              "fee"
-            ]
+            "enum": ["ticket", "merchandise", "fee"]
           },
           "metadata": {
             "type": "object",
@@ -3534,11 +3310,7 @@
             }
           }
         },
-        "required": [
-          "organizationId",
-          "amount",
-          "currency"
-        ]
+        "required": ["organizationId", "amount", "currency"]
       },
       "ConfirmPaymentDto": {
         "type": "object",
@@ -3554,10 +3326,7 @@
             "example": "pi_3NtX5ELkdIwHu7ix0SjgrdUm"
           }
         },
-        "required": [
-          "organizationId",
-          "paymentIntentId"
-        ]
+        "required": ["organizationId", "paymentIntentId"]
       },
       "ProcessRefundDto": {
         "type": "object",
@@ -3578,29 +3347,16 @@
             "example": 50
           }
         },
-        "required": [
-          "organizationId",
-          "paymentIntentId"
-        ]
+        "required": ["organizationId", "paymentIntentId"]
       },
       "TransactionType": {
         "type": "string",
-        "enum": [
-          "purchase",
-          "refund",
-          "chargeback",
-          "payout"
-        ],
+        "enum": ["purchase", "refund", "chargeback", "payout"],
         "description": "Transaction type"
       },
       "TransactionStatus": {
         "type": "string",
-        "enum": [
-          "pending",
-          "completed",
-          "failed",
-          "cancelled"
-        ],
+        "enum": ["pending", "completed", "failed", "cancelled"],
         "description": "Transaction status"
       },
       "Transaction": {
@@ -3743,10 +3499,7 @@
           },
           "extensionPoints": {
             "description": "List of extension points this plugin implements",
-            "example": [
-              "payment.gateway",
-              "checkout.form"
-            ],
+            "example": ["payment.gateway", "checkout.form"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3779,22 +3532,13 @@
               "displayName": "Stripe Payments",
               "author": "Stripe Inc.",
               "paymentProvider": "stripe",
-              "supportedMethods": [
-                "credit_card",
-                "ach"
-              ],
-              "supportedCurrencies": [
-                "USD",
-                "EUR"
-              ]
+              "supportedMethods": ["credit_card", "ach"],
+              "supportedCurrencies": ["USD", "EUR"]
             }
           },
           "requiredPermissions": {
             "description": "Required permissions for this plugin",
-            "example": [
-              "payments.read",
-              "payments.write"
-            ],
+            "example": ["payments.read", "payments.write"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3827,12 +3571,7 @@
       },
       "PluginStatus": {
         "type": "string",
-        "enum": [
-          "active",
-          "inactive",
-          "deprecated",
-          "removed"
-        ],
+        "enum": ["active", "inactive", "deprecated", "removed"],
         "description": "Plugin status"
       },
       "PluginResponseDto": {
@@ -3962,10 +3701,7 @@
           },
           "extensionPoints": {
             "description": "List of extension points this plugin implements",
-            "example": [
-              "payment.gateway",
-              "checkout.form"
-            ],
+            "example": ["payment.gateway", "checkout.form"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3998,22 +3734,13 @@
               "displayName": "Stripe Payments",
               "author": "Stripe Inc.",
               "paymentProvider": "stripe",
-              "supportedMethods": [
-                "credit_card",
-                "ach"
-              ],
-              "supportedCurrencies": [
-                "USD",
-                "EUR"
-              ]
+              "supportedMethods": ["credit_card", "ach"],
+              "supportedCurrencies": ["USD", "EUR"]
             }
           },
           "requiredPermissions": {
             "description": "Required permissions for this plugin",
-            "example": [
-              "payments.read",
-              "payments.write"
-            ],
+            "example": ["payments.read", "payments.write"],
             "type": "array",
             "items": {
               "type": "string"
@@ -4023,22 +3750,11 @@
             "type": "string",
             "description": "Payment provider name",
             "example": "stripe",
-            "enum": [
-              "stripe",
-              "paypal",
-              "authorize_net",
-              "square",
-              "braintree"
-            ]
+            "enum": ["stripe", "paypal", "authorize_net", "square", "braintree"]
           },
           "supportedMethods": {
             "description": "Supported payment methods",
-            "example": [
-              "credit_card",
-              "ach",
-              "apple_pay",
-              "google_pay"
-            ],
+            "example": ["credit_card", "ach", "apple_pay", "google_pay"],
             "type": "array",
             "items": {
               "type": "string"
@@ -4046,11 +3762,7 @@
           },
           "supportedCurrencies": {
             "description": "Supported currencies",
-            "example": [
-              "USD",
-              "EUR",
-              "GBP"
-            ],
+            "example": ["USD", "EUR", "GBP"],
             "type": "array",
             "items": {
               "type": "string"
@@ -4133,10 +3845,7 @@
           },
           "extensionPoints": {
             "description": "List of extension points this plugin implements",
-            "example": [
-              "payment.gateway",
-              "checkout.form"
-            ],
+            "example": ["payment.gateway", "checkout.form"],
             "type": "array",
             "items": {
               "type": "string"
@@ -4172,10 +3881,7 @@
           },
           "requiredPermissions": {
             "description": "Required permissions for this plugin",
-            "example": [
-              "payments.read",
-              "payments.write"
-            ],
+            "example": ["payments.read", "payments.write"],
             "type": "array",
             "items": {
               "type": "string"
@@ -4191,9 +3897,7 @@
             "description": "Plugin ID to install"
           }
         },
-        "required": [
-          "pluginId"
-        ]
+        "required": ["pluginId"]
       },
       "InstalledPluginDto": {
         "type": "object",
@@ -4243,12 +3947,7 @@
           "status": {
             "type": "string",
             "description": "Plugin status",
-            "enum": [
-              "active",
-              "inactive",
-              "deprecated",
-              "removed"
-            ]
+            "enum": ["active", "inactive", "deprecated", "removed"]
           },
           "enabled": {
             "type": "boolean",

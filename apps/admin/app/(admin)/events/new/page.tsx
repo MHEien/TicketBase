@@ -22,7 +22,8 @@ export default function CreateEventPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingDuplicate, setIsLoadingDuplicate] = useState(false);
-  const { eventData, isValid, resetEventData, updateEventData } = useEventCreation();
+  const { eventData, isValid, resetEventData, updateEventData } =
+    useEventCreation();
 
   const duplicateId = searchParams.get("duplicate");
 
@@ -51,17 +52,19 @@ export default function CreateEventPage() {
             virtualEventUrl: event.virtualEventUrl || "",
             featuredImage: event.featuredImage || "",
             galleryImages: event.galleryImages || [],
-            ticketTypes: event.ticketTypes?.map(ticket => ({
-              id: `${ticket.id}-copy-${Date.now()}`,
-              name: ticket.name,
-              price: ticket.price,
-              quantity: ticket.quantity,
-              description: ticket.description || "",
-            })) || [],
+            ticketTypes:
+              event.ticketTypes?.map((ticket) => ({
+                id: `${ticket.id}-copy-${Date.now()}`,
+                name: ticket.name,
+                price: ticket.price,
+                quantity: ticket.quantity,
+                description: ticket.description || "",
+              })) || [],
           });
           toast({
             title: "Event Duplicated",
-            description: "Event data has been loaded for duplication. Please update the dates and other details as needed.",
+            description:
+              "Event data has been loaded for duplication. Please update the dates and other details as needed.",
           });
         })
         .catch((error) => {
@@ -133,7 +136,10 @@ export default function CreateEventPage() {
         featuredImage: eventData.featuredImage,
         galleryImages: eventData.galleryImages,
         visibility: "public", // Default to public
-        capacity: eventData.ticketTypes.reduce((sum, ticket) => sum + ticket.quantity, 0),
+        capacity: eventData.ticketTypes.reduce(
+          (sum, ticket) => sum + ticket.quantity,
+          0,
+        ),
       });
 
       toast({
