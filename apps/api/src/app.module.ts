@@ -13,6 +13,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { PluginsModule } from './plugins/plugins.module';
 import { CustomersModule } from './customers/customers.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { ActivitiesModule } from './activities/activities.module';
 import appConfig from './config/app.config';
 
 @Module({
@@ -47,6 +48,7 @@ import appConfig from './config/app.config';
     PluginsModule,
     CustomersModule,
     AnalyticsModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -33,11 +33,15 @@ import { SalesChart } from "@/components/sales-chart";
 import { DashboardLoading } from "@/components/dashboard-loading";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useEvents } from "@/hooks/use-events";
+import { useRecentActivity } from "@/hooks/use-activity";
+import { useRouter } from "next/navigation";
 
 export function WidgetDashboard() {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const { data, loading, error, refresh } = useDashboard();
   const { events, loading: eventsLoading } = useEvents();
+  const { activities: recentActivities, loading: activitiesLoading } = useRecentActivity(5);
+  const router = useRouter();
 
   const handleWidgetClick = (widgetId: string) => {
     setActiveWidget(activeWidget === widgetId ? null : widgetId);
@@ -393,24 +397,33 @@ export function WidgetDashboard() {
               <CardDescription>Latest actions on your platform</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {data.recentActivity.length > 0 ? (
-                data.recentActivity.map((activity) => (
+              {activitiesLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-4 bg-muted rounded animate-pulse" />
+                      <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              ) : recentActivities.length > 0 ? (
+                recentActivities.map((activity) => (
                   <div key={activity.id} className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={activity.avatar || "/placeholder.svg"}
-                        alt={activity.user}
+                        src={activity.user.avatar || "/placeholder.svg"}
+                        alt={activity.user.name}
                       />
-                      <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>{activity.user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
                       <p className="text-sm">
-                        <span className="font-medium">{activity.user}</span>{" "}
-                        {activity.action}
+                        <span className="font-medium">{activity.user.name}</span>{" "}
+                        {activity.description}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        <span>{activity.time}</span>
+                        <span>{new Date(activity.createdAt).toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -422,7 +435,12 @@ export function WidgetDashboard() {
               )}
             </CardContent>
             <CardFooter>
-              <Button variant="ghost" size="sm" className="w-full">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full"
+                onClick={() => router.push('/activity')}
+              >
                 View All Activity
               </Button>
             </CardFooter>
