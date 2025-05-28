@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, use } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import {
@@ -46,14 +46,15 @@ import { deleteEvent, publishEvent, cancelEvent } from "@/lib/api/events-api";
 export default function EventDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const resolvedParams = use(params);
   const router = useRouter();
   const { toast } = useToast();
-  const { event, loading, error, refetch } = useEvent(params.id);
+  const { event, loading, error, refetch } = useEvent(resolvedParams.id);
 
   const handleEditEvent = () => {
-    router.push(`/events/${params.id}/edit`);
+    router.push(`/events/${resolvedParams.id}/edit`);
   };
 
   const handleDeleteEvent = async () => {
@@ -66,7 +67,7 @@ export default function EventDetailsPage({
     }
 
     try {
-      await deleteEvent(params.id);
+      await deleteEvent(resolvedParams.id);
       toast({
         title: "Success",
         description: "Event deleted successfully",
@@ -83,12 +84,12 @@ export default function EventDetailsPage({
 
   const handleDuplicateEvent = () => {
     // Navigate to create new event with duplicate parameter
-    router.push(`/events/new?duplicate=${params.id}`);
+    router.push(`/events/new?duplicate=${resolvedParams.id}`);
   };
 
   const handlePublishEvent = async () => {
     try {
-      await publishEvent(params.id);
+      await publishEvent(resolvedParams.id);
       toast({
         title: "Success",
         description: "Event published successfully",
@@ -110,7 +111,7 @@ export default function EventDetailsPage({
     }
 
     try {
-      await cancelEvent(params.id);
+      await cancelEvent(resolvedParams.id);
       toast({
         title: "Success",
         description: "Event cancelled successfully",
@@ -128,7 +129,7 @@ export default function EventDetailsPage({
 
   const handleShareEvent = () => {
     // Copy event URL to clipboard
-    const eventUrl = `${window.location.origin}/events/${params.id}`;
+    const eventUrl = `${window.location.origin}/events/${resolvedParams.id}`;
     navigator.clipboard
       .writeText(eventUrl)
       .then(() => {
@@ -170,11 +171,11 @@ export default function EventDetailsPage({
   }
 
   const totalTickets = event.ticketTypes.reduce(
-    (sum: number, ticket: any) => sum + ticket.quantity,
+    (sum: number, ticket: any) => sum + Number(ticket.quantity),
     0,
   );
   const ticketsSoldPercentage =
-    Math.round((event.totalTicketsSold / totalTickets) * 100) || 0;
+    Math.round((Number(event.totalTicketsSold) / totalTickets) * 100) || 0;
   const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
 
   return (
@@ -351,10 +352,10 @@ export default function EventDetailsPage({
                 <CardContent className="space-y-4">
                   {event.ticketTypes.map((ticket: any, index: number) => {
                     const soldQuantity =
-                      ticket.quantity -
-                      (ticket.availableQuantity || ticket.quantity);
+                      Number(ticket.quantity) -
+                      (Number(ticket.availableQuantity) || Number(ticket.quantity));
                     const soldPercentage =
-                      Math.round((soldQuantity / ticket.quantity) * 100) || 0;
+                      Math.round((soldQuantity / Number(ticket.quantity)) * 100) || 0;
 
                     return (
                       <div key={ticket.id} className="space-y-2">
@@ -367,7 +368,7 @@ export default function EventDetailsPage({
                           </div>
                           <div className="text-right">
                             <p className="font-bold">
-                              ${ticket.price.toFixed(2)}
+                              ${Number(ticket.price).toFixed(2)}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               {soldQuantity} sold / {ticket.quantity} total
@@ -520,7 +521,7 @@ export default function EventDetailsPage({
               <div className="flex items-center justify-between border-t pt-4">
                 <span className="text-muted-foreground">Total Revenue</span>
                 <span className="text-xl font-bold">
-                  ${event.totalRevenue.toLocaleString()}
+                  ${Number(event.totalRevenue || 0).toLocaleString()}
                 </span>
               </div>
             </CardContent>

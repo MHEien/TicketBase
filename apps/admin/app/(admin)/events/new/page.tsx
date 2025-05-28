@@ -120,8 +120,8 @@ export default function CreateEventPage() {
         title: eventData.title,
         description: eventData.description,
         category: eventData.category,
-        startDate: eventData.startDate!,
-        endDate: eventData.endDate!,
+        startDate: new Date(eventData.startDate!).toISOString(),
+        endDate: new Date(eventData.endDate!).toISOString(),
         startTime: eventData.startTime,
         endTime: eventData.endTime,
         timeZone: eventData.timeZone,
@@ -140,6 +140,16 @@ export default function CreateEventPage() {
           (sum, ticket) => sum + ticket.quantity,
           0,
         ),
+        ticketTypes: eventData.ticketTypes.map(ticket => ({
+          name: ticket.name,
+          description: ticket.description,
+          price: ticket.price,
+          quantity: ticket.quantity,
+          isHidden: false,
+          isFree: ticket.price === 0,
+          requiresApproval: false,
+          sortOrder: 0,
+        })),
       });
 
       toast({
@@ -150,11 +160,56 @@ export default function CreateEventPage() {
       // Reset form and navigate to the new event
       resetEventData();
       router.push(`/events/${newEvent.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating event:", error);
+      
+      // Log detailed error information for debugging
+      if (error.response) {
+        console.error("Response status:", error.response.status);
+        console.error("Response data:", error.response.data);
+        console.error("Response headers:", error.response.headers);
+      }
+      
+      // Log the payload that was sent
+      console.error("Event payload that was sent:", {
+        title: eventData.title,
+        description: eventData.description,
+        category: eventData.category,
+        startDate: eventData.startDate,
+        endDate: eventData.endDate,
+        startTime: eventData.startTime,
+        endTime: eventData.endTime,
+        timeZone: eventData.timeZone,
+        locationType: eventData.locationType,
+        venueName: eventData.venueName,
+        address: eventData.address,
+        city: eventData.city,
+        state: eventData.state,
+        zipCode: eventData.zipCode,
+        country: eventData.country,
+        virtualEventUrl: eventData.virtualEventUrl,
+        featuredImage: eventData.featuredImage,
+        galleryImages: eventData.galleryImages,
+        visibility: "public",
+        capacity: eventData.ticketTypes.reduce(
+          (sum, ticket) => sum + ticket.quantity,
+          0,
+        ),
+        ticketTypes: eventData.ticketTypes.map(ticket => ({
+          name: ticket.name,
+          description: ticket.description,
+          price: ticket.price,
+          quantity: ticket.quantity,
+          isHidden: false,
+          isFree: ticket.price === 0,
+          requiresApproval: false,
+          sortOrder: 0,
+        })),
+      });
+      
       toast({
         title: "Error",
-        description: "Failed to create event. Please try again.",
+        description: error.response?.data?.message || "Failed to create event. Please try again.",
         variant: "destructive",
       });
     } finally {

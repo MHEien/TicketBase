@@ -145,7 +145,7 @@ export default function EventsPage() {
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value || "");
+      setSearchQuery(e.target.value);
     },
     [],
   );
@@ -553,7 +553,7 @@ export default function EventsPage() {
           <Input
             placeholder="Search events..."
             className="pl-9"
-            value={searchQuery || ""}
+            value={searchQuery}
             onChange={handleSearchChange}
           />
         </div>

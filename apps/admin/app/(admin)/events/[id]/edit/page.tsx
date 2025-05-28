@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
@@ -16,14 +16,15 @@ import { useEventCreation } from "@/hooks/use-event-creation";
 import { useEvent } from "@/hooks/use-events";
 import { updateEvent } from "@/lib/api/events-api";
 
-export default function EditEventPage({ params }: { params: { id: string } }) {
+export default function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { eventData, isValid, resetEventData, updateEventData } =
     useEventCreation();
-  const { event, loading, error } = useEvent(params.id);
+  const { event, loading, error } = useEvent(resolvedParams.id);
 
   const steps = [
     { id: "basics", title: "Basic Details", component: EventBasicDetails },
@@ -94,12 +95,12 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
 
     try {
       // Update the event using the API
-      await updateEvent(params.id, {
+      await updateEvent(resolvedParams.id, {
         title: eventData.title,
         description: eventData.description,
         category: eventData.category,
-        startDate: eventData.startDate!,
-        endDate: eventData.endDate!,
+        startDate: new Date(eventData.startDate!).toISOString(),
+        endDate: new Date(eventData.endDate!).toISOString(),
         startTime: eventData.startTime,
         endTime: eventData.endTime,
         timeZone: eventData.timeZone,
@@ -117,6 +118,16 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
           (sum, ticket) => sum + ticket.quantity,
           0,
         ),
+        ticketTypes: eventData.ticketTypes.map(ticket => ({
+          name: ticket.name,
+          description: ticket.description,
+          price: ticket.price,
+          quantity: ticket.quantity,
+          isHidden: false,
+          isFree: ticket.price === 0,
+          requiresApproval: false,
+          sortOrder: 0,
+        })),
       });
 
       toast({
@@ -125,7 +136,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
       });
 
       // Navigate back to the event detail page
-      router.push(`/events/${params.id}`);
+      router.push(`/events/${resolvedParams.id}`);
     } catch (error) {
       console.error("Error updating event:", error);
       toast({
@@ -142,7 +153,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
     if (
       confirm("Are you sure you want to cancel? All your changes will be lost.")
     ) {
-      router.push(`/events/${params.id}`);
+      router.push(`/events/${resolvedParams.id}`);
     }
   };
 
@@ -181,7 +192,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/events/${params.id}`)}
+              onClick={() => router.push(`/events/${resolvedParams.id}`)}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

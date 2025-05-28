@@ -58,13 +58,28 @@ export interface TicketType {
   metadata?: Record<string, any>;
 }
 
+export interface CreateTicketTypeDto {
+  name: string;
+  description?: string;
+  price: number;
+  quantity: number;
+  minPerOrder?: number;
+  maxPerOrder?: number;
+  salesStartDate?: string;
+  salesEndDate?: string;
+  isHidden?: boolean;
+  isFree?: boolean;
+  requiresApproval?: boolean;
+  sortOrder?: number;
+}
+
 export interface CreateEventDto {
   title: string;
   description: string;
   shortDescription?: string;
   category: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   startTime: string;
   endTime: string;
   timeZone: string;
@@ -79,12 +94,13 @@ export interface CreateEventDto {
   featuredImage?: string;
   galleryImages?: string[];
   visibility?: "public" | "private" | "unlisted";
-  salesStartDate?: Date;
-  salesEndDate?: Date;
+  salesStartDate?: string;
+  salesEndDate?: string;
   seoTitle?: string;
   seoDescription?: string;
   tags?: string[];
   capacity?: number;
+  ticketTypes?: CreateTicketTypeDto[];
 }
 
 export interface UpdateEventDto extends Partial<CreateEventDto> {}
