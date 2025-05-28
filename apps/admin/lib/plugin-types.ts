@@ -28,6 +28,17 @@ export interface Plugin {
     priority?: number; // Priority for rendering when multiple plugins implement the same extension point
     displayName?: string; // Human-readable name for display
     author?: string; // Plugin author/developer
+    authorEmail?: string; // Plugin author email
+    authorAvatar?: string; // Plugin author avatar URL
+    repositoryUrl?: string; // Repository URL for the plugin source code
+    submittedAt?: string; // Plugin submission timestamp
+    status?: "pending" | "approved" | "rejected"; // Plugin submission status
+    iconUrl?: string; // URL to the plugin icon
+    installCount?: number; // Number of times this plugin has been installed
+    rating?: number; // Average rating (1-5 stars)
+    reviewCount?: number; // Number of reviews
+    lastUpdated?: string; // Last update timestamp
+    [key: string]: any; // Allow additional metadata
   };
   requiredPermissions?: string[];
 }

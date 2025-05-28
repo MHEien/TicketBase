@@ -51,7 +51,19 @@ export function ExtensionPoint({
         // Get all plugins that implement this extension point
         const plugins = pluginRegistry.getPluginsForExtensionPoint(name);
 
-        if (plugins.length === 0) {
+        // For admin-settings extension point, also include plugins with admin.settings components
+        let allPlugins = [...plugins];
+        if (name === "admin-settings") {
+          const pluginsWithAdminSettings = pluginRegistry.getPluginsWithComponent("settings");
+          // Add plugins that have admin settings but aren't in the extension points list
+          for (const plugin of pluginsWithAdminSettings) {
+            if (!allPlugins.find(p => p.id === plugin.id)) {
+              allPlugins.push(plugin);
+            }
+          }
+        }
+
+        if (allPlugins.length === 0) {
           setExtensions([]);
           return;
         }
@@ -59,7 +71,7 @@ export function ExtensionPoint({
         // Load all extension components
         const loadedExtensions = [];
 
-        for (const plugin of plugins) {
+        for (const plugin of allPlugins) {
           if (!plugin.enabled) continue;
 
           try {
@@ -80,27 +92,34 @@ export function ExtensionPoint({
             }
 
             // Check for extension points from dynamic imports
-            if (
-              !componentModule.default?.extensionPoints?.[name] &&
-              !componentModule.extensionPoints?.[name]
-            ) {
+            let Component = null;
+            
+            // Try multiple ways to find the extension point component
+            if (componentModule.default?.extensionPoints?.[name]) {
+              Component = componentModule.default.extensionPoints[name];
+            } else if (componentModule.extensionPoints?.[name]) {
+              Component = componentModule.extensionPoints[name];
+            } else if (name === "admin-settings" && plugin.adminComponents?.settings) {
+              // For admin-settings, try to find the admin settings component directly
+              Component = 
+                componentModule.default?.extensionPoints?.["admin-settings"] ||
+                componentModule.extensionPoints?.["admin-settings"] ||
+                componentModule.AdminSettingsComponent ||
+                componentModule.default?.AdminSettingsComponent;
+            }
+
+            if (!Component) {
               console.warn(
                 `Plugin ${plugin.id} does not properly implement extension point "${name}"`,
               );
               continue;
             }
 
-            const Component =
-              componentModule.default?.extensionPoints?.[name] ||
-              componentModule.extensionPoints?.[name];
-
-            if (Component) {
-              loadedExtensions.push({
-                id: plugin.id,
-                component: Component,
-                plugin,
-              });
-            }
+            loadedExtensions.push({
+              id: plugin.id,
+              component: Component,
+              plugin,
+            });
           } catch (e) {
             console.error(
               `Failed to load extension from plugin ${plugin.id} for "${name}":`,

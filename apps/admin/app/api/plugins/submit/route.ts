@@ -23,6 +23,7 @@ interface PublishPluginDto {
   category: string;
   remoteEntry: string;
   scope: string;
+  extensionPoints?: string[];
   adminComponents?: {
     settings?: string;
     eventCreation?: string;
@@ -134,6 +135,76 @@ export async function POST(request: NextRequest) {
       .replace(/^-|-$/g, "");
     const uniquePluginId = `${pluginId}-${Date.now()}`;
 
+    // Fetch and analyze the plugin bundle to extract metadata
+    let pluginMetadata = {
+      extensionPoints: [] as string[],
+      adminComponents: {
+        settings: "./Settings",
+      },
+      storefrontComponents: {},
+      requiredPermissions: [] as string[],
+    };
+
+    try {
+      // Fetch the plugin bundle content
+      const bundleResponse = await fetch(data.bundleUrl);
+      if (bundleResponse.ok) {
+        const bundleContent = await bundleResponse.text();
+        
+        // Extract extension points from the plugin code
+        const extensionPointsMatch = bundleContent.match(/extensionPoints\s*:\s*\{([\s\S]*?)\}/);
+        if (extensionPointsMatch) {
+          const extensionPointsContent = extensionPointsMatch[1];
+          // Extract extension point names (keys in the object)
+          const extensionPointNames = extensionPointsContent.match(/["']([^"']+)["']\s*:/g);
+          if (extensionPointNames) {
+            pluginMetadata.extensionPoints = extensionPointNames.map(name => 
+              name.replace(/["']/g, '').replace(':', '').trim()
+            );
+          }
+        }
+
+        // Extract admin components
+        const adminComponentsMatch = bundleContent.match(/adminComponents\s*:\s*\{([\s\S]*?)\}/);
+        if (adminComponentsMatch) {
+          const adminContent = adminComponentsMatch[1];
+          const settingsMatch = adminContent.match(/settings\s*:\s*["']([^"']+)["']/);
+          if (settingsMatch) {
+            pluginMetadata.adminComponents.settings = settingsMatch[1];
+          }
+        }
+
+        // Extract storefront components
+        const storefrontComponentsMatch = bundleContent.match(/storefrontComponents\s*:\s*\{([\s\S]*?)\}/);
+        if (storefrontComponentsMatch) {
+          const storefrontContent = storefrontComponentsMatch[1];
+          const checkoutMatch = storefrontContent.match(/checkout\s*:\s*["']([^"']+)["']/);
+          if (checkoutMatch) {
+            pluginMetadata.storefrontComponents = {
+              ...pluginMetadata.storefrontComponents,
+              checkout: checkoutMatch[1],
+            };
+          }
+        }
+
+        // Extract required permissions
+        const permissionsMatch = bundleContent.match(/requiredPermissions\s*:\s*\[([\s\S]*?)\]/);
+        if (permissionsMatch) {
+          const permissionsContent = permissionsMatch[1];
+          const permissions = permissionsContent.match(/["']([^"']+)["']/g);
+          if (permissions) {
+            pluginMetadata.requiredPermissions = permissions.map(p => 
+              p.replace(/["']/g, '').trim()
+            );
+          }
+        }
+
+        console.log('Extracted plugin metadata:', pluginMetadata);
+      }
+    } catch (error) {
+      console.warn('Failed to analyze plugin bundle, using defaults:', error);
+    }
+
     // Prepare data for the plugin server API
     const pluginDto: PublishPluginDto = {
       id: uniquePluginId,
@@ -143,11 +214,9 @@ export async function POST(request: NextRequest) {
       category: data.category,
       remoteEntry: data.bundleUrl,
       scope: data.name.toLowerCase().replace(/\s+/g, "_"),
-      adminComponents: {
-        settings: "./Settings",
-      },
-      storefrontComponents: {},
-      requiredPermissions: [],
+      adminComponents: pluginMetadata.adminComponents,
+      storefrontComponents: pluginMetadata.storefrontComponents,
+      requiredPermissions: pluginMetadata.requiredPermissions,
       metadata: {
         author: data.authorName,
         authorEmail: data.authorEmail,
@@ -191,6 +260,25 @@ export async function POST(request: NextRequest) {
       }
 
       const result = await response.json();
+
+      // After successful plugin creation, update the extension points
+      if (pluginMetadata.extensionPoints.length > 0) {
+        try {
+          await fetch(`${PLUGIN_SERVER_URL}/plugins/${uniquePluginId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+            body: JSON.stringify({
+              extensionPoints: pluginMetadata.extensionPoints,
+            }),
+          });
+        } catch (updateError) {
+          console.warn("Failed to update extension points:", updateError);
+          // Don't fail the entire submission if extension points update fails
+        }
+      }
 
       // Return success response to the client
       return NextResponse.json({

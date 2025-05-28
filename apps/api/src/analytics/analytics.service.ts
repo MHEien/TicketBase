@@ -551,7 +551,7 @@ export class AnalyticsService {
           name: plugin.name,
           description: plugin.description,
           installs: plugin.installationCount,
-          rating: 4.5 + Math.random() * 0.5, // Generate rating between 4.5-5.0
+          rating: plugin.metadata?.rating || null, // Use real rating or null
           category: plugin.category,
           icon: plugin.iconUrl,
           version: plugin.version,

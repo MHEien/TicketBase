@@ -8,6 +8,7 @@ import {
   InstalledPlugin,
   InstalledPluginSchema,
 } from './schemas/installed-plugin.schema';
+import { PluginRating, PluginRatingSchema } from './schemas/plugin-rating.schema';
 import { PluginProxyController } from './plugin-proxy.controller';
 import { WebhookController } from './webhook.controller';
 import { AssetsModule } from '../assets/assets.module';
@@ -23,6 +24,7 @@ import { MinioModule } from '../minio/minio.module';
     MongooseModule.forFeature([
       { name: Plugin.name, schema: PluginSchema },
       { name: InstalledPlugin.name, schema: InstalledPluginSchema },
+      { name: PluginRating.name, schema: PluginRatingSchema },
     ]),
     AssetsModule,
     MinioModule,

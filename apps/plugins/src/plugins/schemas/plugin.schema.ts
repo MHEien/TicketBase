@@ -62,12 +62,17 @@ export class Plugin {
   metadata: {
     author?: string;
     authorEmail?: string;
+    authorAvatar?: string;
     repositoryUrl?: string;
     submittedAt?: string;
     status?: string; // pending, approved, rejected
     priority?: number;
     displayName?: string;
     iconUrl?: string;
+    installCount?: number; // Number of times this plugin has been installed
+    rating?: number; // Average rating (1-5 stars)
+    reviewCount?: number; // Number of reviews
+    lastUpdated?: string; // Last update timestamp
     [key: string]: any;
   };
 

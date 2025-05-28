@@ -50,4 +50,13 @@ export class UpdatePluginDto {
   @IsArray()
   @IsOptional()
   requiredPermissions?: string[];
+
+  @ApiPropertyOptional({
+    description: 'List of extension points implemented by the plugin',
+    example: ['admin-settings', 'payment-methods', 'checkout-confirmation'],
+    type: [String],
+  })
+  @IsArray()
+  @IsOptional()
+  extensionPoints?: string[];
 }

@@ -405,6 +405,80 @@ export class PluginsController {
     );
   }
 
+  @ApiOperation({ summary: 'Store plugin bundle file without creating plugin entry' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Bundle successfully stored',
+    schema: {
+      type: 'object',
+      properties: {
+        bundleUrl: { type: 'string', description: 'URL to the stored bundle' },
+        pluginId: { type: 'string', description: 'Plugin ID used for storage' },
+        version: { type: 'string', description: 'Version used for storage' },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Plugin bundle file (JavaScript)',
+        },
+        pluginId: { type: 'string', description: 'Plugin ID for storage path' },
+        version: { type: 'string', description: 'Plugin version for storage path' },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @Public() // Make this endpoint public for admin uploads
+  @Post('storage/upload')
+  async storePluginBundle(
+    @UploadedFile() file: Express.Multer.File,
+    @Body()
+    storageDto: {
+      pluginId: string;
+      version: string;
+    },
+  ) {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('File upload is required');
+    }
+
+    if (!storageDto.pluginId || !storageDto.version) {
+      throw new BadRequestException('pluginId and version are required');
+    }
+
+    try {
+      // Check MinIO connection first
+      const storageStatus = await this.pluginsService.checkStorageHealth();
+      if (!storageStatus.isConnected) {
+        throw new BadRequestException(storageStatus.message);
+      }
+
+      // Store the bundle directly in MinIO without creating a plugin entry
+      const bundleUrl = await this.pluginsService.storePluginBundle(
+        storageDto.pluginId,
+        storageDto.version,
+        file.buffer,
+      );
+
+      return {
+        bundleUrl,
+        pluginId: storageDto.pluginId,
+        version: storageDto.version,
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to store plugin bundle: ${error.message}. ` +
+          `Make sure MinIO is running and properly configured.`,
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Check MinIO storage health' })
   @ApiResponse({
     status: 200,

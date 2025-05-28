@@ -138,11 +138,11 @@ export function PluginGallery() {
       installed: !!installed,
       enabled: installed?.enabled || false,
       icon: IconComponent,
-      // Mock data for now, you could add these to your plugin schema
-      installs: "500+",
-      rating: 4.5,
-      developer: plugin.name.split(" ")[0] + " Team",
-      developerAvatar: "/placeholder.svg",
+      // Use real data from plugin metadata
+      installs: plugin.metadata?.installCount || 0,
+      rating: plugin.metadata?.rating || null, // No default rating
+      developer: plugin.metadata?.author || "Unknown Developer",
+      developerAvatar: plugin.metadata?.authorAvatar || null, // No placeholder
     };
   });
 
@@ -395,23 +395,28 @@ export function PluginGallery() {
                             </div>
                             <div>
                               <p className="text-sm font-medium">Rating</p>
-                              <div className="flex items-center gap-1">
-                                <div className="flex">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className={`h-4 w-4 ${i < Math.floor(filteredPlugins.find((p) => p.id === selectedPlugin)?.rating || 0) ? "fill-primary text-primary" : "text-muted-foreground"}`}
-                                    />
-                                  ))}
+                              {filteredPlugins.find((p) => p.id === selectedPlugin)?.rating ? (
+                                <div className="flex items-center gap-1">
+                                  <div className="flex">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`h-4 w-4 ${i < Math.floor(filteredPlugins.find((p) => p.id === selectedPlugin)?.rating || 0) ? "fill-primary text-primary" : "text-muted-foreground"}`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="text-sm font-medium">
+                                    {filteredPlugins.find((p) => p.id === selectedPlugin)?.rating?.toFixed(1)}
+                                  </span>
+                                  {filteredPlugins.find((p) => p.id === selectedPlugin)?.metadata?.reviewCount && (
+                                    <span className="text-xs text-muted-foreground">
+                                      ({filteredPlugins.find((p) => p.id === selectedPlugin)?.metadata?.reviewCount} reviews)
+                                    </span>
+                                  )}
                                 </div>
-                                <span className="text-sm font-medium">
-                                  {
-                                    filteredPlugins.find(
-                                      (p) => p.id === selectedPlugin,
-                                    )?.rating
-                                  }
-                                </span>
-                              </div>
+                              ) : (
+                                <p className="text-sm text-muted-foreground">No ratings yet</p>
+                              )}
                             </div>
                             {(() => {
                               const plugin = filteredPlugins.find(
@@ -503,30 +508,32 @@ export function PluginGallery() {
                         <div className="space-y-4">
                           <h3 className="font-medium">Developer</h3>
                           <div className="flex items-center gap-3">
-                            <Avatar>
-                              <AvatarImage
-                                src={
-                                  filteredPlugins.find(
-                                    (p) => p.id === selectedPlugin,
-                                  )?.developerAvatar || "/placeholder.svg"
-                                }
-                              />
-                              <AvatarFallback>
-                                {filteredPlugins
-                                  .find((p) => p.id === selectedPlugin)
-                                  ?.developer.charAt(0)}
-                              </AvatarFallback>
+                            <Avatar className="h-8 w-8">
+                              {filteredPlugins.find((p) => p.id === selectedPlugin)?.developerAvatar ? (
+                                <AvatarImage
+                                  src={
+                                    filteredPlugins.find(
+                                      (p) => p.id === selectedPlugin,
+                                    )?.developerAvatar || ""
+                                  }
+                                  alt="Developer"
+                                />
+                              ) : (
+                                <AvatarFallback>
+                                  {filteredPlugins.find((p) => p.id === selectedPlugin)?.developer?.charAt(0) || "?"}
+                                </AvatarFallback>
+                              )}
                             </Avatar>
                             <div>
-                              <p className="font-medium">
+                              <p className="text-sm font-medium">
                                 {
                                   filteredPlugins.find(
                                     (p) => p.id === selectedPlugin,
                                   )?.developer
                                 }
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                12 plugins • Since 2020
+                              <p className="text-xs text-muted-foreground">
+                                Developer
                               </p>
                             </div>
                           </div>
@@ -631,20 +638,28 @@ export function PluginGallery() {
                               <CardContent className="pb-2">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-1">
-                                    <div className="flex">
-                                      {[...Array(5)].map((_, i) => (
-                                        <Star
-                                          key={i}
-                                          className={`h-3 w-3 ${i < Math.floor(plugin.rating) ? "fill-primary text-primary" : "text-muted-foreground"}`}
-                                        />
-                                      ))}
-                                    </div>
-                                    <span className="text-xs font-medium">
-                                      {plugin.rating}
-                                    </span>
+                                    {plugin.rating ? (
+                                      <>
+                                        <div className="flex">
+                                          {[...Array(5)].map((_, i) => (
+                                            <Star
+                                              key={i}
+                                              className={`h-3 w-3 ${i < Math.floor(plugin.rating!) ? "fill-primary text-primary" : "text-muted-foreground"}`}
+                                            />
+                                          ))}
+                                        </div>
+                                        <span className="text-xs font-medium">
+                                          {plugin.rating.toFixed(1)}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="text-xs text-muted-foreground">
+                                        No ratings yet
+                                      </span>
+                                    )}
                                   </div>
                                   <span className="text-xs text-muted-foreground">
-                                    {plugin.installs} installs
+                                    {plugin.installs} install{plugin.installs !== 1 ? 's' : ''}
                                   </span>
                                 </div>
                               </CardContent>
@@ -702,23 +717,31 @@ export function PluginGallery() {
                                   </p>
                                   <div className="mt-1 flex items-center gap-2">
                                     <div className="flex items-center gap-1">
-                                      <div className="flex">
-                                        {[...Array(5)].map((_, i) => (
-                                          <Star
-                                            key={i}
-                                            className={`h-3 w-3 ${i < Math.floor(plugin.rating) ? "fill-primary text-primary" : "text-muted-foreground"}`}
-                                          />
-                                        ))}
-                                      </div>
-                                      <span className="text-xs font-medium">
-                                        {plugin.rating}
-                                      </span>
+                                      {plugin.rating ? (
+                                        <>
+                                          <div className="flex">
+                                            {[...Array(5)].map((_, i) => (
+                                              <Star
+                                                key={i}
+                                                className={`h-3 w-3 ${i < Math.floor(plugin.rating!) ? "fill-primary text-primary" : "text-muted-foreground"}`}
+                                              />
+                                            ))}
+                                          </div>
+                                          <span className="text-xs font-medium">
+                                            {plugin.rating.toFixed(1)}
+                                          </span>
+                                        </>
+                                      ) : (
+                                        <span className="text-xs text-muted-foreground">
+                                          No ratings yet
+                                        </span>
+                                      )}
                                     </div>
                                     <span className="text-xs text-muted-foreground">
                                       •
                                     </span>
                                     <span className="text-xs text-muted-foreground">
-                                      {plugin.installs} installs
+                                      {plugin.installs} install{plugin.installs !== 1 ? 's' : ''}
                                     </span>
                                   </div>
                                 </div>
