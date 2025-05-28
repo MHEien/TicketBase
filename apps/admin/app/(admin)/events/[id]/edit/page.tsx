@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
@@ -13,70 +13,20 @@ import { EventMedia } from "@/components/event-creation/event-media";
 import { EventPreview } from "@/components/event-creation/event-preview";
 import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
-import { createEvent, fetchEvent } from "@/lib/api/events-api";
+import { useEvent } from "@/hooks/use-events";
+import { updateEvent } from "@/lib/api/events-api";
 
-export default function CreateEventPage() {
+export default function EditEventPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingDuplicate, setIsLoadingDuplicate] = useState(false);
   const { eventData, isValid, resetEventData, updateEventData } = useEventCreation();
-
-  const duplicateId = searchParams.get("duplicate");
-
-  // Load event data for duplication
-  useEffect(() => {
-    if (duplicateId) {
-      setIsLoadingDuplicate(true);
-      fetchEvent(duplicateId)
-        .then((event) => {
-          updateEventData({
-            title: `${event.title} (Copy)`,
-            description: event.description,
-            category: event.category,
-            startDate: null, // Reset dates for new event
-            endDate: null,
-            startTime: event.startTime,
-            endTime: event.endTime,
-            timeZone: event.timeZone || "UTC",
-            locationType: event.locationType,
-            venueName: event.venueName || "",
-            address: event.address || "",
-            city: event.city || "",
-            state: event.state || "",
-            zipCode: event.zipCode || "",
-            country: event.country || "",
-            virtualEventUrl: event.virtualEventUrl || "",
-            featuredImage: event.featuredImage || "",
-            galleryImages: event.galleryImages || [],
-            ticketTypes: event.ticketTypes?.map(ticket => ({
-              id: `${ticket.id}-copy-${Date.now()}`,
-              name: ticket.name,
-              price: ticket.price,
-              quantity: ticket.quantity,
-              description: ticket.description || "",
-            })) || [],
-          });
-          toast({
-            title: "Event Duplicated",
-            description: "Event data has been loaded for duplication. Please update the dates and other details as needed.",
-          });
-        })
-        .catch((error) => {
-          console.error("Error loading event for duplication:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load event for duplication.",
-            variant: "destructive",
-          });
-        })
-        .finally(() => {
-          setIsLoadingDuplicate(false);
-        });
-    }
-  }, [duplicateId, updateEventData, toast]);
+  const { event, loading, error } = useEvent(params.id);
 
   const steps = [
     { id: "basics", title: "Basic Details", component: EventBasicDetails },
@@ -86,6 +36,39 @@ export default function CreateEventPage() {
     { id: "media", title: "Media", component: EventMedia },
     { id: "preview", title: "Preview", component: EventPreview },
   ];
+
+  // Load existing event data when component mounts
+  useEffect(() => {
+    if (event && !loading) {
+      updateEventData({
+        title: event.title,
+        description: event.description,
+        category: event.category,
+        startDate: event.startDate ? new Date(event.startDate) : null,
+        endDate: event.endDate ? new Date(event.endDate) : null,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        timeZone: event.timeZone || "UTC",
+        locationType: event.locationType,
+        venueName: event.venueName || "",
+        address: event.address || "",
+        city: event.city || "",
+        state: event.state || "",
+        zipCode: event.zipCode || "",
+        country: event.country || "",
+        virtualEventUrl: event.virtualEventUrl || "",
+        featuredImage: event.featuredImage || "",
+        galleryImages: event.galleryImages || [],
+        ticketTypes: event.ticketTypes?.map(ticket => ({
+          id: ticket.id,
+          name: ticket.name,
+          price: ticket.price,
+          quantity: ticket.quantity,
+          description: ticket.description || "",
+        })) || [],
+      });
+    }
+  }, [event, loading, updateEventData]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -112,8 +95,8 @@ export default function CreateEventPage() {
     setIsSubmitting(true);
 
     try {
-      // Create the event using the API
-      const newEvent = await createEvent({
+      // Update the event using the API
+      await updateEvent(params.id, {
         title: eventData.title,
         description: eventData.description,
         category: eventData.category,
@@ -132,23 +115,21 @@ export default function CreateEventPage() {
         virtualEventUrl: eventData.virtualEventUrl,
         featuredImage: eventData.featuredImage,
         galleryImages: eventData.galleryImages,
-        visibility: "public", // Default to public
         capacity: eventData.ticketTypes.reduce((sum, ticket) => sum + ticket.quantity, 0),
       });
 
       toast({
         title: "Success",
-        description: `${eventData.title} has been created successfully.`,
+        description: `${eventData.title} has been updated successfully.`,
       });
 
-      // Reset form and navigate to the new event
-      resetEventData();
-      router.push(`/events/${newEvent.id}`);
+      // Navigate back to the event detail page
+      router.push(`/events/${params.id}`);
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error updating event:", error);
       toast({
         title: "Error",
-        description: "Failed to create event. Please try again.",
+        description: "Failed to update event. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -159,27 +140,40 @@ export default function CreateEventPage() {
   const handleCancel = () => {
     if (
       confirm(
-        "Are you sure you want to cancel? All your progress will be lost.",
+        "Are you sure you want to cancel? All your changes will be lost.",
       )
     ) {
-      resetEventData();
-      router.push("/events");
+      router.push(`/events/${params.id}`);
     }
   };
 
-  const CurrentStepComponent = steps[currentStep].component;
-
-  // Show loading state when loading duplicate data
-  if (isLoadingDuplicate) {
+  // Loading state
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p>Loading event data for duplication...</p>
+          <p>Loading event data...</p>
         </div>
       </div>
     );
   }
+
+  // Error state
+  if (error || !event) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <p className="mb-4 text-destructive">Error loading event data</p>
+          <Button onClick={() => router.push("/events")}>
+            Back to Events
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const CurrentStepComponent = steps[currentStep].component;
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-background to-background/80">
@@ -190,14 +184,12 @@ export default function CreateEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/")}
+              onClick={() => router.push(`/events/${params.id}`)}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-xl font-semibold">
-              {duplicateId ? "Duplicate Event" : "Create New Event"}
-            </h1>
+            <h1 className="text-xl font-semibold">Edit Event</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -217,7 +209,7 @@ export default function CreateEventPage() {
               className="gap-1 rounded-full"
             >
               <Save className="h-4 w-4" />
-              <span>{isSubmitting ? "Saving..." : "Save Event"}</span>
+              <span>{isSubmitting ? "Saving..." : "Save Changes"}</span>
             </Button>
           </div>
         </div>
@@ -314,11 +306,11 @@ export default function CreateEventPage() {
               className="gap-1 rounded-full"
             >
               <Save className="h-4 w-4" />
-              <span>{isSubmitting ? "Saving..." : "Save Event"}</span>
+              <span>{isSubmitting ? "Saving..." : "Save Changes"}</span>
             </Button>
           )}
         </div>
       </div>
     </div>
   );
-}
+} 

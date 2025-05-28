@@ -58,26 +58,6 @@ export class PluginsController {
     return this.pluginsService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get a specific plugin by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the plugin details',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Plugin not found',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'Plugin ID',
-    required: true,
-  })
-  @Public() // No auth required for public plugin details
-  @Get(':id')
-  async getPluginById(@Param('id') id: string) {
-    return this.pluginsService.findById(id);
-  }
-
   @ApiOperation({ summary: 'Get all installed plugins for a tenant' })
   @ApiResponse({
     status: 200,
@@ -175,6 +155,26 @@ export class PluginsController {
     const tenantId = req.user.tenantId;
     await this.pluginsService.uninstallPlugin(tenantId, installDto.pluginId);
     return { success: true };
+  }
+
+  @ApiOperation({ summary: 'Get a specific plugin by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the plugin details',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin not found',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Plugin ID',
+    required: true,
+  })
+  @Public() // No auth required for public plugin details
+  @Get(':id')
+  async getPluginById(@Param('id') id: string) {
+    return this.pluginsService.findById(id);
   }
 
   @ApiOperation({ summary: 'Update plugin configuration' })

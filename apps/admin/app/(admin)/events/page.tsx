@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import {
@@ -10,6 +10,7 @@ import {
   Edit,
   Filter,
   Globe,
+  Loader2,
   MapPin,
   MoreHorizontal,
   Plus,
@@ -40,54 +41,67 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllEvents, type EventWithId } from "@/lib/event-data";
-import { useToast } from "@/hooks/use-toast";
+import { useEvents } from "@/hooks/use-events";
+import { type Event } from "@/lib/api/events-api";
+import { EventsLoading } from "@/components/ui/loading-skeleton";
 
 export default function EventsPage() {
   const router = useRouter();
-  const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"date" | "title" | "sales">("date");
   const [view, setView] = useState<"grid" | "list">("grid");
 
-  // Get all events
-  const allEvents = getAllEvents();
+  // Fetch events with real API
+  const { 
+    events, 
+    loading, 
+    error, 
+    deleteEventMutation, 
+    publishEventMutation, 
+    cancelEventMutation 
+  } = useEvents();
 
-  // Filter events based on search query and category
-  const filteredEvents = allEvents.filter((event) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase());
+  // Filter and sort events
+  const filteredAndSortedEvents = useMemo(() => {
+    let filtered = events.filter((event) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory =
-      !filterCategory || event.category === filterCategory;
+      const matchesCategory =
+        !filterCategory || event.category === filterCategory;
 
-    return matchesSearch && matchesCategory;
-  });
+      return matchesSearch && matchesCategory;
+    });
 
-  // Sort events
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    if (sortBy === "date") {
-      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-    } else if (sortBy === "title") {
-      return a.title.localeCompare(b.title);
-    } else if (sortBy === "sales") {
-      return b.totalRevenue - a.totalRevenue;
-    }
-    return 0;
-  });
+    // Sort events
+    return filtered.sort((a, b) => {
+      if (sortBy === "date") {
+        const aDate = a.startDate ? new Date(a.startDate).getTime() : 0;
+        const bDate = b.startDate ? new Date(b.startDate).getTime() : 0;
+        return bDate - aDate;
+      } else if (sortBy === "title") {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === "sales") {
+        return b.totalRevenue - a.totalRevenue;
+      }
+      return 0;
+    });
+  }, [events, searchQuery, filterCategory, sortBy]);
 
   // Group events by status
-  const publishedEvents = sortedEvents.filter(
+  const publishedEvents = filteredAndSortedEvents.filter(
     (event) => event.status === "published",
   );
-  const draftEvents = sortedEvents.filter((event) => event.status === "draft");
-  const pastEvents = sortedEvents.filter(
+  const draftEvents = filteredAndSortedEvents.filter((event) => event.status === "draft");
+  const pastEvents = filteredAndSortedEvents.filter(
     (event) =>
       event.status === "completed" ||
-      (event.status === "published" && new Date(event.endDate) < new Date()),
+      (event.status === "published" && 
+       event.endDate && 
+       new Date(event.endDate) < new Date()),
   );
 
   const handleCreateEvent = () => {
@@ -96,47 +110,39 @@ export default function EventsPage() {
 
   const handleEditEvent = (eventId: string) => {
     router.push(`/events/${eventId}/edit`);
-    // For now, just show a toast since we haven't implemented the edit page yet
-    toast({
-      title: "Edit Event",
-      description: `Editing event ${eventId}`,
-    });
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    // In a real app, this would delete the event from the database
-    toast({
-      title: "Delete Event",
-      description: `Event ${eventId} has been deleted.`,
-      variant: "destructive",
-    });
+  const handleDeleteEvent = async (eventId: string) => {
+    if (confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+      await deleteEventMutation(eventId);
+    }
   };
 
   const handleDuplicateEvent = (eventId: string) => {
-    toast({
-      title: "Duplicate Event",
-      description: `Event ${eventId} has been duplicated.`,
-    });
+    // TODO: Implement duplication logic
+    router.push(`/events/new?duplicate=${eventId}`);
   };
 
   const handleViewEvent = (eventId: string) => {
     router.push(`/events/${eventId}`);
-    // For now, just show a toast since we haven't implemented the view page yet
-    toast({
-      title: "View Event",
-      description: `Viewing event ${eventId}`,
-    });
   };
 
-  const handlePublishEvent = (eventId: string) => {
-    toast({
-      title: "Publish Event",
-      description: `Event ${eventId} has been published.`,
-    });
+  const handlePublishEvent = async (eventId: string) => {
+    await publishEventMutation(eventId);
   };
 
-  const renderEventCard = (event: EventWithId) => {
-    const isPast = new Date(event.endDate) < new Date();
+  const handleCancelEvent = async (eventId: string) => {
+    if (confirm("Are you sure you want to cancel this event?")) {
+      await cancelEventMutation(eventId);
+    }
+  };
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value || "");
+  }, []);
+
+  const renderEventCard = (event: Event) => {
+    const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
 
     return (
       <Card
@@ -198,6 +204,11 @@ export default function EventsPage() {
                   Publish
                 </DropdownMenuItem>
               )}
+              {event.status === "published" && (
+                <DropdownMenuItem onClick={() => handleCancelEvent(event.id)}>
+                  Cancel Event
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => handleDeleteEvent(event.id)}
@@ -233,7 +244,12 @@ export default function EventsPage() {
           <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              <span>{format(new Date(event.startDate), "MMM d, yyyy")}</span>
+              <span>
+                {event.startDate 
+                  ? format(new Date(event.startDate), "MMM d, yyyy")
+                  : "Date TBD"
+                }
+              </span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -271,8 +287,8 @@ export default function EventsPage() {
     );
   };
 
-  const renderEventList = (event: EventWithId) => {
-    const isPast = new Date(event.endDate) < new Date();
+  const renderEventList = (event: Event) => {
+    const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
 
     return (
       <Card
@@ -304,7 +320,12 @@ export default function EventsPage() {
             <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                <span>{format(new Date(event.startDate), "MMM d, yyyy")}</span>
+                <span>
+                  {event.startDate 
+                    ? format(new Date(event.startDate), "MMM d, yyyy")
+                    : "Date TBD"
+                  }
+                </span>
               </div>
 
               <div className="flex items-center gap-1">
@@ -367,6 +388,11 @@ export default function EventsPage() {
                     Publish
                   </DropdownMenuItem>
                 )}
+                {event.status === "published" && (
+                  <DropdownMenuItem onClick={() => handleCancelEvent(event.id)}>
+                    Cancel Event
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleDeleteEvent(event.id)}
@@ -382,6 +408,136 @@ export default function EventsPage() {
       </Card>
     );
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Events</h1>
+            <p className="text-muted-foreground">
+              Manage your events and track ticket sales
+            </p>
+          </div>
+          <Button onClick={handleCreateEvent} className="gap-2 rounded-full">
+            <Plus className="h-4 w-4" />
+            <span>Create Event</span>
+          </Button>
+        </div>
+
+        <div className="mb-6 flex flex-col gap-4 md:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search events..."
+              className="pl-9"
+              disabled
+            />
+          </div>
+          <div className="flex gap-2">
+            <Select disabled>
+              <SelectTrigger className="w-[180px] gap-1">
+                <Filter className="h-4 w-4" />
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+            </Select>
+            <Select disabled>
+              <SelectTrigger className="w-[180px] gap-1">
+                <ChevronDown className="h-4 w-4" />
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+            </Select>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10"
+              disabled
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </Button>
+          </div>
+        </div>
+        
+        <Tabs defaultValue="active" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="active" className="relative">
+              Active
+              <Badge className="ml-2 rounded-full px-1.5 py-0.5">
+                -
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="drafts" className="relative">
+              Drafts
+              <Badge className="ml-2 rounded-full px-1.5 py-0.5">
+                -
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="past" className="relative">
+              Past
+              <Badge className="ml-2 rounded-full px-1.5 py-0.5">
+                -
+              </Badge>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="active" className="space-y-4">
+            <EventsLoading view={view} count={6} />
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Events</h1>
+            <p className="text-muted-foreground">
+              Manage your events and track ticket sales
+            </p>
+          </div>
+          <Button onClick={handleCreateEvent} className="gap-2 rounded-full">
+            <Plus className="h-4 w-4" />
+            <span>Create Event</span>
+          </Button>
+        </div>
+        
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="mb-4 rounded-full bg-destructive/10 p-3">
+              <Clock className="h-6 w-6 text-destructive" />
+            </div>
+            <CardTitle className="mb-2">Error loading events</CardTitle>
+            <CardDescription className="mb-4 max-w-md">
+              {error}
+            </CardDescription>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8">
@@ -404,15 +560,15 @@ export default function EventsPage() {
           <Input
             placeholder="Search events..."
             className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery || ""}
+            onChange={handleSearchChange}
           />
         </div>
 
         <div className="flex gap-2">
           <Select
             value={filterCategory || "all"}
-            onValueChange={(value) => setFilterCategory(value || null)}
+            onValueChange={(value) => setFilterCategory(value === "all" ? null : value)}
           >
             <SelectTrigger className="w-[180px] gap-1">
               <Filter className="h-4 w-4" />
@@ -429,7 +585,7 @@ export default function EventsPage() {
           </Select>
 
           <Select
-            value={sortBy}
+            value={sortBy || "date"}
             onValueChange={(value: "date" | "title" | "sales") =>
               setSortBy(value)
             }

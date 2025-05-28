@@ -10,7 +10,9 @@
             "description": ""
           }
         },
-        "tags": ["App"]
+        "tags": [
+          "App"
+        ]
       }
     },
     "/auth/me": {
@@ -31,7 +33,24 @@
             "description": ""
           }
         },
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns the health status of all services"
+          }
+        },
+        "summary": "Get system health status",
+        "tags": [
+          "health"
+        ]
       }
     },
     "/plugins/available": {
@@ -49,7 +68,9 @@
           }
         ],
         "summary": "Get all available plugins",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/installed": {
@@ -70,7 +91,9 @@
           }
         ],
         "summary": "Get all installed plugins for a tenant",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/install": {
@@ -101,7 +124,9 @@
           }
         ],
         "summary": "Install a plugin for a tenant",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/uninstall": {
@@ -145,7 +170,80 @@
           }
         ],
         "summary": "Uninstall a plugin for a tenant",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
+      }
+    },
+    "/plugins/{id}": {
+      "get": {
+        "operationId": "PluginsController_getPluginById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Plugin ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the plugin details"
+          },
+          "404": {
+            "description": "Plugin not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a specific plugin by ID",
+        "tags": [
+          "plugins"
+        ]
+      },
+      "put": {
+        "operationId": "PluginsController_updatePlugin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Plugin ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePluginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plugin successfully updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an existing plugin",
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/{id}/config": {
@@ -188,7 +286,9 @@
           }
         ],
         "summary": "Update plugin configuration",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/{id}/status": {
@@ -229,7 +329,9 @@
           }
         ],
         "summary": "Enable or disable a plugin",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins": {
@@ -257,45 +359,9 @@
           }
         ],
         "summary": "Create a new plugin",
-        "tags": ["plugins"]
-      }
-    },
-    "/plugins/{id}": {
-      "put": {
-        "operationId": "PluginsController_updatePlugin",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "description": "Plugin ID",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePluginDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Plugin successfully updated"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update an existing plugin",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/by-extension-point": {
@@ -326,7 +392,9 @@
           }
         ],
         "summary": "Get plugins by extension point",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/upload": {
@@ -392,7 +460,9 @@
           }
         ],
         "summary": "Upload a plugin bundle file",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/plugins/storage-health": {
@@ -425,7 +495,50 @@
           }
         ],
         "summary": "Check MinIO storage health",
-        "tags": ["plugins"]
+        "tags": [
+          "plugins"
+        ]
+      }
+    },
+    "/plugins/{id}/bundle": {
+      "get": {
+        "operationId": "PluginsController_getPluginBundle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Plugin ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the plugin bundle file",
+            "content": {
+              "application/javascript": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plugin not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get plugin bundle",
+        "tags": [
+          "plugins"
+        ]
       }
     },
     "/api/plugin-proxy/{pluginId}/{pathSuffix}": {
@@ -472,7 +585,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "post": {
         "operationId": "PluginProxyController_proxyRequest_post",
@@ -517,7 +632,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "put": {
         "operationId": "PluginProxyController_proxyRequest_put",
@@ -562,7 +679,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "delete": {
         "operationId": "PluginProxyController_proxyRequest_delete",
@@ -607,7 +726,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "patch": {
         "operationId": "PluginProxyController_proxyRequest_patch",
@@ -652,7 +773,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "options": {
         "operationId": "PluginProxyController_proxyRequest_options",
@@ -697,7 +820,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "head": {
         "operationId": "PluginProxyController_proxyRequest_head",
@@ -742,7 +867,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       },
       "search": {
         "operationId": "PluginProxyController_proxyRequest_search",
@@ -787,7 +914,9 @@
           }
         },
         "summary": "Proxy requests to plugin services",
-        "tags": ["plugin-proxy"]
+        "tags": [
+          "plugin-proxy"
+        ]
       }
     },
     "/webhooks/plugins/{pluginId}": {
@@ -808,7 +937,9 @@
             "description": ""
           }
         },
-        "tags": ["Webhook"]
+        "tags": [
+          "Webhook"
+        ]
       }
     },
     "/plugins/bundles/{pluginId}/v{version}/{filename}": {
@@ -852,7 +983,9 @@
           }
         },
         "summary": "Serve plugin bundle with versioned path format",
-        "tags": ["plugin-bundles"]
+        "tags": [
+          "plugin-bundles"
+        ]
       }
     },
     "/plugins/bundles/{objectKey}": {
@@ -878,7 +1011,9 @@
           }
         },
         "summary": "Serve plugin bundle with legacy path format",
-        "tags": ["plugin-bundles"]
+        "tags": [
+          "plugin-bundles"
+        ]
       }
     },
     "/marketplace": {
@@ -910,7 +1045,9 @@
           }
         },
         "summary": "Get available plugins from the marketplace",
-        "tags": ["marketplace"]
+        "tags": [
+          "marketplace"
+        ]
       },
       "post": {
         "operationId": "MarketplaceController_publishPlugin",
@@ -931,7 +1068,9 @@
           }
         },
         "summary": "Publish a plugin to the marketplace",
-        "tags": ["marketplace"]
+        "tags": [
+          "marketplace"
+        ]
       }
     },
     "/marketplace/categories": {
@@ -944,7 +1083,9 @@
           }
         },
         "summary": "Get all plugin categories",
-        "tags": ["marketplace"]
+        "tags": [
+          "marketplace"
+        ]
       }
     },
     "/marketplace/{id}": {
@@ -970,7 +1111,9 @@
           }
         },
         "summary": "Get plugin details by ID",
-        "tags": ["marketplace"]
+        "tags": [
+          "marketplace"
+        ]
       },
       "delete": {
         "operationId": "MarketplaceController_removePlugin",
@@ -1007,7 +1150,9 @@
           }
         },
         "summary": "Remove a plugin from the marketplace",
-        "tags": ["marketplace"]
+        "tags": [
+          "marketplace"
+        ]
       }
     }
   },
@@ -1050,7 +1195,9 @@
             "example": "payment-gateway"
           }
         },
-        "required": ["pluginId"]
+        "required": [
+          "pluginId"
+        ]
       },
       "UpdatePluginStatusDto": {
         "type": "object",
@@ -1061,7 +1208,9 @@
             "example": true
           }
         },
-        "required": ["enabled"]
+        "required": [
+          "enabled"
+        ]
       },
       "CreatePluginDto": {
         "type": "object",
@@ -1103,14 +1252,23 @@
           },
           "requiredPermissions": {
             "description": "List of permissions required by the plugin",
-            "example": ["read:orders", "write:transactions"],
+            "example": [
+              "read:orders",
+              "write:transactions"
+            ],
             "type": "array",
             "items": {
               "type": "string"
             }
           }
         },
-        "required": ["id", "name", "version", "category", "sourceCode"]
+        "required": [
+          "id",
+          "name",
+          "version",
+          "category",
+          "sourceCode"
+        ]
       },
       "UpdatePluginDto": {
         "type": "object",
@@ -1142,7 +1300,11 @@
           },
           "requiredPermissions": {
             "description": "List of permissions required by the plugin",
-            "example": ["read:orders", "write:transactions", "read:customers"],
+            "example": [
+              "read:orders",
+              "write:transactions",
+              "read:customers"
+            ],
             "type": "array",
             "items": {
               "type": "string"
@@ -1198,6 +1360,56 @@
             "additionalProperties": {
               "type": "string"
             }
+          }
+        }
+      },
+      "PluginMetadataDto": {
+        "type": "object",
+        "properties": {
+          "author": {
+            "type": "string",
+            "description": "Plugin author name",
+            "example": "John Doe"
+          },
+          "authorEmail": {
+            "type": "string",
+            "description": "Plugin author email",
+            "example": "john.doe@example.com"
+          },
+          "repositoryUrl": {
+            "type": "string",
+            "description": "Repository URL for the plugin source code",
+            "example": "https://github.com/johndoe/payment-plugin"
+          },
+          "submittedAt": {
+            "type": "string",
+            "description": "Plugin submission timestamp",
+            "example": "2023-12-01T10:00:00Z"
+          },
+          "status": {
+            "type": "string",
+            "description": "Plugin submission status",
+            "example": "pending",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected"
+            ]
+          },
+          "priority": {
+            "type": "number",
+            "description": "Plugin priority for ordering",
+            "example": 100
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Display name for the plugin",
+            "example": "Stripe Payments"
+          },
+          "iconUrl": {
+            "type": "string",
+            "description": "URL to the plugin icon",
+            "example": "https://example.com/icon.svg"
           }
         }
       },
@@ -1257,11 +1469,22 @@
           },
           "requiredPermissions": {
             "description": "List of permissions required by the plugin",
-            "example": ["read:orders", "write:transactions"],
+            "example": [
+              "read:orders",
+              "write:transactions"
+            ],
             "type": "array",
             "items": {
               "type": "string"
             }
+          },
+          "metadata": {
+            "description": "Plugin metadata including author information and submission details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PluginMetadataDto"
+              }
+            ]
           }
         },
         "required": [

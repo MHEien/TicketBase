@@ -37,9 +37,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getEventById, type EventWithId } from "@/lib/event-data";
+import { useEvent } from "@/hooks/use-events";
+import { type Event } from "@/lib/api/events-api";
 import { useToast } from "@/hooks/use-toast";
 import { PluginWidgetArea } from "@/components/plugin-widget-area";
+import { 
+  deleteEvent, 
+  publishEvent, 
+  cancelEvent 
+} from "@/lib/api/events-api";
 
 export default function EventDetailsPage({
   params,
@@ -48,62 +54,120 @@ export default function EventDetailsPage({
 }) {
   const router = useRouter();
   const { toast } = useToast();
-  const [event, setEvent] = useState<EventWithId | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadEvent() {
-      try {
-        const eventData = await getEventById(params.id);
-        setEvent(eventData || null);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Could not load event details",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadEvent();
-  }, [params.id, toast]);
+  const { event, loading, error, refetch } = useEvent(params.id);
 
   const handleEditEvent = () => {
     router.push(`/events/${params.id}/edit`);
   };
 
-  const handleDeleteEvent = () => {
-    // For now, just show a toast
-    toast({
-      title: "Not implemented",
-      description: "Delete functionality will be added soon",
-    });
+  const handleDeleteEvent = async () => {
+    if (!confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      await deleteEvent(params.id);
+      toast({
+        title: "Success",
+        description: "Event deleted successfully",
+      });
+      router.push("/events");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete event",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDuplicateEvent = () => {
-    // For now, just show a toast
-    toast({
-      title: "Not implemented",
-      description: "Duplicate functionality will be added soon",
+    // Navigate to create new event with duplicate parameter
+    router.push(`/events/new?duplicate=${params.id}`);
+  };
+
+  const handlePublishEvent = async () => {
+    try {
+      await publishEvent(params.id);
+      toast({
+        title: "Success",
+        description: "Event published successfully",
+      });
+      // Refetch to get updated data
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to publish event",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelEvent = async () => {
+    if (!confirm("Are you sure you want to cancel this event?")) {
+      return;
+    }
+
+    try {
+      await cancelEvent(params.id);
+      toast({
+        title: "Success",
+        description: "Event cancelled successfully",
+      });
+      // Refetch to get updated data
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel event",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShareEvent = () => {
+    // Copy event URL to clipboard
+    const eventUrl = `${window.location.origin}/events/${params.id}`;
+    navigator.clipboard.writeText(eventUrl).then(() => {
+      toast({
+        title: "Success",
+        description: "Event URL copied to clipboard",
+      });
+    }).catch(() => {
+      toast({
+        title: "Error",
+        description: "Failed to copy URL to clipboard",
+        variant: "destructive",
+      });
     });
   };
 
-  const handlePublishEvent = () => {
-    // For now, just show a toast
+  const handleExportAttendees = () => {
+    // TODO: Implement attendee export functionality
     toast({
-      title: "Not implemented",
-      description: "Publish functionality will be added soon",
+      title: "Coming Soon",
+      description: "Attendee export functionality will be available soon",
     });
   };
 
-  if (loading || !event) {
+  if (loading) {
     return <div className="p-8 text-center">Loading event details...</div>;
   }
 
+  if (error || !event) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-destructive">Error loading event details</p>
+        <Button onClick={() => router.push("/events")} className="mt-4">
+          Back to Events
+        </Button>
+      </div>
+    );
+  }
+
   const totalTickets = event.ticketTypes.reduce(
-    (sum, ticket) => sum + ticket.quantity,
+    (sum: number, ticket: any) => sum + ticket.quantity,
     0,
   );
   const ticketsSoldPercentage =
@@ -133,6 +197,12 @@ export default function EventDetailsPage({
               Publish Event
             </Button>
           )}
+          
+          {event.status === "published" && (
+            <Button onClick={handleCancelEvent} variant="destructive" className="gap-2">
+              Cancel Event
+            </Button>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -149,11 +219,11 @@ export default function EventDetailsPage({
               <DropdownMenuItem onClick={handleDuplicateEvent}>
                 Duplicate
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShareEvent}>
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportAttendees}>
                 <Download className="mr-2 h-4 w-4" />
                 Export Attendees
               </DropdownMenuItem>
@@ -272,28 +342,32 @@ export default function EventDetailsPage({
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {event.ticketTypes.map((ticket, index) => (
-                    <div key={ticket.id} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium">{ticket.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {ticket.description}
-                          </p>
+                  {event.ticketTypes.map((ticket: any, index: number) => {
+                    const soldQuantity = ticket.quantity - (ticket.availableQuantity || ticket.quantity);
+                    const soldPercentage = Math.round((soldQuantity / ticket.quantity) * 100) || 0;
+                    
+                    return (
+                      <div key={ticket.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-medium">{ticket.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {ticket.description}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold">
+                              ${ticket.price.toFixed(2)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {soldQuantity} sold / {ticket.quantity} total
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold">
-                            ${ticket.price.toFixed(2)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {Math.floor(ticket.quantity * 0.3)} sold /{" "}
-                            {ticket.quantity} total
-                          </p>
-                        </div>
+                        <Progress value={soldPercentage} className="h-2" />
                       </div>
-                      <Progress value={30} className="h-2" />
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {/* Plugin integrations for ticket types */}
                   <Suspense
