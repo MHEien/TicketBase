@@ -1,6 +1,5 @@
 import { Plugin, InstalledPlugin } from "./plugin-types";
 import { getTenantPlugins } from "./plugin-api";
-import { getDevPlugins, isDevEnvironment } from "./dev-plugins";
 
 class PluginRegistry {
   private plugins: InstalledPlugin[] = [];
@@ -33,20 +32,14 @@ class PluginRegistry {
         return;
       }
 
-      // In development mode, use the mock plugins
-      if (isDevEnvironment()) {
-        console.log("Using development plugins");
-        this.plugins = getDevPlugins();
+      // Always fetch installed plugins from the API
+      console.log("Fetching plugins from API");
+      const response = await getTenantPlugins();
+      if (response.success && response.data) {
+        this.plugins = response.data;
       } else {
-        // In production, fetch installed plugins from the API
-        console.log("Fetching plugins from API");
-        const response = await getTenantPlugins();
-        if (response.success && response.data) {
-          this.plugins = response.data;
-        } else {
-          console.error("Failed to load plugins:", response.error);
-          this.plugins = [];
-        }
+        console.error("Failed to load plugins:", response.error);
+        this.plugins = [];
       }
 
       console.log(`Loaded ${this.plugins.length} plugins`);
@@ -64,18 +57,13 @@ class PluginRegistry {
    */
   async refreshPlugins(): Promise<void> {
     try {
-      // In development mode, use the mock plugins
-      if (isDevEnvironment()) {
-        this.plugins = getDevPlugins();
+      // Always fetch installed plugins from the API
+      const response = await getTenantPlugins();
+      if (response.success && response.data) {
+        this.plugins = response.data;
       } else {
-        // In production, fetch installed plugins from the API
-        const response = await getTenantPlugins();
-        if (response.success && response.data) {
-          this.plugins = response.data;
-        } else {
-          console.error("Failed to refresh plugins:", response.error);
-          // Keep the existing plugins if refresh fails
-        }
+        console.error("Failed to refresh plugins:", response.error);
+        // Keep the existing plugins if refresh fails
       }
     } catch (error) {
       console.error("Failed to refresh plugins:", error);

@@ -5,11 +5,17 @@ import { PluginsController } from './plugins.controller';
 import { PluginProxyController } from './plugin-proxy.controller';
 import { BundleService } from './bundle.service';
 import { BundleController } from './bundle.controller';
+import { BundleProxyController } from './bundle-proxy.controller';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [HttpModule],
-  controllers: [PluginsController, PluginProxyController, BundleController],
+  controllers: [
+    PluginsController,
+    PluginProxyController,
+    BundleController,
+    BundleProxyController,
+  ],
   providers: [
     PluginsService,
     PluginsProxyService,

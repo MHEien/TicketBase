@@ -20,6 +20,7 @@ const nextConfig = {
     // Allow importing modules from URLs
     urlImports: [
       // Development environment
+      "http://localhost:3000", // Admin server (for local plugin files)
       "http://localhost:5000", // Plugin server (corrected port)
       "http://localhost:4000", // API server (corrected port)
       "https://minio-m4o4k40o80os0wc84k44skcc.heien.dev", // MinIO storage
@@ -40,10 +41,10 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:4000 http://localhost:5000 https://minio-m4o4k40o80os0wc84k44skcc.heien.dev;
-              connect-src 'self' http://localhost:4000 http://localhost:5000 https://minio-m4o4k40o80os0wc84k44skcc.heien.dev;
+              script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000 http://localhost:4000 http://localhost:5000 https://minio-m4o4k40o80os0wc84k44skcc.heien.dev;
+              connect-src 'self' http://localhost:3000 http://localhost:4000 http://localhost:5000 https://minio-m4o4k40o80os0wc84k44skcc.heien.dev;
               style-src 'self' 'unsafe-inline';
-              img-src 'self' data: blob: http://localhost:4000 http://localhost:5000 https://minio-m4o4k40o80os0wc84k44skcc.heien.dev;
+              img-src 'self' data: blob: http://localhost:3000 http://localhost:4000 http://localhost:5000 https://minio-m4o4k40o80os0wc84k44skcc.heien.dev;
               font-src 'self';
               object-src 'none';
               base-uri 'self';

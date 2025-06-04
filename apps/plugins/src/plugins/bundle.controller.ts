@@ -12,6 +12,7 @@ import {
 import { Response } from 'express';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { Public } from '../common/auth/decorators/public.decorator';
 
 @ApiTags('plugin-bundles')
 @Controller('plugins/bundles')
@@ -35,6 +36,7 @@ export class PluginBundleController {
     description: 'Plugin version (without v prefix)',
   })
   @ApiParam({ name: 'filename', description: 'Bundle filename' })
+  @Public()
   @Get(':pluginId/v:version/:filename')
   @Header('Content-Type', 'application/javascript')
   @Header('Cache-Control', 'max-age=31536000, immutable') // 1 year cache, immutable
@@ -80,6 +82,7 @@ export class PluginBundleController {
     description: 'Full path to the bundle file in storage',
     type: 'string',
   })
+  @Public()
   @Get('*objectKey')
   @Header('Content-Type', 'application/javascript')
   @Header('Cache-Control', 'max-age=31536000, immutable')
