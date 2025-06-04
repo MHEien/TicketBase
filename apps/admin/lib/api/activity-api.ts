@@ -85,18 +85,20 @@ export interface CreateActivityDto {
 
 export const activityApi = {
   // Get activities with filtering and pagination
-  async getActivities(params: GetActivitiesParams = {}): Promise<GetActivitiesResponse> {
+  async getActivities(
+    params: GetActivitiesParams = {},
+  ): Promise<GetActivitiesResponse> {
     const searchParams = new URLSearchParams();
-    
-    if (params.search) searchParams.append('search', params.search);
-    if (params.type) searchParams.append('type', params.type);
-    if (params.severity) searchParams.append('severity', params.severity);
-    if (params.dateRange) searchParams.append('dateRange', params.dateRange);
-    if (params.limit) searchParams.append('limit', params.limit.toString());
-    if (params.offset) searchParams.append('offset', params.offset.toString());
+
+    if (params.search) searchParams.append("search", params.search);
+    if (params.type) searchParams.append("type", params.type);
+    if (params.severity) searchParams.append("severity", params.severity);
+    if (params.dateRange) searchParams.append("dateRange", params.dateRange);
+    if (params.limit) searchParams.append("limit", params.limit.toString());
+    if (params.offset) searchParams.append("offset", params.offset.toString());
 
     const response = await apiClient.get(
-      `/api/activities?${searchParams.toString()}`
+      `/api/activities?${searchParams.toString()}`,
     );
     return response.data;
   },
@@ -104,10 +106,10 @@ export const activityApi = {
   // Get activity counts by type
   async getActivityCounts(dateRange?: string): Promise<ActivityCounts> {
     const searchParams = new URLSearchParams();
-    if (dateRange) searchParams.append('dateRange', dateRange);
+    if (dateRange) searchParams.append("dateRange", dateRange);
 
     const response = await apiClient.get(
-      `/api/activities/counts?${searchParams.toString()}`
+      `/api/activities/counts?${searchParams.toString()}`,
     );
     return response.data;
   },
@@ -115,10 +117,10 @@ export const activityApi = {
   // Get recent activities
   async getRecentActivities(limit?: number): Promise<Activity[]> {
     const searchParams = new URLSearchParams();
-    if (limit) searchParams.append('limit', limit.toString());
+    if (limit) searchParams.append("limit", limit.toString());
 
     const response = await apiClient.get(
-      `/api/activities/recent?${searchParams.toString()}`
+      `/api/activities/recent?${searchParams.toString()}`,
     );
     return response.data;
   },
@@ -131,7 +133,7 @@ export const activityApi = {
 
   // Create new activity
   async createActivity(activity: CreateActivityDto): Promise<Activity> {
-    const response = await apiClient.post('/api/activities', activity);
+    const response = await apiClient.post("/api/activities", activity);
     return response.data;
   },
 
@@ -150,7 +152,7 @@ export const activityApi = {
       relatedEntityId?: string;
       relatedEntityType?: string;
       relatedEntityName?: string;
-    }
+    },
   ): Promise<Activity> {
     return this.createActivity({
       type,
@@ -162,4 +164,4 @@ export const activityApi = {
       relatedEntityName: options?.relatedEntityName,
     });
   },
-}; 
+};

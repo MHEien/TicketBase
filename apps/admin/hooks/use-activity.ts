@@ -53,9 +53,13 @@ interface UseActivityOptions {
   refreshInterval?: number;
 }
 
-export function useActivity(options: UseActivityOptions = {}): UseActivityReturn {
+export function useActivity(
+  options: UseActivityOptions = {},
+): UseActivityReturn {
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [activityCounts, setActivityCounts] = useState<ActivityCounts | null>(null);
+  const [activityCounts, setActivityCounts] = useState<ActivityCounts | null>(
+    null,
+  );
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +100,8 @@ export function useActivity(options: UseActivityOptions = {}): UseActivityReturn
       setTotal(activitiesResponse.total);
       setActivityCounts(countsResponse);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch activities";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch activities";
       setError(errorMessage);
       toast({
         title: "Error",
@@ -153,7 +158,7 @@ export function useActivity(options: UseActivityOptions = {}): UseActivityReturn
             new Date(activity.createdAt).toISOString(),
             activity.ipAddress || "",
             activity.relatedEntityName || "",
-          ].join(",")
+          ].join(","),
         ),
       ].join("\n");
 
@@ -162,7 +167,10 @@ export function useActivity(options: UseActivityOptions = {}): UseActivityReturn
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `activities-${new Date().toISOString().split("T")[0]}.csv`);
+      link.setAttribute(
+        "download",
+        `activities-${new Date().toISOString().split("T")[0]}.csv`,
+      );
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
@@ -173,7 +181,8 @@ export function useActivity(options: UseActivityOptions = {}): UseActivityReturn
         description: `Exported ${activities.length} activities to CSV`,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to export activities";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to export activities";
       toast({
         title: "Export Failed",
         description: errorMessage,
@@ -222,7 +231,10 @@ export function useRecentActivity(limit: number = 10) {
       const recentActivities = await activityApi.getRecentActivities(limit);
       setActivities(recentActivities);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch recent activities";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to fetch recent activities";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -239,4 +251,4 @@ export function useRecentActivity(limit: number = 10) {
     error,
     refresh: fetchRecentActivities,
   };
-} 
+}

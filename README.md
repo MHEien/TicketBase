@@ -20,6 +20,7 @@
 ## 🌟 Features
 
 ### 🎯 **Core Event Management**
+
 - **Multi-format Events**: Physical, virtual, and hybrid event support
 - **Advanced Scheduling**: Timezone-aware event scheduling with flexible date/time management
 - **Venue Management**: Comprehensive location handling with address validation
@@ -27,12 +28,14 @@
 - **SEO Optimization**: Built-in SEO tools for better event discoverability
 
 ### 🎫 **Sophisticated Ticketing System**
+
 - **Multiple Ticket Types**: General admission, VIP, early bird, and custom ticket categories
 - **Dynamic Pricing**: Time-based and demand-based pricing strategies
 - **Capacity Management**: Real-time availability tracking and overselling prevention
 - **Sales Windows**: Configurable sales start/end dates with automated controls
 
 ### 💳 **Enterprise Payment Processing**
+
 - **Multi-Provider Support**: Pluggable payment gateway architecture
 - **Global Currency Support**: Multi-currency transactions with real-time conversion
 - **Advanced Fee Management**: Configurable gateway and platform fees
@@ -40,18 +43,21 @@
 - **Transaction Analytics**: Comprehensive payment tracking and reporting
 
 ### 🛒 **Smart Cart & Checkout**
+
 - **Session Persistence**: Cross-device cart synchronization
 - **Inventory Locking**: Temporary ticket reservations during checkout
 - **Guest Checkout**: Streamlined purchase flow for non-registered users
 - **Order Management**: Complete order lifecycle tracking
 
 ### 📊 **Advanced Analytics & Reporting**
+
 - **Real-time Dashboards**: Live event performance metrics
 - **Sales Analytics**: Revenue tracking, conversion rates, and sales trends
 - **Attendee Insights**: Demographics and behavior analysis
 - **Custom Reports**: Exportable data in multiple formats
 
 ### 🔌 **Extensible Plugin System**
+
 - **Marketplace**: Centralized plugin discovery and installation
 - **Payment Plugins**: Easy integration with new payment providers
 - **Analytics Plugins**: Custom reporting and data visualization tools
@@ -59,12 +65,14 @@
 - **Bundle Management**: Secure plugin packaging and distribution
 
 ### 👥 **Multi-tenant Architecture**
+
 - **Organization Isolation**: Complete data separation between tenants
 - **Role-based Access Control**: Granular permission management
 - **White-label Support**: Customizable branding per organization
 - **API Rate Limiting**: Per-tenant resource management
 
 ### 🔐 **Enterprise Security**
+
 - **JWT Authentication**: Secure token-based authentication
 - **NextAuth.js Integration**: Social login and OAuth support
 - **RBAC**: Role-based access control with fine-grained permissions
@@ -83,24 +91,24 @@ graph TB
         A[Admin Dashboard<br/>Next.js + React]
         B[Customer Portal<br/>Next.js + React]
     end
-    
+
     subgraph "API Gateway Layer"
         C[Main API Server<br/>NestJS + PostgreSQL<br/>Port 4000]
     end
-    
+
     subgraph "Microservices"
         D[Plugin Server<br/>NestJS + MongoDB<br/>Port 5000]
         E[Analytics Service<br/>Real-time Processing]
         F[Notification Service<br/>Multi-channel Delivery]
     end
-    
+
     subgraph "Storage Layer"
         G[(PostgreSQL<br/>Core Data)]
         H[(MongoDB<br/>Plugin Data)]
         I[MinIO<br/>File Storage]
         J[(Redis<br/>Caching)]
     end
-    
+
     A --> C
     B --> C
     C --> D
@@ -114,16 +122,16 @@ graph TB
 
 ### **Technology Stack**
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | Next.js 15, React 19, TypeScript | Modern, performant user interfaces |
-| **Backend** | NestJS, TypeScript | Scalable, maintainable API services |
-| **Databases** | PostgreSQL, MongoDB | Relational and document data storage |
-| **Storage** | MinIO | S3-compatible object storage |
-| **Caching** | Redis | High-performance data caching |
-| **Authentication** | NextAuth.js, JWT | Secure user authentication |
-| **UI Components** | Radix UI, Tailwind CSS | Accessible, customizable components |
-| **Build System** | Turborepo, Bun | Monorepo management and fast builds |
+| Layer              | Technology                       | Purpose                              |
+| ------------------ | -------------------------------- | ------------------------------------ |
+| **Frontend**       | Next.js 15, React 19, TypeScript | Modern, performant user interfaces   |
+| **Backend**        | NestJS, TypeScript               | Scalable, maintainable API services  |
+| **Databases**      | PostgreSQL, MongoDB              | Relational and document data storage |
+| **Storage**        | MinIO                            | S3-compatible object storage         |
+| **Caching**        | Redis                            | High-performance data caching        |
+| **Authentication** | NextAuth.js, JWT                 | Secure user authentication           |
+| **UI Components**  | Radix UI, Tailwind CSS           | Accessible, customizable components  |
+| **Build System**   | Turborepo, Bun                   | Monorepo management and fast builds  |
 
 ---
 
@@ -131,7 +139,7 @@ graph TB
 
 ### **Prerequisites**
 
-- **Node.js** v20+ 
+- **Node.js** v20+
 - **Bun** v1.2.4+ (Package manager)
 - **Docker** & **Docker Compose**
 - **PostgreSQL** 16+
@@ -156,7 +164,7 @@ docker-compose up -d
 
 # Services will be available at:
 # - PostgreSQL: localhost:5432
-# - MongoDB: localhost:27017  
+# - MongoDB: localhost:27017
 # - MinIO: localhost:9000 (API), localhost:9001 (Console)
 # - Adminer: localhost:8080
 ```
@@ -200,7 +208,7 @@ bun dev
 # API Server
 cd apps/api && bun dev
 
-# Plugin Server  
+# Plugin Server
 cd apps/plugins && bun dev
 
 # Admin Dashboard
@@ -229,7 +237,7 @@ interface PaymentPlugin {
   name: string;
   version: string;
   category: PluginCategory.PAYMENT;
-  
+
   // Plugin Methods
   processPayment(amount: number, currency: string): Promise<PaymentResult>;
   processRefund(paymentId: string, amount?: number): Promise<RefundResult>;
@@ -269,6 +277,7 @@ my-payment-plugin/
 ### **Core Endpoints**
 
 #### **Events Management**
+
 ```http
 GET    /api/events              # List events with filtering
 POST   /api/events              # Create new event
@@ -280,6 +289,7 @@ POST   /api/events/:id/cancel   # Cancel event
 ```
 
 #### **Ticket Management**
+
 ```http
 GET    /api/events/:id/tickets        # List ticket types
 POST   /api/events/:id/tickets        # Create ticket type
@@ -288,6 +298,7 @@ DELETE /api/tickets/:id               # Delete ticket type
 ```
 
 #### **Order Processing**
+
 ```http
 POST   /api/orders                    # Create order
 GET    /api/orders/:id                # Get order details
@@ -296,6 +307,7 @@ POST   /api/orders/:id/refund         # Process refund
 ```
 
 #### **Analytics**
+
 ```http
 GET    /api/analytics/events/:id      # Event analytics
 GET    /api/analytics/sales           # Sales analytics
@@ -307,15 +319,15 @@ GET    /api/analytics/dashboard       # Dashboard metrics
 ```typescript
 // Event Filtering
 interface EventQuery {
-  status?: 'draft' | 'published' | 'cancelled' | 'completed';
+  status?: "draft" | "published" | "cancelled" | "completed";
   category?: string;
   search?: string;
   startDate?: string;
   endDate?: string;
   page?: number;
   limit?: number;
-  sortBy?: 'date' | 'title' | 'revenue';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "date" | "title" | "revenue";
+  sortOrder?: "asc" | "desc";
 }
 ```
 
@@ -391,6 +403,7 @@ docker-compose -f docker-compose.prod.yml up -d
 <summary>📋 Complete Environment Configuration</summary>
 
 #### **API Server**
+
 ```env
 # Server
 PORT=4000
@@ -418,6 +431,7 @@ FRONTEND_URL=https://admin.yourdomain.com
 ```
 
 #### **Plugin Server**
+
 ```env
 # Server
 PORT=5000
@@ -438,6 +452,7 @@ JWT_SECRET=your-plugin-jwt-secret
 ```
 
 #### **Admin App**
+
 ```env
 # Next.js
 NEXTAUTH_SECRET=your-nextauth-secret
@@ -455,14 +470,14 @@ NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
 
 ### **Infrastructure Requirements**
 
-| Service | Minimum | Recommended |
-|---------|---------|-------------|
-| **API Server** | 1 CPU, 1GB RAM | 2 CPU, 4GB RAM |
-| **Plugin Server** | 1 CPU, 512MB RAM | 2 CPU, 2GB RAM |
-| **Admin App** | Static hosting | CDN + Edge functions |
-| **PostgreSQL** | 1 CPU, 2GB RAM | 2 CPU, 4GB RAM |
-| **MongoDB** | 1 CPU, 1GB RAM | 2 CPU, 2GB RAM |
-| **Redis** | 512MB RAM | 1GB RAM |
+| Service           | Minimum          | Recommended          |
+| ----------------- | ---------------- | -------------------- |
+| **API Server**    | 1 CPU, 1GB RAM   | 2 CPU, 4GB RAM       |
+| **Plugin Server** | 1 CPU, 512MB RAM | 2 CPU, 2GB RAM       |
+| **Admin App**     | Static hosting   | CDN + Edge functions |
+| **PostgreSQL**    | 1 CPU, 2GB RAM   | 2 CPU, 4GB RAM       |
+| **MongoDB**       | 1 CPU, 1GB RAM   | 2 CPU, 2GB RAM       |
+| **Redis**         | 512MB RAM        | 1GB RAM              |
 
 ---
 

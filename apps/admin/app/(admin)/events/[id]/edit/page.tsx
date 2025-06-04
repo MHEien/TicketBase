@@ -16,7 +16,11 @@ import { useEventCreation } from "@/hooks/use-event-creation";
 import { useEvent } from "@/hooks/use-events";
 import { updateEvent } from "@/lib/api/events-api";
 
-export default function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditEventPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = use(params);
   const router = useRouter();
   const { toast } = useToast();
@@ -118,7 +122,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
           (sum, ticket) => sum + ticket.quantity,
           0,
         ),
-        ticketTypes: eventData.ticketTypes.map(ticket => ({
+        ticketTypes: eventData.ticketTypes.map((ticket) => ({
           name: ticket.name,
           description: ticket.description,
           price: ticket.price,

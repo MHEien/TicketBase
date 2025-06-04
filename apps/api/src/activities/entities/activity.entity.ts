@@ -83,4 +83,4 @@ export class Activity {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

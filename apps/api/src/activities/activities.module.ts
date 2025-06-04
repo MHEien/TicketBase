@@ -10,4 +10,4 @@ import { ActivitiesController } from './activities.controller';
   providers: [ActivitiesService],
   exports: [ActivitiesService],
 })
-export class ActivitiesModule {} 
+export class ActivitiesModule {}

@@ -405,9 +405,11 @@ export class PluginsController {
     );
   }
 
-  @ApiOperation({ summary: 'Store plugin bundle file without creating plugin entry' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiOperation({
+    summary: 'Store plugin bundle file without creating plugin entry',
+  })
+  @ApiResponse({
+    status: 201,
     description: 'Bundle successfully stored',
     schema: {
       type: 'object',
@@ -429,7 +431,10 @@ export class PluginsController {
           description: 'Plugin bundle file (JavaScript)',
         },
         pluginId: { type: 'string', description: 'Plugin ID for storage path' },
-        version: { type: 'string', description: 'Plugin version for storage path' },
+        version: {
+          type: 'string',
+          description: 'Plugin version for storage path',
+        },
       },
     },
   })

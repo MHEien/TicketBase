@@ -150,35 +150,46 @@ export async function POST(request: NextRequest) {
       const bundleResponse = await fetch(data.bundleUrl);
       if (bundleResponse.ok) {
         const bundleContent = await bundleResponse.text();
-        
+
         // Extract extension points from the plugin code
-        const extensionPointsMatch = bundleContent.match(/extensionPoints\s*:\s*\{([\s\S]*?)\}/);
+        const extensionPointsMatch = bundleContent.match(
+          /extensionPoints\s*:\s*\{([\s\S]*?)\}/,
+        );
         if (extensionPointsMatch) {
           const extensionPointsContent = extensionPointsMatch[1];
           // Extract extension point names (keys in the object)
-          const extensionPointNames = extensionPointsContent.match(/["']([^"']+)["']\s*:/g);
+          const extensionPointNames =
+            extensionPointsContent.match(/["']([^"']+)["']\s*:/g);
           if (extensionPointNames) {
-            pluginMetadata.extensionPoints = extensionPointNames.map(name => 
-              name.replace(/["']/g, '').replace(':', '').trim()
+            pluginMetadata.extensionPoints = extensionPointNames.map((name) =>
+              name.replace(/["']/g, "").replace(":", "").trim(),
             );
           }
         }
 
         // Extract admin components
-        const adminComponentsMatch = bundleContent.match(/adminComponents\s*:\s*\{([\s\S]*?)\}/);
+        const adminComponentsMatch = bundleContent.match(
+          /adminComponents\s*:\s*\{([\s\S]*?)\}/,
+        );
         if (adminComponentsMatch) {
           const adminContent = adminComponentsMatch[1];
-          const settingsMatch = adminContent.match(/settings\s*:\s*["']([^"']+)["']/);
+          const settingsMatch = adminContent.match(
+            /settings\s*:\s*["']([^"']+)["']/,
+          );
           if (settingsMatch) {
             pluginMetadata.adminComponents.settings = settingsMatch[1];
           }
         }
 
         // Extract storefront components
-        const storefrontComponentsMatch = bundleContent.match(/storefrontComponents\s*:\s*\{([\s\S]*?)\}/);
+        const storefrontComponentsMatch = bundleContent.match(
+          /storefrontComponents\s*:\s*\{([\s\S]*?)\}/,
+        );
         if (storefrontComponentsMatch) {
           const storefrontContent = storefrontComponentsMatch[1];
-          const checkoutMatch = storefrontContent.match(/checkout\s*:\s*["']([^"']+)["']/);
+          const checkoutMatch = storefrontContent.match(
+            /checkout\s*:\s*["']([^"']+)["']/,
+          );
           if (checkoutMatch) {
             pluginMetadata.storefrontComponents = {
               ...pluginMetadata.storefrontComponents,
@@ -188,21 +199,23 @@ export async function POST(request: NextRequest) {
         }
 
         // Extract required permissions
-        const permissionsMatch = bundleContent.match(/requiredPermissions\s*:\s*\[([\s\S]*?)\]/);
+        const permissionsMatch = bundleContent.match(
+          /requiredPermissions\s*:\s*\[([\s\S]*?)\]/,
+        );
         if (permissionsMatch) {
           const permissionsContent = permissionsMatch[1];
           const permissions = permissionsContent.match(/["']([^"']+)["']/g);
           if (permissions) {
-            pluginMetadata.requiredPermissions = permissions.map(p => 
-              p.replace(/["']/g, '').trim()
+            pluginMetadata.requiredPermissions = permissions.map((p) =>
+              p.replace(/["']/g, "").trim(),
             );
           }
         }
 
-        console.log('Extracted plugin metadata:', pluginMetadata);
+        console.log("Extracted plugin metadata:", pluginMetadata);
       }
     } catch (error) {
-      console.warn('Failed to analyze plugin bundle, using defaults:', error);
+      console.warn("Failed to analyze plugin bundle, using defaults:", error);
     }
 
     // Prepare data for the plugin server API

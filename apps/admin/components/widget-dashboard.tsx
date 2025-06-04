@@ -40,7 +40,8 @@ export function WidgetDashboard() {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const { data, loading, error, refresh } = useDashboard();
   const { events, loading: eventsLoading } = useEvents();
-  const { activities: recentActivities, loading: activitiesLoading } = useRecentActivity(5);
+  const { activities: recentActivities, loading: activitiesLoading } =
+    useRecentActivity(5);
   const router = useRouter();
 
   const handleWidgetClick = (widgetId: string) => {
@@ -98,28 +99,30 @@ export function WidgetDashboard() {
       title: "Total Revenue",
       value: formatCurrency(data.metrics?.totalRevenue || 0),
       change: data.metrics?.changes?.revenue || "0%",
-      trend: data.metrics?.changes?.revenue?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.revenue?.startsWith("+") ? "up" : "down",
       icon: DollarSign,
     },
     {
       title: "Tickets Sold",
       value: formatNumber(data.metrics?.ticketsSold || 0),
       change: data.metrics?.changes?.tickets || "0%",
-      trend: data.metrics?.changes?.tickets?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.tickets?.startsWith("+") ? "up" : "down",
       icon: Ticket,
     },
     {
       title: "Active Events",
       value: formatNumber(data.metrics?.activeEvents || 0),
       change: data.metrics?.changes?.activeEvents || "0%",
-      trend: data.metrics?.changes?.activeEvents?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.activeEvents?.startsWith("+")
+        ? "up"
+        : "down",
       icon: Calendar,
     },
     {
       title: "New Users",
       value: formatNumber(data.metrics?.newUsers || 0),
       change: data.metrics?.changes?.newUsers || "0%",
-      trend: data.metrics?.changes?.newUsers?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.newUsers?.startsWith("+") ? "up" : "down",
       icon: Users,
     },
   ];
@@ -131,7 +134,7 @@ export function WidgetDashboard() {
       value: formatCurrency(data.metrics?.totalRevenue || 0),
       change: data.metrics?.changes?.revenue || "0%",
       icon: DollarSign,
-      trend: data.metrics?.changes?.revenue?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.revenue?.startsWith("+") ? "up" : "down",
     },
     {
       id: "tickets",
@@ -139,7 +142,7 @@ export function WidgetDashboard() {
       value: formatNumber(data.metrics?.ticketsSold || 0),
       change: data.metrics?.changes?.tickets || "0%",
       icon: Ticket,
-      trend: data.metrics?.changes?.tickets?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.tickets?.startsWith("+") ? "up" : "down",
     },
     {
       id: "events",
@@ -147,7 +150,9 @@ export function WidgetDashboard() {
       value: formatNumber(data.metrics?.activeEvents || 0),
       change: data.metrics?.changes?.activeEvents || "0%",
       icon: Calendar,
-      trend: data.metrics?.changes?.activeEvents?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.activeEvents?.startsWith("+")
+        ? "up"
+        : "down",
     },
     {
       id: "users",
@@ -155,7 +160,7 @@ export function WidgetDashboard() {
       value: formatNumber(data.metrics?.newUsers || 0),
       change: data.metrics?.changes?.newUsers || "0%",
       icon: Users,
-      trend: data.metrics?.changes?.newUsers?.startsWith('+') ? "up" : "down",
+      trend: data.metrics?.changes?.newUsers?.startsWith("+") ? "up" : "down",
     },
   ];
 
@@ -414,16 +419,22 @@ export function WidgetDashboard() {
                         src={activity.user.avatar || "/placeholder.svg"}
                         alt={activity.user.name}
                       />
-                      <AvatarFallback>{activity.user.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {activity.user.name.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
                       <p className="text-sm">
-                        <span className="font-medium">{activity.user.name}</span>{" "}
+                        <span className="font-medium">
+                          {activity.user.name}
+                        </span>{" "}
                         {activity.description}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        <span>{new Date(activity.createdAt).toLocaleString()}</span>
+                        <span>
+                          {new Date(activity.createdAt).toLocaleString()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -435,11 +446,11 @@ export function WidgetDashboard() {
               )}
             </CardContent>
             <CardFooter>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="w-full"
-                onClick={() => router.push('/activity')}
+                onClick={() => router.push("/activity")}
               >
                 View All Activity
               </Button>
@@ -462,17 +473,22 @@ export function WidgetDashboard() {
             <CardContent className="space-y-4">
               {data.popularPlugins.length > 0 ? (
                 data.popularPlugins.map((plugin, i) => (
-                  <div key={plugin.id} className="flex items-center justify-between">
+                  <div
+                    key={plugin.id}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                        <img 
-                          src={plugin.icon} 
+                        <img
+                          src={plugin.icon}
                           alt={plugin.name}
                           className="h-5 w-5 rounded"
                           onError={(e) => {
                             // Fallback to a default icon if image fails to load
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            e.currentTarget.style.display = "none";
+                            e.currentTarget.nextElementSibling?.classList.remove(
+                              "hidden",
+                            );
                           }}
                         />
                         <Layers className="h-5 w-5 text-primary hidden" />

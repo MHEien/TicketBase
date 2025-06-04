@@ -11,24 +11,34 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 function extractPluginInfo(sourceCode: string) {
   // Try to extract plugin metadata from definePlugin calls or export statements
   // Look for patterns like: definePlugin({ name: "...", ... }) or export default { name: "...", ... }
-  
+
   // First try to find definePlugin calls (without 's' flag for compatibility)
-  const definePluginMatch = sourceCode.match(/definePlugin\s*\(\s*\{([\s\S]*?)\}/);
+  const definePluginMatch = sourceCode.match(
+    /definePlugin\s*\(\s*\{([\s\S]*?)\}/,
+  );
   let metadataBlock = definePluginMatch ? definePluginMatch[1] : null;
-  
+
   // If no definePlugin, try to find export default object
   if (!metadataBlock) {
-    const exportDefaultMatch = sourceCode.match(/export\s+default\s*\{([\s\S]*?)\}/);
+    const exportDefaultMatch = sourceCode.match(
+      /export\s+default\s*\{([\s\S]*?)\}/,
+    );
     metadataBlock = exportDefaultMatch ? exportDefaultMatch[1] : null;
   }
-  
+
   // If we found a metadata block, extract from it
   if (metadataBlock) {
     const nameMatch = metadataBlock.match(/name\s*:\s*['"`]([^'"`]+)['"`]/);
-    const versionMatch = metadataBlock.match(/version\s*:\s*['"`]([^'"`]+)['"`]/);
-    const descriptionMatch = metadataBlock.match(/description\s*:\s*['"`]([^'"`]+)['"`]/);
-    const categoryMatch = metadataBlock.match(/category\s*:\s*['"`]([^'"`]+)['"`]/);
-    
+    const versionMatch = metadataBlock.match(
+      /version\s*:\s*['"`]([^'"`]+)['"`]/,
+    );
+    const descriptionMatch = metadataBlock.match(
+      /description\s*:\s*['"`]([^'"`]+)['"`]/,
+    );
+    const categoryMatch = metadataBlock.match(
+      /category\s*:\s*['"`]([^'"`]+)['"`]/,
+    );
+
     return {
       name: nameMatch ? nameMatch[1] : null,
       version: versionMatch ? versionMatch[1] : null,
@@ -36,13 +46,21 @@ function extractPluginInfo(sourceCode: string) {
       category: categoryMatch ? categoryMatch[1] : null,
     };
   }
-  
+
   // Fallback: try to extract from anywhere in the code, but be more specific
   // Look for object property patterns that are likely plugin metadata
-  const nameMatch = sourceCode.match(/(?:plugin|meta|config)\s*[:\s]*\{[^}]*name\s*:\s*['"`]([^'"`]+)['"`]/i);
-  const versionMatch = sourceCode.match(/(?:plugin|meta|config)\s*[:\s]*\{[^}]*version\s*:\s*['"`]([^'"`]+)['"`]/i);
-  const descriptionMatch = sourceCode.match(/(?:plugin|meta|config)\s*[:\s]*\{[^}]*description\s*:\s*['"`]([^'"`]+)['"`]/i);
-  const categoryMatch = sourceCode.match(/(?:plugin|meta|config)\s*[:\s]*\{[^}]*category\s*:\s*['"`]([^'"`]+)['"`]/i);
+  const nameMatch = sourceCode.match(
+    /(?:plugin|meta|config)\s*[:\s]*\{[^}]*name\s*:\s*['"`]([^'"`]+)['"`]/i,
+  );
+  const versionMatch = sourceCode.match(
+    /(?:plugin|meta|config)\s*[:\s]*\{[^}]*version\s*:\s*['"`]([^'"`]+)['"`]/i,
+  );
+  const descriptionMatch = sourceCode.match(
+    /(?:plugin|meta|config)\s*[:\s]*\{[^}]*description\s*:\s*['"`]([^'"`]+)['"`]/i,
+  );
+  const categoryMatch = sourceCode.match(
+    /(?:plugin|meta|config)\s*[:\s]*\{[^}]*category\s*:\s*['"`]([^'"`]+)['"`]/i,
+  );
 
   return {
     name: nameMatch ? nameMatch[1] : null,
@@ -117,18 +135,23 @@ export async function POST(request: NextRequest) {
 
     try {
       // Store the file in MinIO storage directly without creating a plugin entry
-      const response = await fetch(`${PLUGIN_SERVER_URL}/plugins/storage/upload`, {
-        method: "POST",
-        body: (() => {
-          const formData = new FormData();
-          const fileBlob = new Blob([fileContent], { type: file.type });
-          const newFile = new File([fileBlob], file.name, { type: file.type });
-          formData.append("file", newFile);
-          formData.append("pluginId", pluginId);
-          formData.append("version", "1.0.0");
-          return formData;
-        })(),
-      });
+      const response = await fetch(
+        `${PLUGIN_SERVER_URL}/plugins/storage/upload`,
+        {
+          method: "POST",
+          body: (() => {
+            const formData = new FormData();
+            const fileBlob = new Blob([fileContent], { type: file.type });
+            const newFile = new File([fileBlob], file.name, {
+              type: file.type,
+            });
+            formData.append("file", newFile);
+            formData.append("pluginId", pluginId);
+            formData.append("version", "1.0.0");
+            return formData;
+          })(),
+        },
+      );
 
       if (!response.ok) {
         const errorText = await response.text();

@@ -48,16 +48,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useActivity, Activity, ActivityType, ActivitySeverity } from "@/hooks/use-activity";
+import {
+  useActivity,
+  Activity,
+  ActivityType,
+  ActivitySeverity,
+} from "@/hooks/use-activity";
 
 // Activity type configurations
-const ACTIVITY_TYPES: Record<ActivityType, {
-  label: string;
-  icon: any;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-}> = {
+const ACTIVITY_TYPES: Record<
+  ActivityType,
+  {
+    label: string;
+    icon: any;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+  }
+> = {
   [ActivityType.FINANCIAL]: {
     label: "Financial",
     icon: DollarSign,
@@ -102,11 +110,14 @@ const ACTIVITY_TYPES: Record<ActivityType, {
   },
 };
 
-const ACTIVITY_SEVERITY: Record<ActivitySeverity, {
-  label: string;
-  icon: any;
-  color: string;
-}> = {
+const ACTIVITY_SEVERITY: Record<
+  ActivitySeverity,
+  {
+    label: string;
+    icon: any;
+    color: string;
+  }
+> = {
   [ActivitySeverity.LOW]: {
     label: "Low",
     icon: CheckCircle,
@@ -150,7 +161,10 @@ export default function ActivityPage() {
   } = useActivity({
     search: searchQuery,
     type: activeTab === "all" ? undefined : tabToActivityType[activeTab],
-    severity: selectedSeverity === "all" ? undefined : (selectedSeverity as ActivitySeverity),
+    severity:
+      selectedSeverity === "all"
+        ? undefined
+        : (selectedSeverity as ActivitySeverity),
     dateRange,
     limit: 50,
     offset: 0,
@@ -161,19 +175,23 @@ export default function ActivityPage() {
   const formatTimeAgo = (date: string) => {
     const now = new Date();
     const activityDate = new Date(date);
-    const diffInSeconds = Math.floor((now.getTime() - activityDate.getTime()) / 1000);
+    const diffInSeconds = Math.floor(
+      (now.getTime() - activityDate.getTime()) / 1000,
+    );
 
     if (diffInSeconds < 60) return "Just now";
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
     return activityDate.toLocaleDateString();
   };
 
   const getActivityIcon = (type: ActivityType, severity: ActivitySeverity) => {
     const typeConfig = ACTIVITY_TYPES[type];
     const severityConfig = ACTIVITY_SEVERITY[severity];
-    
+
     if (severity === ActivitySeverity.HIGH) {
       return severityConfig.icon;
     }
@@ -192,19 +210,21 @@ export default function ActivityPage() {
   const filteredActivities = activities;
 
   // Use activity counts from the API
-  const displayedActivityCounts = activityCounts ? {
-    all: activityCounts.total,
-    financial: activityCounts.financial,
-    eventManagement: activityCounts.eventManagement,
-    userManagement: activityCounts.userManagement,
-    security: activityCounts.security,
-  } : {
-    all: 0,
-    financial: 0,
-    eventManagement: 0,
-    userManagement: 0,
-    security: 0,
-  };
+  const displayedActivityCounts = activityCounts
+    ? {
+        all: activityCounts.total,
+        financial: activityCounts.financial,
+        eventManagement: activityCounts.eventManagement,
+        userManagement: activityCounts.userManagement,
+        security: activityCounts.security,
+      }
+    : {
+        all: 0,
+        financial: 0,
+        eventManagement: 0,
+        userManagement: 0,
+        security: 0,
+      };
 
   return (
     <div className="h-full space-y-6 overflow-y-auto">
@@ -217,7 +237,11 @@ export default function ActivityPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={exportActivities} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={exportActivities}
+            className="gap-2"
+          >
             <Download className="h-4 w-4" />
             Export
           </Button>
@@ -246,7 +270,7 @@ export default function ActivityPage() {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Activity Type</label>
               <Select value={selectedType} onValueChange={setSelectedType}>
@@ -266,7 +290,10 @@ export default function ActivityPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Severity</label>
-              <Select value={selectedSeverity} onValueChange={setSelectedSeverity}>
+              <Select
+                value={selectedSeverity}
+                onValueChange={setSelectedSeverity}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All severities" />
                 </SelectTrigger>
@@ -309,28 +336,40 @@ export default function ActivityPage() {
                 {displayedActivityCounts.all}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="financial" className="flex items-center gap-2 px-4">
+            <TabsTrigger
+              value="financial"
+              className="flex items-center gap-2 px-4"
+            >
               <DollarSign className="h-4 w-4" />
               <span>Financial</span>
               <Badge variant="secondary" className="text-xs">
                 {displayedActivityCounts.financial}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="event_management" className="flex items-center gap-2 px-4">
+            <TabsTrigger
+              value="event_management"
+              className="flex items-center gap-2 px-4"
+            >
               <Calendar className="h-4 w-4" />
               <span>Events</span>
               <Badge variant="secondary" className="text-xs">
                 {displayedActivityCounts.eventManagement}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="user_management" className="flex items-center gap-2 px-4">
+            <TabsTrigger
+              value="user_management"
+              className="flex items-center gap-2 px-4"
+            >
               <Users className="h-4 w-4" />
               <span>Users</span>
               <Badge variant="secondary" className="text-xs">
                 {displayedActivityCounts.userManagement}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2 px-4">
+            <TabsTrigger
+              value="security"
+              className="flex items-center gap-2 px-4"
+            >
               <Shield className="h-4 w-4" />
               <span>Security</span>
               <Badge variant="secondary" className="text-xs">
@@ -338,7 +377,7 @@ export default function ActivityPage() {
               </Badge>
             </TabsTrigger>
           </TabsList>
-          
+
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Last updated: {new Date().toLocaleTimeString()}</span>
           </div>
@@ -383,8 +422,14 @@ export default function ActivityPage() {
               ) : (
                 <div className="space-y-1">
                   {filteredActivities.map((activity: Activity) => {
-                    const ActivityIcon = getActivityIcon(activity.type, activity.severity);
-                    const iconColor = getActivityColor(activity.type, activity.severity);
+                    const ActivityIcon = getActivityIcon(
+                      activity.type,
+                      activity.severity,
+                    );
+                    const iconColor = getActivityColor(
+                      activity.type,
+                      activity.severity,
+                    );
                     const typeConfig = ACTIVITY_TYPES[activity.type];
 
                     return (
@@ -394,26 +439,37 @@ export default function ActivityPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="flex items-start gap-4 p-4 rounded-lg border border-transparent hover:border-border hover:bg-muted/50 transition-all duration-200"
                       >
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${typeConfig?.bgColor} ${typeConfig?.borderColor} border`}>
+                        <div
+                          className={`flex h-10 w-10 items-center justify-center rounded-full ${typeConfig?.bgColor} ${typeConfig?.borderColor} border`}
+                        >
                           <ActivityIcon className={`h-5 w-5 ${iconColor}`} />
                         </div>
-                        
+
                         <div className="flex-1 space-y-1">
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="flex items-center gap-2">
                                 <Avatar className="h-6 w-6">
-                                  <AvatarImage src={activity.user.avatar} alt={activity.user.name} />
+                                  <AvatarImage
+                                    src={activity.user.avatar}
+                                    alt={activity.user.name}
+                                  />
                                   <AvatarFallback className="text-xs">
                                     {activity.user.name.charAt(0)}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className="font-medium text-sm">{activity.user.name}</span>
+                                <span className="font-medium text-sm">
+                                  {activity.user.name}
+                                </span>
                                 <Badge variant="outline" className="text-xs">
                                   {typeConfig?.label}
                                 </Badge>
-                                {activity.severity === ActivitySeverity.HIGH && (
-                                  <Badge variant="destructive" className="text-xs">
+                                {activity.severity ===
+                                  ActivitySeverity.HIGH && (
+                                  <Badge
+                                    variant="destructive"
+                                    className="text-xs"
+                                  >
                                     High Priority
                                   </Badge>
                                 )}
@@ -423,15 +479,20 @@ export default function ActivityPage() {
                               </p>
                               {activity.metadata && (
                                 <div className="mt-2 text-xs text-muted-foreground">
-                                  {Object.entries(activity.metadata).map(([key, value]) => (
-                                    <span key={key} className="mr-4">
-                                      <span className="font-medium">{key}:</span> {String(value)}
-                                    </span>
-                                  ))}
+                                  {Object.entries(activity.metadata).map(
+                                    ([key, value]) => (
+                                      <span key={key} className="mr-4">
+                                        <span className="font-medium">
+                                          {key}:
+                                        </span>{" "}
+                                        {String(value)}
+                                      </span>
+                                    ),
+                                  )}
                                 </div>
                               )}
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Clock className="h-3 w-3" />
@@ -439,17 +500,25 @@ export default function ActivityPage() {
                               </div>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                  >
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem>View Details</DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    View Details
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem>Copy ID</DropdownMenuItem>
                                   {activity.relatedEntityName && (
-                                    <DropdownMenuItem>Go to {activity.relatedEntityType}</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      Go to {activity.relatedEntityType}
+                                    </DropdownMenuItem>
                                   )}
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -467,4 +536,4 @@ export default function ActivityPage() {
       </Tabs>
     </div>
   );
-} 
+}

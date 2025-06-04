@@ -11,7 +11,10 @@ import {
   InstalledPlugin,
   InstalledPluginDocument,
 } from './schemas/installed-plugin.schema';
-import { PluginRating, PluginRatingDocument } from './schemas/plugin-rating.schema';
+import {
+  PluginRating,
+  PluginRatingDocument,
+} from './schemas/plugin-rating.schema';
 import { BundleService } from './services/bundle.service';
 import { PluginStorageService } from './services/plugin-storage.service';
 
@@ -23,7 +26,8 @@ export class PluginsService {
     @InjectModel(Plugin.name) private pluginModel: Model<PluginDocument>,
     @InjectModel(InstalledPlugin.name)
     private installedPluginModel: Model<InstalledPluginDocument>,
-    @InjectModel(PluginRating.name) private pluginRatingModel: Model<PluginRatingDocument>,
+    @InjectModel(PluginRating.name)
+    private pluginRatingModel: Model<PluginRatingDocument>,
     private bundleService: BundleService,
     private pluginStorageService: PluginStorageService,
   ) {}
@@ -129,25 +133,33 @@ export class PluginsService {
    * @param pluginId - The plugin ID
    * @param increment - The amount to increment (default 1, use -1 to decrement)
    */
-  private async updatePluginInstallCount(pluginId: string, increment: number = 1): Promise<void> {
+  private async updatePluginInstallCount(
+    pluginId: string,
+    increment: number = 1,
+  ): Promise<void> {
     try {
       const plugin = await this.pluginModel.findOne({ id: pluginId }).exec();
       if (plugin) {
         const currentCount = plugin.metadata?.installCount || 0;
         const newCount = Math.max(0, currentCount + increment); // Ensure count doesn't go below 0
-        
-        await this.pluginModel.updateOne(
-          { id: pluginId },
-          { 
-            $set: { 
-              'metadata.installCount': newCount,
-              'metadata.lastUpdated': new Date().toISOString()
-            } 
-          }
-        ).exec();
+
+        await this.pluginModel
+          .updateOne(
+            { id: pluginId },
+            {
+              $set: {
+                'metadata.installCount': newCount,
+                'metadata.lastUpdated': new Date().toISOString(),
+              },
+            },
+          )
+          .exec();
       }
     } catch (error) {
-      this.logger.warn(`Failed to update install count for plugin ${pluginId}:`, error);
+      this.logger.warn(
+        `Failed to update install count for plugin ${pluginId}:`,
+        error,
+      );
     }
   }
 
@@ -485,37 +497,47 @@ export class PluginsService {
   private async updatePluginAverageRating(pluginId: string): Promise<void> {
     try {
       const ratings = await this.pluginRatingModel.find({ pluginId }).exec();
-      
+
       if (ratings.length === 0) {
         // No ratings, set to null
-        await this.pluginModel.updateOne(
-          { id: pluginId },
-          { 
-            $set: { 
-              'metadata.rating': null,
-              'metadata.reviewCount': 0,
-              'metadata.lastUpdated': new Date().toISOString()
-            } 
-          }
-        ).exec();
+        await this.pluginModel
+          .updateOne(
+            { id: pluginId },
+            {
+              $set: {
+                'metadata.rating': null,
+                'metadata.reviewCount': 0,
+                'metadata.lastUpdated': new Date().toISOString(),
+              },
+            },
+          )
+          .exec();
       } else {
         // Calculate average rating
-        const totalRating = ratings.reduce((sum, rating) => sum + rating.rating, 0);
+        const totalRating = ratings.reduce(
+          (sum, rating) => sum + rating.rating,
+          0,
+        );
         const averageRating = totalRating / ratings.length;
-        
-        await this.pluginModel.updateOne(
-          { id: pluginId },
-          { 
-            $set: { 
-              'metadata.rating': Math.round(averageRating * 10) / 10, // Round to 1 decimal place
-              'metadata.reviewCount': ratings.length,
-              'metadata.lastUpdated': new Date().toISOString()
-            } 
-          }
-        ).exec();
+
+        await this.pluginModel
+          .updateOne(
+            { id: pluginId },
+            {
+              $set: {
+                'metadata.rating': Math.round(averageRating * 10) / 10, // Round to 1 decimal place
+                'metadata.reviewCount': ratings.length,
+                'metadata.lastUpdated': new Date().toISOString(),
+              },
+            },
+          )
+          .exec();
       }
     } catch (error) {
-      this.logger.warn(`Failed to update average rating for plugin ${pluginId}:`, error);
+      this.logger.warn(
+        `Failed to update average rating for plugin ${pluginId}:`,
+        error,
+      );
     }
   }
 }

@@ -38,7 +38,9 @@ export class ActivitiesService {
     private readonly activityRepository: Repository<Activity>,
   ) {}
 
-  async createActivity(createActivityDto: CreateActivityDto): Promise<Activity> {
+  async createActivity(
+    createActivityDto: CreateActivityDto,
+  ): Promise<Activity> {
     const activity = this.activityRepository.create({
       ...createActivityDto,
       severity: createActivityDto.severity || ActivitySeverity.LOW,
@@ -123,7 +125,10 @@ export class ActivitiesService {
     return { activities, total };
   }
 
-  async getActivityCounts(organizationId: string, dateRange: string = '7d'): Promise<{
+  async getActivityCounts(
+    organizationId: string,
+    dateRange: string = '7d',
+  ): Promise<{
     total: number;
     financial: number;
     eventManagement: number;
@@ -166,12 +171,36 @@ export class ActivitiesService {
       marketing,
     ] = await Promise.all([
       baseQuery.getCount(),
-      baseQuery.clone().andWhere('activity.type = :type', { type: ActivityType.FINANCIAL }).getCount(),
-      baseQuery.clone().andWhere('activity.type = :type', { type: ActivityType.EVENT_MANAGEMENT }).getCount(),
-      baseQuery.clone().andWhere('activity.type = :type', { type: ActivityType.USER_MANAGEMENT }).getCount(),
-      baseQuery.clone().andWhere('activity.type = :type', { type: ActivityType.ADMINISTRATIVE }).getCount(),
-      baseQuery.clone().andWhere('activity.type = :type', { type: ActivityType.SECURITY }).getCount(),
-      baseQuery.clone().andWhere('activity.type = :type', { type: ActivityType.MARKETING }).getCount(),
+      baseQuery
+        .clone()
+        .andWhere('activity.type = :type', { type: ActivityType.FINANCIAL })
+        .getCount(),
+      baseQuery
+        .clone()
+        .andWhere('activity.type = :type', {
+          type: ActivityType.EVENT_MANAGEMENT,
+        })
+        .getCount(),
+      baseQuery
+        .clone()
+        .andWhere('activity.type = :type', {
+          type: ActivityType.USER_MANAGEMENT,
+        })
+        .getCount(),
+      baseQuery
+        .clone()
+        .andWhere('activity.type = :type', {
+          type: ActivityType.ADMINISTRATIVE,
+        })
+        .getCount(),
+      baseQuery
+        .clone()
+        .andWhere('activity.type = :type', { type: ActivityType.SECURITY })
+        .getCount(),
+      baseQuery
+        .clone()
+        .andWhere('activity.type = :type', { type: ActivityType.MARKETING })
+        .getCount(),
     ]);
 
     return {
@@ -185,7 +214,10 @@ export class ActivitiesService {
     };
   }
 
-  async getRecentActivities(organizationId: string, limit: number = 10): Promise<Activity[]> {
+  async getRecentActivities(
+    organizationId: string,
+    limit: number = 10,
+  ): Promise<Activity[]> {
     return await this.activityRepository.find({
       where: { organizationId },
       order: { createdAt: 'DESC' },
@@ -198,7 +230,10 @@ export class ActivitiesService {
     await this.activityRepository.delete({ id, organizationId });
   }
 
-  async getActivityById(id: string, organizationId: string): Promise<Activity | null> {
+  async getActivityById(
+    id: string,
+    organizationId: string,
+  ): Promise<Activity | null> {
     return await this.activityRepository.findOne({
       where: { id, organizationId },
       relations: ['user'],
@@ -235,4 +270,4 @@ export class ActivitiesService {
       userAgent: options?.userAgent,
     });
   }
-} 
+}

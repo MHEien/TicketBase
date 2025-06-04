@@ -38,11 +38,22 @@ export class BundleProxyController {
         throw new Error('Plugin server URL not configured');
       }
 
-      this.logger.log(`Proxying bundle request to plugin server: ${path}`);
+      // FIX: Convert commas back to slashes since NestJS converts slashes to commas in wildcard params
+      const actualPath = path.replace(/,/g, '/');
+
+      this.logger.log(
+        `Proxying bundle request to plugin server. Original path: ${path}, Converted: ${actualPath}`,
+      );
+
+      // Make sure to construct the URL correctly with proper slashes
+      const targetUrl = `${pluginServerUrl}/plugins/bundles/${actualPath}`;
+
+      this.logger.debug(`Target URL: ${targetUrl}`);
 
       const response = await firstValueFrom(
-        this.httpService.get(`${pluginServerUrl}/plugins/bundles/${path}`, {
+        this.httpService.get(targetUrl, {
           responseType: 'arraybuffer',
+          timeout: 30000, // Add timeout
         }),
       );
 
@@ -51,12 +62,19 @@ export class BundleProxyController {
         'Content-Type':
           response.headers['content-type'] || 'application/javascript',
         'Cache-Control':
-          response.headers['cache-control'] || 'public, max-age=3600',
+          response.headers['cache-control'] || 'max-age=31536000, immutable',
       });
 
       return new StreamableFile(response.data);
     } catch (error) {
-      this.logger.error(`Error proxying bundle request: ${error.message}`);
+      this.logger.error(
+        `Error proxying bundle request for path ${path}: ${error.message}`,
+      );
+      this.logger.error(`Error details:`, {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+      });
       throw new NotFoundException(`Bundle not found: ${error.message}`);
     }
   }

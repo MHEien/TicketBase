@@ -22,6 +22,7 @@ import { PluginsService } from './plugins.service';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { PluginStatus } from './types/plugin.types';
 
 @ApiTags('plugin-proxy')
 @Controller('api/plugins/proxy')
@@ -55,7 +56,7 @@ export class PluginProxyController {
       }
 
       // Check if plugin is active
-      if (plugin.status !== 'active') {
+      if (plugin.status !== PluginStatus.ACTIVE) {
         throw new BadRequestException(
           `Plugin with ID ${pluginId} is not active`,
         );

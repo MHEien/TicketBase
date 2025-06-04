@@ -39,7 +39,7 @@ export class PluginBundleController {
   @Public()
   @Get(':pluginId/v:version/:filename')
   @Header('Content-Type', 'application/javascript')
-  @Header('Cache-Control', 'max-age=31536000, immutable') // 1 year cache, immutable
+  @Header('Cache-Control', 'max-age=31536000, immutable')
   async servePluginBundle(
     @Param('pluginId') pluginId: string,
     @Param('version') version: string,
@@ -50,11 +50,9 @@ export class PluginBundleController {
       const objectKey = `${pluginId}/v${version}/${filename}`;
       this.logger.debug(`Serving plugin bundle: ${objectKey}`);
 
-      // Get bundle stream from MinIO
       const stream =
         await this.pluginStorageService.getPluginBundleStream(objectKey);
 
-      // Return the stream as a StreamableFile
       return new StreamableFile(stream);
     } catch (error) {
       this.logger.error(`Error serving plugin bundle: ${error.message}`, error);
@@ -67,8 +65,7 @@ export class PluginBundleController {
     }
   }
 
-  // Legacy path format support
-  @ApiOperation({ summary: 'Serve plugin bundle with legacy path format' })
+  @ApiOperation({ summary: 'Serve plugin bundle - alternative pattern without v prefix' })
   @ApiResponse({
     status: 200,
     description: 'Returns the plugin bundle JavaScript file',
@@ -77,27 +74,32 @@ export class PluginBundleController {
     status: 404,
     description: 'Plugin bundle not found',
   })
+  @ApiParam({ name: 'pluginId', description: 'Plugin ID' })
   @ApiParam({
-    name: 'objectKey',
-    description: 'Full path to the bundle file in storage',
-    type: 'string',
+    name: 'version',
+    description: 'Plugin version (may or may not have v prefix)',
   })
+  @ApiParam({ name: 'filename', description: 'Bundle filename' })
   @Public()
-  @Get('*objectKey')
+  @Get(':pluginId/:version/:filename')
   @Header('Content-Type', 'application/javascript')
   @Header('Cache-Control', 'max-age=31536000, immutable')
-  async servePluginBundleLegacy(
-    @Param('objectKey') objectKey: string,
+  async servePluginBundleAlternative(
+    @Param('pluginId') pluginId: string,
+    @Param('version') version: string,
+    @Param('filename') filename: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     try {
-      this.logger.debug(`Serving plugin bundle with legacy path: ${objectKey}`);
+      // Handle both versioned (v1.0.0) and non-versioned (1.0.0) formats
+      const versionKey = version.startsWith('v') ? version : `v${version}`;
+      const objectKey = `${pluginId}/${versionKey}/${filename}`;
+      
+      this.logger.debug(`Serving plugin bundle (alternative): ${objectKey}`);
 
-      // Get bundle stream from MinIO
       const stream =
         await this.pluginStorageService.getPluginBundleStream(objectKey);
 
-      // Return the stream as a StreamableFile
       return new StreamableFile(stream);
     } catch (error) {
       this.logger.error(`Error serving plugin bundle: ${error.message}`, error);

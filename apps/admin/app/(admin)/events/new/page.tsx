@@ -140,7 +140,7 @@ export default function CreateEventPage() {
           (sum, ticket) => sum + ticket.quantity,
           0,
         ),
-        ticketTypes: eventData.ticketTypes.map(ticket => ({
+        ticketTypes: eventData.ticketTypes.map((ticket) => ({
           name: ticket.name,
           description: ticket.description,
           price: ticket.price,
@@ -162,14 +162,14 @@ export default function CreateEventPage() {
       router.push(`/events/${newEvent.id}`);
     } catch (error: any) {
       console.error("Error creating event:", error);
-      
+
       // Log detailed error information for debugging
       if (error.response) {
         console.error("Response status:", error.response.status);
         console.error("Response data:", error.response.data);
         console.error("Response headers:", error.response.headers);
       }
-      
+
       // Log the payload that was sent
       console.error("Event payload that was sent:", {
         title: eventData.title,
@@ -195,7 +195,7 @@ export default function CreateEventPage() {
           (sum, ticket) => sum + ticket.quantity,
           0,
         ),
-        ticketTypes: eventData.ticketTypes.map(ticket => ({
+        ticketTypes: eventData.ticketTypes.map((ticket) => ({
           name: ticket.name,
           description: ticket.description,
           price: ticket.price,
@@ -206,10 +206,12 @@ export default function CreateEventPage() {
           sortOrder: 0,
         })),
       });
-      
+
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to create event. Please try again.",
+        description:
+          error.response?.data?.message ||
+          "Failed to create event. Please try again.",
         variant: "destructive",
       });
     } finally {

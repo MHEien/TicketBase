@@ -18,7 +18,11 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ActivitiesService, CreateActivityDto, GetActivitiesDto } from './activities.service';
+import {
+  ActivitiesService,
+  CreateActivityDto,
+  GetActivitiesDto,
+} from './activities.service';
 import { ActivityType, ActivitySeverity } from './entities/activity.entity';
 
 interface RequestWithUser {
@@ -42,7 +46,8 @@ export class ActivitiesController {
     description: 'Activity created successfully',
   })
   async createActivity(
-    @Body() createActivityDto: Omit<CreateActivityDto, 'organizationId' | 'userId'>,
+    @Body()
+    createActivityDto: Omit<CreateActivityDto, 'organizationId' | 'userId'>,
     @Req() req: RequestWithUser,
   ) {
     return this.activitiesService.createActivity({
@@ -171,10 +176,7 @@ export class ActivitiesController {
     type: String,
     description: 'Activity ID',
   })
-  async getActivityById(
-    @Param('id') id: string,
-    @Req() req: RequestWithUser,
-  ) {
+  async getActivityById(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.activitiesService.getActivityById(id, req.user.organizationId);
   }
 
@@ -189,11 +191,8 @@ export class ActivitiesController {
     type: String,
     description: 'Activity ID',
   })
-  async deleteActivity(
-    @Param('id') id: string,
-    @Req() req: RequestWithUser,
-  ) {
+  async deleteActivity(@Param('id') id: string, @Req() req: RequestWithUser) {
     await this.activitiesService.deleteActivity(id, req.user.organizationId);
     return { message: 'Activity deleted successfully' };
   }
-} 
+}

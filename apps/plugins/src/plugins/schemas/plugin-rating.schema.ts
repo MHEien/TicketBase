@@ -30,4 +30,7 @@ export class PluginRating {
 export const PluginRatingSchema = SchemaFactory.createForClass(PluginRating);
 
 // Create compound index to ensure one rating per user per plugin
-PluginRatingSchema.index({ pluginId: 1, tenantId: 1, userId: 1 }, { unique: true }); 
+PluginRatingSchema.index(
+  { pluginId: 1, tenantId: 1, userId: 1 },
+  { unique: true },
+);

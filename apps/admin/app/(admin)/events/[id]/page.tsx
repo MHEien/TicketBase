@@ -353,9 +353,12 @@ export default function EventDetailsPage({
                   {event.ticketTypes.map((ticket: any, index: number) => {
                     const soldQuantity =
                       Number(ticket.quantity) -
-                      (Number(ticket.availableQuantity) || Number(ticket.quantity));
+                      (Number(ticket.availableQuantity) ||
+                        Number(ticket.quantity));
                     const soldPercentage =
-                      Math.round((soldQuantity / Number(ticket.quantity)) * 100) || 0;
+                      Math.round(
+                        (soldQuantity / Number(ticket.quantity)) * 100,
+                      ) || 0;
 
                     return (
                       <div key={ticket.id} className="space-y-2">

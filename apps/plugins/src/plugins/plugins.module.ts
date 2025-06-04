@@ -38,7 +38,7 @@ import { MinioModule } from '../minio/minio.module';
     PluginsController,
     PluginProxyController,
     WebhookController,
-    PluginBundleController,
+    PluginBundleController, // This serves bundles directly from MinIO
   ],
   providers: [
     PluginsService,

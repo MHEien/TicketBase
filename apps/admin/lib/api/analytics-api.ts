@@ -190,7 +190,7 @@ export const analyticsApi = {
   },
 
   async getPopularPlugins(): Promise<PopularPlugin[]> {
-    const response = await apiClient.get('/api/analytics/popular-plugins');
+    const response = await apiClient.get("/api/analytics/popular-plugins");
     return response.data;
   },
 };
