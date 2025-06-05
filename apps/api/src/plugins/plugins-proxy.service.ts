@@ -563,4 +563,148 @@ export class PluginsProxyService {
       };
     }
   }
+
+  async uploadPluginStorage(
+    file: Buffer,
+    filename: string,
+    pluginId: string,
+    version: string,
+    authToken?: string,
+  ): Promise<{ bundleUrl: string; pluginId: string; version: string }> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/storage/upload`;
+
+      // Create FormData for multipart upload
+      const FormData = require('form-data');
+      const formData = new FormData();
+
+      // Add the file as a stream
+      formData.append('file', file, {
+        filename,
+        contentType: 'application/javascript',
+      });
+      formData.append('pluginId', pluginId);
+      formData.append('version', version);
+
+      // Create headers including the FormData boundary
+      const headers = {
+        ...formData.getHeaders(),
+      };
+
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
+      this.logger.debug('🔄 Uploading plugin to storage:', {
+        url,
+        pluginId,
+        version,
+        filename,
+        fileSize: file.length,
+        hasAuthToken: !!authToken,
+      });
+
+      const response = await firstValueFrom(
+        this.httpService
+          .post<{
+            bundleUrl: string;
+            pluginId: string;
+            version: string;
+          }>(url, formData, { headers })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.logger.error('❌ Plugin storage upload failed:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message,
+                url,
+                pluginId,
+                version,
+              });
+              this.handleHttpError(error, `Upload plugin storage ${pluginId}`);
+              throw error;
+            }),
+          ),
+      );
+
+      this.logger.debug('✅ Plugin storage upload successful:', {
+        status: response.status,
+        pluginId,
+        version,
+        bundleUrl: response.data.bundleUrl,
+      });
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Upload plugin storage ${pluginId}`);
+      }
+      throw error;
+    }
+  }
+
+  async createPluginMetadata(
+    createPluginDto: {
+      id: string;
+      name: string;
+      version: string;
+      description: string;
+      category: string;
+      sourceCode: string;
+      bundleUrl: string;
+      requiredPermissions?: string[];
+    },
+    authToken?: string,
+  ): Promise<Plugin> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins`;
+      const headers = this.createAuthHeaders(authToken);
+
+      this.logger.debug('🔄 Creating plugin metadata:', {
+        url,
+        pluginId: createPluginDto.id,
+        name: createPluginDto.name,
+        version: createPluginDto.version,
+        bundleUrl: createPluginDto.bundleUrl,
+        hasAuthToken: !!authToken,
+      });
+
+      const response = await firstValueFrom(
+        this.httpService.post<Plugin>(url, createPluginDto, { headers }).pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error('❌ Plugin metadata creation failed:', {
+              status: error.response?.status,
+              statusText: error.response?.statusText,
+              data: error.response?.data,
+              message: error.message,
+              url,
+              pluginId: createPluginDto.id,
+            });
+            this.handleHttpError(
+              error,
+              `Create plugin metadata ${createPluginDto.id}`,
+            );
+            throw error;
+          }),
+        ),
+      );
+
+      this.logger.debug('✅ Plugin metadata creation successful:', {
+        status: response.status,
+        pluginId: createPluginDto.id,
+        name: createPluginDto.name,
+      });
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(
+          error,
+          `Create plugin metadata ${createPluginDto.id}`,
+        );
+      }
+      throw error;
+    }
+  }
 }

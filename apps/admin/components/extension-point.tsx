@@ -1,27 +1,22 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import { InstalledPlugin, ExtensionPointContext } from "@/lib/plugin-types";
+import React, { useState, useEffect } from "react";
+import {
+  loadPluginWithContext,
+  getPluginLoadingState,
+} from "@/lib/context-aware-plugin-loader";
 import { pluginRegistry } from "@/lib/plugin-registry";
-import { loadPluginModule } from "@/lib/plugin-loader";
-import { ErrorBoundary } from "@/components/error-boundary";
-import { Loader2 } from "lucide-react";
+import { InstalledPlugin } from "@/lib/plugin-types";
 
-// Loading indicator component
-const LoadingIndicator = () => (
-  <div className="flex items-center justify-center p-4">
-    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-  </div>
-);
-
-interface ExtensionPointProps {
+export interface ExtensionPointProps {
   name: string;
-  context?: ExtensionPointContext;
+  context?: Record<string, any>;
   fallback?: React.ReactNode;
 }
 
 /**
  * A component that renders an extension point where plugins can inject content
+ * Now uses context-aware plugin loading to solve auth and environment issues
  */
 export function ExtensionPoint({
   name,
@@ -44,6 +39,7 @@ export function ExtensionPoint({
     async function loadExtensions() {
       try {
         setLoading(true);
+        setError(null);
 
         // Initialize the plugin registry
         await pluginRegistry.initialize();
@@ -64,92 +60,68 @@ export function ExtensionPoint({
           }
         }
 
+        if (!isMounted) return;
+
         if (allPlugins.length === 0) {
           setExtensions([]);
+          setLoading(false);
           return;
         }
 
-        // Load all extension components
+        // Load all extension components using context-aware loader
         const loadedExtensions = [];
 
         for (const plugin of allPlugins) {
           if (!plugin.enabled) continue;
 
           try {
-            // Use the plugin loader utility to load the plugin module
-            const componentModule = await loadPluginModule(plugin);
+            console.log(
+              `Loading extension point "${name}" for plugin: ${plugin.id}`,
+            );
 
-            // First check for globally defined extension points
-            if (typeof window !== "undefined" && window[`devPlugin1`]) {
-              const globalPlugin = window[`devPlugin1`];
-              if (globalPlugin && globalPlugin.extensionPoints?.[name]) {
-                loadedExtensions.push({
-                  id: plugin.id,
-                  component: globalPlugin.extensionPoints[name],
-                  plugin,
-                });
-                continue;
-              }
-            }
+            // Use the new context-aware plugin loader
+            const Component = await loadPluginWithContext(plugin, name);
 
-            // Check for extension points from dynamic imports
-            let Component = null;
+            if (Component && isMounted) {
+              loadedExtensions.push({
+                id: plugin.id,
+                component: Component,
+                plugin,
+              });
 
-            // Try multiple ways to find the extension point component
-            if (componentModule.default?.extensionPoints?.[name]) {
-              Component = componentModule.default.extensionPoints[name];
-            } else if (componentModule.extensionPoints?.[name]) {
-              Component = componentModule.extensionPoints[name];
-            } else if (
-              name === "admin-settings" &&
-              plugin.adminComponents?.settings
-            ) {
-              // For admin-settings, try to find the admin settings component directly
-              Component =
-                componentModule.default?.extensionPoints?.["admin-settings"] ||
-                componentModule.extensionPoints?.["admin-settings"] ||
-                componentModule.AdminSettingsComponent ||
-                componentModule.default?.AdminSettingsComponent;
-            }
-
-            if (!Component) {
+              console.log(
+                `Successfully loaded extension point "${name}" for plugin: ${plugin.id}`,
+              );
+            } else {
               console.warn(
                 `Plugin ${plugin.id} does not properly implement extension point "${name}"`,
               );
-              continue;
             }
-
-            loadedExtensions.push({
-              id: plugin.id,
-              component: Component,
-              plugin,
-            });
-          } catch (e) {
+          } catch (err) {
             console.error(
               `Failed to load extension from plugin ${plugin.id} for "${name}":`,
-              e,
+              err,
             );
+
+            // Check if it's a specific loading error we can handle
+            const loadState = getPluginLoadingState(plugin.id, name);
+            if (loadState.error) {
+              console.error(
+                `Plugin loading error for ${plugin.id}:`,
+                loadState.error,
+              );
+            }
           }
         }
 
-        // Sort by priority (higher numbers first)
-        loadedExtensions.sort(
-          (a, b) =>
-            (b.plugin.metadata?.priority || 0) -
-            (a.plugin.metadata?.priority || 0),
-        );
-
         if (isMounted) {
           setExtensions(loadedExtensions);
-          setError(null);
+          setLoading(false);
         }
       } catch (err) {
+        console.error("Failed to load extensions:", err);
         if (isMounted) {
-          setError(err instanceof Error ? err : new Error(String(err)));
-          console.error(`Failed to load extensions for "${name}":`, err);
-        }
-      } finally {
-        if (isMounted) {
+          setError(err instanceof Error ? err : new Error("Unknown error"));
           setLoading(false);
         }
       }
@@ -162,32 +134,49 @@ export function ExtensionPoint({
     };
   }, [name]);
 
-  // Show loading state initially
   if (loading) {
-    return <LoadingIndicator />;
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+        <span className="ml-2 text-sm text-muted-foreground">
+          Loading plugins...
+        </span>
+      </div>
+    );
   }
 
-  // If no extensions are available, show the fallback
+  if (error) {
+    return (
+      <div className="p-4 border border-red-200 rounded-md bg-red-50">
+        <p className="text-red-800 text-sm">
+          Error loading plugins: {error.message}
+        </p>
+        <p className="text-red-600 text-xs mt-1">
+          Using context-aware plugin loader - check browser console for details
+        </p>
+      </div>
+    );
+  }
+
   if (extensions.length === 0) {
     return <>{fallback}</>;
   }
 
-  // Render all enabled extensions
+  // Render all loaded extensions
   return (
     <>
-      {extensions.map(({ id, component: ExtensionComponent, plugin }) => (
-        <ErrorBoundary
-          key={id}
-          fallback={<div>Error loading plugin: {plugin.name}</div>}
-        >
-          <Suspense fallback={<LoadingIndicator />}>
-            <ExtensionComponent
-              context={context}
-              configuration={plugin.configuration}
-              plugin={plugin}
-            />
-          </Suspense>
-        </ErrorBoundary>
+      {extensions.map(({ id, component: Component, plugin }) => (
+        <div key={id} className="plugin-extension" data-plugin-id={id}>
+          <React.Suspense
+            fallback={
+              <div className="p-2 text-sm text-muted-foreground">
+                Loading {plugin.name}...
+              </div>
+            }
+          >
+            <Component context={context} pluginId={id} plugin={plugin} />
+          </React.Suspense>
+        </div>
       ))}
     </>
   );

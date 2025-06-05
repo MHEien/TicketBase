@@ -1,0 +1,62 @@
+{
+  "name": "ticketsplatform-plugin-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for developing Tickets Platform plugins with full type safety and modern React hooks",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "lint": "eslint src",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "keywords": [
+    "tickets",
+    "plugin",
+    "sdk",
+    "typescript",
+    "react",
+    "ticketsplatform",
+    "events",
+    "payment",
+    "extension"
+  ],
+  "author": "Tickets Platform Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/ticketsmonorepo",
+    "directory": "packages/plugin-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/ticketsmonorepo/issues"
+  },
+  "homepage": "https://github.com/your-org/ticketsmonorepo/tree/main/packages/plugin-sdk#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

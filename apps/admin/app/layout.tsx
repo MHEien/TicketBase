@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/session-provider";
 import { AuthErrorHandler } from "@/components/ui/auth-error-handler";
+import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
 
 export const metadata: Metadata = {
   title: "Tickets Admin",
@@ -19,8 +20,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SessionProvider>
-          <AuthErrorHandler />
-          {children}
+          <PluginSDKProvider>
+            <AuthErrorHandler />
+            {children}
+          </PluginSDKProvider>
         </SessionProvider>
       </body>
     </html>

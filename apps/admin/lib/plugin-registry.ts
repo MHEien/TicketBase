@@ -114,28 +114,28 @@ class PluginRegistry {
   ): InstalledPlugin[] {
     return this.plugins
       .filter((plugin) => {
-        if (componentType === "settings" && plugin.adminComponents.settings)
+        if (componentType === "settings" && plugin.adminComponents?.settings)
           return true;
         if (
           componentType === "eventCreation" &&
-          plugin.adminComponents.eventCreation
+          plugin.adminComponents?.eventCreation
         )
           return true;
-        if (componentType === "dashboard" && plugin.adminComponents.dashboard)
+        if (componentType === "dashboard" && plugin.adminComponents?.dashboard)
           return true;
         if (
           componentType === "checkout" &&
-          plugin.storefrontComponents.checkout
+          plugin.storefrontComponents?.checkout
         )
           return true;
         if (
           componentType === "eventDetail" &&
-          plugin.storefrontComponents.eventDetail
+          plugin.storefrontComponents?.eventDetail
         )
           return true;
         if (
           componentType === "ticketSelection" &&
-          plugin.storefrontComponents.ticketSelection
+          plugin.storefrontComponents?.ticketSelection
         )
           return true;
         return false;

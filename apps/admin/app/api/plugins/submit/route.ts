@@ -133,7 +133,25 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
-    const uniquePluginId = `${pluginId}-${Date.now()}`;
+
+    // Check if bundleUrl contains an existing plugin ID and use it to maintain consistency
+    let uniquePluginId: string;
+    if (data.bundleUrl.includes("/plugins/bundles/")) {
+      // Extract plugin ID from bundle URL to maintain consistency
+      const bundlePathMatch = data.bundleUrl.match(
+        /\/plugins\/bundles\/([^\/]+)/,
+      );
+      if (bundlePathMatch) {
+        uniquePluginId = bundlePathMatch[1];
+        console.log(
+          `Using existing plugin ID from bundle URL: ${uniquePluginId}`,
+        );
+      } else {
+        uniquePluginId = `${pluginId}-${Date.now()}`;
+      }
+    } else {
+      uniquePluginId = `${pluginId}-${Date.now()}`;
+    }
 
     // Fetch and analyze the plugin bundle to extract metadata
     let pluginMetadata = {

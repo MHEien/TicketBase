@@ -10,7 +10,10 @@ import {
   UseGuards,
   Req,
   Logger,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { IsNotEmpty, IsString } from 'class-validator';
 import {
   ApiBearerAuth,
@@ -21,6 +24,7 @@ import {
   ApiQuery,
   ApiBody,
   ApiProperty,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { PluginsProxyService } from './plugins-proxy.service';
@@ -881,6 +885,166 @@ export class PluginsController {
         type,
         userId: req.user?.id,
         userOrgId: req.user?.organizationId,
+      });
+      throw error;
+    }
+  }
+
+  @Post('storage/upload')
+  @ApiOperation({ summary: 'Upload plugin bundle to storage server' })
+  @ApiResponse({
+    status: 201,
+    description: 'Plugin bundle successfully uploaded to storage',
+    schema: {
+      type: 'object',
+      properties: {
+        bundleUrl: { type: 'string', description: 'URL to the stored bundle' },
+        pluginId: { type: 'string', description: 'Plugin ID used for storage' },
+        version: { type: 'string', description: 'Version used for storage' },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Plugin bundle file (JavaScript)',
+        },
+        pluginId: { type: 'string', description: 'Plugin ID for storage path' },
+        version: {
+          type: 'string',
+          description: 'Plugin version for storage path',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadStorage(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() storageDto: { pluginId: string; version: string },
+  ): Promise<{ bundleUrl: string; pluginId: string; version: string }> {
+    const operation = 'uploadStorage';
+
+    try {
+      this.debugLog(operation, {
+        filename: file?.originalname,
+        size: file?.size,
+        pluginId: storageDto.pluginId,
+        version: storageDto.version,
+        description: 'Uploading plugin bundle to storage server',
+      });
+
+      if (!file || !file.buffer) {
+        throw new Error('File upload is required');
+      }
+
+      if (!storageDto.pluginId || !storageDto.version) {
+        throw new Error('pluginId and version are required');
+      }
+
+      const result = await this.pluginsService.uploadPluginStorage(
+        file.buffer,
+        file.originalname,
+        storageDto.pluginId,
+        storageDto.version,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: storageDto.pluginId,
+        version: storageDto.version,
+        bundleUrl: result.bundleUrl,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        filename: file?.originalname,
+        size: file?.size,
+        pluginId: storageDto?.pluginId,
+        version: storageDto?.version,
+      });
+      throw error;
+    }
+  }
+
+  @Post('metadata/create')
+  @ApiOperation({ summary: 'Create plugin metadata entry in MongoDB' })
+  @ApiResponse({
+    status: 201,
+    description: 'Plugin metadata successfully created',
+    type: PluginResponseDto,
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', description: 'Plugin ID' },
+        name: { type: 'string', description: 'Plugin name' },
+        version: { type: 'string', description: 'Plugin version' },
+        description: { type: 'string', description: 'Plugin description' },
+        category: { type: 'string', description: 'Plugin category' },
+        sourceCode: { type: 'string', description: 'Plugin source code' },
+        bundleUrl: { type: 'string', description: 'URL to the plugin bundle' },
+        requiredPermissions: { 
+          type: 'array', 
+          items: { type: 'string' },
+          description: 'Required permissions'
+        },
+      },
+      required: [
+        'id',
+        'name',
+        'version',
+        'description',
+        'category',
+        'sourceCode',
+        'bundleUrl',
+      ],
+    },
+  })
+  async createMetadata(
+    @Body()
+    createMetadataDto: {
+      id: string;
+      name: string;
+      version: string;
+      description: string;
+      category: string;
+      sourceCode: string;
+      bundleUrl: string;
+      requiredPermissions?: string[];
+    },
+  ): Promise<Plugin> {
+    const operation = 'createMetadata';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: createMetadataDto.id,
+        name: createMetadataDto.name,
+        version: createMetadataDto.version,
+        bundleUrl: createMetadataDto.bundleUrl,
+        description: 'Creating plugin metadata entry',
+      });
+
+      const result =
+        await this.pluginsService.createPluginMetadata(createMetadataDto);
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: createMetadataDto.id,
+        name: createMetadataDto.name,
+        version: createMetadataDto.version,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        pluginId: createMetadataDto?.id,
+        name: createMetadataDto?.name,
+        version: createMetadataDto?.version,
       });
       throw error;
     }

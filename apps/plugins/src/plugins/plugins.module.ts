@@ -8,7 +8,10 @@ import {
   InstalledPlugin,
   InstalledPluginSchema,
 } from './schemas/installed-plugin.schema';
-import { PluginRating, PluginRatingSchema } from './schemas/plugin-rating.schema';
+import {
+  PluginRating,
+  PluginRatingSchema,
+} from './schemas/plugin-rating.schema';
 import { PluginProxyController } from './plugin-proxy.controller';
 import { WebhookController } from './webhook.controller';
 import { AssetsModule } from '../assets/assets.module';
@@ -18,6 +21,7 @@ import { BundleService } from './services/bundle.service';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { PluginBundleController } from './bundle.controller';
 import { MinioModule } from '../minio/minio.module';
+import { DebugController } from './debug.controller';
 
 @Module({
   imports: [
@@ -39,6 +43,7 @@ import { MinioModule } from '../minio/minio.module';
     PluginProxyController,
     WebhookController,
     PluginBundleController, // This serves bundles directly from MinIO
+    DebugController,
   ],
   providers: [
     PluginsService,

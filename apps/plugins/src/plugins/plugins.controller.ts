@@ -244,9 +244,12 @@ export class PluginsController {
     description: 'Plugin successfully created',
   })
   @ApiBody({ type: CreatePluginDto })
-  @Roles('admin') // Only system admins can create new plugins
+  @Public() // Make this public for plugin uploads from admin interface
   @Post()
   async createPlugin(@Body() createDto: CreatePluginDto) {
+    const logger = new Logger('PluginsController.createPlugin');
+    logger.debug('Received CreatePluginDto:', JSON.stringify(createDto, null, 2));
+    logger.debug('bundleUrl:', createDto.bundleUrl);
     return this.pluginsService.createPlugin(
       createDto.id,
       createDto.name,

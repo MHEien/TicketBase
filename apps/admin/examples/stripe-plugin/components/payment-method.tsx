@@ -1,3 +1,18 @@
+/**
+ * @deprecated This component is part of the deprecated TypeScript plugin approach.
+ *
+ * See ../bundle.js for the new Plugin SDK Context-Aware implementation
+ * which provides the same functionality but with:
+ * - No import/export issues
+ * - Direct Plugin SDK access
+ * - No bundling complexity
+ * - Automatic authentication context
+ * - Consistent UI components
+ * - Better error handling with SDK utilities
+ *
+ * This file is kept for reference only.
+ */
+
 "use client";
 
 import { useState } from "react";

@@ -50,7 +50,7 @@ export class CreatePluginDto {
     description: 'URL to the plugin bundle (if already hosted)',
     example: 'https://example.com/plugins/payment-gateway/bundle.js',
   })
-  @IsUrl()
+  @IsUrl({ require_tld: false })
   @IsOptional()
   bundleUrl?: string;
 

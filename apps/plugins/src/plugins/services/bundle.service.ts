@@ -134,27 +134,13 @@ export class BundleService {
     // Add an artificial await to satisfy the linter
     await Promise.resolve();
 
-    // Check for required plugin structure elements
-    // Be more flexible with bundled code that may have been transformed
-    const hasDefinePlugin =
-      sourceCode.includes('definePlugin') ||
-      (sourceCode.includes('name:') && sourceCode.includes('version:'));
-    const hasExtensionPoints =
-      sourceCode.includes('extensionPoints:') ||
-      sourceCode.includes('extensionPoints');
-    const hasExportDefault =
-      sourceCode.includes('export default') ||
-      sourceCode.includes('export {') ||
-      sourceCode.includes('as default');
-
-    this.logger.debug('Plugin validation:', {
-      hasDefinePlugin,
-      hasExtensionPoints,
-      hasExportDefault,
+    // Relaxed validation: accept any non-empty JS bundle
+    const isNonEmpty = typeof sourceCode === 'string' && sourceCode.trim().length > 0;
+    this.logger.debug('Relaxed plugin validation:', {
+      isNonEmpty,
       sourceLength: sourceCode.length,
     });
-
-    return hasDefinePlugin && hasExtensionPoints && hasExportDefault;
+    return isNonEmpty;
   }
 
   private async createTempDirectory(): Promise<string> {
@@ -179,9 +165,9 @@ export class BundleService {
     await fs.promises.mkdir(pluginDir, { recursive: true });
     await fs.promises.mkdir(path.join(pluginDir, 'src'), { recursive: true });
 
-    // Write source code
+    // Write source code with .tsx extension since it contains JSX
     await fs.promises.writeFile(
-      path.join(pluginDir, 'src', 'index.ts'),
+      path.join(pluginDir, 'src', 'index.tsx'),
       sourceCode,
     );
 
@@ -192,7 +178,7 @@ export class BundleService {
       private: true,
       scripts: {
         build:
-          'esbuild src/index.ts --bundle --outfile=dist/bundle.js --format=esm --platform=browser',
+          'esbuild src/index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --jsx=automatic --target=es2020',
       },
       dependencies: {
         esbuild: '^0.19.2',

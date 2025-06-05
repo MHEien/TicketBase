@@ -1,10 +1,29 @@
+/**
+ * @deprecated This plugin loader is deprecated. Use context-aware-plugin-loader.ts instead.
+ *
+ * The old approach had issues with:
+ * - __dirname not being defined in browser
+ * - Environment variables not being accessible to external plugins
+ * - Authentication context not being shared
+ * - Complex dependency management
+ *
+ * The new context-aware-plugin-loader.ts solves these issues by:
+ * - Providing PluginSDK context with auth, API client, components, etc.
+ * - Proper browser-compatible loading
+ * - Clean separation of concerns
+ *
+ * This file is kept for reference but should not be used in new code.
+ */
+
 import { InstalledPlugin } from "./plugin-types";
 import React from "react";
+import * as NextAuthReact from "next-auth/react";
 
 // Declare window with additional properties
 declare global {
   interface Window {
     React: typeof React;
+    NextAuthReact: typeof NextAuthReact;
     devPlugin1: any;
     __PLUGIN_REGISTRY: {
       registered: Record<string, any>;
@@ -14,9 +33,10 @@ declare global {
   }
 }
 
-// Expose React to plugins via window
+// Expose React and NextAuth to plugins via window
 if (typeof window !== "undefined") {
   window.React = React;
+  window.NextAuthReact = NextAuthReact;
 }
 
 // Cache for loaded modules to avoid redundant loading
@@ -39,6 +59,45 @@ export async function loadPluginModule(plugin: InstalledPlugin): Promise<any> {
 
     // For better error messages, log the URL we're trying to load
     console.log(`Attempting to load plugin from: ${plugin.bundleUrl}`);
+
+    // First, let's check what the server actually returns
+    try {
+      const response = await fetch(plugin.bundleUrl);
+      console.log(`Bundle URL Response Status: ${response.status}`);
+      console.log(
+        `Bundle URL Response Content-Type: ${response.headers.get("content-type")}`,
+      );
+      console.log(`Bundle URL Response OK: ${response.ok}`);
+
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.error(
+          `Bundle URL returned ${response.status}:`,
+          responseText.substring(0, 500),
+        );
+        throw new Error(
+          `Bundle URL returned ${response.status}: ${response.statusText}`,
+        );
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("javascript")) {
+        const responseText = await response.text();
+        console.error(
+          `Bundle URL returned wrong content type (${contentType}):`,
+          responseText.substring(0, 500),
+        );
+        throw new Error(
+          `Bundle URL returned wrong content type: ${contentType}`,
+        );
+      }
+
+      // Content-Type check is sufficient - no need for additional content validation
+      // since JSX code can contain < and > characters which would trigger false positives
+    } catch (fetchError) {
+      console.error("Failed to fetch bundle URL:", fetchError);
+      throw fetchError;
+    }
 
     // Check if the plugin is already loaded globally
     const pluginId = plugin.id.replace(/-/g, "");

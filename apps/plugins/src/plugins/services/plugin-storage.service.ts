@@ -19,7 +19,7 @@ export class PluginStorageService {
     );
     this.serverUrl = this.configService.get(
       'PLUGIN_SERVER_URL',
-      'http://localhost:4000',
+      'http://localhost:5000',
     );
 
     // Ensure bucket exists
@@ -40,6 +40,8 @@ export class PluginStorageService {
         this.logger.log(`Creating bucket ${this.bucketName}`);
         await this.minioService.client.makeBucket(this.bucketName);
         this.logger.log(`Bucket ${this.bucketName} created successfully`);
+      } else {
+        this.logger.log(`Bucket ${this.bucketName} already exists`);
       }
     } catch (error) {
       this.logger.error(`Error initializing bucket: ${error.message}`, error);
@@ -56,6 +58,9 @@ export class PluginStorageService {
     try {
       const objectKey = `${pluginId}/v${version}/bundle-${uuid()}.js`;
 
+      this.logger.debug(`Storing bundle with key: ${objectKey}`);
+      this.logger.debug(`Buffer size: ${bundleBuffer.length} bytes`);
+
       await this.minioService.client.putObject(
         this.bucketName,
         objectKey,
@@ -63,7 +68,7 @@ export class PluginStorageService {
         bundleBuffer.length,
         {
           'Content-Type': contentType,
-          'Cache-Control': 'max-age=31536000, immutable', // Long cache for versioned bundles
+          'Cache-Control': 'max-age=31536000, immutable',
         },
       );
 
@@ -85,12 +90,38 @@ export class PluginStorageService {
 
   async getPluginBundleStream(objectKey: string) {
     try {
-      return await this.minioService.client.getObject(
+      this.logger.debug(`Retrieving bundle stream for key: ${objectKey}`);
+      this.logger.debug(`From bucket: ${this.bucketName}`);
+
+      // First check if the object exists
+      try {
+        const stat = await this.minioService.client.statObject(
+          this.bucketName,
+          objectKey,
+        );
+        this.logger.debug(
+          `Object found - Size: ${stat.size}, Type: ${stat.metaData?.['content-type']}`,
+        );
+      } catch (statError) {
+        this.logger.error(`Object not found: ${objectKey}`, statError);
+        throw new Error(
+          `Object ${objectKey} does not exist in bucket ${this.bucketName}`,
+        );
+      }
+
+      const stream = await this.minioService.client.getObject(
         this.bucketName,
         objectKey,
       );
+
+      this.logger.debug(`Successfully retrieved stream for: ${objectKey}`);
+      return stream;
     } catch (error) {
-      this.logger.error(`Failed to get plugin bundle: ${error.message}`, error);
+      this.logger.error(`Failed to get plugin bundle: ${error.message}`, {
+        objectKey,
+        bucketName: this.bucketName,
+        error: error.stack,
+      });
       throw error;
     }
   }
@@ -98,6 +129,8 @@ export class PluginStorageService {
   async deletePluginBundle(pluginId: string, version?: string): Promise<void> {
     try {
       const prefix = version ? `${pluginId}/v${version}/` : `${pluginId}/`;
+
+      this.logger.debug(`Deleting objects with prefix: ${prefix}`);
 
       // List all objects with the plugin's prefix
       const objectsList = await this.listObjects(prefix);
@@ -110,6 +143,7 @@ export class PluginStorageService {
       // Delete each object
       for (const obj of objectsList) {
         await this.minioService.client.removeObject(this.bucketName, obj.name);
+        this.logger.debug(`Deleted object: ${obj.name}`);
       }
 
       this.logger.log(`Deleted ${objectsList.length} objects for ${prefix}`);
@@ -131,9 +165,20 @@ export class PluginStorageService {
         true,
       );
 
-      stream.on('data', (obj) => objects.push(obj));
-      stream.on('error', (err) => reject(err));
-      stream.on('end', () => resolve(objects));
+      stream.on('data', (obj) => {
+        this.logger.debug(`Found object: ${obj.name}`);
+        objects.push(obj);
+      });
+      stream.on('error', (err) => {
+        this.logger.error(`Error listing objects: ${err.message}`, err);
+        reject(err);
+      });
+      stream.on('end', () => {
+        this.logger.debug(
+          `Listed ${objects.length} objects with prefix: ${prefix}`,
+        );
+        resolve(objects);
+      });
     });
   }
 
@@ -148,6 +193,7 @@ export class PluginStorageService {
     try {
       // Try to check if bucket exists as a simple connectivity test
       await this.minioService.client.bucketExists(this.bucketName);
+      this.logger.debug(`Storage connection check successful`);
       return { isConnected: true };
     } catch (error) {
       this.logger.error(
@@ -158,6 +204,19 @@ export class PluginStorageService {
         isConnected: false,
         message: `MinIO connection failed: ${error.message}. Check your configuration and make sure MinIO is running.`,
       };
+    }
+  }
+
+  /**
+   * Debug method to list all objects in the bucket
+   */
+  async debugListAllObjects(): Promise<any[]> {
+    try {
+      this.logger.debug(`Listing all objects in bucket: ${this.bucketName}`);
+      return await this.listObjects('');
+    } catch (error) {
+      this.logger.error(`Failed to list all objects: ${error.message}`, error);
+      throw error;
     }
   }
 }
