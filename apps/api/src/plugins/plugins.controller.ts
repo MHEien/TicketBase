@@ -989,10 +989,10 @@ export class PluginsController {
         category: { type: 'string', description: 'Plugin category' },
         sourceCode: { type: 'string', description: 'Plugin source code' },
         bundleUrl: { type: 'string', description: 'URL to the plugin bundle' },
-        requiredPermissions: { 
-          type: 'array', 
+        requiredPermissions: {
+          type: 'array',
           items: { type: 'string' },
-          description: 'Required permissions'
+          description: 'Required permissions',
         },
       },
       required: [

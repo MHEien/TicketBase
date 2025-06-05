@@ -70,7 +70,7 @@ export async function loadPluginWithContext(
     const module = await loadPluginBundle(plugin.bundleUrl);
 
     // Extract the component for the specific extension point
-    const component = await extractExtensionPointComponent(plugin, extensionPoint);
+    const component = await extractExtensionPointComponent(plugin, extensionPoint, module);
 
     if (!component) {
       throw new Error(
@@ -109,10 +109,6 @@ export async function loadPluginWithContext(
  */
 async function loadPluginBundle(bundleUrl: string): Promise<any> {
   try {
-    // Create a unique ID for this plugin load
-    const scriptId = `plugin-${Date.now()}`;
-    const globalVar = `PluginExports_${scriptId}`;
-
     return new Promise((resolve, reject) => {
       // First fetch the bundle content
       fetch(bundleUrl)
@@ -130,15 +126,9 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
           if (code.includes("__dirname")) {
             console.warn("⚠️ Plugin bundle contains __dirname - this will cause browser errors");
           }
-          if (code.includes("process.env") && !code.includes("process.env.NODE_ENV")) {
-            console.warn("⚠️ Plugin bundle contains process.env - environment variables may not be available");
-          }
-          if (code.includes("require(") && !code.includes("var require")) {
-            console.warn("⚠️ Plugin bundle contains require() calls - this may cause errors in browser");
-          }
 
-          // Try to validate JavaScript syntax before execution
           try {
+            // Validate JavaScript syntax before execution
             new Function(code);
             console.log("✅ Plugin bundle syntax appears valid");
           } catch (syntaxError) {
@@ -149,27 +139,51 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
           }
 
           try {
-            // Ensure React is available and has hooks
-            if (!window.React || !(window.React as any).useState) {
+            // Ensure React is available and has hooks - CRITICAL FIX
+            const ReactInstance = window.React;
+            if (!ReactInstance || !ReactInstance.useState) {
               reject(new Error("React or React hooks not available in global scope"));
               return;
             }
 
-            // Create a robust React reference with all necessary hooks
+            console.log("✅ React validation passed:", {
+              hasReact: !!ReactInstance,
+              hasUseState: !!ReactInstance.useState,
+              hasUseEffect: !!ReactInstance.useEffect,
+              reactKeys: Object.keys(ReactInstance)
+            });
+
+            // Create a robust React reference with validation
             const ReactReference = {
-              ...(window.React as any),
-              useState: (window.React as any).useState,
-              useEffect: (window.React as any).useEffect,
-              useCallback: (window.React as any).useCallback,
-              useMemo: (window.React as any).useMemo,
-              useContext: (window.React as any).useContext,
-              useReducer: (window.React as any).useReducer,
-              useRef: (window.React as any).useRef,
-              createElement: (window.React as any).createElement,
-              Fragment: (window.React as any).Fragment,
-              Component: (window.React as any).Component,
-              PureComponent: (window.React as any).PureComponent,
+              // Core React
+              ...ReactInstance,
+              
+              // Essential hooks with validation
+              useState: ReactInstance.useState,
+              useEffect: ReactInstance.useEffect,
+              useCallback: ReactInstance.useCallback,
+              useMemo: ReactInstance.useMemo,
+              useContext: ReactInstance.useContext,
+              useReducer: ReactInstance.useReducer,
+              useRef: ReactInstance.useRef,
+              
+              // Core functions
+              createElement: ReactInstance.createElement,
+              Fragment: ReactInstance.Fragment,
+              Component: ReactInstance.Component,
+              PureComponent: ReactInstance.PureComponent,
             };
+
+            // Validate all required hooks are present
+            const requiredHooks = ['useState', 'useEffect', 'useCallback', 'useMemo'] as const;
+            const missingHooks = requiredHooks.filter(hook => !ReactReference[hook as keyof typeof ReactReference]);
+            
+            if (missingHooks.length > 0) {
+              reject(new Error(`Missing React hooks: ${missingHooks.join(', ')}`));
+              return;
+            }
+
+            console.log("✅ All required React hooks validated");
 
             // Create a context object for the plugin with proper React reference
             const context = {
@@ -196,10 +210,26 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
               }
             };
 
+            // CRITICAL: Make React hooks available globally for plugins
+            const globalHooks = {
+              useState: ReactReference.useState,
+              useEffect: ReactReference.useEffect,
+              useCallback: ReactReference.useCallback,
+              useMemo: ReactReference.useMemo,
+              useContext: ReactReference.useContext,
+              useReducer: ReactReference.useReducer,
+              useRef: ReactReference.useRef,
+            };
+
             // Wrap the code in a function that provides the context with proper React access
             const wrappedCode = `
               (function(exports, module, PluginSDK, React, require, process, __dirname, __filename, global) {
-                // Destructure React hooks for easier access
+                // CRITICAL: Validate React before destructuring
+                if (!React || !React.useState) {
+                  throw new Error('React or React.useState not available in plugin context');
+                }
+                
+                // Destructure React hooks for easier access - with validation
                 const { 
                   useState, 
                   useEffect, 
@@ -211,6 +241,16 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
                   createElement,
                   Fragment 
                 } = React;
+                
+                // Validate that hooks are actually functions
+                if (typeof useState !== 'function') {
+                  throw new Error('useState is not a function: ' + typeof useState);
+                }
+                if (typeof useEffect !== 'function') {
+                  throw new Error('useEffect is not a function: ' + typeof useEffect);
+                }
+                
+                console.log('✅ Plugin context: React hooks validated successfully');
                 
                 // Make everything available globally for the plugin
                 global.React = React;
@@ -225,11 +265,22 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
                 global.Fragment = Fragment;
                 global.PluginSDK = PluginSDK;
 
-                // Execute the plugin code
-                ${code}
-                
-                // Return module exports
-                return module.exports.default || module.exports || exports;
+                try {
+                  // Execute the plugin code
+                  ${code}
+                  
+                  // Return module exports with better debugging
+                  const result = module.exports.default || module.exports || exports;
+                  console.log('Plugin execution result type:', typeof result);
+                  console.log('Plugin execution result keys:', Object.keys(result || {}));
+                  console.log('Plugin execution module.exports:', module.exports);
+                  console.log('Plugin execution exports:', exports);
+                  
+                  return result;
+                } catch (pluginError) {
+                  console.error('Plugin execution error:', pluginError);
+                  throw pluginError;
+                }
               })(
                 context.exports,
                 context.module,
@@ -247,12 +298,24 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             console.log('Executing plugin code...');
             const result = eval(wrappedCode);
             console.log('Plugin executed successfully, result:', result);
+            console.log('Result type:', typeof result);
+            console.log('Result keys:', Object.keys(result || {}));
 
             // Store the result in the global scope for debugging
+            const scriptId = Date.now().toString();
+            const globalVar = `PluginExports_${scriptId}`;
             (window as any)[globalVar] = result;
 
-            // Return the result
-            resolve(result);
+            // Validate that we got a valid result
+            if (!result || typeof result !== 'object') {
+              console.warn('Plugin did not return a valid object, wrapping in default structure');
+              resolve({
+                default: result,
+                extensionPoints: {}
+              });
+            } else {
+              resolve(result);
+            }
           } catch (error: unknown) {
             console.error('Plugin execution error:', error);
             console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
@@ -298,10 +361,17 @@ function getAvailableComponents(module: any): string {
 async function extractExtensionPointComponent(
   plugin: InstalledPlugin,
   extensionPoint: string,
+  module: any, // Pass the module directly
 ): Promise<React.ComponentType<any> | null> {
   try {
-    // Load the plugin module
-    const module = await loadPluginBundle(plugin.bundleUrl);
+    console.log('Extracting extension point:', extensionPoint);
+    console.log('Module structure:', {
+      hasDefault: !!module.default,
+      hasExtensionPoints: !!module.extensionPoints,
+      defaultHasExtensionPoints: !!module.default?.extensionPoints,
+      moduleKeys: Object.keys(module || {}),
+      defaultKeys: Object.keys(module.default || {})
+    });
 
     // Make sure the plugin implements the extension point
     if (!plugin.extensionPoints?.includes(extensionPoint)) {
@@ -311,28 +381,50 @@ async function extractExtensionPointComponent(
       return null;
     }
 
-    // Get the extension point component from the plugin registry
-    const registeredPlugin = (window as any).__PLUGIN_REGISTRY?.registered[plugin.id];
-    if (!registeredPlugin) {
-      console.error(`Plugin ${plugin.id} not found in registry`);
-      return null;
+    // Try different ways to get the component
+    let component = null;
+
+    // Method 1: Check if module has extensionPoints directly
+    if (module.extensionPoints && module.extensionPoints[extensionPoint]) {
+      component = module.extensionPoints[extensionPoint];
+      console.log('Found component via module.extensionPoints');
+    }
+    
+    // Method 2: Check if module.default has extensionPoints
+    else if (module.default?.extensionPoints && module.default.extensionPoints[extensionPoint]) {
+      component = module.default.extensionPoints[extensionPoint];
+      console.log('Found component via module.default.extensionPoints');
+    }
+    
+    // Method 3: Check global plugin registry
+    else {
+      const registeredPlugin = (window as any).__PLUGIN_REGISTRY?.registered[plugin.id];
+      if (registeredPlugin?.extensionPoints?.[extensionPoint]) {
+        component = registeredPlugin.extensionPoints[extensionPoint];
+        console.log('Found component via plugin registry');
+      }
     }
 
-    // Try to get the component from the extensionPoints object first
-    let component = registeredPlugin.extensionPoints?.[extensionPoint];
-
-    // If not found, try legacy component names
+    // Method 4: Try legacy component names
     if (!component) {
-      switch (extensionPoint) {
-        case "admin-settings":
-          component = registeredPlugin.AdminSettingsComponent;
+      const legacyNames: Record<string, string[]> = {
+        "admin-settings": ["AdminSettingsComponent", "SettingsComponent"],
+        "payment-methods": ["PaymentMethodComponent"],
+        "checkout-confirmation": ["CheckoutConfirmationComponent"],
+      };
+
+      const possibleNames = legacyNames[extensionPoint] || [];
+      for (const name of possibleNames) {
+        if (module[name]) {
+          component = module[name];
+          console.log(`Found component via legacy name: ${name}`);
           break;
-        case "payment-methods":
-          component = registeredPlugin.PaymentMethodComponent;
+        }
+        if (module.default?.[name]) {
+          component = module.default[name];
+          console.log(`Found component via module.default.${name}`);
           break;
-        case "checkout-confirmation":
-          component = registeredPlugin.CheckoutConfirmationComponent;
-          break;
+        }
       }
     }
 
@@ -340,10 +432,12 @@ async function extractExtensionPointComponent(
     if (!component || typeof component !== "function") {
       console.error(
         `Extension point ${extensionPoint} in plugin ${plugin.id} is not a valid component`,
+        { component, type: typeof component }
       );
       return null;
     }
 
+    console.log(`✅ Successfully extracted component for ${extensionPoint}`);
     return component;
   } catch (error: unknown) {
     console.error(
@@ -356,7 +450,6 @@ async function extractExtensionPointComponent(
 
 /**
  * Create a wrapper that provides PluginSDK context to the component
- * This wrapper ensures React hooks are properly available
  */
 function createContextAwareWrapper(
   Component: React.ComponentType<any>,
@@ -408,10 +501,10 @@ function createContextAwareWrapper(
     }
 
     // Use React hooks directly from the React instance
-    const [sdkReady, setSdkReady] = window.React.useState(false);
-    const [error, setError] = window.React.useState<string | null>(null);
+    const [sdkReady, setSdkReady] = React.useState(false);
+    const [error, setError] = React.useState(null);
 
-    window.React.useEffect(() => {
+    React.useEffect(() => {
       try {
         // Ensure SDK is available before rendering
         if (window.PluginSDK) {

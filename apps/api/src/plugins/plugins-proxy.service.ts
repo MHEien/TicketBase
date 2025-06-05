@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
+import FormData from 'form-data';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import { InstallPluginDto } from './dto/install-plugin.dto';
@@ -575,7 +576,6 @@ export class PluginsProxyService {
       const url = `${this.getPluginServerUrl()}/plugins/storage/upload`;
 
       // Create FormData for multipart upload
-      const FormData = require('form-data');
       const formData = new FormData();
 
       // Add the file as a stream
