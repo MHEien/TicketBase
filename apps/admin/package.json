@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@auth/core": "^0.39.1",
-    "ticketsplatform-plugin-sdk": "workspace:*",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
     "@module-federation/nextjs-mf": "^8.8.26",
@@ -69,8 +68,10 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "latest",
     "sonner": "^1.7.1",
+    "systemjs": "^6.15.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "ticketsplatform-plugin-sdk": "workspace:*",
     "use-sync-external-store": "latest",
     "uuid": "^11.1.0",
     "vaul": "^0.9.6",
