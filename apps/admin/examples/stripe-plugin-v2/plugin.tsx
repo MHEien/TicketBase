@@ -438,5 +438,5 @@ export default definePlugin({
     "admin-settings": AdminSettingsComponent,
     "payment-methods": PaymentMethodComponent,
     "checkout-confirmation": CheckoutConfirmationComponent,
-  },
+  }
 });

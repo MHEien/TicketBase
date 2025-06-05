@@ -4,6 +4,7 @@ import React, { createContext, useContext, ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import "@/types/plugins"; // Import global types
 
 // Import your UI components that plugins can use
 import { Button } from "@/components/ui/button";
@@ -89,6 +90,9 @@ export interface PluginSDK {
     useEffect: typeof React.useEffect;
     useCallback: typeof React.useCallback;
     useMemo: typeof React.useMemo;
+    useContext: typeof React.useContext;
+    useReducer: typeof React.useReducer;
+    useRef: typeof React.useRef;
   };
 }
 
@@ -198,7 +202,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   // Plugin SDK object
-  const pluginSDK: PluginSDK = {
+  const pluginSDK: PluginSDK = React.useMemo(() => ({
     auth: {
       session,
       token: session?.accessToken,
@@ -244,13 +248,56 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       useEffect: React.useEffect,
       useCallback: React.useCallback,
       useMemo: React.useMemo,
+      useContext: React.useContext,
+      useReducer: React.useReducer,
+      useRef: React.useRef,
     },
-  };
+  }), [session, status, router, toast]);
 
-  // Make SDK globally available for plugins
+  // Make SDK and React globally available for plugins
   React.useEffect(() => {
     if (typeof window !== "undefined") {
+      // Ensure React is available with all hooks
+      const ReactWithHooks = {
+        ...React,
+        useState: React.useState,
+        useEffect: React.useEffect,
+        useCallback: React.useCallback,
+        useMemo: React.useMemo,
+        useContext: React.useContext,
+        useReducer: React.useReducer,
+        useRef: React.useRef,
+        createElement: React.createElement,
+        Fragment: React.Fragment,
+        Component: React.Component,
+        PureComponent: React.PureComponent,
+      };
+
+      // Make React available globally with validation
+      (window as any).React = ReactWithHooks;
       window.PluginSDK = pluginSDK;
+
+      // Validate that React hooks are properly available
+      if (!ReactWithHooks.useState || !ReactWithHooks.useEffect) {
+        console.error("React hooks not properly available in global scope");
+      } else {
+        console.log("✅ React and hooks are properly available globally");
+      }
+
+      // Create a plugin registry if it doesn't exist
+      if (!(window as any).__PLUGIN_REGISTRY) {
+        (window as any).__PLUGIN_REGISTRY = {
+          registered: {},
+          register: (pluginId: string, exports: any) => {
+            (window as any).__PLUGIN_REGISTRY.registered[pluginId] = exports;
+            console.log(`Plugin ${pluginId} registered successfully`);
+            return exports;
+          },
+          get: (pluginId: string) => {
+            return (window as any).__PLUGIN_REGISTRY.registered[pluginId];
+          }
+        };
+      }
     }
   }, [pluginSDK]);
 
@@ -270,10 +317,11 @@ export const usePluginSDK = (): PluginSDK => {
   return context;
 };
 
-// Global type declarations
+// Global type declarations - keeping consistent with plugin-loader.ts
 declare global {
   interface Window {
     PluginSDK: PluginSDK;
+    ReactDOM?: any;
   }
 }
 

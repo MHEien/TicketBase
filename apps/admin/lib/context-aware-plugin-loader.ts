@@ -1,4 +1,5 @@
 import { InstalledPlugin } from "./plugin-types";
+import "@/types/plugins";
 
 // Cache for loaded plugins to avoid redundant loading
 const loadedPlugins: Record<string, any> = {};
@@ -60,15 +61,16 @@ export async function loadPluginWithContext(
       );
     }
 
+    // Ensure React is available
+    if (!window.React) {
+      throw new Error("React not available in global scope");
+    }
+
     // Load the plugin bundle
     const module = await loadPluginBundle(plugin.bundleUrl);
 
     // Extract the component for the specific extension point
-    const component = extractExtensionPointComponent(
-      module,
-      extensionPoint,
-      plugin,
-    );
+    const component = await extractExtensionPointComponent(plugin, extensionPoint);
 
     if (!component) {
       throw new Error(
@@ -103,98 +105,36 @@ export async function loadPluginWithContext(
 }
 
 /**
- * Load plugin bundle using dynamic import
+ * Load plugin bundle using dynamic import with proper React context
  */
 async function loadPluginBundle(bundleUrl: string): Promise<any> {
   try {
-    // Create a dynamic script element for SystemJS-style loading
-    // This avoids webpack trying to analyze the import
+    // Create a unique ID for this plugin load
     const scriptId = `plugin-${Date.now()}`;
+    const globalVar = `PluginExports_${scriptId}`;
 
     return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.type = "text/javascript";
-      script.crossOrigin = "anonymous";
-
-      // Global variable to capture plugin exports
-      const globalVar = `PluginExports_${scriptId}`;
-
-      script.onload = () => {
-        try {
-          // Get the plugin exports from global scope
-          const exports = (window as any)[globalVar];
-
-          if (!exports) {
-            // Fallback: check for common plugin globals
-            const fallbackExports =
-              (window as any).PluginRegistry?.pop() ||
-              (window as any).LastLoadedPlugin ||
-              {};
-            console.log(
-              "Plugin loaded via fallback registry:",
-              fallbackExports,
-            );
-            resolve(fallbackExports);
-          } else {
-            console.log("Plugin loaded via global export:", exports);
-            resolve(exports);
-          }
-
-          // Cleanup
-          try {
-            document.head.removeChild(script);
-            delete (window as any)[globalVar];
-          } catch (cleanupError) {
-            console.warn("Error during cleanup:", cleanupError);
-          }
-        } catch (err) {
-          console.error("Error processing plugin script:", err);
-          reject(err);
-        }
-      };
-
-      script.onerror = (event) => {
-        console.error("Script loading error:", event);
-        try {
-          document.head.removeChild(script);
-        } catch (cleanupError) {
-          console.warn(
-            "Error during cleanup after script error:",
-            cleanupError,
-          );
-        }
-        reject(new Error(`Failed to load plugin bundle from ${bundleUrl}`));
-      };
-
-      // Modify the script to export to a global variable
+      // First fetch the bundle content
       fetch(bundleUrl)
-        .then((response) => response.text())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to fetch bundle: ${response.status} ${response.statusText}`);
+          }
+          return response.text();
+        })
         .then((code) => {
-          console.log("Plugin bundle code loaded, wrapping for execution...");
-          console.log(
-            "First 500 characters of plugin bundle:",
-            code.substring(0, 500),
-          );
+          console.log("Plugin bundle code loaded, preparing for execution...");
+          console.log("First 500 characters of plugin bundle:", code.substring(0, 500));
 
           // Check for common syntax issues before wrapping
           if (code.includes("__dirname")) {
-            console.warn(
-              "⚠️ Plugin bundle contains __dirname - this will cause browser errors",
-            );
+            console.warn("⚠️ Plugin bundle contains __dirname - this will cause browser errors");
           }
-          if (
-            code.includes("process.env") &&
-            !code.includes("process.env.NODE_ENV")
-          ) {
-            console.warn(
-              "⚠️ Plugin bundle contains process.env - environment variables may not be available",
-            );
+          if (code.includes("process.env") && !code.includes("process.env.NODE_ENV")) {
+            console.warn("⚠️ Plugin bundle contains process.env - environment variables may not be available");
           }
           if (code.includes("require(") && !code.includes("var require")) {
-            console.warn(
-              "⚠️ Plugin bundle contains require() calls - this may cause errors in browser",
-            );
+            console.warn("⚠️ Plugin bundle contains require() calls - this may cause errors in browser");
           }
 
           // Try to validate JavaScript syntax before execution
@@ -202,69 +142,122 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             new Function(code);
             console.log("✅ Plugin bundle syntax appears valid");
           } catch (syntaxError) {
-            const errorMessage =
-              syntaxError instanceof Error
-                ? syntaxError.message
-                : String(syntaxError);
+            const errorMessage = syntaxError instanceof Error ? syntaxError.message : String(syntaxError);
             console.error("❌ Plugin bundle has syntax errors:", syntaxError);
             reject(new Error(`Plugin bundle syntax error: ${errorMessage}`));
             return;
           }
 
-          // Fix circular reference issue and improve plugin environment
-          const wrappedCode = `
-            (function() {
-              try {
-                var exports = {};
-                var module = { exports: exports };
+          try {
+            // Ensure React is available and has hooks
+            if (!window.React || !(window.React as any).useState) {
+              reject(new Error("React or React hooks not available in global scope"));
+              return;
+            }
+
+            // Create a robust React reference with all necessary hooks
+            const ReactReference = {
+              ...(window.React as any),
+              useState: (window.React as any).useState,
+              useEffect: (window.React as any).useEffect,
+              useCallback: (window.React as any).useCallback,
+              useMemo: (window.React as any).useMemo,
+              useContext: (window.React as any).useContext,
+              useReducer: (window.React as any).useReducer,
+              useRef: (window.React as any).useRef,
+              createElement: (window.React as any).createElement,
+              Fragment: (window.React as any).Fragment,
+              Component: (window.React as any).Component,
+              PureComponent: (window.React as any).PureComponent,
+            };
+
+            // Create a context object for the plugin with proper React reference
+            const context = {
+              exports: {},
+              module: { exports: {} },
+              PluginSDK: window.PluginSDK,
+              React: ReactReference,
+              require: function(moduleName: string) {
+                console.log('Plugin requiring:', moduleName);
+                if (moduleName === 'react') return ReactReference;
+                if (moduleName === 'react-dom') return (window as any).ReactDOM;
+                if (moduleName === '@/components/ui/button') return { Button: window.PluginSDK?.components?.Button };
+                if (moduleName === '@/components/ui/input') return { Input: window.PluginSDK?.components?.Input };
+                // Add more component mappings as needed
+                throw new Error('Module not available: ' + moduleName);
+              },
+              process: { env: { NODE_ENV: 'production' } },
+              __dirname: '/virtual/plugin',
+              __filename: '/virtual/plugin/index.js',
+              global: {
+                ...window,
+                React: ReactReference,
+                PluginSDK: window.PluginSDK
+              }
+            };
+
+            // Wrap the code in a function that provides the context with proper React access
+            const wrappedCode = `
+              (function(exports, module, PluginSDK, React, require, process, __dirname, __filename, global) {
+                // Destructure React hooks for easier access
+                const { 
+                  useState, 
+                  useEffect, 
+                  useCallback, 
+                  useMemo, 
+                  useContext, 
+                  useReducer, 
+                  useRef,
+                  createElement,
+                  Fragment 
+                } = React;
                 
-                // Make PluginSDK available to the plugin
-                var PluginSDK = window.PluginSDK;
-                
-                // Fix circular reference by getting React from window first
-                var WindowReact = window.React;
-                var React = PluginSDK && PluginSDK.hooks ? {
-                  useState: PluginSDK.hooks.useState,
-                  useEffect: PluginSDK.hooks.useEffect,
-                  useCallback: PluginSDK.hooks.useCallback,
-                  useMemo: PluginSDK.hooks.useMemo,
-                  createElement: WindowReact ? WindowReact.createElement : function() { console.error('React not available'); }
-                } : WindowReact;
-                
-                // Provide additional globals that plugins might expect
-                var require = function(moduleName) {
-                  console.warn('Plugin tried to require:', moduleName);
-                  if (moduleName === 'react') return React;
-                  if (moduleName === 'react-dom') return window.ReactDOM;
-                  throw new Error('Module not available: ' + moduleName);
-                };
-                
-                // Mock Node.js globals that might be in the bundle
-                var process = { env: { NODE_ENV: 'production' } };
-                var __dirname = '/virtual/plugin';
-                var __filename = '/virtual/plugin/index.js';
-                var global = window;
-                
-                console.log('About to execute plugin code...');
-                
+                // Make everything available globally for the plugin
+                global.React = React;
+                global.useState = useState;
+                global.useEffect = useEffect;
+                global.useCallback = useCallback;
+                global.useMemo = useMemo;
+                global.useContext = useContext;
+                global.useReducer = useReducer;
+                global.useRef = useRef;
+                global.createElement = createElement;
+                global.Fragment = Fragment;
+                global.PluginSDK = PluginSDK;
+
                 // Execute the plugin code
                 ${code}
                 
-                // Export the result - handle different export patterns
-                var result = module.exports.default || module.exports || exports;
-                window.${globalVar} = result;
-                
-                console.log('Plugin executed successfully, exports:', result);
-              } catch (error) {
-                console.error('Plugin execution error:', error);
-                console.error('Error stack:', error.stack);
-                window.${globalVar} = { error: error.message, stack: error.stack };
-              }
-            })();
-          `;
+                // Return module exports
+                return module.exports.default || module.exports || exports;
+              })(
+                context.exports,
+                context.module,
+                context.PluginSDK,
+                context.React,
+                context.require,
+                context.process,
+                context.__dirname,
+                context.__filename,
+                context.global
+              );
+            `;
 
-          script.textContent = wrappedCode;
-          document.head.appendChild(script);
+            // Execute the wrapped code
+            console.log('Executing plugin code...');
+            const result = eval(wrappedCode);
+            console.log('Plugin executed successfully, result:', result);
+
+            // Store the result in the global scope for debugging
+            (window as any)[globalVar] = result;
+
+            // Return the result
+            resolve(result);
+          } catch (error: unknown) {
+            console.error('Plugin execution error:', error);
+            console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
+            reject(error);
+          }
         })
         .catch((error) => {
           console.error("Failed to fetch plugin bundle:", error);
@@ -302,92 +295,100 @@ function getAvailableComponents(module: any): string {
 /**
  * Extract component for specific extension point from plugin module
  */
-function extractExtensionPointComponent(
-  module: any,
-  extensionPoint: string,
+async function extractExtensionPointComponent(
   plugin: InstalledPlugin,
-): React.ComponentType<any> | null {
-  console.log(
-    `Extracting component for extension point "${extensionPoint}" from plugin:`,
-    module,
-  );
+  extensionPoint: string,
+): Promise<React.ComponentType<any> | null> {
+  try {
+    // Load the plugin module
+    const module = await loadPluginBundle(plugin.bundleUrl);
 
-  // Check for error in module loading
-  if (module.error) {
-    throw new Error(`Plugin bundle execution failed: ${module.error}`);
-  }
-
-  // Check multiple possible locations for the extension point
-  const possibleLocations = [
-    module.extensionPoints?.[extensionPoint],
-    module.default?.extensionPoints?.[extensionPoint],
-    module[extensionPoint],
-    module.default?.[extensionPoint],
-    module.components?.[extensionPoint],
-    module.default?.components?.[extensionPoint],
-  ];
-
-  for (const component of possibleLocations) {
-    if (component && typeof component === "function") {
-      console.log(`Found component for extension point "${extensionPoint}"`);
-      return component;
-    }
-  }
-
-  // Special handling for admin-settings
-  if (extensionPoint === "admin-settings") {
-    const adminComponents = [
-      module.AdminSettingsComponent,
-      module.default?.AdminSettingsComponent,
-      module.SettingsComponent,
-      module.default?.SettingsComponent,
-      // Handle case where plugin defines admin settings differently
-      module.Settings,
-      module.default?.Settings,
-      module.adminSettings,
-      module.default?.adminSettings,
-    ];
-
-    for (const component of adminComponents) {
-      if (component && typeof component === "function") {
-        console.log(`Found admin settings component for plugin ${plugin.id}`);
-        return component;
-      }
-    }
-
-    // Check if plugin has adminComponents defined in metadata
-    if (plugin.adminComponents?.settings) {
-      console.log(
-        `Plugin ${plugin.id} has adminComponents.settings defined: ${plugin.adminComponents.settings}`,
+    // Make sure the plugin implements the extension point
+    if (!plugin.extensionPoints?.includes(extensionPoint)) {
+      console.warn(
+        `Plugin ${plugin.id} does not implement extension point: ${extensionPoint}`,
       );
-      // Try to find component by the path specified
-      const settingsPath = plugin.adminComponents.settings.replace("./", "");
-      const settingsComponent =
-        module[settingsPath] || module.default?.[settingsPath];
-      if (settingsComponent && typeof settingsComponent === "function") {
-        console.log(`Found settings component at path: ${settingsPath}`);
-        return settingsComponent;
+      return null;
+    }
+
+    // Get the extension point component from the plugin registry
+    const registeredPlugin = (window as any).__PLUGIN_REGISTRY?.registered[plugin.id];
+    if (!registeredPlugin) {
+      console.error(`Plugin ${plugin.id} not found in registry`);
+      return null;
+    }
+
+    // Try to get the component from the extensionPoints object first
+    let component = registeredPlugin.extensionPoints?.[extensionPoint];
+
+    // If not found, try legacy component names
+    if (!component) {
+      switch (extensionPoint) {
+        case "admin-settings":
+          component = registeredPlugin.AdminSettingsComponent;
+          break;
+        case "payment-methods":
+          component = registeredPlugin.PaymentMethodComponent;
+          break;
+        case "checkout-confirmation":
+          component = registeredPlugin.CheckoutConfirmationComponent;
+          break;
       }
     }
-  }
 
-  console.warn(
-    `No component found for extension point "${extensionPoint}" in plugin ${plugin.id}`,
-  );
-  console.log("Available module properties:", Object.keys(module));
-  return null;
+    // Make sure the component is valid
+    if (!component || typeof component !== "function") {
+      console.error(
+        `Extension point ${extensionPoint} in plugin ${plugin.id} is not a valid component`,
+      );
+      return null;
+    }
+
+    return component;
+  } catch (error: unknown) {
+    console.error(
+      `Failed to load extension point ${extensionPoint} from plugin ${plugin.id}:`,
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
 }
 
 /**
  * Create a wrapper that provides PluginSDK context to the component
+ * This wrapper ensures React hooks are properly available
  */
 function createContextAwareWrapper(
   Component: React.ComponentType<any>,
   plugin: InstalledPlugin,
 ): React.ComponentType<any> {
   return function ContextAwarePlugin(props: any) {
-    // Use React from window to avoid circular dependencies
-    const React = window.React;
+    // Get React from global scope with proper error handling
+    if (typeof window === "undefined" || !(window as any).React) {
+      console.error("React not available in plugin context");
+      return null;
+    }
+
+    const React = (window as any).React;
+
+    // Validate that React hooks are available
+    if (!React.useState || !React.useEffect) {
+      console.error("React hooks not available");
+      return React.createElement(
+        "div",
+        {
+          style: {
+            padding: "1rem",
+            textAlign: "center",
+            border: "1px solid #f87171",
+            borderRadius: "0.5rem",
+            backgroundColor: "#fef2f2",
+            color: "#dc2626",
+          },
+        },
+        "React hooks not available. Please ensure React is properly loaded.",
+      );
+    }
 
     if (!window.PluginSDK) {
       return React.createElement(
@@ -406,15 +407,38 @@ function createContextAwareWrapper(
       );
     }
 
-    const { useState, useEffect } = window.PluginSDK.hooks;
-    const [sdkReady, setSdkReady] = useState(false);
+    // Use React hooks directly from the React instance
+    const [sdkReady, setSdkReady] = window.React.useState(false);
+    const [error, setError] = window.React.useState<string | null>(null);
 
-    useEffect(() => {
-      // Ensure SDK is available before rendering
-      if (window.PluginSDK) {
-        setSdkReady(true);
+    window.React.useEffect(() => {
+      try {
+        // Ensure SDK is available before rendering
+        if (window.PluginSDK) {
+          setSdkReady(true);
+        } else {
+          setError("PluginSDK became unavailable");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
       }
     }, []);
+
+    if (error) {
+      return React.createElement(
+        "div",
+        {
+          style: {
+            padding: "1rem",
+            border: "1px solid #f87171",
+            borderRadius: "0.5rem",
+            backgroundColor: "#fef2f2",
+            color: "#dc2626",
+          },
+        },
+        `Plugin Error: ${error}`,
+      );
+    }
 
     if (!sdkReady) {
       return React.createElement(
@@ -441,7 +465,7 @@ function createContextAwareWrapper(
 
     try {
       return React.createElement(Component, enhancedProps);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Error rendering plugin ${plugin.id}:`, error);
 
       return React.createElement(
@@ -460,7 +484,7 @@ function createContextAwareWrapper(
           React.createElement(
             "span",
             { key: "message" },
-            error instanceof Error ? error.message : "Unknown error",
+            error instanceof Error ? error.message : String(error),
           ),
           React.createElement("br", { key: "br" }),
           React.createElement(
@@ -508,7 +532,6 @@ export function clearPluginCache(pluginId?: string): void {
 
 /**
  * Debug function to inspect plugin bundle without loading
- * Use this in browser console: debugPluginBundle('your-bundle-url')
  */
 export async function debugPluginBundle(bundleUrl: string): Promise<void> {
   try {
