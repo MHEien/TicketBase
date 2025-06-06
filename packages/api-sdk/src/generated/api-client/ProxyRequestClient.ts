@@ -15,14 +15,17 @@ import { getAxios, getBaseUrl } from './helpers';
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function get(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function get(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -32,7 +35,6 @@ export function get(pluginId: string, config?: AxiosRequestConfig | undefined): 
         url: url_,
         headers: {
             ..._requestConfigGet?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -48,7 +50,7 @@ export function get(pluginId: string, config?: AxiosRequestConfig | undefined): 
     });
 }
 
-function processGet(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processGet(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -60,40 +62,28 @@ function processGet(response: AxiosResponse): Promise<Types.PluginProxyResponseD
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function post(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function post(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -103,7 +93,6 @@ export function post(pluginId: string, config?: AxiosRequestConfig | undefined):
         url: url_,
         headers: {
             ..._requestConfigPost?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -119,7 +108,7 @@ export function post(pluginId: string, config?: AxiosRequestConfig | undefined):
     });
 }
 
-function processPost(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processPost(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -131,40 +120,28 @@ function processPost(response: AxiosResponse): Promise<Types.PluginProxyResponse
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function put(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function put(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -174,7 +151,6 @@ export function put(pluginId: string, config?: AxiosRequestConfig | undefined): 
         url: url_,
         headers: {
             ..._requestConfigPut?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -190,7 +166,7 @@ export function put(pluginId: string, config?: AxiosRequestConfig | undefined): 
     });
 }
 
-function processPut(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processPut(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -202,40 +178,28 @@ function processPut(response: AxiosResponse): Promise<Types.PluginProxyResponseD
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function delete_(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function delete_(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -245,7 +209,6 @@ export function delete_(pluginId: string, config?: AxiosRequestConfig | undefine
         url: url_,
         headers: {
             ..._requestConfigDelete?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -261,7 +224,7 @@ export function delete_(pluginId: string, config?: AxiosRequestConfig | undefine
     });
 }
 
-function processDelete(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processDelete(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -273,40 +236,28 @@ function processDelete(response: AxiosResponse): Promise<Types.PluginProxyRespon
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function patch(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function patch(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -316,7 +267,6 @@ export function patch(pluginId: string, config?: AxiosRequestConfig | undefined)
         url: url_,
         headers: {
             ..._requestConfigPatch?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -332,7 +282,7 @@ export function patch(pluginId: string, config?: AxiosRequestConfig | undefined)
     });
 }
 
-function processPatch(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processPatch(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -344,40 +294,28 @@ function processPatch(response: AxiosResponse): Promise<Types.PluginProxyRespons
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function options(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function options(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -387,7 +325,6 @@ export function options(pluginId: string, config?: AxiosRequestConfig | undefine
         url: url_,
         headers: {
             ..._requestConfigOptions?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -403,7 +340,7 @@ export function options(pluginId: string, config?: AxiosRequestConfig | undefine
     });
 }
 
-function processOptions(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processOptions(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -415,40 +352,28 @@ function processOptions(response: AxiosResponse): Promise<Types.PluginProxyRespo
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function head(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function head(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -458,7 +383,6 @@ export function head(pluginId: string, config?: AxiosRequestConfig | undefined):
         url: url_,
         headers: {
             ..._requestConfigHead?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -474,7 +398,7 @@ export function head(pluginId: string, config?: AxiosRequestConfig | undefined):
     });
 }
 
-function processHead(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processHead(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -486,40 +410,28 @@ function processHead(response: AxiosResponse): Promise<Types.PluginProxyResponse
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function search(pluginId: string, config?: AxiosRequestConfig | undefined): Promise<Types.PluginProxyResponseDto> {
+export function search(pluginId: string, path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
     let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
     if (pluginId === undefined || pluginId === null)
       throw new Error("The parameter 'pluginId' must be defined.");
     url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+    if (path === undefined || path === null)
+      throw new Error("The parameter 'path' must be defined.");
+    url_ = url_.replace("{path}", encodeURIComponent("" + path));
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -529,7 +441,6 @@ export function search(pluginId: string, config?: AxiosRequestConfig | undefined
         url: url_,
         headers: {
             ..._requestConfigSearch?.headers,
-            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -545,7 +456,7 @@ export function search(pluginId: string, config?: AxiosRequestConfig | undefined
     });
 }
 
-function processSearch(response: AxiosResponse): Promise<Types.PluginProxyResponseDto> {
+function processSearch(response: AxiosResponse): Promise<void> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -557,28 +468,13 @@ function processSearch(response: AxiosResponse): Promise<Types.PluginProxyRespon
     }
     if (status === 200) {
         const _responseText = response.data;
-        let result200: any = null;
-        let resultData200  = _responseText;
-        result200 = Types.PluginProxyResponseDto.fromJS(resultData200);
-        return Promise.resolve<Types.PluginProxyResponseDto>(result200);
-
-    } else if (status === 400) {
-        const _responseText = response.data;
-        return throwException("Invalid request", status, _responseText, _headers);
-
-    } else if (status === 404) {
-        const _responseText = response.data;
-        return throwException("Plugin not found", status, _responseText, _headers);
-
-    } else if (status === 500) {
-        const _responseText = response.data;
-        return throwException("Internal server error", status, _responseText, _headers);
+        return Promise.resolve<void>(null as any);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<Types.PluginProxyResponseDto>(null as any);
+    return Promise.resolve<void>(null as any);
 }
 let _requestConfigGet: Partial<AxiosRequestConfig> | null;
 export function getGetRequestConfig() {

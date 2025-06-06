@@ -15,7 +15,6 @@ import { Skeleton } from "@repo/ui/skeleton";
 import { useToast } from "@repo/ui/use-toast";
 import { Alert, AlertDescription } from "@repo/ui/alert";
 
-
 interface PaymentSectionProps {
   cart: any;
   onPaymentComplete: (paymentId: string, method: string) => void;

@@ -1,46 +1,72 @@
-import { getSession } from "./auth";
-import { signOut } from "./auth";
+import { getSession, signOut } from "./auth";
 
-/**
- * Check if a user has a specific permission
- */
-export async function hasPermission(permission: string): Promise<boolean> {
-  const session = await getSession();
+// These functions are now provided directly by the auth service,
+// but we'll keep this file as a central place for auth utilities
+// and to maintain backward compatibility
 
-  if (!session?.data?.user?.permissions) {
-    return false;
-  }
-
-  return session.data.user.permissions.includes(permission);
-}
-
-/**
- * Check if a user has a specific role
- */
-export async function hasRole(role: string): Promise<boolean> {
-  const session = await getSession();
-
-  if (!session?.data?.user?.role) {
-    return false;
-  }
-
-  return session.data.user.role === role;
-}
+export { hasPermission, hasRole, isAuthenticated } from "./auth";
 
 /**
  * Get the current user session
  */
 export async function getCurrentUser() {
   const session = await getSession();
-  return session?.data?.user;
+  return session?.user;
 }
 
 /**
- * Check if a user is authenticated
+ * Completely resets the authentication state
  */
-export async function isAuthenticated(): Promise<boolean> {
-  const session = await getSession();
-  return !!session?.data?.user;
+export async function resetAuthState(): Promise<void> {
+  try {
+    // Clear any debug tokens from localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("debug_refresh_token");
+      localStorage.removeItem("nextauth.message");
+
+      // Clear any other auth-related items
+      Object.keys(localStorage).forEach((key) => {
+        if (key.includes("auth") || key.includes("token")) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      // Clear session storage as well
+      sessionStorage.clear();
+    }
+
+    // Sign out
+    await signOut();
+
+    console.log("Authentication state reset successfully");
+
+    // Force a page reload to ensure clean state
+    if (typeof window !== "undefined") {
+      window.location.href = "/login?reset=true";
+    }
+  } catch (error) {
+    console.error("Error resetting auth state:", error);
+
+    // Force reload even if there's an error
+    if (typeof window !== "undefined") {
+      window.location.href = "/login?reset=error";
+    }
+  }
+}
+
+/**
+ * Checks if the current session has errors that require a reset
+ */
+export function shouldResetAuth(session: any): boolean {
+  if (!session) return false;
+
+  const errorStates = [
+    "MaxRefreshAttemptsExceeded",
+    "InvalidRefreshToken",
+    "RefreshAccessTokenError",
+  ];
+
+  return errorStates.includes(session.error);
 }
 
 /**
@@ -64,34 +90,30 @@ export async function handleTokenRefreshFailure(
   }
 
   // Clear the session
-  await signOut({ query: { redirect: false, callbackUrl: "/login" } });
+  await signOut();
 
   // Optionally redirect to login page
-  if (redirectToLogin) {
+  if (redirectToLogin && typeof window !== "undefined") {
     window.location.href = "/login?error=session_expired";
   }
 }
 
 /**
- * Check if the error is a token refresh error
- * @param error The error to check
+ * Check if an error is a token refresh error
  */
 export function isTokenRefreshError(error: any): boolean {
   if (!error) return false;
 
-  // Check different ways the error might be structured
-  if (typeof error === "string") {
-    return (
-      error.includes("refresh token") ||
-      error.includes("RefreshAccessTokenError") ||
-      error.includes("401") ||
-      error.includes("Unauthorized")
-    );
-  }
+  const refreshErrors = [
+    "MaxRefreshAttemptsExceeded",
+    "InvalidRefreshToken",
+    "RefreshAccessTokenError",
+    "TokenExpiredError",
+  ];
 
-  if (error.message) {
-    return isTokenRefreshError(error.message);
-  }
-
-  return false;
+  return (
+    refreshErrors.includes(error.code) ||
+    refreshErrors.includes(error.name) ||
+    (error.message && refreshErrors.some((e) => error.message.includes(e)))
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -17,12 +17,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@repo/ui/card";
+import { Card, CardContent, CardDescription, CardTitle } from "@repo/ui/card";
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";

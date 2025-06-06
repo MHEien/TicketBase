@@ -20,46 +20,57 @@ import type { AxiosRequestConfig } from 'axios';
 
 export type GetProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type PostProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type PutProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type DeleteProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type PatchProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type OptionsProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type HeadProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
 export type SearchProxyRequestQueryParameters = {
   pluginId: string ;
+  path: string ;
 }
 
-export function getUrl(pluginId: string): string {
+export function getUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-let getDefaultOptions: Omit<UseQueryOptions<Types.PluginProxyResponseDto, unknown, Types.PluginProxyResponseDto>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<Types.PluginProxyResponseDto, unknown, Types.PluginProxyResponseDto>, 'queryFn'>> = {
+let getDefaultOptions: Omit<UseQueryOptions<void, unknown, void>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<void, unknown, void>, 'queryFn'>> = {
 };
 export function getGetDefaultOptions() {
   return getDefaultOptions;
@@ -68,15 +79,17 @@ export function setGetDefaultOptions(options: typeof getDefaultOptions) {
   getDefaultOptions = options;
 }
 
-export function getQueryKey(pluginId: string): QueryKey;
+export function getQueryKey(dto: GetProxyRequestQueryParameters): QueryKey;
+export function getQueryKey(pluginId: string, path: string): QueryKey;
 export function getQueryKey(...params: any[]): QueryKey {
   if (params.length === 1 && isParameterObject(params[0])) {
-    const { pluginId,  } = params[0] as GetProxyRequestQueryParameters;
+    const { pluginId, path,  } = params[0] as GetProxyRequestQueryParameters;
 
     return trimArrayEnd([
         'ProxyRequestClient',
         'get',
         pluginId as any,
+        path as any,
       ]);
   } else {
     return trimArrayEnd([
@@ -88,92 +101,97 @@ export function getQueryKey(...params: any[]): QueryKey {
 }
 export function __get(context: QueryFunctionContext, axiosConfig?: AxiosRequestConfig | undefined) {
   return Client.get(
-      context.queryKey[2] as string,axiosConfig    );
+      context.queryKey[2] as string,       context.queryKey[3] as string,axiosConfig    );
 }
 
-export function useGetQuery<TSelectData = Types.PluginProxyResponseDto, TError = unknown>(dto: GetProxyRequestQueryParameters, options?: Omit<UseQueryOptions<Types.PluginProxyResponseDto, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetQuery<TSelectData = void, TError = unknown>(dto: GetProxyRequestQueryParameters, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useGetQuery<TSelectData = Types.PluginProxyResponseDto, TError = unknown>(pluginId: string, options?: Omit<UseQueryOptions<Types.PluginProxyResponseDto, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useGetQuery<TSelectData = Types.PluginProxyResponseDto, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<Types.PluginProxyResponseDto, TError, TSelectData> | undefined = undefined;
+export function useGetQuery<TSelectData = void, TError = unknown>(pluginId: string, path: string, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetQuery<TSelectData = void, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<void, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined = undefined;
   let pluginId: any = undefined;
+  let path: any = undefined;
   
   if (params.length > 0) {
     if (isParameterObject(params[0])) {
-      ({ pluginId,  } = params[0] as GetProxyRequestQueryParameters);
+      ({ pluginId, path,  } = params[0] as GetProxyRequestQueryParameters);
       options = params[1];
       axiosConfig = params[2];
     } else {
-      [pluginId, options, axiosConfig] = params;
+      [pluginId, path, options, axiosConfig] = params;
     }
   }
 
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
 
-  return useQuery<Types.PluginProxyResponseDto, TError, TSelectData>({
+  return useQuery<void, TError, TSelectData>({
     queryFn: axiosConfig ? (context) => __get(context, axiosConfig) : __get,
-    queryKey: getQueryKey(pluginId),
-    ...getDefaultOptions as unknown as Omit<UseQueryOptions<Types.PluginProxyResponseDto, TError, TSelectData>, 'queryKey'>,
+    queryKey: getQueryKey(pluginId, path),
+    ...getDefaultOptions as unknown as Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>,
     ...options,
   });
 }
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function setGetData(queryClient: QueryClient, updater: (data: Types.PluginProxyResponseDto | undefined) => Types.PluginProxyResponseDto, pluginId: string) {
-  queryClient.setQueryData(getQueryKey(pluginId),
+export function setGetData(queryClient: QueryClient, updater: (data: void | undefined) => void, pluginId: string, path: string) {
+  queryClient.setQueryData(getQueryKey(pluginId, path),
     updater
   );
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function setGetDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.PluginProxyResponseDto | undefined) => Types.PluginProxyResponseDto) {
+export function setGetDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: void | undefined) => void) {
   queryClient.setQueryData(queryKey, updater);
 }
     
-export function postUrl(pluginId: string): string {
+export function postUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function postMutationKey(pluginId: string): MutationKey {
+export function postMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'post',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function usePostMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = postMutationKey(pluginId);
+export function usePostMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = postMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.post(pluginId),
+    mutationFn: () => Client.post(pluginId, path),
     mutationKey: key,
   });
 }
@@ -182,53 +200,57 @@ type Post__MutationParameters = PostProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function usePostMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Post__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PostProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Post__MutationParameters, TContext> {
-  const key = postMutationKey(options?.parameters?.pluginId!);
+export function usePostMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Post__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PostProxyRequestQueryParameters}): UseMutationResult<void, unknown, Post__MutationParameters, TContext> {
+  const key = postMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Post__MutationParameters) => Client.post(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Post__MutationParameters) => Client.post(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }
   
-export function putUrl(pluginId: string): string {
+export function putUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function putMutationKey(pluginId: string): MutationKey {
+export function putMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'put',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function usePutMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = putMutationKey(pluginId);
+export function usePutMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = putMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.put(pluginId),
+    mutationFn: () => Client.put(pluginId, path),
     mutationKey: key,
   });
 }
@@ -237,53 +259,57 @@ type Put__MutationParameters = PutProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function usePutMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Put__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PutProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Put__MutationParameters, TContext> {
-  const key = putMutationKey(options?.parameters?.pluginId!);
+export function usePutMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Put__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PutProxyRequestQueryParameters}): UseMutationResult<void, unknown, Put__MutationParameters, TContext> {
+  const key = putMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Put__MutationParameters) => Client.put(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Put__MutationParameters) => Client.put(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }
   
-export function deleteUrl(pluginId: string): string {
+export function deleteUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function deleteMutationKey(pluginId: string): MutationKey {
+export function deleteMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'delete',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useDeleteMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = deleteMutationKey(pluginId);
+export function useDeleteMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = deleteMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.delete_(pluginId),
+    mutationFn: () => Client.delete_(pluginId, path),
     mutationKey: key,
   });
 }
@@ -292,53 +318,57 @@ type Delete__MutationParameters = DeleteProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useDeleteMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Delete__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: DeleteProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Delete__MutationParameters, TContext> {
-  const key = deleteMutationKey(options?.parameters?.pluginId!);
+export function useDeleteMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Delete__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: DeleteProxyRequestQueryParameters}): UseMutationResult<void, unknown, Delete__MutationParameters, TContext> {
+  const key = deleteMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Delete__MutationParameters) => Client.delete_(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Delete__MutationParameters) => Client.delete_(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }
   
-export function patchUrl(pluginId: string): string {
+export function patchUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function patchMutationKey(pluginId: string): MutationKey {
+export function patchMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'patch',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function usePatchMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = patchMutationKey(pluginId);
+export function usePatchMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = patchMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.patch(pluginId),
+    mutationFn: () => Client.patch(pluginId, path),
     mutationKey: key,
   });
 }
@@ -347,53 +377,57 @@ type Patch__MutationParameters = PatchProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function usePatchMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Patch__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PatchProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Patch__MutationParameters, TContext> {
-  const key = patchMutationKey(options?.parameters?.pluginId!);
+export function usePatchMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Patch__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: PatchProxyRequestQueryParameters}): UseMutationResult<void, unknown, Patch__MutationParameters, TContext> {
+  const key = patchMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Patch__MutationParameters) => Client.patch(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Patch__MutationParameters) => Client.patch(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }
   
-export function optionsUrl(pluginId: string): string {
+export function optionsUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function optionsMutationKey(pluginId: string): MutationKey {
+export function optionsMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'options',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useOptionsMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = optionsMutationKey(pluginId);
+export function useOptionsMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = optionsMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.options(pluginId),
+    mutationFn: () => Client.options(pluginId, path),
     mutationKey: key,
   });
 }
@@ -402,53 +436,57 @@ type Options__MutationParameters = OptionsProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useOptionsMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Options__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: OptionsProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Options__MutationParameters, TContext> {
-  const key = optionsMutationKey(options?.parameters?.pluginId!);
+export function useOptionsMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Options__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: OptionsProxyRequestQueryParameters}): UseMutationResult<void, unknown, Options__MutationParameters, TContext> {
+  const key = optionsMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Options__MutationParameters) => Client.options(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Options__MutationParameters) => Client.options(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }
   
-export function headUrl(pluginId: string): string {
+export function headUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function headMutationKey(pluginId: string): MutationKey {
+export function headMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'head',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useHeadMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = headMutationKey(pluginId);
+export function useHeadMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = headMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.head(pluginId),
+    mutationFn: () => Client.head(pluginId, path),
     mutationKey: key,
   });
 }
@@ -457,53 +495,57 @@ type Head__MutationParameters = HeadProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useHeadMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Head__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: HeadProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Head__MutationParameters, TContext> {
-  const key = headMutationKey(options?.parameters?.pluginId!);
+export function useHeadMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Head__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: HeadProxyRequestQueryParameters}): UseMutationResult<void, unknown, Head__MutationParameters, TContext> {
+  const key = headMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Head__MutationParameters) => Client.head(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Head__MutationParameters) => Client.head(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }
   
-export function searchUrl(pluginId: string): string {
+export function searchUrl(pluginId: string, path: string): string {
   let url_ = getBaseUrl() + "/api/plugins/proxy/{pluginId}/{path}";
 if (pluginId === undefined || pluginId === null)
   throw new Error("The parameter 'pluginId' must be defined.");
 url_ = url_.replace("{pluginId}", encodeURIComponent("" + pluginId));
+if (path === undefined || path === null)
+  throw new Error("The parameter 'path' must be defined.");
+url_ = url_.replace("{path}", encodeURIComponent("" + path));
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
 
-export function searchMutationKey(pluginId: string): MutationKey {
+export function searchMutationKey(pluginId: string, path: string): MutationKey {
   return trimArrayEnd([
       'ProxyRequestClient',
       'search',
       pluginId as any,
+      path as any,
     ]);
 }
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useSearchMutation<TContext>(pluginId: string, options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.PluginProxyResponseDto, unknown, void, TContext> {
-  const key = searchMutationKey(pluginId);
+export function useSearchMutation<TContext>(pluginId: string, path: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+  const key = searchMutationKey(pluginId, path);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
   return useMutation({
     ...options,
-    mutationFn: () => Client.search(pluginId),
+    mutationFn: () => Client.search(pluginId, path),
     mutationKey: key,
   });
 }
@@ -512,18 +554,18 @@ type Search__MutationParameters = SearchProxyRequestQueryParameters
 
 /**
  * Proxy request to plugin server
- * @param pluginId ID of the plugin to proxy request to
- * @return Request successfully proxied to plugin
+ * @param pluginId Plugin ID
+ * @param path Path to proxy
  */
-export function useSearchMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.PluginProxyResponseDto, unknown, Search__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: SearchProxyRequestQueryParameters}): UseMutationResult<Types.PluginProxyResponseDto, unknown, Search__MutationParameters, TContext> {
-  const key = searchMutationKey(options?.parameters?.pluginId!);
+export function useSearchMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, Search__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: SearchProxyRequestQueryParameters}): UseMutationResult<void, unknown, Search__MutationParameters, TContext> {
+  const key = searchMutationKey(options?.parameters?.pluginId!, options?.parameters?.path!);
   
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
   
 return useMutation({
   ...options, 
-  mutationFn: (data: Search__MutationParameters) => Client.search(data.pluginId ?? options?.parameters?.pluginId!),
+  mutationFn: (data: Search__MutationParameters) => Client.search(data.pluginId ?? options?.parameters?.pluginId!, data.path ?? options?.parameters?.path!),
   mutationKey: key,
 });
 }

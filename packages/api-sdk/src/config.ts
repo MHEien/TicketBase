@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 export interface ApiConfig {
   baseURL: string;
@@ -34,7 +34,7 @@ export const configureApi = (config: ApiConfig) => {
         currentConfig.onUnauthorized();
       }
       return Promise.reject(error);
-    }
+    },
   );
 
   return axiosInstance;
@@ -42,7 +42,7 @@ export const configureApi = (config: ApiConfig) => {
 
 export const getAxiosInstance = () => {
   if (!axiosInstance) {
-    throw new Error('API client not configured. Call configureApi first.');
+    throw new Error("API client not configured. Call configureApi first.");
   }
   return axiosInstance;
-}; 
+};

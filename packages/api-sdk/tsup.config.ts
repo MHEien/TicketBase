@@ -9,10 +9,15 @@ export default defineConfig({
   clean: true,
   outExtension({ format }) {
     return {
-      js: `.${format === 'esm' ? 'mjs' : 'js'}`,
+      js: `.${format === "esm" ? "mjs" : "js"}`,
     };
   },
   esbuildOptions(options) {
-    options.external = ['react', 'react-dom', '@tanstack/react-query', 'react-query-swagger'];
+    options.external = [
+      "react",
+      "react-dom",
+      "@tanstack/react-query",
+      "react-query-swagger",
+    ];
   },
-}); 
+});

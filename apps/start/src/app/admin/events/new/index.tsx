@@ -15,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
 import { createEvent, fetchEvent } from "@/lib/api/events-api";
 
-
 export const Route = createFileRoute({
   component: CreateEventPage,
 });

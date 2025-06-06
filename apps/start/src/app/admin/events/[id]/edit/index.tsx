@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
@@ -16,16 +16,11 @@ import { useEventCreation } from "@/hooks/use-event-creation";
 import { useEvent } from "@/hooks/use-events";
 import { updateEvent } from "@/lib/api/events-api";
 
-
 export const Route = createFileRoute({
   component: EditEventPage,
 });
 
-function EditEventPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
   const { toast } = useToast();
@@ -184,7 +179,9 @@ function EditEventPage({
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-destructive">Error loading event data</p>
-          <Button onClick={() => router.navigate({ to: "/admin/events" })}>Back to Events</Button>
+          <Button onClick={() => router.navigate({ to: "/admin/events" })}>
+            Back to Events
+          </Button>
         </div>
       </div>
     );
@@ -195,7 +192,9 @@ function EditEventPage({
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-destructive">Error loading event data</p>
-          <Button onClick={() => router.navigate({ to: "/admin/events" })}>Back to Events</Button>
+          <Button onClick={() => router.navigate({ to: "/admin/events" })}>
+            Back to Events
+          </Button>
         </div>
       </div>
     );
@@ -212,7 +211,9 @@ function EditEventPage({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.navigate({ to: `/admin/events/${resolvedParams.id}` })}
+              onClick={() =>
+                router.navigate({ to: `/admin/events/${resolvedParams.id}` })
+              }
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

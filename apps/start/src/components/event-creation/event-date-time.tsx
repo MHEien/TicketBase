@@ -21,11 +21,7 @@ import {
   SelectValue,
 } from "@repo/ui/select";
 import { Calendar } from "@repo/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@repo/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/popover";
 import { cn } from "@/lib/utils";
 import { useEventCreation } from "@/hooks/use-event-creation";
 

@@ -18,7 +18,7 @@ import {
 import { Badge } from "@repo/ui/badge";
 import { Button } from "@repo/ui/button";
 import { useCommandMenu } from "@/hooks/use-command-menu";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { useDashboardNav } from "@/hooks/useDashboardNav";
 
 export function CommandHub() {
@@ -153,7 +153,6 @@ export function CommandHub() {
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">New Event</span>
             </Button>
-
           </div>
         </div>
 

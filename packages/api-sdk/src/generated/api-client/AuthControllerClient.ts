@@ -18,7 +18,7 @@ import { getAxios, getBaseUrl } from './helpers';
  * @return Login successful
  */
 export function login(body: Types.LoginDto, config?: AxiosRequestConfig | undefined): Promise<Types.LoginResponseDto> {
-    let url_ = getBaseUrl() + "/auth/login";
+    let url_ = getBaseUrl() + "/api/auth/login";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = JSON.stringify(body);
@@ -81,7 +81,7 @@ function processLogin(response: AxiosResponse): Promise<Types.LoginResponseDto> 
  * @return Registration successful
  */
 export function register(body: Types.RegisterDto, config?: AxiosRequestConfig | undefined): Promise<Types.TokenResponseDto> {
-    let url_ = getBaseUrl() + "/auth/register";
+    let url_ = getBaseUrl() + "/api/auth/register";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = JSON.stringify(body);
@@ -144,7 +144,7 @@ function processRegister(response: AxiosResponse): Promise<Types.TokenResponseDt
  * @return Token refreshed successfully
  */
 export function refreshToken(body: Types.RefreshTokenDto, config?: AxiosRequestConfig | undefined): Promise<Types.TokenResponseDto> {
-    let url_ = getBaseUrl() + "/auth/refresh";
+    let url_ = getBaseUrl() + "/api/auth/refresh";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = JSON.stringify(body);
@@ -207,7 +207,7 @@ function processRefreshToken(response: AxiosResponse): Promise<Types.TokenRespon
  * @return Token status information
  */
 export function checkToken(body: Types.RefreshTokenDto, config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/check-token";
+    let url_ = getBaseUrl() + "/api/auth/check-token";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = JSON.stringify(body);
@@ -266,7 +266,7 @@ function processCheckToken(response: AxiosResponse): Promise<void> {
  * @return Session diagnostic information
  */
 export function getSessionInfo(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/session-info";
+    let url_ = getBaseUrl() + "/api/auth/session-info";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -317,7 +317,7 @@ function processGetSessionInfo(response: AxiosResponse): Promise<void> {
  * @return Session cleanup result
  */
 export function cleanupSessions(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/cleanup-sessions";
+    let url_ = getBaseUrl() + "/api/auth/cleanup-sessions";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -368,7 +368,7 @@ function processCleanupSessions(response: AxiosResponse): Promise<void> {
  * @return Logged out successfully
  */
 export function logout(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/logout";
+    let url_ = getBaseUrl() + "/api/auth/logout";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -419,7 +419,7 @@ function processLogout(response: AxiosResponse): Promise<void> {
  * @return Logged out from all devices successfully
  */
 export function logoutAll(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/logout-all";
+    let url_ = getBaseUrl() + "/api/auth/logout-all";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -470,7 +470,7 @@ function processLogoutAll(response: AxiosResponse): Promise<void> {
  * @return User session info retrieved successfully
  */
 export function getSession(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/session";
+    let url_ = getBaseUrl() + "/api/auth/session";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -521,7 +521,7 @@ function processGetSession(response: AxiosResponse): Promise<void> {
  * @return Settings updated successfully
  */
 export function updateUserSettings(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/auth/user-settings";
+    let url_ = getBaseUrl() + "/api/auth/user-settings";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {

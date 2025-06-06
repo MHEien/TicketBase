@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, ReactNode } from "react";
 import { useSession } from "./auth";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { useToast } from "@repo/ui/use-toast";
 import "@/types/plugins"; // Import global types
 import { PluginRegistry } from "@/types/plugins";
@@ -103,7 +103,7 @@ const PluginSDKContext = createContext<PluginSDK | null>(null);
 export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -118,8 +118,8 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
         method,
         headers: {
           "Content-Type": "application/json",
-          ...(session?.session.token && {
-            Authorization: `Bearer ${session.session.token}`,
+          ...(session?.data.session.token && {
+            Authorization: `Bearer ${session.data.session.token}`,
           }),
         },
       };
@@ -206,7 +206,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
     () => ({
       auth: {
         session,
-        token: session?.session.token,
+        token: session?.data.session.token,
         user: session?.user,
         isAuthenticated: !!session?.user,
       },
@@ -221,7 +221,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
 
       navigation: {
         push: (url: string) => router.navigate({ to: url }),
-        replace: (url: string) => router.navigate({ to: url, replace: true })
+        replace: (url: string) => router.navigate({ to: url, replace: true }),
       },
 
       components: {

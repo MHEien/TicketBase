@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   ArrowUpDown,
@@ -70,7 +70,6 @@ import {
   type UserRole,
 } from "@/lib/user-data";
 import { useToast } from "@/hooks/use-toast";
-
 
 export const Route = createFileRoute({
   component: UsersPage,

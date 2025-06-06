@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@/lib/auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -36,7 +36,6 @@ import {
   CardTitle,
 } from "@repo/ui/card";
 import { toast } from "@repo/ui/use-toast";
-
 
 export const Route = createFileRoute({
   component: SettingsPage,

@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useEffect, useState, Suspense, use } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   BarChart,
@@ -43,16 +43,11 @@ import { useToast } from "@/hooks/use-toast";
 import { PluginWidgetArea } from "@/components/plugin-widget-area";
 import { deleteEvent, publishEvent, cancelEvent } from "@/lib/api/events-api";
 
-
 export const Route = createFileRoute({
   component: EventDetailsPage,
 });
 
-function EventDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+function EventDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
   const { toast } = useToast();
@@ -168,7 +163,10 @@ function EventDetailsPage({
     return (
       <div className="p-8 text-center">
         <p className="text-destructive">Error loading event details</p>
-        <Button onClick={() => router.navigate({ to: "/admin/events" })} className="mt-4">
+        <Button
+          onClick={() => router.navigate({ to: "/admin/events" })}
+          className="mt-4"
+        >
           Back to Events
         </Button>
       </div>

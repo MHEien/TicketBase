@@ -17,7 +17,6 @@ import { Button } from "@repo/ui/button";
 import { Separator } from "@repo/ui/separator";
 import { useToast } from "@repo/ui/use-toast";
 
-
 export const Route = createFileRoute({
   component: PluginSettingsPage,
 });
@@ -343,4 +342,4 @@ function PluginSettingsPage() {
       </div>
     </div>
   );
-};
+}

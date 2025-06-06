@@ -26,7 +26,7 @@ import { UserRole } from './entities/user.entity';
 
 @ApiTags('Departments')
 @ApiBearerAuth()
-@Controller('departments')
+@Controller('api/departments')
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 

@@ -23,7 +23,7 @@ import {
 } from './types/plugin.types';
 import { PluginsService } from './plugins.service';
 
-interface ProxyResponse {
+export interface ProxyResponse {
   status: number;
   data: any;
   headers: Record<string, string | string[]>;

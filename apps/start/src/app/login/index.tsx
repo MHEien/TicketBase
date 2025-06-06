@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { signIn } from "@/lib/auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -27,16 +27,22 @@ import {
 import { Alert, AlertDescription } from "@repo/ui/alert";
 
 type LoginSearchParams = {
-  error?: "session_expired" | "credentials_signin";
+  error?:
+    | "session_expired"
+    | "credentials_signin"
+    | "invalid_credentials"
+    | "auth_error";
 };
-
 
 export const Route = createFileRoute({
   component: LoginPage,
   validateSearch: (search: Record<string, unknown>): LoginSearchParams => {
     return {
-      error: search.error as "session_expired" | "credentials_signin" | undefined,
-    }
+      error: search.error as
+        | "session_expired"
+        | "credentials_signin"
+        | undefined,
+    };
   },
 });
 
@@ -67,24 +73,25 @@ function LoginPage() {
     setIsLoading(true);
 
     try {
-      const result = await signIn.email({
+      await signIn({
         email: data.email,
         password: data.password,
-      })
-
-      if (!result?.error) {
-        router.navigate({ to: "/admin" });
-      } else {
-        // Show more detailed error message based on the error
-        if (result.error?.code === "CREDENTIALS_SIGNIN") {
-          router.navigate({ to: "/login", search: { error: "credentials_signin" } });
-        } else {
-          router.navigate({ to: "/login", search: { error: "session_expired" } });
-        }
-      }
-    } catch (error) {
+      });
+      
+      // If we get here, login was successful
+      router.navigate({ to: "/admin" });
+    } catch (error: any) {
       console.error("Login error:", error);
-      router.navigate({ to: "/login", search: { error: "session_expired" } });
+      
+      // Handle SDK error types
+      if (error.name === 'InvalidCredentialsError') {
+        router.navigate({
+          to: "/login",
+          search: { error: "invalid_credentials" },
+        });
+      } else {
+        router.navigate({ to: "/login", search: { error: "auth_error" } });
+      }
     } finally {
       setIsLoading(false);
     }

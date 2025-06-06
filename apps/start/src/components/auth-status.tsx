@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/dropdown-menu";
-import { UserIcon } from "lucide-react";
 
 interface AuthStatusProps {
   user?: {
@@ -33,7 +32,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
   const initials = sessionUser.name
     ? sessionUser.name
         .split(" ")
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .join("")
     : sessionUser.email?.charAt(0) || "U";
 
@@ -73,10 +72,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onSelect={() => signOut()}
-        >
+        <DropdownMenuItem className="cursor-pointer" onSelect={() => signOut()}>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

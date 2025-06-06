@@ -1,5 +1,9 @@
 import { apiClient } from "./api-client";
-import { diagnosticClient } from "./diagnostic-client";
+
+// Create a diagnostic client that doesn't auto-redirect on auth errors
+const diagnosticClient = apiClient.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+});
 
 /**
  * Checks the status of a refresh token
@@ -21,7 +25,6 @@ export async function checkRefreshToken(refreshToken: string): Promise<any> {
  */
 export async function getSessionDiagnostics(): Promise<any> {
   try {
-    // This is a simple route to get session diagnostics
     const response = await diagnosticClient.get("/auth/session-info");
     return response.data;
   } catch (error) {

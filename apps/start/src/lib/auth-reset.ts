@@ -22,13 +22,8 @@ export async function resetAuthState(): Promise<void> {
       sessionStorage.clear();
     }
 
-    // Sign out from NextAuth
-    await signOut({
-      query: {
-        redirect: false,
-        callbackUrl: "/login",
-      },
-    });
+    // Sign out from auth service
+    await signOut();
 
     console.log("Authentication state reset successfully");
 

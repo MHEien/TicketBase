@@ -23,7 +23,7 @@ export type FindOneOrdersControllerQueryParameters = {
 }
 
 export function findAllUrl(): string {
-  let url_ = getBaseUrl() + "/orders";
+  let url_ = getBaseUrl() + "/api/orders";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -80,7 +80,7 @@ export function setFindAllDataByQueryId(queryClient: QueryClient, queryKey: Quer
 }
     
 export function findOneUrl(id: string): string {
-  let url_ = getBaseUrl() + "/orders/{id}";
+  let url_ = getBaseUrl() + "/api/orders/{id}";
 if (id === undefined || id === null)
   throw new Error("The parameter 'id' must be defined.");
 url_ = url_.replace("{id}", encodeURIComponent("" + id));

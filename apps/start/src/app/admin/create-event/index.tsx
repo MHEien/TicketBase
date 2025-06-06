@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";

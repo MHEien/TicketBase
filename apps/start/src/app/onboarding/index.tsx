@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { useOnboarding } from "@/lib/onboarding-context";
 import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";

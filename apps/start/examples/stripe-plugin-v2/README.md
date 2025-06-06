@@ -37,7 +37,7 @@ This is an example of a modern TypeScript-based plugin for the Tickets Platform,
 
 ```
 stripe-plugin-v2/
-├── 
+├──
 │   └── index.tsx          # Main plugin implementation
 ├── package.json           # Dependencies and scripts
 ├── plugin.json           # Plugin metadata and configuration

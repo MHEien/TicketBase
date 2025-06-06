@@ -3550,83 +3550,6 @@ export interface IInstalledPluginDto {
     [key: string]: any;
 }
 
-export class PluginProxyResponseDto implements IPluginProxyResponseDto {
-    /** HTTP status code of the proxied response */
-    status!: number;
-    /** Response data from the plugin */
-    data!: any;
-    /** Response headers from the plugin */
-    headers!: { [key: string]: string; };
-
-    [key: string]: any;
-
-    constructor(data?: IPluginProxyResponseDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.headers = {};
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.status = _data["status"];
-            this.data = _data["data"];
-            if (_data["headers"]) {
-                this.headers = {} as any;
-                for (let key in _data["headers"]) {
-                    if (_data["headers"].hasOwnProperty(key))
-                        (<any>this.headers)![key] = _data["headers"][key];
-                }
-            }
-        }
-    }
-
-    static fromJS(data: any): PluginProxyResponseDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PluginProxyResponseDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["status"] = this.status;
-        data["data"] = this.data;
-        if (this.headers) {
-            data["headers"] = {};
-            for (let key in this.headers) {
-                if (this.headers.hasOwnProperty(key))
-                    (<any>data["headers"])[key] = (<any>this.headers)[key];
-            }
-        }
-        return data;
-    }
-}
-
-export interface IPluginProxyResponseDto {
-    /** HTTP status code of the proxied response */
-    status: number;
-    /** Response data from the plugin */
-    data: any;
-    /** Response headers from the plugin */
-    headers: { [key: string]: string; };
-
-    [key: string]: any;
-}
-
 export class AudienceAnalyticsDto implements IAudienceAnalyticsDto {
     /** Total number of unique visitors */
     totalVisitors!: number;
@@ -4622,7 +4545,6 @@ export function initPersister() {
   addResultTypeFactory('PluginsControllerClient___getPluginsByType', (data: any) => { const result = new InstalledPluginDto(); result.init(data); return result; });
 
 
-  addResultTypeFactory('ProxyRequestClient___get', (data: any) => { const result = new PluginProxyResponseDto(); result.init(data); return result; });
 
 
 

@@ -14,7 +14,7 @@ import { throwException, isAxiosError } from '../api-client';
 import { getAxios, getBaseUrl } from './helpers';
 
 export function findAll(config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/orders";
+    let url_ = getBaseUrl() + "/api/orders";
       url_ = url_.replace(/[?&]$/, "");
 
     let options_: AxiosRequestConfig = {
@@ -61,7 +61,7 @@ function processFindAll(response: AxiosResponse): Promise<void> {
 }
 
 export function findOne(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/orders/{id}";
+    let url_ = getBaseUrl() + "/api/orders/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
     url_ = url_.replace("{id}", encodeURIComponent("" + id));

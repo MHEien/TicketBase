@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -53,7 +53,6 @@ import {
   hasPermission,
 } from "@/lib/user-data";
 import { useToast } from "@/hooks/use-toast";
-
 
 export const Route = createFileRoute({
   component: UserDetailPage,
@@ -158,7 +157,10 @@ function UserDetailPage({ params }: { params: { id: string } }) {
           <p className="mb-6 text-muted-foreground">
             The user you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => router.navigate({ to: "/admin/users" })} className="gap-2">
+          <Button
+            onClick={() => router.navigate({ to: "/admin/users" })}
+            className="gap-2"
+          >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Users</span>
           </Button>
@@ -216,7 +218,9 @@ function UserDetailPage({ params }: { params: { id: string } }) {
           <Button
             variant="outline"
             className="gap-2"
-            onClick={() => router.navigate({ to: `/admin/users/${user.id}/edit` })}
+            onClick={() =>
+              router.navigate({ to: `/admin/users/${user.id}/edit` })
+            }
           >
             <Edit className="h-4 w-4" />
             <span>Edit</span>

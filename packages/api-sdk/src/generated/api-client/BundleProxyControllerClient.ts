@@ -17,8 +17,8 @@ import { getAxios, getBaseUrl } from './helpers';
  * Proxy bundle requests to plugin server
  * @param path Full bundle path with version
  */
-export function proxyBundleRequest(path: any, config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/plugins/bundles/{path}";
+export function proxyBundleRequest(path: string, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/plugins/bundles/{path}";
     if (path === undefined || path === null)
       throw new Error("The parameter 'path' must be defined.");
     url_ = url_.replace("{path}", encodeURIComponent("" + path));

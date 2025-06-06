@@ -13,97 +13,57 @@
 import type {
   FileRoutesByPath,
   CreateServerFileRoute,
-} from '@tanstack/react-start/server'
+} from "@tanstack/react-start/server";
 import {
   createServerRoute,
   createServerFileRoute,
-} from '@tanstack/react-start/server'
-
-import { ServerRoute as ApiAuthSplatRouteImport } from './../../src/app/api/auth/$'
+} from "@tanstack/react-start/server";
 
 // Create/Update Routes
 
-const rootRoute = createServerRoute()
-
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRoute,
-} as any)
+const rootRoute = createServerRoute();
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-start/server' {
-  interface FileRoutesByPath {
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRoute
-    }
-  }
+declare module "@tanstack/react-start/server" {
+  interface FileRoutesByPath {}
 }
 
 // Add type-safety to the createFileRoute function across the route tree
 
-declare module './../../src/app/api/auth/$' {
-  const createServerFileRoute: CreateServerFileRoute<
-    FileRoutesByPath['/api/auth/$']['parentRoute'],
-    FileRoutesByPath['/api/auth/$']['id'],
-    FileRoutesByPath['/api/auth/$']['path'],
-    FileRoutesByPath['/api/auth/$']['fullPath'],
-    unknown
-  >
-}
-
 // Create and export the route tree
 
-export interface FileRoutesByFullPath {
-  '/api/auth/$': typeof ApiAuthSplatRoute
-}
+export interface FileRoutesByFullPath {}
 
-export interface FileRoutesByTo {
-  '/api/auth/$': typeof ApiAuthSplatRoute
-}
+export interface FileRoutesByTo {}
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
+  __root__: typeof rootRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/api/auth/$'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/api/auth/$'
-  id: '__root__' | '/api/auth/$'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: never;
+  fileRoutesByTo: FileRoutesByTo;
+  to: never;
+  id: "__root__";
+  fileRoutesById: FileRoutesById;
 }
 
-export interface RootRouteChildren {
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-}
+export interface RootRouteChildren {}
 
-const rootRouteChildren: RootRouteChildren = {
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
-}
+const rootRouteChildren: RootRouteChildren = {};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
   "routes": {
     "__root__": {
       "filePath": "__root.tsx",
-      "children": [
-        "/api/auth/$"
-      ]
-    },
-    "/api/auth/$": {
-      "filePath": "api/auth/$.ts"
+      "children": []
     }
   }
 }

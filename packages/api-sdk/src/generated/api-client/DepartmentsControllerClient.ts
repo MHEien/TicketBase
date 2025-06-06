@@ -18,7 +18,7 @@ import { getAxios, getBaseUrl } from './helpers';
  * @return Department created successfully
  */
 export function create(body: Types.CreateDepartmentDto, config?: AxiosRequestConfig | undefined): Promise<Types.Department> {
-    let url_ = getBaseUrl() + "/departments";
+    let url_ = getBaseUrl() + "/api/departments";
       url_ = url_.replace(/[?&]$/, "");
 
     const content_ = JSON.stringify(body);
@@ -89,7 +89,7 @@ function processCreate(response: AxiosResponse): Promise<Types.Department> {
  * @return List of departments
  */
 export function findAll(organizationId: string, config?: AxiosRequestConfig | undefined): Promise<Types.Department[]> {
-    let url_ = getBaseUrl() + "/departments?";
+    let url_ = getBaseUrl() + "/api/departments?";
       if (organizationId === undefined || organizationId === null)
         throw new Error("The parameter 'organizationId' must be defined and cannot be null.");
       else
@@ -159,7 +159,7 @@ function processFindAll(response: AxiosResponse): Promise<Types.Department[]> {
  * @return Hierarchical list of departments
  */
 export function getHierarchy(organizationId: string, config?: AxiosRequestConfig | undefined): Promise<Types.Department[]> {
-    let url_ = getBaseUrl() + "/departments/hierarchy?";
+    let url_ = getBaseUrl() + "/api/departments/hierarchy?";
       if (organizationId === undefined || organizationId === null)
         throw new Error("The parameter 'organizationId' must be defined and cannot be null.");
       else
@@ -229,7 +229,7 @@ function processGetHierarchy(response: AxiosResponse): Promise<Types.Department[
  * @return List of departments with users
  */
 export function findAllWithUsers(organizationId: string, config?: AxiosRequestConfig | undefined): Promise<Types.Department[]> {
-    let url_ = getBaseUrl() + "/departments/with-users?";
+    let url_ = getBaseUrl() + "/api/departments/with-users?";
       if (organizationId === undefined || organizationId === null)
         throw new Error("The parameter 'organizationId' must be defined and cannot be null.");
       else
@@ -299,7 +299,7 @@ function processFindAllWithUsers(response: AxiosResponse): Promise<Types.Departm
  * @return Department found
  */
 export function findOne(id: string, organizationId: string, config?: AxiosRequestConfig | undefined): Promise<Types.Department> {
-    let url_ = getBaseUrl() + "/departments/{id}?";
+    let url_ = getBaseUrl() + "/api/departments/{id}?";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -369,7 +369,7 @@ function processFindOne(response: AxiosResponse): Promise<Types.Department> {
  * @return Department updated successfully
  */
 export function update(id: string, organizationId: string, body: Types.UpdateDepartmentDto, config?: AxiosRequestConfig | undefined): Promise<Types.Department> {
-    let url_ = getBaseUrl() + "/departments/{id}?";
+    let url_ = getBaseUrl() + "/api/departments/{id}?";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -451,7 +451,7 @@ function processUpdate(response: AxiosResponse): Promise<Types.Department> {
  * @return Department deleted successfully
  */
 export function remove(id: string, organizationId: string, config?: AxiosRequestConfig | undefined): Promise<void> {
-    let url_ = getBaseUrl() + "/departments/{id}?";
+    let url_ = getBaseUrl() + "/api/departments/{id}?";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -525,7 +525,7 @@ function processRemove(response: AxiosResponse): Promise<void> {
  * @return Department found
  */
 export function findBySlug(slug: string, organizationId: string, config?: AxiosRequestConfig | undefined): Promise<Types.Department> {
-    let url_ = getBaseUrl() + "/departments/by-slug/{slug}?";
+    let url_ = getBaseUrl() + "/api/departments/by-slug/{slug}?";
     if (slug === undefined || slug === null)
       throw new Error("The parameter 'slug' must be defined.");
     url_ = url_.replace("{slug}", encodeURIComponent("" + slug));

@@ -3,9 +3,8 @@
 import PluginUploadInterface from "@/components/plugin-upload";
 import { Button } from "@repo/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { Separator } from "@repo/ui/separator";
-
 
 export const Route = createFileRoute({
   component: SubmitPluginPage,

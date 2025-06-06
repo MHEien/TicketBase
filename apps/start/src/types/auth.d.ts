@@ -1,9 +1,6 @@
-import { DefaultSession } from "next-auth";
-import { UserRole } from "@/lib/user-data";
-import "next-auth";
 import { User } from "./department";
 
-declare module "next-auth" {
+declare module "@repo/api-sdk/auth" {
   interface Session {
     user: {
       id: string;
@@ -15,6 +12,7 @@ declare module "next-auth" {
       organizationId: string;
     } & Partial<User>;
     accessToken: string;
+    refreshToken: string;
     error?: string;
   }
 
@@ -26,17 +24,24 @@ declare module "next-auth" {
     refreshToken: string;
     expiresAt: number;
   }
-}
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-    role: string;
-    permissions: string[];
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-    error?: string;
-    lastRefreshAttempt?: number;
+  interface AuthError {
+    code: string;
+    message: string;
+    name: string;
+  }
+
+  interface SignInOptions {
+    email: string;
+    password: string;
+    redirectTo?: string;
+  }
+
+  interface SignUpOptions {
+    name: string;
+    email: string;
+    password: string;
+    organizationName?: string;
+    redirectTo?: string;
   }
 }

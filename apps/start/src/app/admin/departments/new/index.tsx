@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -35,7 +35,6 @@ import {
 } from "@repo/ui/select";
 import { createDepartment, getDepartments } from "@/lib/api/departments";
 import { Department, CreateDepartmentRequest } from "@/types/department";
-
 
 export const Route = createFileRoute({
   component: NewDepartmentPage,

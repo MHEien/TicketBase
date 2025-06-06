@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import Link from "next/link";
-import { signIn } from "@/lib/auth";
+import { signIn, signUp } from "@/lib/auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,42 +69,32 @@ function RegisterPage() {
     setError(null);
 
     try {
-      // API call to register the user and organization
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          organizationName: data.organizationName,
-        }),
+      // Register the user using the SDK
+      await signUp({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        organizationName: data.organizationName,
       });
 
-      if (response.ok) {
-        // On successful registration, sign the user in with NextAuth
-        const result = await signIn.email({
-          email: data.email,
-          password: data.password,
-        });
+      // On successful registration, sign the user in
+      await signIn({
+        email: data.email,
+        password: data.password,
+      });
 
-        if (!result?.error) {
-          // On successful sign-in, redirect to the onboarding flow
-          router.navigate({ to: "/onboarding" });
-        } else {
-          setError(
-            "Registration successful but sign-in failed. Please try logging in.",
-          );
-        }
+      // If we get here, both registration and sign-in were successful
+      router.navigate({ to: "/onboarding" });
+    } catch (error: any) {
+      console.error("Registration/Login error:", error);
+      
+      if (error.name === 'EmailAlreadyExistsError') {
+        setError("This email is already registered. Please try logging in.");
+      } else if (error.name === 'InvalidCredentialsError') {
+        setError("Registration successful but sign-in failed. Please try logging in.");
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Registration failed. Please try again.");
+        setError(error.message || "An error occurred. Please try again.");
       }
-    } catch (error) {
-      console.error("Registration error:", error);
-      setError("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -27,7 +27,7 @@ export type FindOneCustomersControllerQueryParameters = {
 }
 
 export function findAllUrl(): string {
-  let url_ = getBaseUrl() + "/customers";
+  let url_ = getBaseUrl() + "/api/customers";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -84,7 +84,7 @@ export function setFindAllDataByQueryId(queryClient: QueryClient, queryKey: Quer
 }
     
 export function findByEmailUrl(email: string): string {
-  let url_ = getBaseUrl() + "/customers/search?";
+  let url_ = getBaseUrl() + "/api/customers/search?";
   if (email === undefined || email === null)
     throw new Error("The parameter 'email' must be defined and cannot be null.");
   else
@@ -165,7 +165,7 @@ export function setFindByEmailDataByQueryId(queryClient: QueryClient, queryKey: 
 }
     
 export function findOneUrl(id: string): string {
-  let url_ = getBaseUrl() + "/customers/{id}";
+  let url_ = getBaseUrl() + "/api/customers/{id}";
 if (id === undefined || id === null)
   throw new Error("The parameter 'id' must be defined.");
 url_ = url_.replace("{id}", encodeURIComponent("" + id));

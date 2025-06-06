@@ -3,7 +3,6 @@
 import { PluginGallery } from "@/components/plugin-gallery";
 import { Separator } from "@repo/ui/separator";
 
-
 export const Route = createFileRoute({
   component: PluginsPage,
 });

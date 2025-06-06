@@ -23,7 +23,7 @@ import type { AxiosRequestConfig } from 'axios';
 
 
 export function loginUrl(): string {
-  let url_ = getBaseUrl() + "/auth/login";
+  let url_ = getBaseUrl() + "/api/auth/login";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -53,7 +53,7 @@ export function useLoginMutation<TContext>(options?: Omit<UseMutationOptions<Typ
 }
   
 export function registerUrl(): string {
-  let url_ = getBaseUrl() + "/auth/register";
+  let url_ = getBaseUrl() + "/api/auth/register";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -83,7 +83,7 @@ export function useRegisterMutation<TContext>(options?: Omit<UseMutationOptions<
 }
   
 export function refreshTokenUrl(): string {
-  let url_ = getBaseUrl() + "/auth/refresh";
+  let url_ = getBaseUrl() + "/api/auth/refresh";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -113,7 +113,7 @@ export function useRefreshTokenMutation<TContext>(options?: Omit<UseMutationOpti
 }
   
 export function checkTokenUrl(): string {
-  let url_ = getBaseUrl() + "/auth/check-token";
+  let url_ = getBaseUrl() + "/api/auth/check-token";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -143,7 +143,7 @@ export function useCheckTokenMutation<TContext>(options?: Omit<UseMutationOption
 }
   
 export function getSessionInfoUrl(): string {
-  let url_ = getBaseUrl() + "/auth/session-info";
+  let url_ = getBaseUrl() + "/api/auth/session-info";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -211,7 +211,7 @@ export function setGetSessionInfoDataByQueryId(queryClient: QueryClient, queryKe
 }
     
 export function cleanupSessionsUrl(): string {
-  let url_ = getBaseUrl() + "/auth/cleanup-sessions";
+  let url_ = getBaseUrl() + "/api/auth/cleanup-sessions";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -241,7 +241,7 @@ export function useCleanupSessionsMutation<TContext>(options?: Omit<UseMutationO
 }
   
 export function logoutUrl(): string {
-  let url_ = getBaseUrl() + "/auth/logout";
+  let url_ = getBaseUrl() + "/api/auth/logout";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -271,7 +271,7 @@ export function useLogoutMutation<TContext>(options?: Omit<UseMutationOptions<vo
 }
   
 export function logoutAllUrl(): string {
-  let url_ = getBaseUrl() + "/auth/logout-all";
+  let url_ = getBaseUrl() + "/api/auth/logout-all";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -301,7 +301,7 @@ export function useLogoutAllMutation<TContext>(options?: Omit<UseMutationOptions
 }
   
 export function getSessionUrl(): string {
-  let url_ = getBaseUrl() + "/auth/session";
+  let url_ = getBaseUrl() + "/api/auth/session";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -369,7 +369,7 @@ export function setGetSessionDataByQueryId(queryClient: QueryClient, queryKey: Q
 }
     
 export function updateUserSettingsUrl(): string {
-  let url_ = getBaseUrl() + "/auth/user-settings";
+  let url_ = getBaseUrl() + "/api/auth/user-settings";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }

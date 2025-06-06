@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router";
 import confetti from "canvas-confetti";
 import { Button } from "@repo/ui/button";
 import { useOnboarding } from "@/lib/onboarding-context";
@@ -155,7 +155,10 @@ export default function OnboardingComplete() {
           Create Your First Event
         </Button>
 
-        <Button variant="outline" onClick={() => router.navigate({ to: "/admin" })}>
+        <Button
+          variant="outline"
+          onClick={() => router.navigate({ to: "/admin" })}
+        >
           Go to Dashboard
         </Button>
       </div>

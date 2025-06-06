@@ -1,5 +1,4 @@
-
-import { auth, getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -7,7 +6,7 @@ const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 // Update organization domain settings
 export async function PATCH(request: Request) {
   try {
-      const session = await getSession();
+    const session = await getSession();
 
     // Ensure the user is authenticated
     if (!session?.data?.user || !session.data?.session.token) {

@@ -1,27 +1,21 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import { PluginsController } from './plugins.controller';
 import { PluginsService } from './plugins.service';
 import { PluginsProxyService } from './plugins-proxy.service';
-import { PluginsController } from './plugins.controller';
 import { PluginProxyController } from './plugin-proxy.controller';
 import { BundleProxyController } from './bundle-proxy.controller';
-import { HttpModule } from '@nestjs/axios';
+import { BundleProxyService } from './bundle-proxy.service';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, ConfigModule],
   controllers: [
     PluginsController,
     PluginProxyController,
-    BundleProxyController, // Only the proxy controller, not the direct bundle controller
+    BundleProxyController,
   ],
-  providers: [
-    PluginsService,
-    PluginsProxyService,
-    // Alias the new service as the old one for backward compatibility
-    {
-      provide: 'PluginsService',
-      useExisting: PluginsProxyService,
-    },
-  ],
-  exports: [PluginsService, PluginsProxyService],
+  providers: [PluginsService, PluginsProxyService, BundleProxyService],
+  exports: [PluginsService],
 })
 export class PluginsModule {}

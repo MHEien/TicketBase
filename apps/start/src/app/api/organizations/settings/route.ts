@@ -1,4 +1,3 @@
-
 import { getSession } from "@/lib/auth";
 
 // Configure API URL based on environment

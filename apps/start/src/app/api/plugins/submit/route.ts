@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
 // Define a type for the plugin submission
 interface PluginSubmission {

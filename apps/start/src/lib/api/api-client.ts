@@ -1,84 +1,35 @@
-import axios from "axios";
-import { getSession } from "@/lib/auth";
-import { handleTokenRefreshFailure, isTokenRefreshError } from "../auth-utils";
 import { configureApi } from "@ticketsmonorepo/api-sdk";
 
-const apiClient = configureApi({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
-});
+// Configure API URL based on environment
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-// Paths that should not trigger auto-redirect on auth failure
-const noRedirectPaths = [
-  "/auth/check-token",
-  "/auth/session-info",
-  "/auth/cleanup-sessions",
-];
+// Create and configure API client
+export const setupApiClient = () => {
+  return configureApi({
+    baseURL: apiBaseUrl,
+  });
+};
 
-// Debug logging helper
-function debugLog(operation: string, details: any) {
-  console.group(`🌐 API Client Debug: ${operation}`);
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("Details:", details);
-  console.groupEnd();
+// Export the configured client
+export const apiClient = setupApiClient();
+
+// Debug logging function
+function debugLog(label: string, data: any) {
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[API Client] ${label}:`, data);
+  }
 }
 
-// Add request interceptor to include auth token and debug logging
+// Add request interceptor for debug logging
 apiClient.interceptors.request.use(
   async (config) => {
-    // Debug log the request
     debugLog("Request", {
       method: config.method?.toUpperCase(),
       url: config.url,
       baseURL: config.baseURL,
-      fullURL: `${config.baseURL}${config.url}`,
-      headers: {
-        ...config.headers,
-        // Don't log the actual auth token for security
-        Authorization: config.headers.Authorization ? "[REDACTED]" : undefined,
-      },
+      headers: config.headers,
       data: config.data,
     });
-
-    // Try to get the session
-    const session = await getSession();
-
-    debugLog("Session Check", {
-      sessionExists: !!session,
-      sessionKeys: session ? Object.keys(session) : [],
-      hasAccessToken: !!session?.data?.session.token,
-      accessTokenLength: session?.data?.session.token?.length,
-      user: session?.data?.user
-        ? {
-            id: session.data.user.id,
-            email: session.data.user.email,
-            name: session.data.user.name,
-          }
-        : null,
-    });
-
-    // If we have a session with an access token, add it to the headers
-    if (session?.data?.session.token) {
-      config.headers.Authorization = `Bearer ${session.data.session.token}`;
-
-      debugLog("Auth Token Added", {
-        hasToken: true,
-        tokenLength: session.data.session.token.length,
-        tokenPreview: session.data.session.token.substring(0, 20) + "...",
-      });
-    } else {
-      debugLog("Auth Token Missing", {
-        hasToken: false,
-        sessionExists: !!session,
-        sessionData: session
-          ? {
-              keys: Object.keys(session),
-              hasUser: !!session?.data?.user,
-              hasAccessToken: !!session?.data?.session?.token,
-            }
-          : null,
-      });
-    }
-
     return config;
   },
   (error) => {
@@ -89,62 +40,3 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   },
 );
-
-// Add response interceptor to handle token refresh errors and debug logging
-apiClient.interceptors.response.use(
-  (response) => {
-    // Debug log successful responses
-    debugLog("Response Success", {
-      status: response.status,
-      statusText: response.statusText,
-      url: response.config.url,
-      method: response.config.method?.toUpperCase(),
-      dataType: typeof response.data,
-      dataLength: Array.isArray(response.data)
-        ? response.data.length
-        : undefined,
-      headers: response.headers,
-    });
-
-    return response;
-  },
-  async (error) => {
-    // Debug log error responses
-    debugLog("Response Error", {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      method: error.config?.method?.toUpperCase(),
-      errorMessage: error.message,
-      responseData: error.response?.data,
-      responseHeaders: error.response?.headers,
-    });
-
-    // Check if the request URL is in the noRedirectPaths list
-    const requestPath = error.config?.url;
-    const shouldRedirect = !noRedirectPaths.some(
-      (path) => requestPath && requestPath.includes(path),
-    );
-
-    // Check if this is a token refresh error
-    if (
-      error.response?.status === 401 &&
-      isTokenRefreshError(error.response?.data) &&
-      shouldRedirect
-    ) {
-      debugLog("Token Refresh Error", {
-        shouldRedirect,
-        requestPath,
-        responseData: error.response?.data,
-      });
-
-      // Handle token refresh failure by logging out and redirecting
-      if (typeof window !== "undefined") {
-        await handleTokenRefreshFailure(error);
-      }
-    }
-    return Promise.reject(error);
-  },
-);
-
-export { apiClient };

@@ -19,11 +19,11 @@ export { Client };
 import type { AxiosRequestConfig } from 'axios';
 
 export type ProxyBundleRequestBundleProxyControllerQueryParameters = {
-  path: any ;
+  path: string ;
 }
 
-export function proxyBundleRequestUrl(path: any): string {
-  let url_ = getBaseUrl() + "/plugins/bundles/{path}";
+export function proxyBundleRequestUrl(path: string): string {
+  let url_ = getBaseUrl() + "/api/plugins/bundles/{path}";
 if (path === undefined || path === null)
   throw new Error("The parameter 'path' must be defined.");
 url_ = url_.replace("{path}", encodeURIComponent("" + path));
@@ -40,7 +40,7 @@ export function setProxyBundleRequestDefaultOptions(options: typeof proxyBundleR
   proxyBundleRequestDefaultOptions = options;
 }
 
-export function proxyBundleRequestQueryKey(path: any): QueryKey;
+export function proxyBundleRequestQueryKey(path: string): QueryKey;
 export function proxyBundleRequestQueryKey(...params: any[]): QueryKey {
   if (params.length === 1 && isParameterObject(params[0])) {
     const { path,  } = params[0] as ProxyBundleRequestBundleProxyControllerQueryParameters;
@@ -60,7 +60,7 @@ export function proxyBundleRequestQueryKey(...params: any[]): QueryKey {
 }
 export function __proxyBundleRequest(context: QueryFunctionContext, axiosConfig?: AxiosRequestConfig | undefined) {
   return Client.proxyBundleRequest(
-      context.queryKey[2] as any,axiosConfig    );
+      context.queryKey[2] as string,axiosConfig    );
 }
 
 export function useProxyBundleRequestQuery<TSelectData = void, TError = unknown>(dto: ProxyBundleRequestBundleProxyControllerQueryParameters, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
@@ -68,7 +68,7 @@ export function useProxyBundleRequestQuery<TSelectData = void, TError = unknown>
  * Proxy bundle requests to plugin server
  * @param path Full bundle path with version
  */
-export function useProxyBundleRequestQuery<TSelectData = void, TError = unknown>(path: any, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useProxyBundleRequestQuery<TSelectData = void, TError = unknown>(path: string, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 export function useProxyBundleRequestQuery<TSelectData = void, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
   let options: UseQueryOptions<void, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined = undefined;
@@ -98,7 +98,7 @@ export function useProxyBundleRequestQuery<TSelectData = void, TError = unknown>
  * Proxy bundle requests to plugin server
  * @param path Full bundle path with version
  */
-export function setProxyBundleRequestData(queryClient: QueryClient, updater: (data: void | undefined) => void, path: any) {
+export function setProxyBundleRequestData(queryClient: QueryClient, updater: (data: void | undefined) => void, path: string) {
   queryClient.setQueryData(proxyBundleRequestQueryKey(path),
     updater
   );

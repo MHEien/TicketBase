@@ -51,7 +51,7 @@ export type FindBySlugDepartmentsControllerQueryParameters = {
 }
 
 export function createUrl(): string {
-  let url_ = getBaseUrl() + "/departments";
+  let url_ = getBaseUrl() + "/api/departments";
   url_ = url_.replace(/[?&]$/, "");
   return url_;
 }
@@ -81,7 +81,7 @@ export function useCreateMutation<TContext>(options?: Omit<UseMutationOptions<Ty
 }
   
 export function findAllUrl(organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments?";
+  let url_ = getBaseUrl() + "/api/departments?";
   if (organizationId === undefined || organizationId === null)
     throw new Error("The parameter 'organizationId' must be defined and cannot be null.");
   else
@@ -172,7 +172,7 @@ export function setFindAllDataByQueryId(queryClient: QueryClient, queryKey: Quer
 }
     
 export function getHierarchyUrl(organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments/hierarchy?";
+  let url_ = getBaseUrl() + "/api/departments/hierarchy?";
   if (organizationId === undefined || organizationId === null)
     throw new Error("The parameter 'organizationId' must be defined and cannot be null.");
   else
@@ -263,7 +263,7 @@ export function setGetHierarchyDataByQueryId(queryClient: QueryClient, queryKey:
 }
     
 export function findAllWithUsersUrl(organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments/with-users?";
+  let url_ = getBaseUrl() + "/api/departments/with-users?";
   if (organizationId === undefined || organizationId === null)
     throw new Error("The parameter 'organizationId' must be defined and cannot be null.");
   else
@@ -354,7 +354,7 @@ export function setFindAllWithUsersDataByQueryId(queryClient: QueryClient, query
 }
     
 export function findOneUrl(id: string, organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments/{id}?";
+  let url_ = getBaseUrl() + "/api/departments/{id}?";
 if (id === undefined || id === null)
   throw new Error("The parameter 'id' must be defined.");
 url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -451,7 +451,7 @@ export function setFindOneDataByQueryId(queryClient: QueryClient, queryKey: Quer
 }
     
 export function updateUrl(id: string, organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments/{id}?";
+  let url_ = getBaseUrl() + "/api/departments/{id}?";
 if (id === undefined || id === null)
   throw new Error("The parameter 'id' must be defined.");
 url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -511,7 +511,7 @@ return useMutation({
 }
   
 export function removeUrl(id: string, organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments/{id}?";
+  let url_ = getBaseUrl() + "/api/departments/{id}?";
 if (id === undefined || id === null)
   throw new Error("The parameter 'id' must be defined.");
 url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -569,7 +569,7 @@ return useMutation({
 }
   
 export function findBySlugUrl(slug: string, organizationId: string): string {
-  let url_ = getBaseUrl() + "/departments/by-slug/{slug}?";
+  let url_ = getBaseUrl() + "/api/departments/by-slug/{slug}?";
 if (slug === undefined || slug === null)
   throw new Error("The parameter 'slug' must be defined.");
 url_ = url_.replace("{slug}", encodeURIComponent("" + slug));
