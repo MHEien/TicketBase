@@ -14,6 +14,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@acme/tailwind-config": "*",
     "@turbo/gen": "^2.5.0",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
