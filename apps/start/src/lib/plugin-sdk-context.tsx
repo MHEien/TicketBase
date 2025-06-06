@@ -5,6 +5,7 @@ import { useSession } from "./auth";
 import { useRouter } from '@tanstack/react-router'
 import { useToast } from "@repo/ui/use-toast";
 import "@/types/plugins"; // Import global types
+import { PluginRegistry } from "@/types/plugins";
 
 // Import your UI components that plugins can use
 import { Button } from "@repo/ui/button";
@@ -56,7 +57,6 @@ export interface PluginSDK {
   navigation: {
     push: (url: string) => void;
     replace: (url: string) => void;
-    back: () => void;
   };
 
   // UI components that plugins can use
@@ -253,7 +253,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
         useRef: React.useRef,
       },
     }),
-    [session, status, router, toast],
+    [session, router, toast],
   );
 
   // Make SDK and React globally available for plugins
@@ -403,11 +403,7 @@ declare global {
     PluginSDK: PluginSDK;
     ReactDOM?: any;
     React: typeof React;
-    __PLUGIN_REGISTRY: {
-      registered: Record<string, any>;
-      register: (pluginId: string, exports: any) => any;
-      get: (pluginId: string) => any;
-    };
+    __PLUGIN_REGISTRY: PluginRegistry;
   }
 }
 

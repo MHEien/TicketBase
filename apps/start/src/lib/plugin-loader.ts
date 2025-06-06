@@ -26,8 +26,7 @@ declare global {
     BetterAuthReact: typeof BetterAuthReact;
     devPlugin1: any;
     __PLUGIN_REGISTRY: {
-      registered: Record<string, any>;
-      register: (pluginId: string, exports: any) => any;
+      register: (pluginId: string, exports: any) => void;
       get: (pluginId: string) => any;
     };
   }
@@ -111,12 +110,12 @@ export async function loadPluginModule(plugin: InstalledPlugin): Promise<any> {
     }
 
     // Check if the plugin is registered in the global registry
-    if (window.__PLUGIN_REGISTRY?.registered[plugin.id]) {
+    const registeredPlugin = window.__PLUGIN_REGISTRY?.get(plugin.id);
+    if (registeredPlugin) {
       console.log(`Plugin ${plugin.id} found in registry`);
       loadedModules[plugin.id] = {
-        default: window.__PLUGIN_REGISTRY.registered[plugin.id],
-        extensionPoints:
-          window.__PLUGIN_REGISTRY.registered[plugin.id].extensionPoints,
+        default: registeredPlugin,
+        extensionPoints: registeredPlugin.extensionPoints,
       };
       return loadedModules[plugin.id];
     }

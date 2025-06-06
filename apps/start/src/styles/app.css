@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,6 +12,7 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
+    --border-border: 240 5.9% 90%;
     --primary: 262 83% 58%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 4.8% 95.9%;
@@ -43,6 +43,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
+    --border-border: 240 3.7% 15.9%;
     --primary: 262 83% 58%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 3.7% 15.9%;
@@ -56,14 +57,5 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 262 83% 58%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }

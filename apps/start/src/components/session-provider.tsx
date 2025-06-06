@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth";
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -15,9 +15,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session]);
 
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
 
   return <>{children}</>;
 }

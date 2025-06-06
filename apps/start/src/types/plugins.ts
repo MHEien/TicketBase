@@ -5,8 +5,7 @@ import { PluginSDK } from "@/lib/plugin-sdk-context";
 import React from "react";
 
 export interface PluginRegistry {
-  registered: Record<string, any>;
-  register: (pluginId: string, exports: any) => any;
+  register: (pluginId: string, exports: any) => void;
   get: (pluginId: string) => any;
 }
 

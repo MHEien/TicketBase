@@ -8,6 +8,12 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  optimizeDeps: {
+    include: ['react-query-swagger'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
+  },
   plugins: [
     tailwindcss(),
     // Enables Vite to resolve imports using path aliases.

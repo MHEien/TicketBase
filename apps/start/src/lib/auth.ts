@@ -31,15 +31,24 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   basePath: "/api/auth",
   
-  // Trust your frontend and API domains
+  // Explicitly configure memory adapter
+  adapter: {
+    type: "memory",
+    // Acknowledge that we're intentionally using memory adapter
+    // since our NestJS backend handles actual data persistence
+    options: {
+      acknowledged: true
+    }
+  },
+  
+  // Trust only specific origins in production
   trustedOrigins: [
-    "http://localhost:3000",
-    "http://localhost:4000",
     process.env.NEXT_PUBLIC_API_URL,
     process.env.BETTER_AUTH_URL,
+    // Add your production domains here
   ].filter(Boolean) as string[],
 
-  // Use environment secret or generate one
+  // Use strong secrets in production
   secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET,
 
   // Since you're using your own NestJS backend, we'll use in-memory storage
@@ -57,14 +66,23 @@ export const auth = betterAuth({
     },
   },
 
-  // Session configuration to work with your NestJS backend
+  // Production-ready session configuration
   session: {
-    expiresIn: 900, // 15 minutes - matches your access token expiry
-    updateAge: 300, // 5 minutes - more frequent updates for better UX
+    expiresIn: 900, // 15 minutes
+    updateAge: 300, // 5 minutes
     cookieCache: {
       enabled: true,
-      maxAge: 300, // 5 minutes
+      maxAge: 300,
     },
+    cookie: {
+      name: "__session",
+      // Use secure cookies in production
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN,
+      httpOnly: true,
+    }
   },
 
   // Configure email/password to use your NestJS backend
@@ -114,7 +132,7 @@ export const auth = betterAuth({
     },
   },
 
-  // Rate limiting
+  // Rate limiting for production
   rateLimit: {
     enabled: process.env.NODE_ENV === "production",
     window: 60, // 1 minute
@@ -140,13 +158,12 @@ export const auth = betterAuth({
     },
   },
 
-  // Error handling
+  // Production error handling
   onAPIError: {
-    throw: false, // Don't throw errors, handle them gracefully
+    throw: false,
     onError: (error, ctx) => {
-      console.error("Better Auth error:", error);
-      
-      // Log detailed error information for debugging
+      // Log errors to your monitoring service
+      console.error("Auth error:", error);
       if (process.env.NODE_ENV !== "production") {
         console.error("Error context:", ctx);
       }
