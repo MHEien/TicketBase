@@ -1,0 +1,14 @@
+{
+  "name": "Stripe Payments",
+  "description": "Stripe Payments",
+  "category": "payments",
+  "version": "1.0.0",
+  "bundleUrl": "/plugins/87d749583b274a14b8fe248df305b4f7.js",
+  "repositoryUrl": "",
+  "authorName": "Markus Heien",
+  "authorEmail": "markushei@hotmail.no",
+  "termsAgreed": true,
+  "id": "1746971831658",
+  "submittedAt": "2025-05-11T13:57:11.659Z",
+  "status": "pending"
+}

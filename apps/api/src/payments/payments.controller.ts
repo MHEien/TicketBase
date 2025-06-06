@@ -22,6 +22,10 @@ import { Transaction } from './entities/transaction.entity';
 import { CreatePaymentIntentDto } from './dto/create-payment-intent.dto';
 import { ConfirmPaymentDto } from './dto/confirm-payment.dto';
 import { ProcessRefundDto } from './dto/process-refund.dto';
+import {
+  PaymentIntentResponseDto,
+  PaymentConfirmationResponseDto,
+} from './dto/payment-intent-response.dto';
 
 @ApiTags('payments')
 @Controller('api/payments')
@@ -33,23 +37,12 @@ export class PaymentsController {
   @ApiResponse({
     status: 201,
     description: 'Returns client secret and payment provider information',
-    schema: {
-      type: 'object',
-      properties: {
-        clientSecret: { type: 'string' },
-        paymentIntentId: { type: 'string' },
-        providerName: { type: 'string' },
-      },
-    },
+    type: PaymentIntentResponseDto,
   })
   @ApiBody({ type: CreatePaymentIntentDto })
   async createPaymentIntent(
     @Body() createPaymentIntentDto: CreatePaymentIntentDto,
-  ): Promise<{
-    clientSecret: string;
-    paymentIntentId: string;
-    providerName: string;
-  }> {
+  ): Promise<PaymentIntentResponseDto> {
     return this.paymentsService.createPaymentIntent(
       createPaymentIntentDto.organizationId,
       createPaymentIntentDto.amount,
@@ -63,23 +56,16 @@ export class PaymentsController {
   @ApiResponse({
     status: 200,
     description: 'Returns the status of the payment intent',
-    schema: {
-      type: 'object',
-      properties: {
-        status: { type: 'string' },
-        paymentData: { type: 'object' },
-      },
-    },
+    type: PaymentConfirmationResponseDto,
   })
   @ApiBody({ type: ConfirmPaymentDto })
   async confirmPayment(
     @Body() confirmPaymentDto: ConfirmPaymentDto,
-  ): Promise<{ status: string; paymentData: any }> {
-    const result = await this.paymentsService.confirmPayment(
+  ): Promise<PaymentConfirmationResponseDto> {
+    return this.paymentsService.confirmPayment(
       confirmPaymentDto.organizationId,
       confirmPaymentDto.paymentIntentId,
     );
-    return result;
   }
 
   @Post('refund')

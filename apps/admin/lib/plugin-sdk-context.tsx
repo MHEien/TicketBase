@@ -202,63 +202,66 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   // Plugin SDK object
-  const pluginSDK: PluginSDK = React.useMemo(() => ({
-    auth: {
-      session,
-      token: session?.accessToken,
-      user: session?.user,
-      isAuthenticated: status === "authenticated",
-    },
+  const pluginSDK: PluginSDK = React.useMemo(
+    () => ({
+      auth: {
+        session,
+        token: session?.accessToken,
+        user: session?.user,
+        isAuthenticated: status === "authenticated",
+      },
 
-    api: createApiClient(),
+      api: createApiClient(),
 
-    env: {
-      API_URL: process.env.NEXT_PUBLIC_API_URL,
-      APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-      NODE_ENV: process.env.NODE_ENV,
-    },
+      env: {
+        API_URL: process.env.NEXT_PUBLIC_API_URL,
+        APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+        NODE_ENV: process.env.NODE_ENV,
+      },
 
-    navigation: {
-      push: router.push,
-      replace: router.replace,
-      back: router.back,
-    },
+      navigation: {
+        push: router.push,
+        replace: router.replace,
+        back: router.back,
+      },
 
-    components: {
-      Button,
-      Input,
-      Card,
-      CardContent,
-      CardDescription,
-      CardHeader,
-      CardTitle,
-      Label,
-      Switch,
-      Separator,
-      Alert,
-      AlertDescription,
-      AlertTitle,
-      Badge,
-    },
+      components: {
+        Button,
+        Input,
+        Card,
+        CardContent,
+        CardDescription,
+        CardHeader,
+        CardTitle,
+        Label,
+        Switch,
+        Separator,
+        Alert,
+        AlertDescription,
+        AlertTitle,
+        Badge,
+      },
 
-    utils,
+      utils,
 
-    hooks: {
-      useState: React.useState,
-      useEffect: React.useEffect,
-      useCallback: React.useCallback,
-      useMemo: React.useMemo,
-      useContext: React.useContext,
-      useReducer: React.useReducer,
-      useRef: React.useRef,
-    },
-  }), [session, status, router, toast]);
+      hooks: {
+        useState: React.useState,
+        useEffect: React.useEffect,
+        useCallback: React.useCallback,
+        useMemo: React.useMemo,
+        useContext: React.useContext,
+        useReducer: React.useReducer,
+        useRef: React.useRef,
+      },
+    }),
+    [session, status, router, toast],
+  );
 
   // Make SDK and React globally available for plugins
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       console.log("🔧 Setting up global React and PluginSDK...");
-      
+
       // CRITICAL: Validate React first
       if (!React || !React.useState || !React.useEffect) {
         console.error("❌ React or React hooks not available in provider");
@@ -269,7 +272,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       const ReactWithHooks = {
         // Copy all React properties first
         ...React,
-        
+
         // Explicitly set essential hooks with validation
         useState: React.useState,
         useEffect: React.useEffect,
@@ -278,7 +281,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
         useContext: React.useContext,
         useReducer: React.useReducer,
         useRef: React.useRef,
-        
+
         // Essential React functions
         createElement: React.createElement,
         Fragment: React.Fragment,
@@ -287,9 +290,21 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       };
 
       // Validate each hook individually
-      const hooks = ['useState', 'useEffect', 'useCallback', 'useMemo', 'useContext', 'useReducer', 'useRef'];
-      const missingHooks = hooks.filter(hook => typeof ReactWithHooks[hook as keyof typeof ReactWithHooks] !== 'function');
-      
+      const hooks = [
+        "useState",
+        "useEffect",
+        "useCallback",
+        "useMemo",
+        "useContext",
+        "useReducer",
+        "useRef",
+      ];
+      const missingHooks = hooks.filter(
+        (hook) =>
+          typeof ReactWithHooks[hook as keyof typeof ReactWithHooks] !==
+          "function",
+      );
+
       if (missingHooks.length > 0) {
         console.error("❌ Missing React hooks:", missingHooks);
         console.error("Available React properties:", Object.keys(React));
@@ -297,7 +312,13 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       }
 
       console.log("✅ All React hooks validated successfully");
-      console.log("React hook types:", hooks.map(hook => `${hook}: ${typeof ReactWithHooks[hook as keyof typeof ReactWithHooks]}`));
+      console.log(
+        "React hook types:",
+        hooks.map(
+          (hook) =>
+            `${hook}: ${typeof ReactWithHooks[hook as keyof typeof ReactWithHooks]}`,
+        ),
+      );
 
       // Make React available globally with comprehensive validation
       (window as any).React = ReactWithHooks;
@@ -306,8 +327,8 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       // Final validation that global React is working
       try {
         const testState = (window as any).React.useState;
-        if (typeof testState !== 'function') {
-          throw new Error('Global React.useState is not a function');
+        if (typeof testState !== "function") {
+          throw new Error("Global React.useState is not a function");
         }
         console.log("✅ Global React validation passed");
       } catch (error) {
@@ -317,9 +338,14 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       // Validate that React hooks are properly available globally
       const globalReact = (window as any).React;
       if (!globalReact || !globalReact.useState || !globalReact.useEffect) {
-        console.error("❌ React hooks not properly available in global scope after assignment");
+        console.error(
+          "❌ React hooks not properly available in global scope after assignment",
+        );
         console.error("Global React:", globalReact);
-        console.error("Global React keys:", globalReact ? Object.keys(globalReact) : 'React is null');
+        console.error(
+          "Global React keys:",
+          globalReact ? Object.keys(globalReact) : "React is null",
+        );
       } else {
         console.log("✅ React and hooks are properly available globally");
         console.log("Global React hook validation:", {
@@ -341,7 +367,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
           },
           get: (pluginId: string) => {
             return (window as any).__PLUGIN_REGISTRY.registered[pluginId];
-          }
+          },
         };
         console.log("✅ Plugin registry created");
       }

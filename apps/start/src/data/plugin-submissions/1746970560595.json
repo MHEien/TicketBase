@@ -1,0 +1,14 @@
+{
+  "name": "Stripe Payments",
+  "description": "First iteration of the Stripe Payments plugin",
+  "category": "payment",
+  "version": "1.0.0",
+  "bundleUrl": "/plugins/f2a689b2-7cf7-4bd1-a4e6-f14493cc5361.js",
+  "repositoryUrl": "",
+  "authorName": "Markus Heien",
+  "authorEmail": "markus@hdsoftware.no",
+  "termsAgreed": true,
+  "id": "1746970560595",
+  "submittedAt": "2025-05-11T13:36:00.595Z",
+  "status": "pending"
+}

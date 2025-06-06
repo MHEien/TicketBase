@@ -21,14 +21,22 @@ import {
   PluginInstallationResponse,
   PluginHealthStatus,
 } from './types/plugin.types';
+import { PluginsService } from './plugins.service';
+
+interface ProxyResponse {
+  status: number;
+  data: any;
+  headers: Record<string, string | string[]>;
+}
 
 @Injectable()
 export class PluginsProxyService {
   private readonly logger = new Logger(PluginsProxyService.name);
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly pluginsService: PluginsService,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
 
   private getPluginServerUrl(): string {
@@ -704,6 +712,102 @@ export class PluginsProxyService {
           `Create plugin metadata ${createPluginDto.id}`,
         );
       }
+      throw error;
+    }
+  }
+
+  async proxyRequest(
+    pluginId: string,
+    path: string,
+    options: {
+      method: string;
+      headers: Record<string, string>;
+      body?: any;
+    },
+  ): Promise<ProxyResponse> {
+    // Find the plugin
+    const plugin = await this.pluginsService.findOne(pluginId);
+    if (!plugin) {
+      throw new NotFoundException(`Plugin with ID ${pluginId} not found`);
+    }
+
+    // Check if plugin is active
+    if (plugin.status !== PluginStatus.ACTIVE) {
+      throw new BadRequestException(`Plugin with ID ${pluginId} is not active`);
+    }
+
+    // Get plugin server URL from environment
+    const pluginServerUrl = this.configService.get<string>('plugins.serverUrl');
+    if (!pluginServerUrl) {
+      throw new InternalServerErrorException(
+        'Plugin server URL not configured',
+      );
+    }
+
+    // Construct full URL to forward to
+    const targetUrl = `${pluginServerUrl}/${plugin.category}/${plugin.name}/${path}`;
+
+    this.logger.debug(`Proxying request to: ${targetUrl}`);
+
+    // Remove host header to avoid conflicts
+    const forwardHeaders = { ...options.headers };
+    delete forwardHeaders.host;
+
+    // Add plugin-specific headers
+    forwardHeaders['x-plugin-id'] = pluginId;
+    forwardHeaders['x-plugin-version'] = plugin.version;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService
+          .request({
+            method: options.method,
+            url: targetUrl,
+            headers: forwardHeaders,
+            data: options.body,
+            responseType: 'arraybuffer', // To support binary responses
+            maxRedirects: 5,
+          })
+          .pipe(
+            catchError((error) => {
+              if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                this.logger.error(
+                  `Plugin server responded with error: ${error.response.status}`,
+                );
+                throw new InternalServerErrorException(
+                  `Plugin request failed with status ${error.response.status}`,
+                );
+              } else if (error.request) {
+                // The request was made but no response was received
+                this.logger.error('No response received from plugin server');
+                throw new InternalServerErrorException(
+                  'No response from plugin server',
+                );
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                this.logger.error(
+                  `Error making request to plugin server: ${error.message}`,
+                );
+                throw new InternalServerErrorException(
+                  'Error proxying request to plugin server',
+                );
+              }
+            }),
+          ),
+      );
+
+      return {
+        status: response.status,
+        data: response.data,
+        headers: response.headers as Record<string, string | string[]>,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error proxying request: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }

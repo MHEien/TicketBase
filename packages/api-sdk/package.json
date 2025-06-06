@@ -1,0 +1,25 @@
+{
+  "name": "@ticketsmonorepo/api-sdk",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "generate": "react-query-swagger /tanstack /input:../../openapi.json /output:./src/generated/api-client.ts /template:Axios /serviceHost:. /use-recommended-configuration"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "react-query-swagger": "^15.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  }
+} 

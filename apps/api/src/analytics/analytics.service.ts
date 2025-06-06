@@ -8,6 +8,7 @@ import {
   SalesAnalytics,
   DateRangeType,
 } from './entities/sales-analytics.entity';
+import { AudienceAnalyticsDto } from './dto/audience-analytics.dto';
 
 @Injectable()
 export class AnalyticsService {
@@ -379,7 +380,7 @@ export class AnalyticsService {
     ];
   }
 
-  async getAudienceData(organizationId: string) {
+  async getAudienceData(organizationId: string): Promise<AudienceAnalyticsDto> {
     // Get event analytics data for audience insights
     const eventData = await this.eventAnalyticsRepository.find({
       where: {
@@ -388,36 +389,98 @@ export class AnalyticsService {
       },
     });
 
-    // Aggregate referrer data
-    const referrerTotals: Record<string, number> = {};
+    // Calculate total visitors
+    const totalVisitors = eventData.reduce(
+      (sum, event) => sum + event.uniqueViews,
+      0,
+    );
+
+    // Example age distribution - in a real app, this would come from user profiles
+    const ageDistribution = {
+      '18-24': 25,
+      '25-34': 40,
+      '35-44': 20,
+      '45-54': 10,
+      '55+': 5,
+    };
+
+    // Example gender distribution - in a real app, this would come from user profiles
+    const genderDistribution = {
+      male: 48,
+      female: 50,
+      other: 2,
+    };
+
+    // Calculate geographic distribution from referrers data
+    const geoData: Record<string, number> = {};
     eventData.forEach((event) => {
       Object.entries(event.referrers || {}).forEach(([source, count]) => {
-        referrerTotals[source] = (referrerTotals[source] || 0) + count;
+        if (source.startsWith('geo_')) {
+          const country = source.replace('geo_', '');
+          geoData[country] = (geoData[country] || 0) + count;
+        }
       });
     });
 
-    // Convert to percentage-based data
-    const totalReferrers = Object.values(referrerTotals).reduce(
+    // Convert to percentages
+    const totalGeo = Object.values(geoData).reduce(
       (sum, count) => sum + count,
       0,
     );
-    const referrerPercentages = Object.entries(referrerTotals).map(
-      ([source, count]) => ({
-        name: source,
-        value:
-          totalReferrers > 0 ? Math.round((count / totalReferrers) * 100) : 0,
-      }),
+    const geographicDistribution = Object.entries(geoData).reduce(
+      (acc, [country, count]) => {
+        acc[country] = totalGeo > 0 ? (count / totalGeo) * 100 : 0;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    // Calculate device distribution from referrers data
+    const deviceData: Record<string, number> = {};
+    eventData.forEach((event) => {
+      Object.entries(event.referrers || {}).forEach(([source, count]) => {
+        if (source.startsWith('device_')) {
+          const device = source.replace('device_', '');
+          deviceData[device] = (deviceData[device] || 0) + count;
+        }
+      });
+    });
+
+    // Convert to percentages
+    const totalDevices = Object.values(deviceData).reduce(
+      (sum, count) => sum + count,
+      0,
+    );
+    const deviceDistribution = Object.entries(deviceData).reduce(
+      (acc, [device, count]) => {
+        acc[device] = totalDevices > 0 ? (count / totalDevices) * 100 : 0;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    // Calculate engagement metrics
+    const bounces = eventData.reduce(
+      (sum, event) => sum + (event.totalViews === 1 ? 1 : 0),
+      0,
+    );
+    const returningVisits = eventData.reduce(
+      (sum, event) => sum + (event.uniqueViews < event.totalViews ? 1 : 0),
+      0,
     );
 
     return {
-      ageGroups: [
-        { name: '18-24', value: 20 }, // TODO: Implement with actual user demographics
-        { name: '25-34', value: 35 },
-        { name: '35-44', value: 25 },
-        { name: '45-54', value: 15 },
-        { name: '55+', value: 5 },
-      ],
-      interests: referrerPercentages.slice(0, 4), // Top 4 traffic sources as interests
+      totalVisitors,
+      ageDistribution,
+      genderDistribution,
+      geographicDistribution,
+      deviceDistribution,
+      engagement: {
+        averageSessionDuration: 300, // This would need to be tracked separately
+        bounceRate: totalVisitors > 0 ? (bounces / totalVisitors) * 100 : 0,
+        returningVisitors:
+          totalVisitors > 0 ? (returningVisits / totalVisitors) * 100 : 0,
+      },
     };
   }
 

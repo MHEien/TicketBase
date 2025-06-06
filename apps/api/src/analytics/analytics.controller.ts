@@ -10,6 +10,7 @@ import { AnalyticsService } from './analytics.service';
 import { EventAnalytics } from './entities/event-analytics.entity';
 import { SalesAnalytics } from './entities/sales-analytics.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AudienceAnalyticsDto } from './dto/audience-analytics.dto';
 
 interface RequestWithUser extends Request {
   user: {
@@ -134,8 +135,11 @@ export class AnalyticsController {
   @ApiResponse({
     status: 200,
     description: 'Audience data retrieved successfully',
+    type: AudienceAnalyticsDto,
   })
-  async getAudienceData(@Req() req: RequestWithUser) {
+  async getAudienceData(
+    @Req() req: RequestWithUser,
+  ): Promise<AudienceAnalyticsDto> {
     return this.analyticsService.getAudienceData(req.user.organizationId);
   }
 
@@ -173,31 +177,30 @@ export class AnalyticsController {
   }
 
   @Get('sales')
-  @ApiOperation({ summary: 'Get sales analytics' })
+  @ApiOperation({ summary: 'Get sales analytics data' })
   @ApiResponse({
     status: 200,
     description: 'Sales analytics retrieved successfully',
     type: [SalesAnalytics],
   })
   @ApiQuery({
-    name: 'start',
-    required: true,
-    type: String,
-    description: 'Start date (ISO string)',
+    name: 'startDate',
+    required: false,
+    type: Date,
+    description: 'Start date for analytics period',
   })
   @ApiQuery({
-    name: 'end',
-    required: true,
-    type: String,
-    description: 'End date (ISO string)',
+    name: 'endDate',
+    required: false,
+    type: Date,
+    description: 'End date for analytics period',
   })
-  getSalesAnalytics(
-    @Query('start') startDate: string,
-    @Query('end') endDate: string,
+  async getSalesAnalytics(
+    @Req() req: RequestWithUser,
+    @Query('startDate') startDate?: Date,
+    @Query('endDate') endDate?: Date,
   ): Promise<SalesAnalytics[]> {
-    const periodStart = new Date(startDate);
-    const periodEnd = new Date(endDate);
-    return this.analyticsService.getSalesAnalytics(periodStart, periodEnd);
+    return this.analyticsService.getSalesAnalytics(startDate, endDate);
   }
 
   // Add more endpoints as needed for your application

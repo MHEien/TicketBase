@@ -4,44 +4,41 @@ import {
   Param,
   Req,
   Res,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
-  UseGuards,
   Logger,
+  UseGuards,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiParam,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { PluginsProxyService } from './plugins-proxy.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PluginsService } from './plugins.service';
-import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom } from 'rxjs';
-import { ConfigService } from '@nestjs/config';
-import { PluginStatus } from './types/plugin.types';
+import { PluginProxyResponseDto } from './dto/plugin-proxy-response.dto';
 
 @ApiTags('plugin-proxy')
 @Controller('api/plugins/proxy')
 export class PluginProxyController {
   private readonly logger = new Logger(PluginProxyController.name);
 
-  constructor(
-    private readonly pluginsService: PluginsService,
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly pluginsProxyService: PluginsProxyService) {}
 
   @All(':pluginId/*')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Proxy requests to the plugin server' })
+  @ApiOperation({ summary: 'Proxy request to plugin server' })
+  @ApiResponse({
+    status: 200,
+    description: 'Request successfully proxied to plugin',
+    type: PluginProxyResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Plugin not found' })
+  @ApiResponse({ status: 400, description: 'Invalid request' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiParam({
     name: 'pluginId',
-    description: 'Plugin ID to route the request to',
+    required: true,
+    type: String,
+    description: 'ID of the plugin to proxy request to',
   })
   async proxyRequest(
     @Param('pluginId') pluginId: string,
@@ -49,105 +46,35 @@ export class PluginProxyController {
     @Res() res: Response,
   ) {
     try {
-      // Find the plugin
-      const plugin = await this.pluginsService.findOne(pluginId);
-      if (!plugin) {
-        throw new NotFoundException(`Plugin with ID ${pluginId} not found`);
-      }
+      const { path, method, headers, body } = req;
+      const pluginPath = path.split(`/api/plugins/proxy/${pluginId}/`)[1];
 
-      // Check if plugin is active
-      if (plugin.status !== PluginStatus.ACTIVE) {
-        throw new BadRequestException(
-          `Plugin with ID ${pluginId} is not active`,
-        );
-      }
-
-      // Get the original URL and extract the path after the pluginId
-      const originalUrl = req.originalUrl;
-      const pathMatch = originalUrl.match(
-        new RegExp(`/api/plugins/proxy/${pluginId}(.*)`),
+      this.logger.debug(
+        `Proxying ${method} request to plugin ${pluginId}: ${pluginPath}`,
       );
 
-      if (!pathMatch || !pathMatch[1]) {
-        throw new BadRequestException('Invalid plugin proxy path');
-      }
+      // Convert headers to Record<string, string>
+      const stringHeaders: Record<string, string> = {};
+      Object.entries(headers).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          stringHeaders[key] = value.join(', ');
+        } else if (value) {
+          stringHeaders[key] = value;
+        }
+      });
 
-      // Extract the path to forward
-      const pathToForward = pathMatch[1];
-
-      // Get plugin server URL from environment
-      const pluginServerUrl =
-        this.configService.get<string>('plugins.serverUrl');
-      if (!pluginServerUrl) {
-        throw new InternalServerErrorException(
-          'Plugin server URL not configured',
-        );
-      }
-
-      // Construct full URL to forward to
-      const targetUrl = `${pluginServerUrl}/${plugin.category}/${plugin.name}${pathToForward}`;
-
-      this.logger.log(`Proxying request to: ${targetUrl}`);
-
-      // Forward the request with all headers, query parameters, and body
-      const { method, headers, query, body } = req;
-
-      // Remove host header to avoid conflicts
-      const forwardHeaders = { ...headers };
-      delete forwardHeaders.host;
-
-      // Add plugin-specific headers
-      forwardHeaders['x-plugin-id'] = pluginId;
-      forwardHeaders['x-plugin-version'] = plugin.version;
-
-      // Forward organization ID from user if available
-      if (req.user && req.user['organizationId']) {
-        forwardHeaders['x-organization-id'] = req.user['organizationId'];
-      }
-
-      const response = await firstValueFrom(
-        this.httpService
-          .request({
-            method,
-            url: targetUrl,
-            headers: forwardHeaders,
-            params: query,
-            data: body,
-            responseType: 'arraybuffer', // To support binary responses
-            maxRedirects: 5,
-          })
-          .pipe(
-            catchError((error) => {
-              if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                this.logger.error(
-                  `Plugin server responded with error: ${error.response.status}`,
-                );
-                throw new InternalServerErrorException(
-                  `Plugin request failed with status ${error.response.status}`,
-                );
-              } else if (error.request) {
-                // The request was made but no response was received
-                this.logger.error('No response received from plugin server');
-                throw new InternalServerErrorException(
-                  'No response from plugin server',
-                );
-              } else {
-                // Something happened in setting up the request that triggered an Error
-                this.logger.error(
-                  `Error making request to plugin server: ${error.message}`,
-                );
-                throw new InternalServerErrorException(
-                  'Error proxying request to plugin server',
-                );
-              }
-            }),
-          ),
+      // Forward the request to the plugin server
+      const response = await this.pluginsProxyService.proxyRequest(
+        pluginId,
+        pluginPath,
+        {
+          method,
+          headers: stringHeaders,
+          body,
+        },
       );
 
-      // Forward the response back to the client
-      const responseHeaders = { ...response.headers };
+      const responseHeaders = response.headers || {};
 
       // Set response headers
       Object.keys(responseHeaders).forEach((key) => {
