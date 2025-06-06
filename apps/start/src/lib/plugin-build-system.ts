@@ -223,8 +223,8 @@ export class PluginBuildService {
         },
         devDependencies: {
           typescript: "^5.0.0",
-          "@types/react": "^18.2.0",
-          "@types/react-dom": "^18.2.0",
+          "@types/react": "^18.3.23",
+          "@types/react-dom": "^18.3.23",
         },
         peerDependencies: {
           react: ">=18.0.0",
@@ -247,10 +247,10 @@ export class PluginBuildService {
         existingPackageJson.devDependencies.typescript = "^5.0.0";
       }
       if (!existingPackageJson.devDependencies["@types/react"]) {
-        existingPackageJson.devDependencies["@types/react"] = "^18.2.0";
+        existingPackageJson.devDependencies["@types/react"] = "^18.3.23";
       }
       if (!existingPackageJson.devDependencies["@types/react-dom"]) {
-        existingPackageJson.devDependencies["@types/react-dom"] = "^18.2.0";
+        existingPackageJson.devDependencies["@types/react-dom"] = "^18.3.23";
       }
 
       await fs.writeFile(

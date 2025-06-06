@@ -7,9 +7,9 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { AuthProvider } from "@ticketsmonorepo/api-sdk"
+import { QueryProvider } from "@/components/query-provider";
 
 import appCss from "@/styles/app.css?url";
-import { QueryClientProvider } from "@tanstack/react-query";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -42,10 +42,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <AuthProvider>
-          <PluginSDKProvider> 
-            {children}
-            <Scripts />
-          </PluginSDKProvider>
+          <QueryProvider>
+            <PluginSDKProvider> 
+              {children}
+              <Scripts />
+            </PluginSDKProvider>
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
