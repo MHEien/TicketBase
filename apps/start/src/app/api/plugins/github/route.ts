@@ -28,11 +28,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const pluginId = repoMatch[1].toLowerCase().replace(/[^a-z0-9-]/g, "-");
+    const pluginId = repoMatch[1]?.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
     // Setup GitHub integration
     const result = await uploadAPI.setupGitHubIntegration(
-      pluginId,
+      pluginId!,
       repository,
       {
         branch: branch || "main",

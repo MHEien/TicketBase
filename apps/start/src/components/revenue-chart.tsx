@@ -12,7 +12,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@repo/ui/chart";
 
 // Sample data for the chart
 const data = [

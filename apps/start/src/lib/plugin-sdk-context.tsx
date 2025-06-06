@@ -1,26 +1,26 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "./auth";
 import { useRouter } from '@tanstack/react-router'
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@repo/ui/use-toast";
 import "@/types/plugins"; // Import global types
 
 // Import your UI components that plugins can use
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+} from "@repo/ui/card";
+import { Label } from "@repo/ui/label";
+import { Switch } from "@repo/ui/switch";
+import { Separator } from "@repo/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@repo/ui/alert";
+import { Badge } from "@repo/ui/badge";
 
 // Plugin SDK Interface
 export interface PluginSDK {
@@ -103,7 +103,7 @@ const PluginSDKContext = createContext<PluginSDK | null>(null);
 export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = useSession();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -118,8 +118,8 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
         method,
         headers: {
           "Content-Type": "application/json",
-          ...(session?.accessToken && {
-            Authorization: `Bearer ${session.accessToken}`,
+          ...(session?.session.token && {
+            Authorization: `Bearer ${session.session.token}`,
           }),
         },
       };
@@ -206,9 +206,9 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
     () => ({
       auth: {
         session,
-        token: session?.accessToken,
+        token: session?.session.token,
         user: session?.user,
-        isAuthenticated: status === "authenticated",
+        isAuthenticated: !!session?.user,
       },
 
       api: createApiClient(),
@@ -220,9 +220,8 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       },
 
       navigation: {
-        push: router.push,
-        replace: router.replace,
-        back: router.back,
+        push: (url: string) => router.navigate({ to: url }),
+        replace: (url: string) => router.navigate({ to: url, replace: true })
       },
 
       components: {

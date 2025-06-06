@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth";
-import { AuthStatus } from "./ui/auth-status";
+import { getSession } from "@/lib/auth";
+import { AuthStatus } from "./auth-status";
 
 export async function AuthProvider() {
-  const session = await auth();
-  return <AuthStatus user={session?.user} />;
+  const session = await getSession();
+  return <AuthStatus user={session?.data?.user} />;
 }

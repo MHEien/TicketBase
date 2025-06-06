@@ -1,10 +1,10 @@
 "use client";
 
 import PluginUploadInterface from "@/components/plugin-upload";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from '@tanstack/react-router'
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@repo/ui/separator";
 
 
 export const Route = createFileRoute({
@@ -26,7 +26,7 @@ function SubmitPluginPage() {
         </div>
         <Button
           variant="outline"
-          onClick={() => router.push("/settings/plugins")}
+          onClick={() => router.navigate({ to: "/admin/settings/plugins" })}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Plugins

@@ -9,12 +9,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+} from "@repo/ui/card";
+import { Label } from "@repo/ui/label";
+import { Input } from "@repo/ui/input";
+import { Textarea } from "@repo/ui/textarea";
+import { Button } from "@repo/ui/button";
+import { Switch } from "@repo/ui/switch";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventTickets() {

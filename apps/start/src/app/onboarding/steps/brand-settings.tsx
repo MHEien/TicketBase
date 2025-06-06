@@ -5,9 +5,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOnboarding } from "@/lib/onboarding-context";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
+import { Switch } from "@repo/ui/switch";
 import {
   Form,
   FormControl,
@@ -16,14 +16,14 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
+} from "@repo/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui/select";
 
 const currencyOptions = [
   { value: "USD", label: "US Dollar ($)" },

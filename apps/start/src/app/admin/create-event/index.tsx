@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
 import { EventDateTime } from "@/components/event-creation/event-date-time";
 import { EventLocation } from "@/components/event-creation/event-location";
@@ -54,7 +54,7 @@ function CreateEventPage() {
 
     // Reset form and navigate back to dashboard
     resetEventData();
-    router.push("/");
+    router.navigate({ to: "/admin" });
   };
 
   const handleCancel = () => {
@@ -64,9 +64,13 @@ function CreateEventPage() {
       )
     ) {
       resetEventData();
-      router.push("/");
+      router.navigate({ to: "/admin" });
     }
   };
+
+  if (!steps[currentStep]?.component) {
+    return null;
+  }
 
   const CurrentStepComponent = steps[currentStep].component;
 
@@ -79,7 +83,7 @@ function CreateEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/")}
+              onClick={() => router.navigate({ to: "/admin" })}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

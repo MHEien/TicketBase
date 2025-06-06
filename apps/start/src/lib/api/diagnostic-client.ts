@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getSession } from "next-auth/react";
+import { getSession } from "../auth";
 
 /**
  * Special API client for diagnostics that doesn't redirect on auth failures
@@ -18,8 +18,8 @@ diagnosticClient.interceptors.request.use(
     const session = await getSession();
 
     // If we have a session with an access token, add it to the headers
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    if (session?.data?.session.token) {
+      config.headers.Authorization = `Bearer ${session.data.session.token}`;
     }
 
     return config;

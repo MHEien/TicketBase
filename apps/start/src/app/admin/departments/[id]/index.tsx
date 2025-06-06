@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from '@tanstack/react-router'
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth";
 import { Pencil, ArrowLeft, Users, BarChart, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/button";
 import {
   Card,
   CardContent,
@@ -11,11 +11,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/components/ui/use-toast";
+} from "@repo/ui/card";
+import { Separator } from "@repo/ui/separator";
+import { Badge } from "@repo/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { toast } from "@repo/ui/use-toast";
 import { Department } from "@/types/department";
 import { getDepartmentById } from "@/lib/api/departments";  
 
@@ -65,7 +65,7 @@ function DepartmentDetailPage({
     return (
       <div className="container mx-auto py-6">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <Button variant="ghost" size="sm" onClick={() => router.navigate({ to: "/admin/departments" })}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -81,7 +81,7 @@ function DepartmentDetailPage({
     return (
       <div className="container mx-auto py-6">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <Button variant="ghost" size="sm" onClick={() => router.navigate({ to: "/admin/departments" })}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -109,7 +109,7 @@ function DepartmentDetailPage({
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+        <Button variant="ghost" size="sm" onClick={() => router.navigate({ to: "/admin/departments" })}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>

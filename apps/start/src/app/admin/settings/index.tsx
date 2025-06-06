@@ -2,22 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from '@tanstack/react-router'
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
+import { Textarea } from "@repo/ui/textarea";
+import { Switch } from "@repo/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui/select";
 import {
   Form,
   FormControl,
@@ -26,7 +26,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@repo/ui/form";
 import {
   Card,
   CardContent,
@@ -34,8 +34,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { toast } from "@/components/ui/use-toast";
+} from "@repo/ui/card";
+import { toast } from "@repo/ui/use-toast";
 
 
 export const Route = createFileRoute({
@@ -85,7 +85,7 @@ type DomainFormValues = z.infer<typeof domainSchema>;
 
 function SettingsPage() {
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState("organization");
   const [isOrganizationLoading, setIsOrganizationLoading] = useState(false);
   const [isBrandingLoading, setIsBrandingLoading] = useState(false);

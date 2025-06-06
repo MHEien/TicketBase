@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
 import { EventDateTime } from "@/components/event-creation/event-date-time";
 import { EventLocation } from "@/components/event-creation/event-location";
@@ -234,7 +234,9 @@ function CreateEventPage() {
       router.push("/events");
     }
   };
-
+  if (!steps[currentStep]?.component) {
+    return null;
+  }
   const CurrentStepComponent = steps[currentStep].component;
 
   // Show loading state when loading duplicate data

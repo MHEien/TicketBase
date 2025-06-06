@@ -5,10 +5,10 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOnboarding } from "@/lib/onboarding-context";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
+import { Checkbox } from "@repo/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@repo/ui/radio-group";
 import {
   Form,
   FormControl,
@@ -17,8 +17,8 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { Slider } from "@/components/ui/slider";
+} from "@repo/ui/form";
+import { Slider } from "@repo/ui/slider";
 
 const paymentMethodOptions = [
   { id: "credit_card", label: "Credit/Debit Cards" },

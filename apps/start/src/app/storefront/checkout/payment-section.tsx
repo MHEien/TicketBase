@@ -3,21 +3,21 @@
 import { useState, useEffect } from "react";
 import { ExtensionPoint } from "@/components/extension-point";
 import { usePluginSDK } from "@/lib/plugin-sdk-context";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Cart } from "@/examples/stripe-plugin/types/cart";
+} from "@repo/ui/card";
+import { Skeleton } from "@repo/ui/skeleton";
+import { useToast } from "@repo/ui/use-toast";
+import { Alert, AlertDescription } from "@repo/ui/alert";
+
 
 interface PaymentSectionProps {
-  cart: Cart;
+  cart: any;
   onPaymentComplete: (paymentId: string, method: string) => void;
 }
 

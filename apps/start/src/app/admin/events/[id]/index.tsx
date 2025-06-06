@@ -18,8 +18,8 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@repo/ui/badge";
+import { Button } from "@repo/ui/button";
 import {
   Card,
   CardContent,
@@ -27,16 +27,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@repo/ui/dropdown-menu";
+import { Progress } from "@repo/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
 import { useEvent } from "@/hooks/use-events";
 import { type Event } from "@/lib/api/events-api";
 import { useToast } from "@/hooks/use-toast";
@@ -59,7 +59,7 @@ function EventDetailsPage({
   const { event, loading, error, refetch } = useEvent(resolvedParams.id);
 
   const handleEditEvent = () => {
-    router.push(`/events/${resolvedParams.id}/edit`);
+    router.navigate({ to: `/admin/events/${resolvedParams.id}/edit` });
   };
 
   const handleDeleteEvent = async () => {
@@ -77,7 +77,7 @@ function EventDetailsPage({
         title: "Success",
         description: "Event deleted successfully",
       });
-      router.push("/events");
+      router.navigate({ to: "/admin/events" });
     } catch (error) {
       toast({
         title: "Error",
@@ -89,7 +89,7 @@ function EventDetailsPage({
 
   const handleDuplicateEvent = () => {
     // Navigate to create new event with duplicate parameter
-    router.push(`/events/new?duplicate=${resolvedParams.id}`);
+    router.navigate({ to: `/admin/events/new?duplicate=${resolvedParams.id}` });
   };
 
   const handlePublishEvent = async () => {
@@ -168,7 +168,7 @@ function EventDetailsPage({
     return (
       <div className="p-8 text-center">
         <p className="text-destructive">Error loading event details</p>
-        <Button onClick={() => router.push("/events")} className="mt-4">
+        <Button onClick={() => router.navigate({ to: "/admin/events" })} className="mt-4">
           Back to Events
         </Button>
       </div>
@@ -188,7 +188,7 @@ function EventDetailsPage({
       <Button
         variant="outline"
         className="mb-6"
-        onClick={() => router.push("/events")}
+        onClick={() => router.navigate({ to: "/admin/events" })}
       >
         ← Back to Events
       </Button>

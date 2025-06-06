@@ -12,7 +12,7 @@ import {
   Ticket,
   Users,
 } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@repo/ui/dialog";
 import {
   Command,
   CommandEmpty,
@@ -20,7 +20,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@repo/ui/command";
 
 interface CommandMenuProps {
   isOpen: boolean;

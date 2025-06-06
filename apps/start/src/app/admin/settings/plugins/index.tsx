@@ -1,7 +1,7 @@
 "use client";
 
 import { PluginGallery } from "@/components/plugin-gallery";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@repo/ui/separator";
 
 
 export const Route = createFileRoute({

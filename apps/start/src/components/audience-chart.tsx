@@ -101,14 +101,14 @@ export function AudienceChart() {
                       <div className="flex items-center gap-1">
                         <div
                           className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: payload[0].payload.color }}
+                          style={{ backgroundColor: payload[0]?.payload?.color }}
                         />
                         <span className="text-sm font-medium">
-                          {payload[0].name}
+                          {payload[0]?.name}
                         </span>
                       </div>
                       <div className="text-right text-sm font-medium">
-                        {payload[0].value}%
+                        {payload[0]?.value}%
                       </div>
                     </div>
                   </div>

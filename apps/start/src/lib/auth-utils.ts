@@ -1,46 +1,46 @@
-import { auth } from "./auth";
-import { signOut } from "next-auth/react";
+import { getSession } from "./auth";
+import { signOut } from "./auth";
 
 /**
  * Check if a user has a specific permission
  */
 export async function hasPermission(permission: string): Promise<boolean> {
-  const session = await auth();
+  const session = await getSession();
 
-  if (!session?.user?.permissions) {
+  if (!session?.data?.user?.permissions) {
     return false;
   }
 
-  return session.user.permissions.includes(permission);
+  return session.data.user.permissions.includes(permission);
 }
 
 /**
  * Check if a user has a specific role
  */
 export async function hasRole(role: string): Promise<boolean> {
-  const session = await auth();
+  const session = await getSession();
 
-  if (!session?.user?.role) {
+  if (!session?.data?.user?.role) {
     return false;
   }
 
-  return session.user.role === role;
+  return session.data.user.role === role;
 }
 
 /**
  * Get the current user session
  */
 export async function getCurrentUser() {
-  const session = await auth();
-  return session?.user;
+  const session = await getSession();
+  return session?.data?.user;
 }
 
 /**
  * Check if a user is authenticated
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const session = await auth();
-  return !!session?.user;
+  const session = await getSession();
+  return !!session?.data?.user;
 }
 
 /**
@@ -64,7 +64,7 @@ export async function handleTokenRefreshFailure(
   }
 
   // Clear the session
-  await signOut({ redirect: false });
+  await signOut({ query: { redirect: false, callbackUrl: "/login" } });
 
   // Optionally redirect to login page
   if (redirectToLogin) {

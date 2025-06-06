@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -8,18 +8,18 @@ export async function POST(request: Request) {
   console.log("=== ONBOARDING COMPLETION STARTED ===");
 
   try {
-    const session = await auth();
+    const session = await getSession();
 
     console.log("Session data:", {
       hasSession: !!session,
-      hasUser: !!session?.user,
-      hasAccessToken: !!session?.accessToken,
-      userId: session?.user?.id,
+      hasUser: !!session?.data?.user,
+      hasAccessToken: !!session?.data?.session.token,
+      userId: session?.data?.user?.id,
       fullSession: session,
     });
 
     // Ensure the user is authenticated
-    if (!session?.user || !session.accessToken) {
+    if (!session?.data?.user || !session.data?.session.token) {
       console.error("Authentication failed - missing session or token");
       return NextResponse.json(
         { message: "Authentication required" },
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Get the user details - we already have the user ID from the session
-    const userId = session.user.id;
+    const userId = session.data.user.id;
 
     // Update user profile with the onboarding settings using new endpoint
     // This endpoint handles both user and organization settings
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${session.data.session.token}`,
       },
       body: JSON.stringify({
         onboardingCompleted: true,

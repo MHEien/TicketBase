@@ -1,6 +1,14 @@
 import { betterAuth } from "better-auth";
-import { bearer } from "better-auth/plugins";
+import { bearer, customSession } from "better-auth/plugins";
 import { reactStartCookies } from "better-auth/react-start";
+import { customSessionClient } from "better-auth/client/plugins";
+import { createAuthClient } from "better-auth/react"
+import { apiClient } from "./api/api-client";
+
+export const { signIn, signUp, useSession, getSession, signOut } = createAuthClient({
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  plugins: [customSessionClient<typeof auth>()],
+});
 
 // Add interface for registration data
 interface RegistrationData {
@@ -12,6 +20,9 @@ interface RegistrationData {
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+
+
+const options = {}
 
 // Better Auth configuration that integrates with your NestJS backend
 export const auth = betterAuth({
@@ -152,6 +163,20 @@ export const auth = betterAuth({
     }),
     // Next.js cookies plugin
       reactStartCookies(),
+      customSession(async ({ user, session}) => {
+        return {
+          session: {
+            ...session,
+          },
+            user: {
+              ...user,
+              // TODO: get organizationId and role from the backend
+              role: "owner",
+              organizationId: "test",
+              permissions: ["admin"],
+            },
+        }
+      })
   ],
 
   // Database hooks to integrate with your NestJS backend
@@ -418,6 +443,3 @@ export interface NestJSAuthResult {
   user: NestJSUser;
   tokens: NestJSTokens;
 }
-
-// Export the auth instance
-export default auth;

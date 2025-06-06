@@ -12,10 +12,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Separator } from "@repo/ui/separator";
+import { useToast } from "@repo/ui/use-toast";
 
 
 export const Route = createFileRoute({

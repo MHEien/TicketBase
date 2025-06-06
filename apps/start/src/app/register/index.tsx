@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useRouter } from '@tanstack/react-router'
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/ui/card";
 import {
   Form,
   FormControl,
@@ -22,8 +22,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@repo/ui/form";
+import { Alert, AlertDescription } from "@repo/ui/alert";
 
 export const Route = createFileRoute({
   component: RegisterPage,
@@ -85,15 +85,14 @@ function RegisterPage() {
 
       if (response.ok) {
         // On successful registration, sign the user in with NextAuth
-        const result = await signIn("credentials", {
+        const result = await signIn.email({
           email: data.email,
           password: data.password,
-          redirect: false,
         });
 
-        if (result?.ok) {
+        if (!result?.error) {
           // On successful sign-in, redirect to the onboarding flow
-          router.push("/onboarding");
+          router.navigate({ to: "/onboarding" });
         } else {
           setError(
             "Registration successful but sign-in failed. Please try logging in.",

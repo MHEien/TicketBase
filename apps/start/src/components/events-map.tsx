@@ -121,8 +121,8 @@ export function EventsMap() {
                   key={`line-${i}`}
                   x1={`${location.x}%`}
                   y1={`${location.y}%`}
-                  x2={`${nextLocation.x}%`}
-                  y2={`${nextLocation.y}%`}
+                  x2={`${nextLocation?.x}%`}
+                  y2={`${nextLocation?.y}%`}
                   stroke="currentColor"
                   strokeWidth="0.5"
                   strokeDasharray="2 2"

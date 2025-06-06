@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from '@tanstack/react-router'
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth";
 import {
   Pencil,
   Trash2,
@@ -13,8 +13,8 @@ import {
   FolderTree,
   BarChart,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
 import {
   Table,
   TableBody,
@@ -22,14 +22,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@repo/ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +38,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@repo/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,7 +46,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,9 +57,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "@/components/ui/use-toast";
+} from "@repo/ui/alert-dialog";
+import { Badge } from "@repo/ui/badge";
+import { toast } from "@repo/ui/use-toast";
 import { Department } from "@/types/department";
 import { getDepartments, deleteDepartment } from "@/lib/api/departments";
 
@@ -171,7 +171,7 @@ function DepartmentsPage() {
         </div>
         <Button
           variant="outline"
-          onClick={() => router.push("/departments/hierarchy")}
+          onClick={() => router.navigate({ to: "/admin/departments" })}
         >
           <FolderTree className="mr-2 h-4 w-4" /> View Hierarchy
         </Button>

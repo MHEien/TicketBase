@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut } from "@/lib/auth";
 import {
   checkRefreshToken,
   getSessionDiagnostics,
@@ -15,7 +15,7 @@ export const Route = createFileRoute({
 });
 
 function AuthDiagnosticsPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [sessionInfo, setSessionInfo] = useState<any>(null);
   const [tokenStatus, setTokenStatus] = useState<any>(null);
   const [cleanupResult, setCleanupResult] = useState<any>(null);
@@ -159,7 +159,7 @@ function AuthDiagnosticsPage() {
   }
 
   function handleSignOut() {
-    signOut({ redirect: true, callbackUrl: "/login" });
+    signOut({ query: { redirect: true, callbackUrl: "/login" } });
   }
 
   function handleForceSignOut() {
@@ -167,7 +167,7 @@ function AuthDiagnosticsPage() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("debug_refresh_token");
     }
-    signOut({ redirect: true, callbackUrl: "/login" });
+    signOut({ query: { redirect: true, callbackUrl: "/login" } });
   }
 
   function handleResetAuth() {
@@ -204,11 +204,8 @@ function AuthDiagnosticsPage() {
               <strong>Email:</strong> {session.user?.email || "N/A"}
             </p>
             <p>
-              <strong>Role:</strong> {session.user?.role || "N/A"}
-            </p>
-            <p>
               <strong>Has Access Token:</strong>{" "}
-              {session.accessToken ? "Yes" : "No"}
+              {session.session.token ? "Yes" : "No"}
             </p>
             <p>
               <strong>Has Refresh Token:</strong>{" "}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { pluginRegistry } from "@/lib/plugin-registry";
 import { loadPluginComponent } from "@/lib/plugin-loader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card";
 import { Loader2 } from "lucide-react";
 
 interface PluginExtensionsProps {

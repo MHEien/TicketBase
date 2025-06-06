@@ -17,10 +17,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Badge } from "@repo/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventPreview() {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth, getSession } from "@/lib/auth";
 
 // Define a type for the plugin submission
 interface PluginSubmission {
@@ -55,8 +55,8 @@ interface PublishPluginDto {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication first
-    const session = await auth();
-    if (!session?.accessToken) {
+    const session = await getSession();
+    if (!session?.data?.session.token) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 },
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         /\/plugins\/bundles\/([^\/]+)/,
       );
       if (bundlePathMatch) {
-        uniquePluginId = bundlePathMatch[1];
+        uniquePluginId = bundlePathMatch[1]!;
         console.log(
           `Using existing plugin ID from bundle URL: ${uniquePluginId}`,
         );
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
           const extensionPointsContent = extensionPointsMatch[1];
           // Extract extension point names (keys in the object)
           const extensionPointNames =
-            extensionPointsContent.match(/["']([^"']+)["']\s*:/g);
+            extensionPointsContent?.match(/["']([^"']+)["']\s*:/g);
           if (extensionPointNames) {
             pluginMetadata.extensionPoints = extensionPointNames.map((name) =>
               name.replace(/["']/g, "").replace(":", "").trim(),
@@ -191,11 +191,11 @@ export async function POST(request: NextRequest) {
         );
         if (adminComponentsMatch) {
           const adminContent = adminComponentsMatch[1];
-          const settingsMatch = adminContent.match(
+          const settingsMatch = adminContent?.match(
             /settings\s*:\s*["']([^"']+)["']/,
           );
           if (settingsMatch) {
-            pluginMetadata.adminComponents.settings = settingsMatch[1];
+            pluginMetadata.adminComponents.settings = settingsMatch[1]!;
           }
         }
 
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
         );
         if (storefrontComponentsMatch) {
           const storefrontContent = storefrontComponentsMatch[1];
-          const checkoutMatch = storefrontContent.match(
+          const checkoutMatch = storefrontContent?.match(
             /checkout\s*:\s*["']([^"']+)["']/,
           );
           if (checkoutMatch) {
@@ -222,7 +222,7 @@ export async function POST(request: NextRequest) {
         );
         if (permissionsMatch) {
           const permissionsContent = permissionsMatch[1];
-          const permissions = permissionsContent.match(/["']([^"']+)["']/g);
+          const permissions = permissionsContent?.match(/["']([^"']+)["']/g);
           if (permissions) {
             pluginMetadata.requiredPermissions = permissions.map((p) =>
               p.replace(/["']/g, "").trim(),
@@ -266,7 +266,7 @@ export async function POST(request: NextRequest) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${session.data.session.token}`,
         },
         body: JSON.stringify(pluginDto),
       });
@@ -299,7 +299,7 @@ export async function POST(request: NextRequest) {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${session.accessToken}`,
+              Authorization: `Bearer ${session.data.session.token}`,
             },
             body: JSON.stringify({
               extensionPoints: pluginMetadata.extensionPoints,

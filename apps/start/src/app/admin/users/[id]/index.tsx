@@ -25,20 +25,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Badge } from "@repo/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { Switch } from "@repo/ui/switch";
+import { Label } from "@repo/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -46,7 +46,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui/dialog";
 import {
   getUserById,
   availablePermissions,
@@ -82,7 +82,7 @@ function UserDetailPage({ params }: { params: { id: string } }) {
       variant: "destructive",
     });
     setIsDeleteDialogOpen(false);
-    router.push("/users");
+    router.navigate({ to: "/admin/users" });
   };
 
   const handleResetPassword = () => {
@@ -143,7 +143,7 @@ function UserDetailPage({ params }: { params: { id: string } }) {
       <div className="container mx-auto py-12">
         <Button
           variant="ghost"
-          onClick={() => router.push("/users")}
+          onClick={() => router.navigate({ to: "/admin/users" })}
           className="mb-8 gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -158,7 +158,7 @@ function UserDetailPage({ params }: { params: { id: string } }) {
           <p className="mb-6 text-muted-foreground">
             The user you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => router.push("/users")} className="gap-2">
+          <Button onClick={() => router.navigate({ to: "/admin/users" })} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Users</span>
           </Button>
@@ -171,7 +171,7 @@ function UserDetailPage({ params }: { params: { id: string } }) {
     <div className="container mx-auto py-8">
       <Button
         variant="ghost"
-        onClick={() => router.push("/users")}
+        onClick={() => router.navigate({ to: "/admin/users" })}
         className="mb-4 gap-2"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -216,7 +216,7 @@ function UserDetailPage({ params }: { params: { id: string } }) {
           <Button
             variant="outline"
             className="gap-2"
-            onClick={() => router.push(`/users/${user.id}/edit`)}
+            onClick={() => router.navigate({ to: `/admin/users/${user.id}/edit` })}
           >
             <Edit className="h-4 w-4" />
             <span>Edit</span>

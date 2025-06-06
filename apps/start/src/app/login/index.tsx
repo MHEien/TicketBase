@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { useRouter } from '@tanstack/react-router'
+import { signIn } from "@/lib/auth";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
+import { Label } from "@repo/ui/label";
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/ui/card";
 import {
   Form,
   FormControl,
@@ -23,12 +23,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@repo/ui/form";
+import { Alert, AlertDescription } from "@repo/ui/alert";
+
+type LoginSearchParams = {
+  error?: "session_expired" | "credentials_signin";
+};
 
 
 export const Route = createFileRoute({
   component: LoginPage,
+  validateSearch: (search: Record<string, unknown>): LoginSearchParams => {
+    return {
+      error: search.error as "session_expired" | "credentials_signin" | undefined,
+    }
+  },
 });
 
 const loginSchema = z.object({
@@ -42,8 +51,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<LoginFormValues>({
@@ -54,39 +61,30 @@ function LoginPage() {
     },
   });
 
-  // Check for error parameter in URL
-  useEffect(() => {
-    const errorParam = searchParams.get("error");
-    if (errorParam === "session_expired") {
-      setError("Your session has expired. Please sign in again.");
-    }
-  }, [searchParams]);
+  const { error } = Route.useSearch();
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
-    setError(null);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn.email({
         email: data.email,
         password: data.password,
-        redirect: false,
-      });
+      })
 
       if (!result?.error) {
-        router.push("/");
-        router.refresh();
+        router.navigate({ to: "/admin" });
       } else {
         // Show more detailed error message based on the error
-        if (result.error === "CredentialsSignin") {
-          setError("Invalid email or password");
+        if (result.error?.code === "CREDENTIALS_SIGNIN") {
+          router.navigate({ to: "/login", search: { error: "credentials_signin" } });
         } else {
-          setError(`Authentication error: ${result.error}`);
+          router.navigate({ to: "/login", search: { error: "session_expired" } });
         }
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      router.navigate({ to: "/login", search: { error: "session_expired" } });
     } finally {
       setIsLoading(false);
     }

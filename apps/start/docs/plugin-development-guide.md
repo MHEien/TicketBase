@@ -172,7 +172,7 @@ const submission = {
   `,
   dependencies: [
     "@/lib/react-pluggable-system",
-    "@/components/ui/button",
+    "@repo/ui/button",
     // ... other dependencies
   ],
 };

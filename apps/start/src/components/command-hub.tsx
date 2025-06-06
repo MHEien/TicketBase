@@ -15,9 +15,8 @@ import {
   MessageSquare,
   Command,
 } from "lucide-react";
-import { AuthStatus } from "@/components/ui/auth-status";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@repo/ui/badge";
+import { Button } from "@repo/ui/button";
 import { useCommandMenu } from "@/hooks/use-command-menu";
 import { useRouter } from '@tanstack/react-router'
 import { useDashboardNav } from "@/hooks/useDashboardNav";
@@ -51,18 +50,18 @@ export function CommandHub() {
   }, []);
 
   const handleNewEvent = () => {
-    router.push("/events/new");
+    router.navigate({ to: "/admin/events/new" });
   };
 
   const handleNavItemClick = (id: string) => {
     if (id === "events") {
-      router.push("/events");
+      router.navigate({ to: "/admin/events" });
     } else if (id === "users") {
-      router.push("/users");
+      router.navigate({ to: "/admin/users" });
     } else if (id === "settings") {
-      router.push("/settings");
+      router.navigate({ to: "/admin/settings" });
     } else if (id === "plugins") {
-      router.push("/settings/plugins");
+      router.navigate({ to: "/admin/settings/plugins" });
     } else {
       setActiveSection(id);
     }
@@ -155,7 +154,6 @@ export function CommandHub() {
               <span className="hidden sm:inline">New Event</span>
             </Button>
 
-            <AuthStatus />
           </div>
         </div>
 
@@ -198,7 +196,7 @@ export function CommandHub() {
                     variant="ghost"
                     className="w-full justify-start text-sm"
                     onClick={() => {
-                      router.push("/events");
+                      router.navigate({ to: "/admin/events" });
                       setExpanded(false);
                     }}
                   >

@@ -4,7 +4,7 @@ import { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
 import { EventDateTime } from "@/components/event-creation/event-date-time";
 import { EventLocation } from "@/components/event-creation/event-location";
@@ -145,7 +145,7 @@ function EditEventPage({
       });
 
       // Navigate back to the event detail page
-      router.push(`/events/${resolvedParams.id}`);
+      router.navigate({ to: `/admin/events/${resolvedParams.id}` });
     } catch (error) {
       console.error("Error updating event:", error);
       toast({
@@ -162,7 +162,7 @@ function EditEventPage({
     if (
       confirm("Are you sure you want to cancel? All your changes will be lost.")
     ) {
-      router.push(`/events/${resolvedParams.id}`);
+      router.navigate({ to: `/admin/events/${resolvedParams.id}` });
     }
   };
 
@@ -184,13 +184,24 @@ function EditEventPage({
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-destructive">Error loading event data</p>
-          <Button onClick={() => router.push("/events")}>Back to Events</Button>
+          <Button onClick={() => router.navigate({ to: "/admin/events" })}>Back to Events</Button>
         </div>
       </div>
     );
   }
 
-  const CurrentStepComponent = steps[currentStep].component;
+  if (!steps[currentStep]) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <p className="mb-4 text-destructive">Error loading event data</p>
+          <Button onClick={() => router.navigate({ to: "/admin/events" })}>Back to Events</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const CurrentStepComponent = steps[currentStep].component!;
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-background to-background/80">
@@ -201,7 +212,7 @@ function EditEventPage({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/events/${resolvedParams.id}`)}
+              onClick={() => router.navigate({ to: `/admin/events/${resolvedParams.id}` })}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

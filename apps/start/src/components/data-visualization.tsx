@@ -15,9 +15,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
 import { SalesChart } from "@/components/sales-chart";
 import { RevenueChart } from "@/components/revenue-chart";
 import { EventsMap } from "@/components/events-map";

@@ -1,13 +1,10 @@
 import axios from "axios";
-import { getSession } from "next-auth/react";
+import { getSession } from "@/lib/auth";
 import { handleTokenRefreshFailure, isTokenRefreshError } from "../auth-utils";
+import { configureApi } from "@ticketsmonorepo/api-sdk";
 
-// Create axios instance with base URL from environment variable
-const apiClient = axios.create({
+const apiClient = configureApi({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // Paths that should not trigger auto-redirect on auth failure
@@ -48,25 +45,25 @@ apiClient.interceptors.request.use(
     debugLog("Session Check", {
       sessionExists: !!session,
       sessionKeys: session ? Object.keys(session) : [],
-      hasAccessToken: !!session?.accessToken,
-      accessTokenLength: session?.accessToken?.length,
-      user: session?.user
+      hasAccessToken: !!session?.data?.session.token,
+      accessTokenLength: session?.data?.session.token?.length,
+      user: session?.data?.user
         ? {
-            id: session.user.id,
-            email: session.user.email,
-            name: session.user.name,
+            id: session.data.user.id,
+            email: session.data.user.email,
+            name: session.data.user.name,
           }
         : null,
     });
 
     // If we have a session with an access token, add it to the headers
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    if (session?.data?.session.token) {
+      config.headers.Authorization = `Bearer ${session.data.session.token}`;
 
       debugLog("Auth Token Added", {
         hasToken: true,
-        tokenLength: session.accessToken.length,
-        tokenPreview: session.accessToken.substring(0, 20) + "...",
+        tokenLength: session.data.session.token.length,
+        tokenPreview: session.data.session.token.substring(0, 20) + "...",
       });
     } else {
       debugLog("Auth Token Missing", {
@@ -75,8 +72,8 @@ apiClient.interceptors.request.use(
         sessionData: session
           ? {
               keys: Object.keys(session),
-              hasUser: !!session.user,
-              hasAccessToken: !!session.accessToken,
+              hasUser: !!session?.data?.user,
+              hasAccessToken: !!session?.data?.session?.token,
             }
           : null,
       });

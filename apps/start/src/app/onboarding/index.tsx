@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useRouter } from '@tanstack/react-router'
 import { useOnboarding } from "@/lib/onboarding-context";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from "@repo/ui/button";
+import { Card } from "@repo/ui/card";
 import OrganizationDetailsForm from "./steps/organization-details";
 import EventPreferencesForm from "./steps/event-preferences";
 import BrandSettingsForm from "./steps/brand-settings";
@@ -20,7 +20,7 @@ function OnboardingPage() {
   // Redirect to dashboard if onboarding is already completed
   useEffect(() => {
     if (isCompleted) {
-      router.push("/");
+      router.navigate({ to: "/admin" });
     }
   }, [isCompleted, router]);
 

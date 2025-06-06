@@ -17,13 +17,13 @@
 
 import { InstalledPlugin } from "./plugin-types";
 import React from "react";
-import * as NextAuthReact from "next-auth/react";
+import * as BetterAuthReact from "better-auth/react";
 
 // Declare window with additional properties
 declare global {
   interface Window {
     React: typeof React;
-    NextAuthReact: typeof NextAuthReact;
+    BetterAuthReact: typeof BetterAuthReact;
     devPlugin1: any;
     __PLUGIN_REGISTRY: {
       registered: Record<string, any>;
@@ -36,7 +36,7 @@ declare global {
 // Expose React and NextAuth to plugins via window
 if (typeof window !== "undefined") {
   window.React = React;
-  window.NextAuthReact = NextAuthReact;
+  window.BetterAuthReact = BetterAuthReact;
 }
 
 // Cache for loaded modules to avoid redundant loading

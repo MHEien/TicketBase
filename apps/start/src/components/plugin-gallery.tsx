@@ -32,13 +32,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
+import { Badge } from "@repo/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
+import { Alert, AlertDescription } from "@repo/ui/alert";
 import {
   fetchAvailablePlugins,
   installPlugin,

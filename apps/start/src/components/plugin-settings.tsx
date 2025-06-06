@@ -8,19 +8,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Switch } from "@repo/ui/switch";
+import { Label } from "@repo/ui/label";
+import { Separator } from "@repo/ui/separator";
+import { Alert, AlertDescription } from "@repo/ui/alert";
 import { Loader2, ArrowLeft, Save, ExternalLink, Settings } from "lucide-react";
 import {
   getPlugin,
   updatePluginConfig,
   setPluginEnabled,
 } from "@/lib/plugin-api";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@repo/ui/use-toast";
 import { ExtensionPoint } from "@/components/extension-point";
 import { usePluginSDK } from "@/lib/plugin-sdk-context";
 import { InstalledPlugin } from "@/lib/plugin-types";

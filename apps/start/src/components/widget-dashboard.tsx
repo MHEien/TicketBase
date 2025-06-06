@@ -24,11 +24,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Progress } from "@repo/ui/progress";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
+import { Badge } from "@repo/ui/badge";
 import { SalesChart } from "@/components/sales-chart";
 import { DashboardLoading } from "@/components/dashboard-loading";
 import { useDashboard } from "@/hooks/use-dashboard";
@@ -450,7 +450,7 @@ export function WidgetDashboard() {
                 variant="ghost"
                 size="sm"
                 className="w-full"
-                onClick={() => router.push("/activity")}
+                onClick={() => router.navigate({ to: "/admin/activity" })}
               >
                 View All Activity
               </Button>

@@ -8,10 +8,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@repo/ui/card";
+import { Label } from "@repo/ui/label";
+import { Input } from "@repo/ui/input";
+import { RadioGroup, RadioGroupItem } from "@repo/ui/radio-group";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventLocation() {

@@ -220,9 +220,9 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
                 console.log("Plugin requiring:", moduleName);
                 if (moduleName === "react") return ReactReference;
                 if (moduleName === "react-dom") return (window as any).ReactDOM;
-                if (moduleName === "@/components/ui/button")
+                if (moduleName === "@repo/ui/button")
                   return { Button: window.PluginSDK?.components?.Button };
-                if (moduleName === "@/components/ui/input")
+                if (moduleName === "@repo/ui/input")
                   return { Input: window.PluginSDK?.components?.Input };
                 // Add more component mappings as needed
                 throw new Error("Module not available: " + moduleName);

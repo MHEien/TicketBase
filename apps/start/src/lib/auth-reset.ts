@@ -1,4 +1,4 @@
-import { signOut } from "next-auth/react";
+import { signOut } from "./auth";
 
 /**
  * Completely resets the authentication state
@@ -24,8 +24,10 @@ export async function resetAuthState(): Promise<void> {
 
     // Sign out from NextAuth
     await signOut({
-      redirect: false,
-      callbackUrl: "/login",
+      query: {
+        redirect: false,
+        callbackUrl: "/login",
+      },
     });
 
     console.log("Authentication state reset successfully");

@@ -1,6 +1,5 @@
 
 import { SessionProvider } from "@/components/session-provider";
-import { AuthErrorHandler } from "@/components/ui/auth-error-handler";
 import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
 import {
     Outlet,
@@ -45,7 +44,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <SessionProvider>
           <PluginSDKProvider>
-            <AuthErrorHandler />
             {children}
             <Scripts />
           </PluginSDKProvider>

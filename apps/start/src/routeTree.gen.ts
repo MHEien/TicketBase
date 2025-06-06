@@ -17,6 +17,7 @@ import { Route as RegisterIndexRouteImport } from './app/register/index'
 import { Route as OnboardingIndexRouteImport } from './app/onboarding/index'
 import { Route as LoginIndexRouteImport } from './app/login/index'
 import { Route as AdminIndexRouteImport } from './app/admin/index'
+import { Route as AdminLayoutRouteImport } from './app/admin/layout'
 import { Route as AdminUsersIndexRouteImport } from './app/admin/users/index'
 import { Route as AdminSettingsIndexRouteImport } from './app/admin/settings/index'
 import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
@@ -57,6 +58,12 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminLayoutRoute = AdminLayoutRouteImport.update({
+  id: '/admin/layout',
+  path: '/admin/layout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -169,6 +176,13 @@ const AdminEventsChar91idChar93EditIndexRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/admin/layout': {
+      id: '/admin/layout'
+      path: '/admin/layout'
+      fullPath: '/admin/layout'
+      preLoaderRoute: typeof AdminLayoutRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
@@ -314,6 +328,15 @@ declare module '@tanstack/react-router' {
 
 // Add type-safety to the createFileRoute function across the route tree
 
+declare module './app/admin/layout' {
+  const createFileRoute: CreateFileRoute<
+    '/admin/layout',
+    FileRoutesByPath['/admin/layout']['parentRoute'],
+    FileRoutesByPath['/admin/layout']['id'],
+    FileRoutesByPath['/admin/layout']['path'],
+    FileRoutesByPath['/admin/layout']['fullPath']
+  >
+}
 declare module './app/admin/index' {
   const createFileRoute: CreateFileRoute<
     '/admin/',
@@ -498,6 +521,7 @@ declare module './app/admin/settings/plugins/submit/index' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
+  '/admin/layout': typeof AdminLayoutRoute
   '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -521,6 +545,7 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/admin/layout': typeof AdminLayoutRoute
   '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -545,6 +570,7 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/admin/layout': typeof AdminLayoutRoute
   '/admin/': typeof AdminIndexRoute
   '/login/': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -570,6 +596,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/admin/layout'
     | '/admin'
     | '/login'
     | '/onboarding'
@@ -592,6 +619,7 @@ export interface FileRouteTypes {
     | '/admin/settings/plugins/submit'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/admin/layout'
     | '/admin'
     | '/login'
     | '/onboarding'
@@ -614,6 +642,7 @@ export interface FileRouteTypes {
     | '/admin/settings/plugins/submit'
   id:
     | '__root__'
+    | '/admin/layout'
     | '/admin/'
     | '/login/'
     | '/onboarding/'
@@ -638,6 +667,7 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
+  AdminLayoutRoute: typeof AdminLayoutRoute
   AdminIndexRoute: typeof AdminIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
@@ -661,6 +691,7 @@ export interface RootRouteChildren {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  AdminLayoutRoute: AdminLayoutRoute,
   AdminIndexRoute: AdminIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
@@ -696,6 +727,7 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/admin/layout",
         "/admin/",
         "/login/",
         "/onboarding/",
@@ -717,6 +749,9 @@ export const routeTree = rootRoute
         "/admin/settings/plugins/[id]/",
         "/admin/settings/plugins/submit/"
       ]
+    },
+    "/admin/layout": {
+      "filePath": "admin/layout.tsx"
     },
     "/admin/": {
       "filePath": "admin/index.tsx"

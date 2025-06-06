@@ -11,9 +11,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+} from "@repo/ui/card";
+import { Label } from "@repo/ui/label";
+import { Button } from "@repo/ui/button";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventMedia() {
@@ -209,7 +209,9 @@ export function EventMedia() {
                       const randomIndex = Math.floor(
                         Math.random() * availableImages.length,
                       );
-                      handleGalleryImageSelect(availableImages[randomIndex]);
+                      if (availableImages[randomIndex]) {
+                        handleGalleryImageSelect(availableImages[randomIndex]);
+                      }
                     }
                   }}
                 >

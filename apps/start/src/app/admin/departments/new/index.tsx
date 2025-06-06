@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from '@tanstack/react-router'
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { toast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { toast } from "@repo/ui/use-toast";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
 import {
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@repo/ui/form";
 import {
   Card,
   CardContent,
@@ -23,16 +23,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
+} from "@repo/ui/card";
+import { Checkbox } from "@repo/ui/checkbox";
+import { Textarea } from "@repo/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui/select";
 import { createDepartment, getDepartments } from "@/lib/api/departments";
 import { Department, CreateDepartmentRequest } from "@/types/department";
 
@@ -135,7 +135,7 @@ export default function NewDepartmentPage() {
         title: "Success",
         description: "Department created successfully",
       });
-      router.push("/departments");
+      router.navigate({ to: "/admin/departments" });
     } catch (error) {
       toast({
         title: "Error",
@@ -340,7 +340,7 @@ export default function NewDepartmentPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/departments")}
+                  onClick={() => router.navigate({ to: "/admin/departments" })}
                 >
                   Cancel
                 </Button>

@@ -1,4 +1,3 @@
-"use client";
 import { CommandHub } from "@/components/command-hub";
 import { CommandMenu } from "@/components/command-menu";
 import { DataVisualization } from "@/components/data-visualization";
@@ -7,14 +6,15 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { WidgetDashboard } from "@/components/widget-dashboard";
 import { useCommandMenu } from "@/hooks/use-command-menu";
 import { DashboardNavProvider, useDashboardNav } from "@/hooks/useDashboardNav";
+import { Outlet } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const Route = createFileRoute({
+  component: AdminLayout,
+});
+
+function AdminLayout() {
   const { activeSection, setActiveSection } = useDashboardNav();
   const [isLoading, setIsLoading] = useState(true);
   const { isOpen, setIsOpen } = useCommandMenu();
@@ -66,7 +66,7 @@ export default function AdminLayout({
             <CommandHub />
 
             <main className="relative flex-1 overflow-y-auto px-6 pb-6 pt-20 md:px-8 md:pt-24">
-              {children}
+              <Outlet />
             </main>
 
             <div className="fixed bottom-6 right-6 z-50">

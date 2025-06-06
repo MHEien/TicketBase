@@ -22,28 +22,28 @@ import {
   CardContent,
   CardDescription,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+} from "@repo/ui/card";
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
+import { Badge } from "@repo/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui/select";
 import { useEvents } from "@/hooks/use-events";
 import { type Event } from "@/lib/api/events-api";
-import { EventsLoading } from "@/components/ui/loading-skeleton";
+import { EventsLoading } from "@repo/ui/loading-skeleton";
 
 export const Route = createFileRoute({
   component: EventsPage,
@@ -111,11 +111,11 @@ function EventsPage() {
   );
 
   const handleCreateEvent = () => {
-    router.push("/events/new");
+    router.navigate({ to: "/admin/events/new" });
   };
 
   const handleEditEvent = (eventId: string) => {
-    router.push(`/events/${eventId}/edit`);
+    router.navigate({ to: `/admin/events/${eventId}/edit` });
   };
 
   const handleDeleteEvent = async (eventId: string) => {
@@ -130,11 +130,11 @@ function EventsPage() {
 
   const handleDuplicateEvent = (eventId: string) => {
     // TODO: Implement duplication logic
-    router.push(`/events/new?duplicate=${eventId}`);
+    router.navigate({ to: `/admin/events/new?duplicate=${eventId}` });
   };
 
   const handleViewEvent = (eventId: string) => {
-    router.push(`/events/${eventId}`);
+    router.navigate({ to: `/admin/events/${eventId}` });
   };
 
   const handlePublishEvent = async (eventId: string) => {
