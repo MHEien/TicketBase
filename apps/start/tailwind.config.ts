@@ -1,12 +1,13 @@
 import type { Config } from "tailwindcss";
 
-import baseConfig from "@acme/tailwind-config/web";
-
 export default {
-  // We need to append the path to the UI package to the content array so that
-  // those classes are included correctly.
-  content: [...baseConfig.content, "../../packages/ui/src/*.{ts,tsx}"],
-  presets: [baseConfig],
+  // Content detection is now automatic in v4, but you can still specify if needed
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
+    "./index.html"
+  ],
+  // Most config is now handled in CSS via @theme
   theme: {
     extend: {
       fontFamily: {

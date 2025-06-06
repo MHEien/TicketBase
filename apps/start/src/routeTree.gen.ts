@@ -8,17 +8,16 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
 import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 
 // Import Routes
 
 import { Route as rootRoute } from './app/__root'
+import { Route as AdminRouteRouteImport } from './app/admin/route'
 import { Route as RegisterIndexRouteImport } from './app/register/index'
 import { Route as OnboardingIndexRouteImport } from './app/onboarding/index'
 import { Route as LoginIndexRouteImport } from './app/login/index'
 import { Route as AdminIndexRouteImport } from './app/admin/index'
-import { Route as AdminPathlessLayoutRouteImport } from './app/admin/_pathlessLayout'
 import { Route as AdminUsersIndexRouteImport } from './app/admin/users/index'
 import { Route as AdminSettingsIndexRouteImport } from './app/admin/settings/index'
 import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
@@ -36,13 +35,9 @@ import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin
 import { Route as AdminSettingsPluginsChar91idChar93IndexRouteImport } from './app/admin/settings/plugins/[id]/index'
 import { Route as AdminEventsChar91idChar93EditIndexRouteImport } from './app/admin/events/[id]/edit/index'
 
-// Create Virtual Routes
-
-const AdminRouteImport = createFileRoute('/admin')()
-
 // Create/Update Routes
 
-const AdminRoute = AdminRouteImport.update({
+const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRoute,
@@ -69,117 +64,112 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-
-const AdminPathlessLayoutRoute = AdminPathlessLayoutRouteImport.update({
-  id: '/_pathlessLayout',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
   id: '/events/',
   path: '/events/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminDepartmentsIndexRoute = AdminDepartmentsIndexRouteImport.update({
   id: '/departments/',
   path: '/departments/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminCreateEventIndexRoute = AdminCreateEventIndexRouteImport.update({
   id: '/create-event/',
   path: '/create-event/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminAuthDiagnosticsIndexRoute =
   AdminAuthDiagnosticsIndexRouteImport.update({
     id: '/auth-diagnostics/',
     path: '/auth-diagnostics/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminActivityIndexRoute = AdminActivityIndexRouteImport.update({
   id: '/activity/',
   path: '/activity/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminUsersChar91idChar93IndexRoute =
   AdminUsersChar91idChar93IndexRouteImport.update({
     id: '/users/[id]/',
     path: '/users/[id]/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminSettingsPluginsIndexRoute =
   AdminSettingsPluginsIndexRouteImport.update({
     id: '/settings/plugins/',
     path: '/settings/plugins/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminEventsNewIndexRoute = AdminEventsNewIndexRouteImport.update({
   id: '/events/new/',
   path: '/events/new/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 const AdminEventsChar91idChar93IndexRoute =
   AdminEventsChar91idChar93IndexRouteImport.update({
     id: '/events/[id]/',
     path: '/events/[id]/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminDepartmentsNewIndexRoute =
   AdminDepartmentsNewIndexRouteImport.update({
     id: '/departments/new/',
     path: '/departments/new/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminDepartmentsChar91idChar93IndexRoute =
   AdminDepartmentsChar91idChar93IndexRouteImport.update({
     id: '/departments/[id]/',
     path: '/departments/[id]/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminSettingsPluginsSubmitIndexRoute =
   AdminSettingsPluginsSubmitIndexRouteImport.update({
     id: '/settings/plugins/submit/',
     path: '/settings/plugins/submit/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminSettingsPluginsChar91idChar93IndexRoute =
   AdminSettingsPluginsChar91idChar93IndexRouteImport.update({
     id: '/settings/plugins/[id]/',
     path: '/settings/plugins/[id]/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 const AdminEventsChar91idChar93EditIndexRoute =
   AdminEventsChar91idChar93EditIndexRouteImport.update({
     id: '/events/[id]/edit/',
     path: '/events/[id]/edit/',
-    getParentRoute: () => AdminRoute,
+    getParentRoute: () => AdminRouteRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -190,22 +180,15 @@ declare module '@tanstack/react-router' {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRoute
-    }
-    '/admin/_pathlessLayout': {
-      id: '/admin/_pathlessLayout'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminPathlessLayoutRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/login/': {
       id: '/login/'
@@ -233,125 +216,125 @@ declare module '@tanstack/react-router' {
       path: '/activity'
       fullPath: '/admin/activity'
       preLoaderRoute: typeof AdminActivityIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/auth-diagnostics/': {
       id: '/admin/auth-diagnostics/'
       path: '/auth-diagnostics'
       fullPath: '/admin/auth-diagnostics'
       preLoaderRoute: typeof AdminAuthDiagnosticsIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/create-event/': {
       id: '/admin/create-event/'
       path: '/create-event'
       fullPath: '/admin/create-event'
       preLoaderRoute: typeof AdminCreateEventIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/departments/': {
       id: '/admin/departments/'
       path: '/departments'
       fullPath: '/admin/departments'
       preLoaderRoute: typeof AdminDepartmentsIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/events/': {
       id: '/admin/events/'
       path: '/events'
       fullPath: '/admin/events'
       preLoaderRoute: typeof AdminEventsIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/settings/': {
       id: '/admin/settings/'
       path: '/settings'
       fullPath: '/admin/settings'
       preLoaderRoute: typeof AdminSettingsIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/users/': {
       id: '/admin/users/'
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/departments/[id]/': {
       id: '/admin/departments/[id]/'
       path: '/departments/[id]'
       fullPath: '/admin/departments/[id]'
       preLoaderRoute: typeof AdminDepartmentsChar91idChar93IndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/departments/new/': {
       id: '/admin/departments/new/'
       path: '/departments/new'
       fullPath: '/admin/departments/new'
       preLoaderRoute: typeof AdminDepartmentsNewIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/events/[id]/': {
       id: '/admin/events/[id]/'
       path: '/events/[id]'
       fullPath: '/admin/events/[id]'
       preLoaderRoute: typeof AdminEventsChar91idChar93IndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/events/new/': {
       id: '/admin/events/new/'
       path: '/events/new'
       fullPath: '/admin/events/new'
       preLoaderRoute: typeof AdminEventsNewIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/settings/plugins/': {
       id: '/admin/settings/plugins/'
       path: '/settings/plugins'
       fullPath: '/admin/settings/plugins'
       preLoaderRoute: typeof AdminSettingsPluginsIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/users/[id]/': {
       id: '/admin/users/[id]/'
       path: '/users/[id]'
       fullPath: '/admin/users/[id]'
       preLoaderRoute: typeof AdminUsersChar91idChar93IndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/events/[id]/edit/': {
       id: '/admin/events/[id]/edit/'
       path: '/events/[id]/edit'
       fullPath: '/admin/events/[id]/edit'
       preLoaderRoute: typeof AdminEventsChar91idChar93EditIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/settings/plugins/[id]/': {
       id: '/admin/settings/plugins/[id]/'
       path: '/settings/plugins/[id]'
       fullPath: '/admin/settings/plugins/[id]'
       preLoaderRoute: typeof AdminSettingsPluginsChar91idChar93IndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/settings/plugins/submit/': {
       id: '/admin/settings/plugins/submit/'
       path: '/settings/plugins/submit'
       fullPath: '/admin/settings/plugins/submit'
       preLoaderRoute: typeof AdminSettingsPluginsSubmitIndexRouteImport
-      parentRoute: typeof AdminRouteImport
+      parentRoute: typeof AdminRouteRouteImport
     }
   }
 }
 
 // Add type-safety to the createFileRoute function across the route tree
 
-declare module './app/admin/_pathlessLayout' {
+declare module './app/admin/route' {
   const createFileRoute: CreateFileRoute<
-    '/admin/_pathlessLayout',
-    FileRoutesByPath['/admin/_pathlessLayout']['parentRoute'],
-    FileRoutesByPath['/admin/_pathlessLayout']['id'],
-    FileRoutesByPath['/admin/_pathlessLayout']['path'],
-    FileRoutesByPath['/admin/_pathlessLayout']['fullPath']
+    '/admin',
+    FileRoutesByPath['/admin']['parentRoute'],
+    FileRoutesByPath['/admin']['id'],
+    FileRoutesByPath['/admin']['path'],
+    FileRoutesByPath['/admin']['fullPath']
   >
 }
 declare module './app/admin/index' {
@@ -537,8 +520,7 @@ declare module './app/admin/settings/plugins/submit/index' {
 
 // Create and export the route tree
 
-interface AdminRouteChildren {
-  AdminPathlessLayoutRoute: typeof AdminPathlessLayoutRoute
+interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivityIndexRoute: typeof AdminActivityIndexRoute
   AdminAuthDiagnosticsIndexRoute: typeof AdminAuthDiagnosticsIndexRoute
@@ -558,8 +540,7 @@ interface AdminRouteChildren {
   AdminSettingsPluginsSubmitIndexRoute: typeof AdminSettingsPluginsSubmitIndexRoute
 }
 
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminPathlessLayoutRoute: AdminPathlessLayoutRoute,
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminActivityIndexRoute: AdminActivityIndexRoute,
   AdminAuthDiagnosticsIndexRoute: AdminAuthDiagnosticsIndexRoute,
@@ -582,10 +563,12 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsPluginsSubmitIndexRoute: AdminSettingsPluginsSubmitIndexRoute,
 }
 
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
-  '/admin': typeof AdminPathlessLayoutRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -633,8 +616,7 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/admin/_pathlessLayout': typeof AdminPathlessLayoutRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/login/': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -706,7 +688,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/admin'
-    | '/admin/_pathlessLayout'
     | '/admin/'
     | '/login/'
     | '/onboarding/'
@@ -731,14 +712,14 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   LoginIndexRoute: typeof LoginIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AdminRoute: AdminRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   LoginIndexRoute: LoginIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
@@ -761,9 +742,8 @@ export const routeTree = rootRoute
       ]
     },
     "/admin": {
-      "filePath": "admin",
+      "filePath": "admin/route.tsx",
       "children": [
-        "/admin/_pathlessLayout",
         "/admin/",
         "/admin/activity/",
         "/admin/auth-diagnostics/",
@@ -782,10 +762,6 @@ export const routeTree = rootRoute
         "/admin/settings/plugins/[id]/",
         "/admin/settings/plugins/submit/"
       ]
-    },
-    "/admin/_pathlessLayout": {
-      "filePath": "admin/_pathlessLayout.tsx",
-      "parent": "/admin"
     },
     "/admin/": {
       "filePath": "admin/index.tsx",
