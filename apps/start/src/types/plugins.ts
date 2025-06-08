@@ -1,10 +1,33 @@
 // plugin-global-types.ts
 // Centralized global type definitions for the plugin system
 
-import { PluginSDK } from "@/lib/plugin-sdk-context";
+import type { PluginSDK } from "@/lib/plugin-sdk-context";
+import type { ExtensionPointComponent } from "ticketsplatform-plugin-sdk";
 import React from "react";
 
+export interface PluginManifest {
+  id: string;
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  category: string;
+  displayName: string;
+  iconUrl?: string;
+  bundleUrl: string;
+  extensionPoints: string[];
+}
+
+export interface InstalledPlugin extends PluginManifest {
+  enabled: boolean;
+  config?: Record<string, any>;
+}
+
 export interface PluginRegistry {
+  registered: Record<string, {
+    metadata: PluginManifest;
+    extensionPoints: Record<string, ExtensionPointComponent>;
+  }>;
   register: (pluginId: string, exports: any) => void;
   get: (pluginId: string) => any;
 }
