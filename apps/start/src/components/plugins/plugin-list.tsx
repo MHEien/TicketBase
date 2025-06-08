@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/dropdown-menu";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 
 interface Plugin {
   id: string;
@@ -246,15 +246,16 @@ export function PluginList() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={`/settings/plugins/${plugin.id}`}>
+                          <Link to={`/admin/settings/plugins/$id`} params={{ id: plugin.id }}>
                             <Eye className="mr-2 h-4 w-4" />
                             View Details
                           </Link>
                         </DropdownMenuItem>
                         {isInstalled && (
                           <DropdownMenuItem asChild>
-                            <Link
-                              href={`/settings/plugins/${plugin.id}/configure`}
+                              <Link
+                                to={`/admin/settings/plugins/$id`}
+                                params={{ id: plugin.id }}
                             >
                               <Settings className="mr-2 h-4 w-4" />
                               Configure

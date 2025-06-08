@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { ExtensionPoint } from "@/components/extension-point";
 import { PluginsControllerClient, AuthControllerClient } from "@repo/api-sdk";
 import { Loader2 } from "lucide-react";
@@ -21,7 +21,7 @@ export const Route = createFileRoute({
 });
 
 function PluginSettingsPage() {
-  const params = useParams();
+  const { id } = Route.useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ function PluginSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
 
-  const pluginId = typeof params.id === "string" ? params.id : "";
+  const pluginId = typeof id === "string" ? id : "";
 
   useEffect(() => {
     async function loadUser() {
@@ -123,7 +123,7 @@ function PluginSettingsPage() {
             </ul>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button onClick={() => router.push("/settings/plugins")}>
+            <Button onClick={() => router.navigate({ to: "/admin/settings/plugins" })}>
               Back to Plugins
             </Button>
             <Button variant="outline" onClick={() => window.location.reload()}>

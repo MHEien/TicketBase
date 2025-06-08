@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { useAuth } from "@repo/api-sdk";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -230,7 +230,7 @@ function RegisterPage() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
             <Link
-              href="/login"
+              to="/login"
               className="font-medium text-primary hover:underline"
             >
               Sign in

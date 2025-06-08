@@ -29,7 +29,7 @@ import { Route as AdminEventsIdIndexRouteImport } from './app/admin/events/$id/i
 import { Route as AdminDepartmentsNewIndexRouteImport } from './app/admin/departments/new/index'
 import { Route as AdminDepartmentsIdIndexRouteImport } from './app/admin/departments/$id/index'
 import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin/settings/plugins/submit/index'
-import { Route as AdminSettingsPluginsSplatIndexRouteImport } from './app/admin/settings/plugins/$/index'
+import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
 
 // Create/Update Routes
@@ -133,10 +133,10 @@ const AdminSettingsPluginsSubmitIndexRoute =
     getParentRoute: () => AdminRouteRoute,
   } as any)
 
-const AdminSettingsPluginsSplatIndexRoute =
-  AdminSettingsPluginsSplatIndexRouteImport.update({
-    id: '/settings/plugins/$/',
-    path: '/settings/plugins/$/',
+const AdminSettingsPluginsIdIndexRoute =
+  AdminSettingsPluginsIdIndexRouteImport.update({
+    id: '/settings/plugins/$id/',
+    path: '/settings/plugins/$id/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
 
@@ -262,11 +262,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEventsIdEditIndexRouteImport
       parentRoute: typeof AdminRouteRouteImport
     }
-    '/admin/settings/plugins/$/': {
-      id: '/admin/settings/plugins/$/'
-      path: '/settings/plugins/$'
-      fullPath: '/admin/settings/plugins/$'
-      preLoaderRoute: typeof AdminSettingsPluginsSplatIndexRouteImport
+    '/admin/settings/plugins/$id/': {
+      id: '/admin/settings/plugins/$id/'
+      path: '/settings/plugins/$id'
+      fullPath: '/admin/settings/plugins/$id'
+      preLoaderRoute: typeof AdminSettingsPluginsIdIndexRouteImport
       parentRoute: typeof AdminRouteRouteImport
     }
     '/admin/settings/plugins/submit/': {
@@ -425,13 +425,13 @@ declare module './app/admin/events/$id/edit/index' {
     FileRoutesByPath['/admin/events/$id/edit/']['fullPath']
   >
 }
-declare module './app/admin/settings/plugins/$/index' {
+declare module './app/admin/settings/plugins/$id/index' {
   const createFileRoute: CreateFileRoute<
-    '/admin/settings/plugins/$/',
-    FileRoutesByPath['/admin/settings/plugins/$/']['parentRoute'],
-    FileRoutesByPath['/admin/settings/plugins/$/']['id'],
-    FileRoutesByPath['/admin/settings/plugins/$/']['path'],
-    FileRoutesByPath['/admin/settings/plugins/$/']['fullPath']
+    '/admin/settings/plugins/$id/',
+    FileRoutesByPath['/admin/settings/plugins/$id/']['parentRoute'],
+    FileRoutesByPath['/admin/settings/plugins/$id/']['id'],
+    FileRoutesByPath['/admin/settings/plugins/$id/']['path'],
+    FileRoutesByPath['/admin/settings/plugins/$id/']['fullPath']
   >
 }
 declare module './app/admin/settings/plugins/submit/index' {
@@ -459,7 +459,7 @@ interface AdminRouteRouteChildren {
   AdminEventsNewIndexRoute: typeof AdminEventsNewIndexRoute
   AdminSettingsPluginsIndexRoute: typeof AdminSettingsPluginsIndexRoute
   AdminEventsIdEditIndexRoute: typeof AdminEventsIdEditIndexRoute
-  AdminSettingsPluginsSplatIndexRoute: typeof AdminSettingsPluginsSplatIndexRoute
+  AdminSettingsPluginsIdIndexRoute: typeof AdminSettingsPluginsIdIndexRoute
   AdminSettingsPluginsSubmitIndexRoute: typeof AdminSettingsPluginsSubmitIndexRoute
 }
 
@@ -476,7 +476,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminEventsNewIndexRoute: AdminEventsNewIndexRoute,
   AdminSettingsPluginsIndexRoute: AdminSettingsPluginsIndexRoute,
   AdminEventsIdEditIndexRoute: AdminEventsIdEditIndexRoute,
-  AdminSettingsPluginsSplatIndexRoute: AdminSettingsPluginsSplatIndexRoute,
+  AdminSettingsPluginsIdIndexRoute: AdminSettingsPluginsIdIndexRoute,
   AdminSettingsPluginsSubmitIndexRoute: AdminSettingsPluginsSubmitIndexRoute,
 }
 
@@ -501,7 +501,7 @@ export interface FileRoutesByFullPath {
   '/admin/events/new': typeof AdminEventsNewIndexRoute
   '/admin/settings/plugins': typeof AdminSettingsPluginsIndexRoute
   '/admin/events/$id/edit': typeof AdminEventsIdEditIndexRoute
-  '/admin/settings/plugins/$': typeof AdminSettingsPluginsSplatIndexRoute
+  '/admin/settings/plugins/$id': typeof AdminSettingsPluginsIdIndexRoute
   '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
 }
 
@@ -522,7 +522,7 @@ export interface FileRoutesByTo {
   '/admin/events/new': typeof AdminEventsNewIndexRoute
   '/admin/settings/plugins': typeof AdminSettingsPluginsIndexRoute
   '/admin/events/$id/edit': typeof AdminEventsIdEditIndexRoute
-  '/admin/settings/plugins/$': typeof AdminSettingsPluginsSplatIndexRoute
+  '/admin/settings/plugins/$id': typeof AdminSettingsPluginsIdIndexRoute
   '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
 }
 
@@ -544,7 +544,7 @@ export interface FileRoutesById {
   '/admin/events/new/': typeof AdminEventsNewIndexRoute
   '/admin/settings/plugins/': typeof AdminSettingsPluginsIndexRoute
   '/admin/events/$id/edit/': typeof AdminEventsIdEditIndexRoute
-  '/admin/settings/plugins/$/': typeof AdminSettingsPluginsSplatIndexRoute
+  '/admin/settings/plugins/$id/': typeof AdminSettingsPluginsIdIndexRoute
   '/admin/settings/plugins/submit/': typeof AdminSettingsPluginsSubmitIndexRoute
 }
 
@@ -567,7 +567,7 @@ export interface FileRouteTypes {
     | '/admin/events/new'
     | '/admin/settings/plugins'
     | '/admin/events/$id/edit'
-    | '/admin/settings/plugins/$'
+    | '/admin/settings/plugins/$id'
     | '/admin/settings/plugins/submit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -587,7 +587,7 @@ export interface FileRouteTypes {
     | '/admin/events/new'
     | '/admin/settings/plugins'
     | '/admin/events/$id/edit'
-    | '/admin/settings/plugins/$'
+    | '/admin/settings/plugins/$id'
     | '/admin/settings/plugins/submit'
   id:
     | '__root__'
@@ -607,7 +607,7 @@ export interface FileRouteTypes {
     | '/admin/events/new/'
     | '/admin/settings/plugins/'
     | '/admin/events/$id/edit/'
-    | '/admin/settings/plugins/$/'
+    | '/admin/settings/plugins/$id/'
     | '/admin/settings/plugins/submit/'
   fileRoutesById: FileRoutesById
 }
@@ -657,7 +657,7 @@ export const routeTree = rootRoute
         "/admin/events/new/",
         "/admin/settings/plugins/",
         "/admin/events/$id/edit/",
-        "/admin/settings/plugins/$/",
+        "/admin/settings/plugins/$id/",
         "/admin/settings/plugins/submit/"
       ]
     },
@@ -718,8 +718,8 @@ export const routeTree = rootRoute
       "filePath": "admin/events/$id/edit/index.tsx",
       "parent": "/admin"
     },
-    "/admin/settings/plugins/$/": {
-      "filePath": "admin/settings/plugins/$/index.tsx",
+    "/admin/settings/plugins/$id/": {
+      "filePath": "admin/settings/plugins/$id/index.tsx",
       "parent": "/admin"
     },
     "/admin/settings/plugins/submit/": {

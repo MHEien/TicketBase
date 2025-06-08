@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { useAuth } from "@repo/api-sdk";
 import { z } from "zod";
@@ -189,7 +189,7 @@ function LoginPage() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Don&apos;t have an account?{" "}
             <Link
-              href="/register"
+              to="/register"
               className="font-medium text-primary hover:underline"
             >
               Register

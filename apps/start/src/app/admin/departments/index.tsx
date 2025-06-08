@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@repo/api-sdk";
 import {
@@ -116,7 +116,7 @@ function DepartmentsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/departments/new">
+          <Link to="/admin/departments/new">
             <Plus className="mr-2 h-4 w-4" /> New Department
           </Link>
         </Button>
@@ -174,7 +174,8 @@ function DepartmentsPage() {
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
                         <Link
-                          href={`/departments/${department.id}`}
+                          to={`/admin/departments/$id`}
+                          params={{ id: department.id }}
                           className="hover:underline"
                         >
                           {department.name}
@@ -225,20 +226,8 @@ function DepartmentsPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
-                            <Link href={`/departments/${department.id}`}>
+                            <Link to={`/admin/departments/$id`} params={{ id: department.id }}>
                               View details
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/departments/${department.id}/edit`}>
-                              <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link
-                              href={`/departments/${department.id}/members`}
-                            >
-                              <Users className="mr-2 h-4 w-4" /> Manage members
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
