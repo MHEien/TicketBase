@@ -184,7 +184,6 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Switch
-                  id="plugin-enabled"
                   checked={enabled}
                   onCheckedChange={handleToggleEnabled}
                   disabled={saving}

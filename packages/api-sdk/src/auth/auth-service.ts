@@ -1,10 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import * as AuthController from "../generated/api-client/AuthControllerClient";
-import {
-  getAxios,
-  getBaseUrl,
-  setBaseUrl,
-} from "../generated/api-client/helpers";
+import { setBaseUrl } from "../generated/api-client/helpers";
 import type {
   LoginDto,
   LoginResponseDto,
@@ -24,6 +20,7 @@ import type {
   TokenResponse,
 } from "./types";
 import { decodeJwt } from "./utils";
+import { tokenStorage } from "./storage";
 
 export class AuthService {
   private config: Required<AuthConfig>;
@@ -37,6 +34,12 @@ export class AuthService {
   private axiosInstance: AxiosInstance;
 
   constructor(config: AuthConfig = {}) {
+    console.log("Initializing AuthService with config:", {
+      baseUrl: config.baseUrl || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api",
+      enableAutoRefresh: config.enableAutoRefresh !== false,
+      refreshBeforeExpiration: config.refreshBeforeExpiration || 60,
+    });
+
     // Set default config values
     this.config = {
       baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api",
@@ -59,6 +62,7 @@ export class AuthService {
 
     // Set the base URL for the API client
     setBaseUrl(this.config.baseUrl);
+    console.log("Set API client base URL to:", this.config.baseUrl);
 
     // Try to restore auth state from storage
     this.restoreAuthState();
@@ -66,9 +70,10 @@ export class AuthService {
 
   private setupAxiosInterceptors() {
     this.axiosInstance.interceptors.request.use(async (config) => {
-      const tokens = this.getStoredTokens();
+      const tokens = tokenStorage.getTokens();
       if (tokens?.accessToken) {
         config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+        console.log("Added authorization header to request");
       }
       return config;
     });
@@ -76,8 +81,14 @@ export class AuthService {
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       async (error) => {
+        console.error("API request failed:", {
+          status: error.response?.status,
+          message: error.message,
+          url: error.config?.url,
+        });
+
         if (error.response?.status === 401) {
-          // Clear auth state on unauthorized
+          console.log("Received 401 response, clearing auth state");
           this.clearAuthState();
         }
         return Promise.reject(error);
@@ -87,7 +98,7 @@ export class AuthService {
 
   async restoreAuthState(): Promise<void> {
     try {
-      const storedTokens = this.getStoredTokens();
+      const storedTokens = tokenStorage.getTokens();
       if (!storedTokens) return;
 
       // Validate access token
@@ -113,87 +124,34 @@ export class AuthService {
 
   private setTokens(tokens: AuthTokens | null) {
     this.state.tokens = tokens;
+    tokenStorage.setTokens(tokens);
 
-    if (tokens) {
-      // Store tokens
-      try {
-        // Check if we're in a browser environment
-        if (typeof window !== "undefined") {
-          localStorage.setItem(
-            `${this.config.storageKeyPrefix}_tokens`,
-            JSON.stringify(tokens),
-          );
+    if (tokens?.accessToken && this.config.enableAutoRefresh) {
+      const decoded = decodeJwt(tokens.accessToken);
+      if (decoded?.exp) {
+        const expiresIn = decoded.exp * 1000 - Date.now();
+        const refreshIn = Math.max(
+          0,
+          expiresIn - this.config.refreshBeforeExpiration * 1000,
+        );
+
+        if (this.refreshTimeout) {
+          clearTimeout(this.refreshTimeout);
         }
 
-        // Setup refresh timer
-        if (this.config.enableAutoRefresh) {
-          const decoded = decodeJwt(tokens.accessToken);
-          if (decoded?.exp) {
-            const expiresIn = decoded.exp * 1000 - Date.now();
-            const refreshIn = Math.max(
-              0,
-              expiresIn - this.config.refreshBeforeExpiration * 1000,
-            );
+        this.refreshTimeout = setTimeout(() => {
+          this.refreshTokens().catch(this.handleError);
+        }, refreshIn);
 
-            if (this.refreshTimeout) {
-              clearTimeout(this.refreshTimeout);
-            }
-
-            this.refreshTimeout = setTimeout(() => {
-              this.refreshTokens().catch(this.handleError);
-            }, refreshIn);
-
-            console.log(
-              "Refresh timer set for",
-              new Date(Date.now() + refreshIn),
-            );
-          }
-        }
-      } catch (error) {
-        console.error("Failed to store tokens:", error);
-        this.handleError(error);
+        console.log(
+          "Refresh timer set for",
+          new Date(Date.now() + refreshIn),
+        );
       }
-    } else {
-      // Clear stored tokens
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(`${this.config.storageKeyPrefix}_tokens`);
-      }
-
-      // Clear refresh timer
+    } else if (!tokens) {
       if (this.refreshTimeout) {
         clearTimeout(this.refreshTimeout);
       }
-    }
-  }
-
-  private getStoredTokens(): AuthTokens | null {
-    try {
-      // Check if we're in a browser environment
-      if (typeof window === "undefined") {
-        return null;
-      }
-
-      const stored = localStorage.getItem(
-        `${this.config.storageKeyPrefix}_tokens`,
-      );
-      if (!stored) return null;
-
-      const tokens = JSON.parse(stored) as AuthTokens;
-
-      // Validate the tokens structure
-      if (!tokens.accessToken || !tokens.refreshToken) {
-        console.error("Invalid tokens structure in storage");
-        localStorage.removeItem(`${this.config.storageKeyPrefix}_tokens`);
-        return null;
-      }
-
-      return tokens;
-    } catch (error) {
-      console.error("Failed to get stored tokens:", error);
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(`${this.config.storageKeyPrefix}_tokens`);
-      }
-      return null;
     }
   }
 
@@ -218,7 +176,7 @@ export class AuthService {
   }
 
   private clearAuthState() {
-    this.setTokens(null);
+    tokenStorage.clearTokens();
     this.setState({
       user: null,
       tokens: null,
@@ -250,6 +208,7 @@ export class AuthService {
   }
 
   async login(credentials: LoginCredentials): Promise<void> {
+    console.log("Attempting login for email:", credentials.email);
     try {
       this.setState({ isLoading: true, error: null });
 
@@ -263,41 +222,52 @@ export class AuthService {
         }),
       };
 
-      const response = (await AuthController.login(
-        loginDto,
-      )) as unknown as LoginResponseDto;
+      console.log("Sending login request to API");
+      const response = await AuthController.login(loginDto);
+      console.log("Received login response:", { 
+        success: !!response,
+        hasAccessToken: !!response?.accessToken,
+        hasRefreshToken: !!response?.refreshToken,
+      });
 
-      if (response) {
-        // First set the tokens to ensure they're available immediately
-        const tokens: AuthTokens = {
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-          expiresIn: response.expiresIn,
-        };
-
-        // Validate tokens before storing
-        if (!tokens.accessToken || !tokens.refreshToken) {
-          throw new Error("Invalid token data received from server");
-        }
-
-        this.setTokens(tokens);
-
-        // Then set user state
-        const user: AuthUser = {
-          id: response.id,
-          name: response.name,
-          email: response.email,
-          role: response.role,
-          permissions: response.permissions,
-          organizationId: response.organizationId,
-        };
-
-        this.setState({ user });
-
-        console.log("Login successful, tokens stored and user state updated");
+      if (!response) {
+        throw new Error("No response received from login endpoint");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
+
+      // First set the tokens to ensure they're available immediately
+      const tokens: AuthTokens = {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        expiresIn: response.expiresIn,
+      };
+
+      // Validate tokens before storing
+      if (!tokens.accessToken || !tokens.refreshToken) {
+        throw new Error("Invalid token data received from server");
+      }
+
+      console.log("Setting tokens in state and storage");
+      this.setTokens(tokens);
+
+      // Then set user state
+      const user: AuthUser = {
+        id: response.id,
+        name: response.name,
+        email: response.email,
+        role: response.role,
+        permissions: response.permissions,
+        organizationId: response.organizationId,
+      };
+
+      this.setState({ user });
+
+      console.log("Login successful, tokens stored and user state updated");
+    } catch (error: any) {
+      console.error("Login failed:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      });
       this.handleError(error);
       // Clear any partial state on error
       this.clearAuthState();
@@ -362,7 +332,7 @@ export class AuthService {
     try {
       this.setState({ isLoading: true, error: null });
 
-      const storedTokens = this.getStoredTokens();
+      const storedTokens = tokenStorage.getTokens();
       if (!storedTokens?.refreshToken) {
         throw new Error("No refresh token available");
       }

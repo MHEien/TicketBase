@@ -21,10 +21,11 @@
     "axios": "^1.6.0"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
+    "@types/react": "^19",
     "@repo/typescript-config": "*",
     "tsup": "^8.0.0",
     "typescript": "^5.3.3"

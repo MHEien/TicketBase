@@ -56,7 +56,7 @@ export function AuthProvider({ children, baseUrl }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>({
     user: null,
     tokens: getStoredTokens(),
-    isLoading: true,
+    isLoading: false,
     error: null,
   });
 
@@ -144,13 +144,13 @@ export function AuthProvider({ children, baseUrl }: AuthProviderProps) {
   // Initial auth state restoration
   useEffect(() => {
     const restoreAuth = async () => {
-      try {
-        const tokens = getStoredTokens();
-        if (!tokens?.accessToken) {
-          updateState({ isLoading: false });
-          return;
-        }
+      const tokens = getStoredTokens();
+      if (!tokens?.accessToken) {
+        return;
+      }
 
+      try {
+        updateState({ isLoading: true });
         const user = await serverAuth.getSession(tokens.accessToken);
         updateState({ user, isLoading: false });
       } catch (error) {

@@ -44,7 +44,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           baseUrl={process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}
         >
           <QueryProvider>
-            {children}
+            <main>
+              {children}
+            </main>
             <Scripts />
           </QueryProvider>
         </AuthProvider>

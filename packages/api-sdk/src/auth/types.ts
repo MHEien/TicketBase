@@ -106,6 +106,11 @@ export interface LoginResponse {
   user: AuthUser;
 }
 
+export interface RegisterResponse {
+  tokens: AuthTokens;
+  user: AuthUser;
+}
+
 export interface TokenResponse {
   accessToken: string;
   refreshToken: string;

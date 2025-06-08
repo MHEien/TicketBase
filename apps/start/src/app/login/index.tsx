@@ -38,10 +38,7 @@ export const Route = createFileRoute({
   component: LoginPage,
   validateSearch: (search: Record<string, unknown>): LoginSearchParams => {
     return {
-      error: search.error as
-        | "session_expired"
-        | "credentials_signin"
-        | undefined,
+      error: search.error as LoginSearchParams["error"],
     };
   },
 });
@@ -57,8 +54,14 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error: authError } = useAuth();
+  const auth = useAuth();
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  console.log("Auth context state:", {
+    isLoading: auth.isLoading,
+    hasLogin: !!auth.login,
+    hasUser: !!auth.user,
+  });
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -68,41 +71,44 @@ function LoginPage() {
     },
   });
 
-  const { error } = Route.useSearch();
+  const search = Route.useSearch();
 
   async function onSubmit(data: LoginFormValues) {
+    console.log("Form submitted with:", { email: data.email });
     setLoginError(null);
 
-    try {
-      console.log("Attempting login with:", { email: data.email });
+    if (!auth.login) {
+      console.error("Login function is not available in auth context");
+      setLoginError("Authentication service is not available");
+      return;
+    }
 
-      await login({
+    try {
+      console.log("Calling login function...");
+      await auth.login({
         email: data.email,
         password: data.password,
       });
 
-      console.log("Login successful");
+      console.log("Login successful, checking auth state:", {
+        user: !!auth.user,
+        tokens: !!auth.tokens,
+      });
 
       // If we get here, login was successful
       router.navigate({ to: "/admin" });
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Login error:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      });
 
       // Set a user-friendly error message
       setLoginError(
         error.message ||
           "Failed to sign in. Please check your credentials and try again.",
       );
-
-      // Handle error types
-      if (error.response?.status === 401) {
-        router.navigate({
-          to: "/login",
-          search: { error: "invalid_credentials" },
-        });
-      } else {
-        router.navigate({ to: "/login", search: { error: "auth_error" } });
-      }
     }
   }
 
@@ -120,10 +126,10 @@ function LoginPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {(error || loginError || authError) && (
+              {(search.error || loginError) && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {loginError || authError?.message || error}
+                    {loginError || getErrorMessage(search.error)}
                   </AlertDescription>
                 </Alert>
               )}
@@ -139,7 +145,7 @@ function LoginPage() {
                         placeholder="your.email@example.com"
                         type="email"
                         autoComplete="email"
-                        disabled={isLoading}
+                        disabled={auth.isLoading}
                         {...field}
                       />
                     </FormControl>
@@ -159,7 +165,7 @@ function LoginPage() {
                         placeholder="******"
                         type="password"
                         autoComplete="current-password"
-                        disabled={isLoading}
+                        disabled={auth.isLoading}
                         {...field}
                       />
                     </FormControl>
@@ -168,8 +174,13 @@ function LoginPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={auth.isLoading}
+                onClick={() => console.log("Submit button clicked")}
+              >
+                {auth.isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
           </Form>
@@ -188,4 +199,17 @@ function LoginPage() {
       </Card>
     </div>
   );
+}
+
+function getErrorMessage(error: LoginSearchParams["error"]) {
+  switch (error) {
+    case "session_expired":
+      return "Your session has expired. Please sign in again.";
+    case "invalid_credentials":
+      return "Invalid email or password.";
+    case "auth_error":
+      return "An error occurred during authentication. Please try again.";
+    default:
+      return "An unexpected error occurred. Please try again.";
+  }
 }

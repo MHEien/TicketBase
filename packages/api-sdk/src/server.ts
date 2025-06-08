@@ -1,5 +1,5 @@
 import { ServerAuthService } from "./auth/server-auth";
-import type { AuthUser, AuthTokens } from "./auth/types";
+import type { AuthUser, AuthTokens, LoginCredentials, RegisterData, LoginResponse, RegisterResponse } from "./auth/types";
 
 let authService: ServerAuthService | null = null;
 
@@ -101,4 +101,14 @@ export async function refreshUserSession(refreshToken: string): Promise<{
       error: "refresh_failed",
     };
   }
+}
+
+export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
+  const response = await getAuthService().login(credentials);
+  return response;
+}
+
+export async function register(data: RegisterData): Promise<RegisterResponse> {
+  const response = await getAuthService().register(data);
+  return response;
 }

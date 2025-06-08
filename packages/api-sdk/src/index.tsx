@@ -6,6 +6,8 @@ export {
   getUser,
   validateSession,
   refreshUserSession,
+  login,
+  register,
 } from "./server";
 
 // Re-export types
