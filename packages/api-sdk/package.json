@@ -10,8 +10,8 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.tsx --format esm,cjs --dts --external react --watch",
+    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --external react --watch",
     "clean": "rm -rf dist",
     "generate": "react-query-swagger /tanstack /input:../../openapi.json /output:./src/generated/api-client.ts /template:Axios /serviceHost:. /use-recommended-configuration",
     "typecheck": "tsc --noEmit"

@@ -5,9 +5,10 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { AuthProvider, getUser } from "@repo/api-sdk";
+import { AuthProvider } from "@/components/auth-provider";
 import { QueryProvider } from "@/components/query-provider";
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { useAppSession } from "@/utils/session";
 
 import appCss from "@/styles/app.css?url";
 
@@ -24,7 +25,7 @@ export const Route = createRootRoute({
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   beforeLoad: async () => {
-    const user = await getUser()
+    const user = await useAppSession()
     return { user }
   },
   component: RootComponent,
@@ -47,11 +48,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
     <QueryProvider>
-            <main>
-              {children}
+              <AuthProvider>
+                {children}
+              </AuthProvider>
             <TanStackRouterDevtools position="bottom-right" />
             <Scripts />
-            </main>
 
             </QueryProvider>
       </body>

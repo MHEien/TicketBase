@@ -85,7 +85,7 @@ export function Login({ search }: { search: LoginSearchParams }) {
 
     try {
       console.log("Calling login function...");
-      await loginMutation.mutateAsync({
+      loginMutation.mutateAsync({
         data: {
             email: data.email,
             password: data.password,
@@ -125,7 +125,7 @@ export function Login({ search }: { search: LoginSearchParams }) {
               onSubmit={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                form.handleSubmit((data) => onSubmit(data, e))();
+                
               }} 
               className="space-y-4"
             >

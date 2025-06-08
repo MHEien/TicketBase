@@ -1,7 +1,7 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { Login } from '@/components/login'
-import { login } from '@repo/api-sdk'
+import { AuthControllerQuery } from '@repo/api-sdk'
 
 export const loginFn = createServerFn({ method: 'POST' })
   .validator((d: { email: string; password: string }) => d)
@@ -10,9 +10,13 @@ export const loginFn = createServerFn({ method: 'POST' })
 
     try {
       // Use the API SDK login function
-      await login({
+      const user = AuthControllerQuery.useLoginMutation()
+
+      user.mutate({
         email: data.email,
         password: data.password,
+        init: () => {},
+        toJSON: () => ({}),
       })
 
       return {
