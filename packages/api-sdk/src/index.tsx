@@ -8,6 +8,7 @@ export {
   refreshUserSession,
   login,
   register,
+  signOut,
 } from "./server";
 
 // Re-export types

@@ -5,8 +5,9 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { AuthProvider } from "@repo/api-sdk";
+import { AuthProvider, getUser } from "@repo/api-sdk";
 import { QueryProvider } from "@/components/query-provider";
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import appCss from "@/styles/app.css?url";
 
@@ -22,6 +23,10 @@ export const Route = createRootRoute({
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
+  beforeLoad: async () => {
+    const user = await getUser()
+    return { user }
+  },
   component: RootComponent,
 });
 
@@ -34,22 +39,21 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <AuthProvider
-          baseUrl={process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}
-        >
-          <QueryProvider>
+    <QueryProvider>
             <main>
               {children}
-            </main>
+            <TanStackRouterDevtools position="bottom-right" />
             <Scripts />
-          </QueryProvider>
-        </AuthProvider>
+            </main>
+
+            </QueryProvider>
       </body>
     </html>
   );

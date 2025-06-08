@@ -112,3 +112,7 @@ export async function register(data: RegisterData): Promise<RegisterResponse> {
   const response = await getAuthService().register(data);
   return response;
 }
+
+export async function signOut(accessToken: string): Promise<void> {
+  await getAuthService().logout(accessToken);
+}

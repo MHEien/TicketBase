@@ -3,6 +3,7 @@ import { validateSession } from "@repo/api-sdk";
 import { DashboardLayout } from "@/components/admin/dashboard-layout";
 
 export const Route = createFileRoute({
+  /*
   beforeLoad: async () => {
     const { user, isValid, error } = await validateSession(undefined, "admin");
 
@@ -20,5 +21,6 @@ export const Route = createFileRoute({
 
     return { user };
   },
+  */
   component: DashboardLayout,
 });

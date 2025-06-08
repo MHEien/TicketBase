@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { useAuth } from "@repo/api-sdk";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +24,8 @@ import {
   FormMessage,
 } from "@repo/ui/form";
 import { Alert, AlertDescription } from "@repo/ui/alert";
+import { register } from "@repo/api-sdk";
+import { login } from "@repo/api-sdk";
 
 export const Route = createFileRoute({
   component: RegisterPage,
@@ -53,7 +54,6 @@ function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { register, login } = useAuth();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),

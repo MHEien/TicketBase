@@ -13,6 +13,8 @@ import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './app/__root'
+import { Route as LogoutRouteImport } from './app/logout'
+import { Route as AuthedRouteImport } from './app/_authed'
 import { Route as AdminRouteRouteImport } from './app/admin/route'
 import { Route as RegisterIndexRouteImport } from './app/register/index'
 import { Route as OnboardingIndexRouteImport } from './app/onboarding/index'
@@ -33,6 +35,17 @@ import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/set
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
 
 // Create/Update Routes
+
+const LogoutRoute = LogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
@@ -155,6 +168,20 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
       parentRoute: typeof rootRoute
     }
     '/login/': {
@@ -288,6 +315,24 @@ declare module './app/admin/route' {
     FileRoutesByPath['/admin']['id'],
     FileRoutesByPath['/admin']['path'],
     FileRoutesByPath['/admin']['fullPath']
+  >
+}
+declare module './app/_authed' {
+  const createFileRoute: CreateFileRoute<
+    '/_authed',
+    FileRoutesByPath['/_authed']['parentRoute'],
+    FileRoutesByPath['/_authed']['id'],
+    FileRoutesByPath['/_authed']['path'],
+    FileRoutesByPath['/_authed']['fullPath']
+  >
+}
+declare module './app/logout' {
+  const createFileRoute: CreateFileRoute<
+    '/logout',
+    FileRoutesByPath['/logout']['parentRoute'],
+    FileRoutesByPath['/logout']['id'],
+    FileRoutesByPath['/logout']['path'],
+    FileRoutesByPath['/logout']['fullPath']
   >
 }
 declare module './app/login/index' {
@@ -486,6 +531,8 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
+  '': typeof AuthedRoute
+  '/logout': typeof LogoutRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/register': typeof RegisterIndexRoute
@@ -507,6 +554,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/admin': typeof AdminRouteRouteWithChildren
+  '': typeof AuthedRoute
+  '/logout': typeof LogoutRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/register': typeof RegisterIndexRoute
@@ -529,6 +578,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/_authed': typeof AuthedRoute
+  '/logout': typeof LogoutRoute
   '/login/': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/register/': typeof RegisterIndexRoute
@@ -552,6 +603,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/admin'
+    | ''
+    | '/logout'
     | '/login'
     | '/onboarding'
     | '/register'
@@ -572,6 +625,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
+    | ''
+    | '/logout'
     | '/login'
     | '/onboarding'
     | '/register'
@@ -592,6 +647,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/admin'
+    | '/_authed'
+    | '/logout'
     | '/login/'
     | '/onboarding/'
     | '/register/'
@@ -614,6 +671,8 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  AuthedRoute: typeof AuthedRoute
+  LogoutRoute: typeof LogoutRoute
   LoginIndexRoute: typeof LoginIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   RegisterIndexRoute: typeof RegisterIndexRoute
@@ -621,6 +680,8 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
+  AuthedRoute: AuthedRoute,
+  LogoutRoute: LogoutRoute,
   LoginIndexRoute: LoginIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
@@ -637,6 +698,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/admin",
+        "/_authed",
+        "/logout",
         "/login/",
         "/onboarding/",
         "/register/"
@@ -660,6 +723,12 @@ export const routeTree = rootRoute
         "/admin/settings/plugins/$id/",
         "/admin/settings/plugins/submit/"
       ]
+    },
+    "/_authed": {
+      "filePath": "_authed.tsx"
+    },
+    "/logout": {
+      "filePath": "logout.tsx"
     },
     "/login/": {
       "filePath": "login/index.tsx"

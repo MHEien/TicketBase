@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession, useAuth } from "@repo/api-sdk";
 import { Button } from "@repo/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import {
@@ -11,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/dropdown-menu";
+import { useAppSession } from "@/utils/session";
 
 interface AuthStatusProps {
   user?: {
@@ -21,9 +21,12 @@ interface AuthStatusProps {
   } | null;
 }
 
-export function AuthStatus({ user }: AuthStatusProps) {
-  const { logout } = useAuth();
+export function AuthStatus(user: AuthUser) {
   const sessionUser = user || user;
+
+  const { data } = await useAppSession();
+
+  const test = data.userEmail
 
   if (!sessionUser) {
     return null;
@@ -41,12 +44,6 @@ export function AuthStatus({ user }: AuthStatusProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            {sessionUser.image ? (
-              <AvatarImage
-                src={sessionUser.image}
-                alt={sessionUser.name || ""}
-              />
-            ) : null}
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -72,7 +69,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onSelect={() => logout()}>
+        <DropdownMenuItem className="cursor-pointer" onSelect={() => signOut(sessionUser.accessToken || "")}>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
