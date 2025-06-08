@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "@/lib/auth";
+import { useSession } from "@repo/api-sdk";
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession();
+  const { user } = useSession();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
-  }, [session]);
+  }, [user]);
 
   return <>{children}</>;
 }

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "@tanstack/react-router";
-import { signIn } from "@/lib/auth";
+import { useAuth } from "@repo/api-sdk";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,7 +57,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 function LoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { login, isLoading, error: authError } = useAuth();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -70,21 +71,31 @@ function LoginPage() {
   const { error } = Route.useSearch();
 
   async function onSubmit(data: LoginFormValues) {
-    setIsLoading(true);
+    setLoginError(null);
 
     try {
-      await signIn({
+      console.log("Attempting login with:", { email: data.email });
+
+      await login({
         email: data.email,
         password: data.password,
       });
-      
+
+      console.log("Login successful");
+
       // If we get here, login was successful
       router.navigate({ to: "/admin" });
     } catch (error: any) {
       console.error("Login error:", error);
-      
-      // Handle SDK error types
-      if (error.name === 'InvalidCredentialsError') {
+
+      // Set a user-friendly error message
+      setLoginError(
+        error.message ||
+          "Failed to sign in. Please check your credentials and try again.",
+      );
+
+      // Handle error types
+      if (error.response?.status === 401) {
         router.navigate({
           to: "/login",
           search: { error: "invalid_credentials" },
@@ -92,8 +103,6 @@ function LoginPage() {
       } else {
         router.navigate({ to: "/login", search: { error: "auth_error" } });
       }
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -111,9 +120,11 @@ function LoginPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
+              {(error || loginError || authError) && (
                 <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>
+                    {loginError || authError?.message || error}
+                  </AlertDescription>
                 </Alert>
               )}
 

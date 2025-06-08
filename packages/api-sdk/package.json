@@ -1,25 +1,32 @@
 {
-  "name": "@ticketsmonorepo/api-sdk",
-  "version": "0.0.1",
+  "name": "@repo/api-sdk",
+  "version": "0.0.0",
   "private": true,
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup src/index.tsx --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.tsx --format esm,cjs --dts --external react --watch",
     "clean": "rm -rf dist",
-    "generate": "react-query-swagger /tanstack /input:../../openapi.json /output:./src/generated/api-client.ts /template:Axios /serviceHost:. /use-recommended-configuration"
+    "generate": "react-query-swagger /tanstack /input:../../openapi.json /output:./src/generated/api-client.ts /template:Axios /serviceHost:. /use-recommended-configuration",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",
     "axios": "^1.6.0"
   },
-  "devDependencies": {
-    "react-query-swagger": "^15.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
-  },
   "peerDependencies": {
-    "react": "^18.0.0"
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@repo/typescript-config": "*",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.3"
   }
 }

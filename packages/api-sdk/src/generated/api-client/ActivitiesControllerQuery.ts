@@ -60,7 +60,7 @@ export function createActivityMutationKey(): MutationKey {
  * Create a new activity
  * @return Activity created successfully
  */
-export function useCreateActivityMutation<TContext>(options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+export function useCreateActivityMutation<TContext>(options?: Omit<UseMutationOptions<Types.Activity, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.Activity, unknown, void, TContext> {
   const key = createActivityMutationKey();
   
   const metaContext = useContext(QueryMetaContext);
@@ -103,7 +103,7 @@ else if (offset !== undefined)
   return url_;
 }
 
-let getActivitiesDefaultOptions: Omit<UseQueryOptions<void, unknown, void>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<void, unknown, void>, 'queryFn'>> = {
+let getActivitiesDefaultOptions: Omit<UseQueryOptions<Types.Anonymous3, unknown, Types.Anonymous3>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<Types.Anonymous3, unknown, Types.Anonymous3>, 'queryFn'>> = {
 };
 export function getGetActivitiesDefaultOptions() {
   return getActivitiesDefaultOptions;
@@ -141,7 +141,7 @@ export function __getActivities(context: QueryFunctionContext, axiosConfig?: Axi
       context.queryKey[2] as string | undefined,       context.queryKey[3] as Types.Type | undefined,       context.queryKey[4] as Types.Severity | undefined,       context.queryKey[5] as string | undefined,       context.queryKey[6] as number | undefined,       context.queryKey[7] as number | undefined,axiosConfig    );
 }
 
-export function useGetActivitiesQuery<TSelectData = void, TError = unknown>(dto: GetActivitiesActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetActivitiesQuery<TSelectData = Types.Anonymous3, TError = unknown>(dto: GetActivitiesActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<Types.Anonymous3, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * Get activities with filtering and pagination
  * @param search (optional) Search in description, user name, or email
@@ -152,9 +152,9 @@ export function useGetActivitiesQuery<TSelectData = void, TError = unknown>(dto:
  * @param offset (optional) Number of activities to skip
  * @return Activities retrieved successfully
  */
-export function useGetActivitiesQuery<TSelectData = void, TError = unknown>(search?: string | undefined, type?: Types.Type | undefined, severity?: Types.Severity | undefined, dateRange?: string | undefined, limit?: number | undefined, offset?: number | undefined, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useGetActivitiesQuery<TSelectData = void, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<void, TError, TSelectData> | undefined = undefined;
+export function useGetActivitiesQuery<TSelectData = Types.Anonymous3, TError = unknown>(search?: string | undefined, type?: Types.Type | undefined, severity?: Types.Severity | undefined, dateRange?: string | undefined, limit?: number | undefined, offset?: number | undefined, options?: Omit<UseQueryOptions<Types.Anonymous3, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetActivitiesQuery<TSelectData = Types.Anonymous3, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.Anonymous3, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined = undefined;
   let search: any = undefined;
   let type: any = undefined;
@@ -176,10 +176,10 @@ export function useGetActivitiesQuery<TSelectData = void, TError = unknown>(...p
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
 
-  return useQuery<void, TError, TSelectData>({
+  return useQuery<Types.Anonymous3, TError, TSelectData>({
     queryFn: axiosConfig ? (context) => __getActivities(context, axiosConfig) : __getActivities,
     queryKey: getActivitiesQueryKey(search, type, severity, dateRange, limit, offset),
-    ...getActivitiesDefaultOptions as unknown as Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>,
+    ...getActivitiesDefaultOptions as unknown as Omit<UseQueryOptions<Types.Anonymous3, TError, TSelectData>, 'queryKey'>,
     ...options,
   });
 }
@@ -193,7 +193,7 @@ export function useGetActivitiesQuery<TSelectData = void, TError = unknown>(...p
  * @param offset (optional) Number of activities to skip
  * @return Activities retrieved successfully
  */
-export function setGetActivitiesData(queryClient: QueryClient, updater: (data: void | undefined) => void, search?: string | undefined, type?: Types.Type | undefined, severity?: Types.Severity | undefined, dateRange?: string | undefined, limit?: number | undefined, offset?: number | undefined) {
+export function setGetActivitiesData(queryClient: QueryClient, updater: (data: Types.Anonymous3 | undefined) => Types.Anonymous3, search?: string | undefined, type?: Types.Type | undefined, severity?: Types.Severity | undefined, dateRange?: string | undefined, limit?: number | undefined, offset?: number | undefined) {
   queryClient.setQueryData(getActivitiesQueryKey(search, type, severity, dateRange, limit, offset),
     updater
   );
@@ -209,7 +209,7 @@ export function setGetActivitiesData(queryClient: QueryClient, updater: (data: v
  * @param offset (optional) Number of activities to skip
  * @return Activities retrieved successfully
  */
-export function setGetActivitiesDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: void | undefined) => void) {
+export function setGetActivitiesDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Anonymous3 | undefined) => Types.Anonymous3) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -223,7 +223,7 @@ else if (dateRange !== undefined)
   return url_;
 }
 
-let getActivityCountsDefaultOptions: Omit<UseQueryOptions<void, unknown, void>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<void, unknown, void>, 'queryFn'>> = {
+let getActivityCountsDefaultOptions: Omit<UseQueryOptions<Types.Anonymous4, unknown, Types.Anonymous4>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<Types.Anonymous4, unknown, Types.Anonymous4>, 'queryFn'>> = {
 };
 export function getGetActivityCountsDefaultOptions() {
   return getActivityCountsDefaultOptions;
@@ -255,15 +255,15 @@ export function __getActivityCounts(context: QueryFunctionContext, axiosConfig?:
       context.queryKey[2] as string | undefined,axiosConfig    );
 }
 
-export function useGetActivityCountsQuery<TSelectData = void, TError = unknown>(dto: GetActivityCountsActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetActivityCountsQuery<TSelectData = Types.Anonymous4, TError = unknown>(dto: GetActivityCountsActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<Types.Anonymous4, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * Get activity counts by type
  * @param dateRange (optional) Date range filter (1d, 7d, 30d, 90d)
  * @return Activity counts retrieved successfully
  */
-export function useGetActivityCountsQuery<TSelectData = void, TError = unknown>(dateRange?: string | undefined, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useGetActivityCountsQuery<TSelectData = void, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<void, TError, TSelectData> | undefined = undefined;
+export function useGetActivityCountsQuery<TSelectData = Types.Anonymous4, TError = unknown>(dateRange?: string | undefined, options?: Omit<UseQueryOptions<Types.Anonymous4, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetActivityCountsQuery<TSelectData = Types.Anonymous4, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.Anonymous4, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined = undefined;
   let dateRange: any = undefined;
   
@@ -280,10 +280,10 @@ export function useGetActivityCountsQuery<TSelectData = void, TError = unknown>(
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
 
-  return useQuery<void, TError, TSelectData>({
+  return useQuery<Types.Anonymous4, TError, TSelectData>({
     queryFn: axiosConfig ? (context) => __getActivityCounts(context, axiosConfig) : __getActivityCounts,
     queryKey: getActivityCountsQueryKey(dateRange),
-    ...getActivityCountsDefaultOptions as unknown as Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>,
+    ...getActivityCountsDefaultOptions as unknown as Omit<UseQueryOptions<Types.Anonymous4, TError, TSelectData>, 'queryKey'>,
     ...options,
   });
 }
@@ -292,7 +292,7 @@ export function useGetActivityCountsQuery<TSelectData = void, TError = unknown>(
  * @param dateRange (optional) Date range filter (1d, 7d, 30d, 90d)
  * @return Activity counts retrieved successfully
  */
-export function setGetActivityCountsData(queryClient: QueryClient, updater: (data: void | undefined) => void, dateRange?: string | undefined) {
+export function setGetActivityCountsData(queryClient: QueryClient, updater: (data: Types.Anonymous4 | undefined) => Types.Anonymous4, dateRange?: string | undefined) {
   queryClient.setQueryData(getActivityCountsQueryKey(dateRange),
     updater
   );
@@ -303,7 +303,7 @@ export function setGetActivityCountsData(queryClient: QueryClient, updater: (dat
  * @param dateRange (optional) Date range filter (1d, 7d, 30d, 90d)
  * @return Activity counts retrieved successfully
  */
-export function setGetActivityCountsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: void | undefined) => void) {
+export function setGetActivityCountsDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Anonymous4 | undefined) => Types.Anonymous4) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -317,7 +317,7 @@ else if (limit !== undefined)
   return url_;
 }
 
-let getRecentActivitiesDefaultOptions: Omit<UseQueryOptions<void, unknown, void>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<void, unknown, void>, 'queryFn'>> = {
+let getRecentActivitiesDefaultOptions: Omit<UseQueryOptions<Types.Activity[], unknown, Types.Activity[]>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<Types.Activity[], unknown, Types.Activity[]>, 'queryFn'>> = {
 };
 export function getGetRecentActivitiesDefaultOptions() {
   return getRecentActivitiesDefaultOptions;
@@ -349,15 +349,15 @@ export function __getRecentActivities(context: QueryFunctionContext, axiosConfig
       context.queryKey[2] as number | undefined,axiosConfig    );
 }
 
-export function useGetRecentActivitiesQuery<TSelectData = void, TError = unknown>(dto: GetRecentActivitiesActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetRecentActivitiesQuery<TSelectData = Types.Activity[], TError = unknown>(dto: GetRecentActivitiesActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<Types.Activity[], TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * Get recent activities
  * @param limit (optional) Number of activities to return
  * @return Recent activities retrieved successfully
  */
-export function useGetRecentActivitiesQuery<TSelectData = void, TError = unknown>(limit?: number | undefined, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useGetRecentActivitiesQuery<TSelectData = void, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<void, TError, TSelectData> | undefined = undefined;
+export function useGetRecentActivitiesQuery<TSelectData = Types.Activity[], TError = unknown>(limit?: number | undefined, options?: Omit<UseQueryOptions<Types.Activity[], TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetRecentActivitiesQuery<TSelectData = Types.Activity[], TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.Activity[], TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined = undefined;
   let limit: any = undefined;
   
@@ -374,10 +374,10 @@ export function useGetRecentActivitiesQuery<TSelectData = void, TError = unknown
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
 
-  return useQuery<void, TError, TSelectData>({
+  return useQuery<Types.Activity[], TError, TSelectData>({
     queryFn: axiosConfig ? (context) => __getRecentActivities(context, axiosConfig) : __getRecentActivities,
     queryKey: getRecentActivitiesQueryKey(limit),
-    ...getRecentActivitiesDefaultOptions as unknown as Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>,
+    ...getRecentActivitiesDefaultOptions as unknown as Omit<UseQueryOptions<Types.Activity[], TError, TSelectData>, 'queryKey'>,
     ...options,
   });
 }
@@ -386,7 +386,7 @@ export function useGetRecentActivitiesQuery<TSelectData = void, TError = unknown
  * @param limit (optional) Number of activities to return
  * @return Recent activities retrieved successfully
  */
-export function setGetRecentActivitiesData(queryClient: QueryClient, updater: (data: void | undefined) => void, limit?: number | undefined) {
+export function setGetRecentActivitiesData(queryClient: QueryClient, updater: (data: Types.Activity[] | undefined) => Types.Activity[], limit?: number | undefined) {
   queryClient.setQueryData(getRecentActivitiesQueryKey(limit),
     updater
   );
@@ -397,7 +397,7 @@ export function setGetRecentActivitiesData(queryClient: QueryClient, updater: (d
  * @param limit (optional) Number of activities to return
  * @return Recent activities retrieved successfully
  */
-export function setGetRecentActivitiesDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: void | undefined) => void) {
+export function setGetRecentActivitiesDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Activity[] | undefined) => Types.Activity[]) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -410,7 +410,7 @@ url_ = url_.replace("{id}", encodeURIComponent("" + id));
   return url_;
 }
 
-let getActivityByIdDefaultOptions: Omit<UseQueryOptions<void, unknown, void>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<void, unknown, void>, 'queryFn'>> = {
+let getActivityByIdDefaultOptions: Omit<UseQueryOptions<Types.Activity, unknown, Types.Activity>, 'queryKey' | 'queryFn'> & Partial<Pick<UseQueryOptions<Types.Activity, unknown, Types.Activity>, 'queryFn'>> = {
 };
 export function getGetActivityByIdDefaultOptions() {
   return getActivityByIdDefaultOptions;
@@ -442,15 +442,15 @@ export function __getActivityById(context: QueryFunctionContext, axiosConfig?: A
       context.queryKey[2] as string,axiosConfig    );
 }
 
-export function useGetActivityByIdQuery<TSelectData = void, TError = unknown>(dto: GetActivityByIdActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetActivityByIdQuery<TSelectData = Types.Activity, TError = unknown>(dto: GetActivityByIdActivitiesControllerQueryParameters, options?: Omit<UseQueryOptions<Types.Activity, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
 /**
  * Get activity by ID
  * @param id Activity ID
  * @return Activity retrieved successfully
  */
-export function useGetActivityByIdQuery<TSelectData = void, TError = unknown>(id: string, options?: Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
-export function useGetActivityByIdQuery<TSelectData = void, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
-  let options: UseQueryOptions<void, TError, TSelectData> | undefined = undefined;
+export function useGetActivityByIdQuery<TSelectData = Types.Activity, TError = unknown>(id: string, options?: Omit<UseQueryOptions<Types.Activity, TError, TSelectData>, 'queryKey'>, axiosConfig?: Partial<AxiosRequestConfig>): UseQueryResult<TSelectData, TError>;
+export function useGetActivityByIdQuery<TSelectData = Types.Activity, TError = unknown>(...params: any []): UseQueryResult<TSelectData, TError> {
+  let options: UseQueryOptions<Types.Activity, TError, TSelectData> | undefined = undefined;
   let axiosConfig: AxiosRequestConfig |undefined = undefined;
   let id: any = undefined;
   
@@ -467,10 +467,10 @@ export function useGetActivityByIdQuery<TSelectData = void, TError = unknown>(..
   const metaContext = useContext(QueryMetaContext);
   options = addMetaToOptions(options, metaContext);
 
-  return useQuery<void, TError, TSelectData>({
+  return useQuery<Types.Activity, TError, TSelectData>({
     queryFn: axiosConfig ? (context) => __getActivityById(context, axiosConfig) : __getActivityById,
     queryKey: getActivityByIdQueryKey(id),
-    ...getActivityByIdDefaultOptions as unknown as Omit<UseQueryOptions<void, TError, TSelectData>, 'queryKey'>,
+    ...getActivityByIdDefaultOptions as unknown as Omit<UseQueryOptions<Types.Activity, TError, TSelectData>, 'queryKey'>,
     ...options,
   });
 }
@@ -479,7 +479,7 @@ export function useGetActivityByIdQuery<TSelectData = void, TError = unknown>(..
  * @param id Activity ID
  * @return Activity retrieved successfully
  */
-export function setGetActivityByIdData(queryClient: QueryClient, updater: (data: void | undefined) => void, id: string) {
+export function setGetActivityByIdData(queryClient: QueryClient, updater: (data: Types.Activity | undefined) => Types.Activity, id: string) {
   queryClient.setQueryData(getActivityByIdQueryKey(id),
     updater
   );
@@ -490,7 +490,7 @@ export function setGetActivityByIdData(queryClient: QueryClient, updater: (data:
  * @param id Activity ID
  * @return Activity retrieved successfully
  */
-export function setGetActivityByIdDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: void | undefined) => void) {
+export function setGetActivityByIdDataByQueryId(queryClient: QueryClient, queryKey: QueryKey, updater: (data: Types.Activity | undefined) => Types.Activity) {
   queryClient.setQueryData(queryKey, updater);
 }
     
@@ -516,7 +516,7 @@ export function deleteActivityMutationKey(id: string): MutationKey {
  * @param id Activity ID
  * @return Activity deleted successfully
  */
-export function useDeleteActivityMutation<TContext>(id: string, options?: Omit<UseMutationOptions<void, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<void, unknown, void, TContext> {
+export function useDeleteActivityMutation<TContext>(id: string, options?: Omit<UseMutationOptions<Types.Anonymous5, unknown, void, TContext>, 'mutationKey' | 'mutationFn'>): UseMutationResult<Types.Anonymous5, unknown, void, TContext> {
   const key = deleteActivityMutationKey(id);
   
   const metaContext = useContext(QueryMetaContext);
@@ -536,7 +536,7 @@ type DeleteActivity__MutationParameters = DeleteActivityActivitiesControllerQuer
  * @param id Activity ID
  * @return Activity deleted successfully
  */
-export function useDeleteActivityMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<void, unknown, DeleteActivity__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: DeleteActivityActivitiesControllerQueryParameters}): UseMutationResult<void, unknown, DeleteActivity__MutationParameters, TContext> {
+export function useDeleteActivityMutationWithParameters<TContext>(options?: Omit<UseMutationOptions<Types.Anonymous5, unknown, DeleteActivity__MutationParameters, TContext>, 'mutationKey' | 'mutationFn'> & { parameters?: DeleteActivityActivitiesControllerQueryParameters}): UseMutationResult<Types.Anonymous5, unknown, DeleteActivity__MutationParameters, TContext> {
   const key = deleteActivityMutationKey(options?.parameters?.id!);
   
   const metaContext = useContext(QueryMetaContext);

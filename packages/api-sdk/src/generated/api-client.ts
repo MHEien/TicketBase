@@ -3942,6 +3942,50 @@ export interface ISalesAnalytics {
     [key: string]: any;
 }
 
+export class Activity implements IActivity {
+
+    [key: string]: any;
+
+    constructor(data?: IActivity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Activity {
+        data = typeof data === 'object' ? data : {};
+        let result = new Activity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IActivity {
+
+    [key: string]: any;
+}
+
 export enum Status {
     Draft = "draft",
     Published = "published",
@@ -4191,6 +4235,188 @@ export interface IAnonymous2 {
     pluginId?: string;
     /** Version used for storage */
     version?: string;
+
+    [key: string]: any;
+}
+
+export class Anonymous3 implements IAnonymous3 {
+    activities?: Activity[];
+    /** Total number of activities */
+    total?: number;
+
+    [key: string]: any;
+
+    constructor(data?: IAnonymous3) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["activities"])) {
+                this.activities = [] as any;
+                for (let item of _data["activities"])
+                    this.activities!.push(Activity.fromJS(item));
+            }
+            this.total = _data["total"];
+        }
+    }
+
+    static fromJS(data: any): Anonymous3 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Anonymous3();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.activities)) {
+            data["activities"] = [];
+            for (let item of this.activities)
+                data["activities"].push(item.toJSON());
+        }
+        data["total"] = this.total;
+        return data;
+    }
+}
+
+export interface IAnonymous3 {
+    activities?: Activity[];
+    /** Total number of activities */
+    total?: number;
+
+    [key: string]: any;
+}
+
+export class Anonymous4 implements IAnonymous4 {
+    total?: number;
+    financial?: number;
+    eventManagement?: number;
+    userManagement?: number;
+    administrative?: number;
+    security?: number;
+    marketing?: number;
+
+    [key: string]: any;
+
+    constructor(data?: IAnonymous4) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.total = _data["total"];
+            this.financial = _data["financial"];
+            this.eventManagement = _data["eventManagement"];
+            this.userManagement = _data["userManagement"];
+            this.administrative = _data["administrative"];
+            this.security = _data["security"];
+            this.marketing = _data["marketing"];
+        }
+    }
+
+    static fromJS(data: any): Anonymous4 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Anonymous4();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["total"] = this.total;
+        data["financial"] = this.financial;
+        data["eventManagement"] = this.eventManagement;
+        data["userManagement"] = this.userManagement;
+        data["administrative"] = this.administrative;
+        data["security"] = this.security;
+        data["marketing"] = this.marketing;
+        return data;
+    }
+}
+
+export interface IAnonymous4 {
+    total?: number;
+    financial?: number;
+    eventManagement?: number;
+    userManagement?: number;
+    administrative?: number;
+    security?: number;
+    marketing?: number;
+
+    [key: string]: any;
+}
+
+export class Anonymous5 implements IAnonymous5 {
+    message?: string;
+
+    [key: string]: any;
+
+    constructor(data?: IAnonymous5) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.message = _data["message"];
+        }
+    }
+
+    static fromJS(data: any): Anonymous5 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Anonymous5();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["message"] = this.message;
+        return data;
+    }
+}
+
+export interface IAnonymous5 {
+    message?: string;
 
     [key: string]: any;
 }
@@ -4556,6 +4782,10 @@ export function initPersister() {
   addResultTypeFactory('AnalyticsControllerClient___getSalesAnalytics', (data: any) => { const result = new SalesAnalytics(); result.init(data); return result; });
 
 
+  addResultTypeFactory('ActivitiesControllerClient___getActivities', (data: any) => { const result = new Anonymous3(); result.init(data); return result; });
+  addResultTypeFactory('ActivitiesControllerClient___getActivityCounts', (data: any) => { const result = new Anonymous4(); result.init(data); return result; });
+  addResultTypeFactory('ActivitiesControllerClient___getRecentActivities', (data: any) => { const result = new Activity(); result.init(data); return result; });
+  addResultTypeFactory('ActivitiesControllerClient___getActivityById', (data: any) => { const result = new Activity(); result.init(data); return result; });
 
 
 }

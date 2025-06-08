@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "@tanstack/react-router";
-import { useSession } from "@/lib/auth";
+import { useSession } from "@repo/api-sdk";
 import {
   Pencil,
   Trash2,
@@ -60,8 +60,8 @@ import {
 } from "@repo/ui/alert-dialog";
 import { Badge } from "@repo/ui/badge";
 import { toast } from "@repo/ui/use-toast";
-import { Department } from "@/types/department";
-import { getDepartments, deleteDepartment } from "@/lib/api/departments";
+import { Department } from "@repo/api-sdk";
+import { DepartmentsControllerQuery } from "@repo/api-sdk";
 
 export const Route = createFileRoute({
   component: DepartmentsPage,
@@ -73,18 +73,23 @@ function DepartmentsPage() {
     [],
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user } = useSession();
 
-  const organizationId = session?.user?.organizationId;
+  const organizationId = user?.organizationId;
+
+  const { data, isLoading } = DepartmentsControllerQuery.useFindAllQuery({
+    organizationId: organizationId!,
+  });
+
+
 
   useEffect(() => {
-    if (organizationId) {
-      fetchDepartments();
+    if (data) {
+      setDepartments(data);
     }
-  }, [organizationId]);
+  }, [data]);
 
   useEffect(() => {
     if (departments.length > 0) {
@@ -99,48 +104,7 @@ function DepartmentsPage() {
     }
   }, [searchQuery, departments]);
 
-  const fetchDepartments = async () => {
-    if (!organizationId) return;
 
-    setIsLoading(true);
-    try {
-      const data = await getDepartments(organizationId);
-      setDepartments(data);
-      setFilteredDepartments(data);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch departments",
-        variant: "destructive",
-      });
-      console.error("Error fetching departments:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!organizationId) return;
-
-    setDeletingId(id);
-    try {
-      await deleteDepartment(id, organizationId);
-      toast({
-        title: "Success",
-        description: "Department deleted successfully",
-      });
-      fetchDepartments();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete department",
-        variant: "destructive",
-      });
-      console.error("Error deleting department:", error);
-    } finally {
-      setDeletingId(null);
-    }
-  };
 
   return (
     <div className="container mx-auto py-6">
@@ -300,7 +264,9 @@ function DepartmentsPage() {
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleDelete(department.id)}
+                                  onClick={() =>
+                                    DepartmentsControllerQuery.useRemoveMutation(department.id, organizationId!)
+                                  }
                                   disabled={deletingId === department.id}
                                 >
                                   {deletingId === department.id

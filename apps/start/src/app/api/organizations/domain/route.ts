@@ -1,57 +1,54 @@
-import { getSession } from "@/lib/auth";
+import { ServerAuthService } from "@repo/api-sdk";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+// Initialize services
+const authService = new ServerAuthService(apiBaseUrl);
+
 // Update organization domain settings
 export async function PATCH(request: Request) {
   try {
-    const session = await getSession();
-
-    // Ensure the user is authenticated
-    if (!session?.data?.user || !session.data?.session.token) {
+    // Get the authorization header
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
     }
 
-    // Get request body
-    const body = await request.json();
-
-    // Get the user's organization ID by fetching user profile
-    const userResponse = await fetch(`${apiBaseUrl}/auth/session`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.data.session.token}`,
-      },
-    });
-
-    if (!userResponse.ok) {
+    // Extract and validate access token
+    const accessToken = authHeader.split(" ")[1];
+    if (!accessToken) {
       return Response.json(
-        { message: "Failed to fetch user data" },
-        { status: userResponse.status },
+        { message: "Invalid authorization token" },
+        { status: 401 },
       );
     }
 
-    const userData = await userResponse.json();
-    const organizationId = userData.organizationId;
+    // Get the user session
+    const user = await authService.getSession(accessToken);
 
-    if (!organizationId) {
+    // Ensure the user has an organization
+    if (!user.organizationId) {
       return Response.json(
         { message: "Organization ID not found" },
         { status: 400 },
       );
     }
 
+    // Get request body
+    const body = await request.json();
+
     // Update organization details via API
     const response = await fetch(
-      `${apiBaseUrl}/api/organizations/${organizationId}`,
+      `${apiBaseUrl}/api/organizations/${user.organizationId}`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.data.session.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           customDomain: body.customDomain,
@@ -66,19 +63,17 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // Generate a domain verification token
-    // In a real implementation, this might be done on the backend
+    // If domain is set, generate and update verification token
     if (body.customDomain && body.customDomain !== "") {
-      // If domain is set, generate a verification token and update it
       const verificationToken = generateVerificationToken();
 
       const verifyResponse = await fetch(
-        `${apiBaseUrl}/api/organizations/${organizationId}/domain-verification`,
+        `${apiBaseUrl}/api/organizations/${user.organizationId}/domain-verification`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.data.session.token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
             domainVerificationToken: verificationToken,

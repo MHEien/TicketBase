@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
-import { useSession } from "@/lib/auth";
+import { useSession } from "@repo/api-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -33,8 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select";
-import { createDepartment, getDepartments } from "@/lib/api/departments";
-import { Department, CreateDepartmentRequest } from "@/types/department";
+import { DepartmentsControllerQuery } from "@repo/api-sdk";
+import { Department, CreateDepartmentDto } from "@repo/api-sdk";
 
 export const Route = createFileRoute({
   component: NewDepartmentPage,
@@ -60,11 +60,11 @@ const formSchema = z.object({
 
 export default function NewDepartmentPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user } = useSession();
   const [submitting, setSubmitting] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
 
-  const organizationId = session?.user?.organizationId;
+  const organizationId = user?.organizationId;
 
   useEffect(() => {
     if (organizationId) {
@@ -76,8 +76,10 @@ export default function NewDepartmentPage() {
     if (!organizationId) return;
 
     try {
-      const data = await getDepartments(organizationId);
-      setDepartments(data);
+      const data = await DepartmentsControllerQuery.useFindAllQuery({
+        organizationId: organizationId,
+      });
+      setDepartments(data.data || []);
     } catch (error) {
       toast({
         title: "Error",
@@ -109,6 +111,8 @@ export default function NewDepartmentPage() {
     }
   }, [organizationId, form]);
 
+  const createDepartmentMutation = DepartmentsControllerQuery.useCreateMutation();
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!organizationId) {
       toast({
@@ -121,15 +125,19 @@ export default function NewDepartmentPage() {
 
     setSubmitting(true);
     try {
-      const departmentData: CreateDepartmentRequest = {
+      const departmentData: CreateDepartmentDto = {
         ...values,
         organizationId,
+        init: () => {},
+        toJSON: () => ({}),
         settings: {
-          color: "#3498db", // Default color
+          color: "#3498db",
+          init: () => {},
+          toJSON: () => ({}),
         },
       };
 
-      await createDepartment(departmentData);
+      await createDepartmentMutation.mutateAsync(departmentData);
       toast({
         title: "Success",
         description: "Department created successfully",

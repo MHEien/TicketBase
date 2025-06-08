@@ -1,43 +1,37 @@
-import { getSession } from "@/lib/auth";
+import { ServerAuthService } from "@repo/api-sdk";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+// Initialize services
+const authService = new ServerAuthService(apiBaseUrl);
+
 // Get organization settings
 export async function GET(request: Request) {
   try {
-    const session = await getSession();
-
-    // Ensure the user is authenticated
-    if (!session?.data?.user || !session.data?.session.token) {
+    // Get the authorization header
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
     }
 
-    // Get the user's organization ID from the session
-    const userId = session.data.user.id;
-
-    // First, get the user profile to find their organization
-    const userResponse = await fetch(`${apiBaseUrl}/auth/session`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.data.session.token}`,
-      },
-    });
-
-    if (!userResponse.ok) {
+    // Extract and validate access token
+    const accessToken = authHeader.split(" ")[1];
+    if (!accessToken) {
       return Response.json(
-        { message: "Failed to fetch user data" },
-        { status: userResponse.status },
+        { message: "Invalid authorization token" },
+        { status: 401 },
       );
     }
 
-    const userData = await userResponse.json();
-    const organizationId = userData.organizationId;
+    // Get the user session
+    const user = await authService.getSession(accessToken);
 
-    if (!organizationId) {
+    // Ensure the user has an organization
+    if (!user.organizationId) {
       return Response.json(
         { message: "Organization ID not found" },
         { status: 400 },
@@ -46,14 +40,12 @@ export async function GET(request: Request) {
 
     // Fetch organization details
     const response = await fetch(
-      `${apiBaseUrl}/api/organizations/${organizationId}`,
+      `${apiBaseUrl}/api/organizations/${user.organizationId}`,
       {
-        method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.data.session.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
-      },
+      }
     );
 
     if (!response.ok) {
@@ -77,52 +69,46 @@ export async function GET(request: Request) {
 // Update organization settings
 export async function PATCH(request: Request) {
   try {
-    const session = await getSession();
-
-    // Ensure the user is authenticated
-    if (!session?.data?.user || !session.data?.session.token) {
+    // Get the authorization header
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
     }
 
-    // Get request body
-    const body = await request.json();
-
-    // Get the user's organization ID from the session by fetching the user profile
-    const userResponse = await fetch(`${apiBaseUrl}/auth/session`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.data.session.token}`,
-      },
-    });
-
-    if (!userResponse.ok) {
+    // Extract and validate access token
+    const accessToken = authHeader.split(" ")[1];
+    if (!accessToken) {
       return Response.json(
-        { message: "Failed to fetch user data" },
-        { status: userResponse.status },
+        { message: "Invalid authorization token" },
+        { status: 401 },
       );
     }
 
-    const userData = await userResponse.json();
-    const organizationId = userData.organizationId;
+    // Get the user session
+    const user = await authService.getSession(accessToken);
 
-    if (!organizationId) {
+    // Ensure the user has an organization
+    if (!user.organizationId) {
       return Response.json(
         { message: "Organization ID not found" },
         { status: 400 },
       );
     }
 
-    // Update organization details via API
+    // Get request body
+    const body = await request.json();
+
+    // Update organization details
     const response = await fetch(
-      `${apiBaseUrl}/api/organizations/${organizationId}`,
+      `${apiBaseUrl}/api/organizations/${user.organizationId}`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.data.session.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           name: body.name,
@@ -133,7 +119,7 @@ export async function PATCH(request: Request) {
           favicon: body.favicon,
           checkoutMessage: body.checkoutMessage,
         }),
-      },
+      }
     );
 
     if (!response.ok) {

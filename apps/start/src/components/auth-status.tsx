@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "@/lib/auth";
+import { useSession, useAuth } from "@repo/api-sdk";
 import { Button } from "@repo/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import {
@@ -22,8 +22,8 @@ interface AuthStatusProps {
 }
 
 export function AuthStatus({ user }: AuthStatusProps) {
-  const { data: session } = useSession();
-  const sessionUser = session?.user || user;
+  const { logout } = useAuth();
+  const sessionUser = user || user;
 
   if (!sessionUser) {
     return null;
@@ -72,7 +72,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onSelect={() => signOut()}>
+        <DropdownMenuItem className="cursor-pointer" onSelect={() => logout()}>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

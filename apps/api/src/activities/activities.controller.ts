@@ -23,7 +23,11 @@ import {
   CreateActivityDto,
   GetActivitiesDto,
 } from './activities.service';
-import { ActivityType, ActivitySeverity } from './entities/activity.entity';
+import {
+  Activity,
+  ActivityType,
+  ActivitySeverity,
+} from './entities/activity.entity';
 
 interface RequestWithUser {
   user: {
@@ -44,6 +48,7 @@ export class ActivitiesController {
   @ApiResponse({
     status: 201,
     description: 'Activity created successfully',
+    type: Activity,
   })
   async createActivity(
     @Body()
@@ -62,6 +67,19 @@ export class ActivitiesController {
   @ApiResponse({
     status: 200,
     description: 'Activities retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        activities: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Activity' },
+        },
+        total: {
+          type: 'number',
+          description: 'Total number of activities',
+        },
+      },
+    },
   })
   @ApiQuery({
     name: 'search',
@@ -126,6 +144,18 @@ export class ActivitiesController {
   @ApiResponse({
     status: 200,
     description: 'Activity counts retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        total: { type: 'number' },
+        financial: { type: 'number' },
+        eventManagement: { type: 'number' },
+        userManagement: { type: 'number' },
+        administrative: { type: 'number' },
+        security: { type: 'number' },
+        marketing: { type: 'number' },
+      },
+    },
   })
   @ApiQuery({
     name: 'dateRange',
@@ -148,6 +178,7 @@ export class ActivitiesController {
   @ApiResponse({
     status: 200,
     description: 'Recent activities retrieved successfully',
+    type: [Activity],
   })
   @ApiQuery({
     name: 'limit',
@@ -170,6 +201,7 @@ export class ActivitiesController {
   @ApiResponse({
     status: 200,
     description: 'Activity retrieved successfully',
+    type: Activity,
   })
   @ApiParam({
     name: 'id',
@@ -185,6 +217,15 @@ export class ActivitiesController {
   @ApiResponse({
     status: 200,
     description: 'Activity deleted successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Activity deleted successfully',
+        },
+      },
+    },
   })
   @ApiParam({
     name: 'id',

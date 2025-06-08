@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { AuthControllerClient } from "@repo/api-sdk";
 
 export interface OnboardingData {
   organizationDetails: {
@@ -153,21 +154,56 @@ export function OnboardingProvider({
 
   const completeOnboarding = async () => {
     try {
-      // Send the completed onboarding data to the API
-      const response = await fetch("/api/onboarding/complete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Use the SDK's client directly since it accepts the correct payload type
+      await AuthControllerClient.updateUserSettings({
+        data: {
+          onboardingCompleted: true,
+          onboardingCompletedAt: new Date().toISOString(),
+          organizationSettings: {
+            details: {
+              name: onboardingData.organizationDetails.name,
+              website: onboardingData.organizationDetails.website,
+              phone: onboardingData.organizationDetails.phone,
+              address: onboardingData.organizationDetails.address && {
+                street: onboardingData.organizationDetails.address.line1,
+                additionalStreet:
+                  onboardingData.organizationDetails.address.line2,
+                city: onboardingData.organizationDetails.address.city,
+                state: onboardingData.organizationDetails.address.state,
+                postalCode:
+                  onboardingData.organizationDetails.address.postalCode,
+                country: onboardingData.organizationDetails.address.country,
+              },
+            },
+            brandSettings: {
+              primaryColor: onboardingData.brandSettings.primaryColor,
+              secondaryColor: onboardingData.brandSettings.secondaryColor,
+              buttonStyle: onboardingData.brandSettings.buttonStyle,
+              fontFamily: onboardingData.brandSettings.fontFamily,
+              headerStyle: onboardingData.brandSettings.headerStyle,
+              allowGuestCheckout:
+                onboardingData.brandSettings.allowGuestCheckout,
+              defaultCurrency: onboardingData.brandSettings.defaultCurrency,
+            },
+            eventPreferences: {
+              categories: onboardingData.eventPreferences.categories,
+              typicalAttendees:
+                onboardingData.eventPreferences.typicalAttendees,
+              frequency: onboardingData.eventPreferences.frequency,
+              primaryLocation: onboardingData.eventPreferences.primaryLocation,
+            },
+            paymentPreferences: {
+              preferredMethods:
+                onboardingData.paymentDetails.preferredPaymentMethods,
+              feeStrategy: onboardingData.paymentDetails.defaultFeeStrategy,
+              customFeePercentage:
+                onboardingData.paymentDetails.customFeePercentage,
+            },
+          },
         },
-        body: JSON.stringify(onboardingData),
       });
 
-      if (response.ok) {
-        setIsCompleted(true);
-        return;
-      }
-
-      throw new Error("Failed to save onboarding data");
+      setIsCompleted(true);
     } catch (error) {
       console.error("Error saving onboarding data:", error);
       throw error;

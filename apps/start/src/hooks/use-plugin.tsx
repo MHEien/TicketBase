@@ -1,15 +1,37 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { InstalledPlugin } from "../lib/plugin-types";
 import {
-  getTenantPlugins,
-  installPlugin,
-  uninstallPlugin,
-  updatePluginConfig,
-  setPluginEnabled,
-} from "../lib/plugin-api";
+  PluginsControllerQuery,
+  InstalledPluginDto,
+  SimpleInstallPluginDto,
+  UpdatePluginDto,
+  InstalledPluginDtoCategory,
+  PluginResponseDto,
+  InstalledPluginDtoStatus
+} from "@repo/api-sdk";
 import { pluginRegistry } from "../lib/plugin-registry";
+
+// Helper to create a new InstalledPluginDto
+const createInstalledPluginDto = (data: Partial<InstalledPluginDto> | PluginResponseDto): InstalledPluginDto => {
+  const dto = new InstalledPluginDto();
+  dto.id = "";
+  dto.pluginId = "";
+  dto.organizationId = "";
+  dto.name = "";
+  dto.version = "";
+  dto.description = "";
+  dto.category = InstalledPluginDtoCategory.Payment;
+  dto.status = InstalledPluginDtoStatus.Active;
+  dto.enabled = false;
+  dto.configuration = {};
+  dto.installedAt = new Date();
+  dto.updatedAt = new Date();
+  dto.metadata = {};
+
+  Object.assign(dto, data);
+  return dto;
+};
 
 // Debug logging helper
 function debugLog(operation: string, details: any) {
@@ -35,7 +57,7 @@ function errorLog(operation: string, error: any, context?: any) {
  * Provides methods for loading, installing, uninstalling, and configuring plugins
  */
 export function usePlugins(organizationId?: string) {
-  const [plugins, setPlugins] = useState<InstalledPlugin[]>([]);
+  const [plugins, setPlugins] = useState<InstalledPluginDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -52,315 +74,129 @@ export function usePlugins(organizationId?: string) {
         description: "Starting to load plugins for organization",
       });
 
-      const response = await getTenantPlugins(organizationId);
-
-      if (!response.success) {
-        const errorMessage = response.error || "Failed to load plugins";
-        throw new Error(errorMessage);
-      }
+      const { data } = await PluginsControllerQuery.useFindAllQuery();
+      
+      // Transform response data to InstalledPluginDto
+      const installedPlugins = data?.map(plugin => createInstalledPluginDto(plugin)) || [];
 
       debugLog(`${operation} - Success`, {
-        pluginCount: response.data?.length || 0,
-        plugins: response.data,
+        pluginCount: installedPlugins.length,
+        plugins: installedPlugins,
       });
 
-      setPlugins(response.data || []);
-
-      // Also update the plugin registry
-      debugLog(`${operation} - Registry Refresh`, {
-        description: "Refreshing plugin registry",
-      });
+      setPlugins(installedPlugins);
 
       await pluginRegistry.refreshPlugins();
 
-      debugLog(`${operation} - Complete`, {
-        description: "Plugin loading completed successfully",
-      });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
-
-      errorLog(operation, err, {
-        organizationId,
-        errorMessage,
-      });
-
+      errorLog(operation, err, { organizationId });
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }
   }, [organizationId]);
 
-  // Initial load
-  useEffect(() => {
-    debugLog("useEffect - Initial Load", {
-      organizationId,
-      description: "Triggering initial plugin load",
-    });
-
-    loadPlugins();
-  }, [loadPlugins]);
-
   // Install a plugin
-  const install = useCallback(
-    async (pluginId: string) => {
-      const operation = "install";
+  const install = useCallback(async (pluginId: string) => {
+    const operation = "install";
 
-      try {
-        debugLog(operation, {
-          pluginId,
-          organizationId,
-          description: "Starting plugin installation",
-        });
+    try {
+      const installDto = new SimpleInstallPluginDto();
+      installDto.pluginId = pluginId;
 
-        const response = await installPlugin(pluginId, organizationId);
+      const { data } = await PluginsControllerQuery.useInstallMutation().mutateAsync(installDto);
 
-        if (!response.success) {
-          const errorMessage = response.error || "Failed to install plugin";
-          throw new Error(errorMessage);
-        }
-
-        const installedPlugin = response.data;
-        if (!installedPlugin) {
-          throw new Error("No plugin data returned from installation");
-        }
-
-        debugLog(`${operation} - Success`, {
-          pluginId,
-          installedPlugin,
-          description: "Plugin installed successfully",
-        });
-
-        // Update local state
-        setPlugins((prev) => {
-          // Check if the plugin already exists
-          const exists = prev.some((p) => p.id === pluginId);
-          if (exists) {
-            debugLog(`${operation} - State Update`, {
-              action: "update existing",
-              pluginId,
-            });
-            return prev.map((p) => (p.id === pluginId ? installedPlugin : p));
-          }
-
-          debugLog(`${operation} - State Update`, {
-            action: "add new",
-            pluginId,
-          });
-          return [...prev, installedPlugin];
-        });
-
-        // Update registry
-        debugLog(`${operation} - Registry Refresh`, {
-          description: "Refreshing plugin registry after installation",
-        });
-        await pluginRegistry.refreshPlugins();
-
-        return installedPlugin;
-      } catch (err) {
-        errorLog(operation, err, {
-          pluginId,
-          organizationId,
-        });
-        throw err;
+      if (!data) {
+        throw new Error("No plugin data returned from installation");
       }
-    },
-    [organizationId],
-  );
 
-  // Uninstall a plugin
-  const uninstall = useCallback(
-    async (pluginId: string) => {
-      const operation = "uninstall";
+      const installedPlugin = createInstalledPluginDto(data);
 
-      try {
-        debugLog(operation, {
-          pluginId,
-          description: "Starting plugin uninstallation",
-        });
+      setPlugins(prev => {
+        const exists = prev.some(p => p.id === pluginId);
+        return exists 
+          ? prev.map(p => p.id === pluginId ? installedPlugin : p)
+          : [...prev, installedPlugin];
+      });
 
-        // Find the installed plugin to get its ID
-        const installedPlugin = plugins.find((p) => p.id === pluginId);
-        if (!installedPlugin) {
-          throw new Error(`Plugin ${pluginId} is not installed`);
-        }
-
-        const installedPluginId = installedPlugin.id;
-
-        const response = await uninstallPlugin(installedPluginId);
-
-        if (!response.success) {
-          const errorMessage = response.error || "Failed to uninstall plugin";
-          throw new Error(errorMessage);
-        }
-
-        debugLog(`${operation} - Success`, {
-          pluginId,
-          installedPluginId,
-          description: "Plugin uninstalled successfully",
-        });
-
-        // Update local state
-        setPlugins((prev) => {
-          const filtered = prev.filter((p) => p.id !== installedPluginId);
-
-          debugLog(`${operation} - State Update`, {
-            removedPluginId: pluginId,
-            remainingCount: filtered.length,
-          });
-
-          return filtered;
-        });
-
-        // Update registry
-        debugLog(`${operation} - Registry Refresh`, {
-          description: "Refreshing plugin registry after uninstallation",
-        });
-        await pluginRegistry.refreshPlugins();
-      } catch (err) {
-        errorLog(operation, err, {
-          pluginId,
-        });
-        throw err;
-      }
-    },
-    [plugins],
-  );
+      await pluginRegistry.refreshPlugins();
+      return installedPlugin;
+    } catch (err) {
+      errorLog(operation, err, { pluginId, organizationId });
+      throw err;
+    }
+  }, [organizationId]);
 
   // Update plugin configuration
-  const updateConfig = useCallback(
-    async (pluginId: string, config: Record<string, any>) => {
-      const operation = "updateConfig";
+  const updateConfig = useCallback(async (pluginId: string, config: Record<string, any>) => {
+    const operation = "updateConfig";
 
-      try {
-        debugLog(operation, {
-          pluginId,
-          config,
-          description: "Starting plugin configuration update",
-        });
+    try {
+      const { data } = await PluginsControllerQuery.useConfigureMutation(pluginId).mutateAsync();
 
-        // Find the installed plugin to get its ID
-        const installedPlugin = plugins.find((p) => p.id === pluginId);
-        if (!installedPlugin) {
-          throw new Error(`Plugin ${pluginId} is not installed`);
-        }
+      const updatedPlugin = createInstalledPluginDto({
+        ...data,
+        configuration: config
+      });
 
-        const installedPluginId = installedPlugin.id;
+      setPlugins(prev =>
+        prev.map(p => p.id === pluginId ? updatedPlugin : p)
+      );
 
-        const response = await updatePluginConfig(installedPluginId, config);
+      return updatedPlugin;
+    } catch (err) {
+      errorLog(operation, err, { pluginId, config });
+      throw err;
+    }
+  }, []);
 
-        if (!response.success) {
-          const errorMessage =
-            response.error || "Failed to update plugin config";
-          throw new Error(errorMessage);
-        }
+  // Enable/disable plugin
+  const setEnabled = useCallback(async (pluginId: string, enabled: boolean) => {
+    const operation = "setEnabled";
 
-        const updatedPlugin = response.data;
-        if (!updatedPlugin) {
-          throw new Error("No plugin data returned from config update");
-        }
-
-        debugLog(`${operation} - Success`, {
-          pluginId,
-          installedPluginId,
-          updatedPlugin,
-          description: "Plugin configuration updated successfully",
-        });
-
-        // Update local state
-        setPlugins((prev) =>
-          prev.map((p) => (p.id === installedPluginId ? updatedPlugin : p)),
-        );
-
-        // Update registry
-        debugLog(`${operation} - Registry Refresh`, {
-          description: "Refreshing plugin registry after configuration update",
-        });
-        await pluginRegistry.refreshPlugins();
-
-        return updatedPlugin;
-      } catch (err) {
-        errorLog(operation, err, {
-          pluginId,
-          config,
-        });
-        throw err;
+    try {
+      if (enabled) {
+        await PluginsControllerQuery.useEnableMutation(pluginId).mutateAsync();
+      } else {
+        await PluginsControllerQuery.useDisableMutation(pluginId).mutateAsync();
       }
-    },
-    [plugins],
-  );
 
-  // Enable or disable a plugin
-  const toggleEnabled = useCallback(
-    async (pluginId: string, enabled: boolean) => {
-      const operation = "toggleEnabled";
+      setPlugins(prev =>
+        prev.map(p => p.id === pluginId ? createInstalledPluginDto({ ...p, enabled }) : p)
+      );
+    } catch (err) {
+      errorLog(operation, err, { pluginId, enabled });
+      throw err;
+    }
+  }, []);
 
-      try {
-        debugLog(operation, {
-          pluginId,
-          enabled,
-          description: `Starting to ${enabled ? "enable" : "disable"} plugin`,
-        });
+  // Uninstall a plugin
+  const uninstall = useCallback(async (pluginId: string) => {
+    const operation = "uninstall";
 
-        // Find the installed plugin to get its ID
-        const installedPlugin = plugins.find((p) => p.id === pluginId);
-        if (!installedPlugin) {
-          throw new Error(`Plugin ${pluginId} is not installed`);
-        }
+    try {
+      await PluginsControllerQuery.useRemoveMutation(pluginId).mutateAsync();
+      setPlugins(prev => prev.filter(p => p.id !== pluginId));
+      await pluginRegistry.refreshPlugins();
+    } catch (err) {
+      errorLog(operation, err, { pluginId });
+      throw err;
+    }
+  }, []);
 
-        const installedPluginId = installedPlugin.id;
-
-        const response = await setPluginEnabled(installedPluginId, enabled);
-
-        if (!response.success) {
-          const errorMessage =
-            response.error || "Failed to update plugin status";
-          throw new Error(errorMessage);
-        }
-
-        const updatedPlugin = response.data;
-        if (!updatedPlugin) {
-          throw new Error("No plugin data returned from status update");
-        }
-
-        debugLog(`${operation} - Success`, {
-          pluginId,
-          installedPluginId,
-          enabled,
-          updatedPlugin,
-          description: `Plugin ${enabled ? "enabled" : "disabled"} successfully`,
-        });
-
-        // Update local state
-        setPlugins((prev) =>
-          prev.map((p) => (p.id === installedPluginId ? updatedPlugin : p)),
-        );
-
-        // Update registry
-        debugLog(`${operation} - Registry Refresh`, {
-          description: "Refreshing plugin registry after status change",
-        });
-        await pluginRegistry.refreshPlugins();
-
-        return updatedPlugin;
-      } catch (err) {
-        errorLog(operation, err, {
-          pluginId,
-          enabled,
-        });
-        throw err;
-      }
-    },
-    [plugins],
-  );
+  // Initial load
+  useEffect(() => {
+    loadPlugins();
+  }, [loadPlugins]);
 
   return {
     plugins,
     loading,
     error,
-    refreshPlugins: loadPlugins,
-    installPlugin: install,
-    uninstallPlugin: uninstall,
-    updatePluginConfig: updateConfig,
-    setPluginEnabled: toggleEnabled,
+    install,
+    uninstall,
+    updateConfig,
+    setEnabled,
+    loadPlugins,
   };
 }

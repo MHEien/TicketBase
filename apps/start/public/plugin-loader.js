@@ -5,13 +5,18 @@
 
 // Ensure React is available globally for plugins
 (function () {
-  if (window.React) {
-    console.log("Plugin loader: React already available globally");
-  } else {
-    console.error(
-      "Plugin loader: React not found globally. Plugins might not work correctly.",
-    );
+  // Check if React DevTools or React is already properly initialized
+  if (
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__ ||
+    (window.React && window.React.useState)
+  ) {
+    console.log("Plugin loader: React already properly initialized");
+    return;
   }
+
+  console.error(
+    "Plugin loader: React not found globally. Plugins might not work correctly.",
+  );
 
   // Create a global plugin registry if it doesn't exist
   window.__PLUGIN_REGISTRY = window.__PLUGIN_REGISTRY || {

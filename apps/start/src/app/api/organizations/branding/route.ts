@@ -1,50 +1,58 @@
-import { getSession } from "@/lib/auth";
+import { ServerAuthService, AuthControllerClient } from "@repo/api-sdk";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+// Initialize services
+const authService = new ServerAuthService(apiBaseUrl);
+
 // Update organization branding settings
 export async function PATCH(request: Request) {
   try {
-    const session = await getSession();
+    // Get request body
+    const body = await request.json();
 
-    // Ensure the user is authenticated
-    if (!session?.data?.user || !session.data?.session.token) {
+    // Get the authorization header
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
     }
 
-    // Get request body
-    const body = await request.json();
-
-    // Get the user's organization ID
-    const userId = session.data.user.id;
-
-    // Update organization branding via user settings
-    const response = await fetch(`${apiBaseUrl}/auth/user-settings`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.data.session.token}`,
-      },
-      body: JSON.stringify({
-        organizationSettings: body.settings,
-      }),
-    });
-
-    if (!response.ok) {
+    // Extract and validate access token
+    const accessToken = authHeader.split(" ")[1];
+    if (!accessToken) {
       return Response.json(
-        { message: "Failed to update branding settings" },
-        { status: response.status },
+        { message: "Invalid authorization token" },
+        { status: 401 },
       );
     }
 
-    const data = await response.json();
+    // Get the user session
+    const user = await authService.getSession(accessToken);
+
+    // Ensure the user has an organization
+    if (!user.organizationId) {
+      return Response.json(
+        { message: "No organization found" },
+        { status: 404 },
+      );
+    }
+
+    // Update organization branding via user settings
+    await AuthControllerClient.updateUserSettings({
+      data: {
+        organizationSettings: body.settings,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
     return Response.json({
       message: "Branding settings updated successfully",
-      data,
     });
   } catch (error) {
     console.error("Error updating branding settings:", error);

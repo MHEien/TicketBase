@@ -1,3 +1,5 @@
+import { type InstalledPluginDto } from "@repo/api-sdk";
+
 export interface Plugin {
   id: string;
   name: string;
@@ -43,13 +45,7 @@ export interface Plugin {
   requiredPermissions?: string[];
 }
 
-export interface InstalledPlugin extends Plugin {
-  enabled: boolean;
-  tenantId: string;
-  configuration: Record<string, any>;
-  installedAt: Date;
-  updatedAt: Date;
-}
+export type InstalledPlugin = InstalledPluginDto;
 
 // Context type for extension points
 export type ExtensionPointContext = Record<string, any>;

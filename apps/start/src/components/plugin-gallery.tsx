@@ -39,14 +39,21 @@ import { Badge } from "@repo/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/avatar";
 import { Alert, AlertDescription } from "@repo/ui/alert";
-import {
-  fetchAvailablePlugins,
-  installPlugin,
-  uninstallPlugin,
-} from "@/lib/plugin-api";
-import { usePlugins } from "@/hooks/use-plugin";
-import { Plugin, InstalledPlugin } from "@/lib/plugin-types";
+import { 
+  PluginsControllerQuery,
+  useSession
+} from "@repo/api-sdk";
 import { PluginSettings } from "@/components/plugin-settings";
+import { PluginResponseDto, InstalledPluginDto } from "@repo/api-sdk";
+
+// Define interfaces for our component
+
+
+interface Category {
+  id: string;
+  name: string;
+  icon?: React.ElementType;
+}
 
 // Icons map for categories
 const categoryIcons: Record<string, React.ElementType> = {
@@ -66,54 +73,43 @@ export function PluginGallery() {
   const [activeTab, setActiveTab] = useState("all");
   const [showSettings, setShowSettings] = useState<string | null>(null);
 
-  // Get installed plugins using our hook
-  const {
-    plugins: installedPlugins,
-    loading: loadingInstalled,
+  // Get organization context
+  const { user } = useSession();
+
+  // Get installed plugins using the API SDK
+  const { 
+    data: installedPlugins = [], 
+    isLoading: loadingInstalled,
     error: installedError,
-    refreshPlugins,
-  } = usePlugins();
+    refetch: refreshPlugins
+  } = PluginsControllerQuery.useGetInstalledPluginsQuery(user?.organizationId || "");
 
-  // State for marketplace plugins
-  const [availablePlugins, setAvailablePlugins] = useState<Plugin[]>([]);
-  const [loadingAvailable, setLoadingAvailable] = useState(true);
-  const [availableError, setAvailableError] = useState<Error | null>(null);
+  // Get available plugins from marketplace
+  const {
+    data: availablePlugins = [],
+    isLoading: loadingAvailable,
+    error: availableError
+  } = PluginsControllerQuery.useFindAllQuery();
 
-  // State for plugin actions
-  const [actionPlugin, setActionPlugin] = useState<string | null>(null);
-  const [isInstalling, setIsInstalling] = useState(false);
-  const [isUninstalling, setIsUninstalling] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
-
-  // Fetch available plugins from the marketplace
-  useEffect(() => {
-    async function loadAvailablePlugins() {
-      try {
-        setLoadingAvailable(true);
-        setAvailableError(null);
-
-        const response = await fetchAvailablePlugins();
-        if (response.success && response.data) {
-          setAvailablePlugins(response.data);
-        } else {
-          setAvailableError(
-            new Error(response.error || "Failed to load plugins"),
-          );
-        }
-      } catch (error) {
-        setAvailableError(
-          error instanceof Error ? error : new Error(String(error)),
-        );
-      } finally {
-        setLoadingAvailable(false);
-      }
+  // Get category-specific plugins when a category is selected
+  const {
+    data: categoryPlugins = [],
+    isLoading: loadingCategory
+  } = PluginsControllerQuery.useFindByCategoryQuery(
+    activeTab !== "all" && activeTab !== "installed" ? activeTab : "payment", // default to payment if not a valid category
+    {
+      enabled: activeTab !== "all" && activeTab !== "installed"
     }
+  );
 
-    loadAvailablePlugins();
-  }, []);
+  // Plugin installation mutation
+  const installMutation = PluginsControllerQuery.useInstallMutation();
+
+  // Plugin uninstallation mutation
+  const uninstallMutation = PluginsControllerQuery.useUninstallMutation(selectedPlugin || "");
 
   // Prepare data for display
-  const categories = [
+  const categories: Category[] = [
     { id: "all", name: "All Plugins" },
     { id: "installed", name: "Installed" },
     { id: "payment", name: "Payment", icon: CreditCard },
@@ -126,23 +122,27 @@ export function PluginGallery() {
   ];
 
   // Map available plugins to UI format
-  const mappedPlugins = availablePlugins.map((plugin) => {
+  const mappedPlugins = (activeTab === "all" ? availablePlugins : 
+    activeTab === "installed" ? installedPlugins :
+    categoryPlugins).map((plugin: PluginResponseDto | InstalledPluginDto) => {
     // Check if this plugin is installed
-    const installed = installedPlugins.find((p) => p.id === plugin.id);
+    const installed = installedPlugins.find((p: InstalledPluginDto) => 
+      'pluginId' in plugin ? p.pluginId === plugin.id : p.id === plugin.id
+    );
 
     // Get the appropriate icon
     const IconComponent = categoryIcons[plugin.category] || Layers;
 
     return {
       ...plugin,
+      id: 'pluginId' in plugin ? plugin.pluginId : plugin.id,
       installed: !!installed,
-      enabled: installed?.enabled || false,
+      enabled: 'enabled' in plugin ? plugin.enabled : false,
       icon: IconComponent,
-      // Use real data from plugin metadata
       installs: plugin.metadata?.installCount || 0,
-      rating: plugin.metadata?.rating || null, // No default rating
+      rating: plugin.metadata?.rating || null,
       developer: plugin.metadata?.author || "Unknown Developer",
-      developerAvatar: plugin.metadata?.authorAvatar || null, // No placeholder
+      developerAvatar: plugin.metadata?.authorAvatar || null,
     };
   });
 
@@ -156,44 +156,20 @@ export function PluginGallery() {
   // Handle plugin installation
   const handleInstall = async (pluginId: string) => {
     try {
-      setActionPlugin(pluginId);
-      setIsInstalling(true);
-      setActionError(null);
-
-      const response = await installPlugin(pluginId);
-      if (!response.success) {
-        setActionError(response.error || "Failed to install plugin");
-        return;
-      }
-
+      await installMutation.mutateAsync({ pluginId, init: () => {}, toJSON: () => {} });
       await refreshPlugins();
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsInstalling(false);
-      setActionPlugin(null);
+      console.error("Failed to install plugin:", error);
     }
   };
 
   // Handle plugin uninstallation
   const handleUninstall = async (pluginId: string) => {
     try {
-      setActionPlugin(pluginId);
-      setIsUninstalling(true);
-      setActionError(null);
-
-      const response = await uninstallPlugin(pluginId);
-      if (!response.success) {
-        setActionError(response.error || "Failed to uninstall plugin");
-        return;
-      }
-
+      await uninstallMutation.mutateAsync();
       await refreshPlugins();
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsUninstalling(false);
-      setActionPlugin(null);
+      console.error("Failed to uninstall plugin:", error);
     }
   };
 
@@ -202,8 +178,7 @@ export function PluginGallery() {
     setShowSettings(pluginId);
   };
 
-  const loading = loadingInstalled || loadingAvailable;
-  const error = installedError || availableError;
+  const loading = loadingInstalled || loadingAvailable || loadingCategory;
 
   return (
     <div className="h-full space-y-6 overflow-y-auto">
@@ -254,20 +229,6 @@ export function PluginGallery() {
         <div className="flex justify-center py-8">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
-      )}
-
-      {!loading && error && (
-        <Alert variant="destructive" className="my-4">
-          <AlertDescription>
-            {error.message || "Failed to load plugins. Please try again later."}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {actionError && (
-        <Alert variant="destructive" className="my-4">
-          <AlertDescription>{actionError}</AlertDescription>
-        </Alert>
       )}
 
       {showSettings ? (
@@ -455,20 +416,8 @@ export function PluginGallery() {
                                       variant="destructive"
                                       className="w-full"
                                       onClick={() => handleUninstall(plugin.id)}
-                                      disabled={
-                                        isUninstalling &&
-                                        actionPlugin === plugin.id
-                                      }
                                     >
-                                      {isUninstalling &&
-                                      actionPlugin === plugin.id ? (
-                                        <>
-                                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                          Uninstalling
-                                        </>
-                                      ) : (
-                                        "Uninstall"
-                                      )}
+                                      Uninstall
                                     </Button>
                                   </div>
                                 </>
@@ -476,22 +425,8 @@ export function PluginGallery() {
                                 <Button
                                   className="w-full gap-2"
                                   onClick={() => handleInstall(plugin.id)}
-                                  disabled={
-                                    isInstalling && actionPlugin === plugin.id
-                                  }
                                 >
-                                  {isInstalling &&
-                                  actionPlugin === plugin.id ? (
-                                    <>
-                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                      Installing
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Download className="h-4 w-4" />
-                                      Install Plugin
-                                    </>
-                                  )}
+                                  Install Plugin
                                 </Button>
                               );
                             })()}
@@ -576,21 +511,8 @@ export function PluginGallery() {
                             <Button
                               className="gap-2"
                               onClick={() => handleInstall(plugin.id)}
-                              disabled={
-                                isInstalling && actionPlugin === plugin.id
-                              }
                             >
-                              {isInstalling && actionPlugin === plugin.id ? (
-                                <>
-                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                  Installing
-                                </>
-                              ) : (
-                                <>
-                                  <Download className="h-4 w-4" />
-                                  Install Plugin
-                                </>
-                              )}
+                              Install Plugin
                             </Button>
                           );
                         })()}
@@ -609,7 +531,7 @@ export function PluginGallery() {
                         : "space-y-4"
                     }
                   >
-                    {!loading && !error && filteredPlugins.length === 0 && (
+                    {!loading && filteredPlugins.length === 0 && (
                       <div className="col-span-full py-8 text-center">
                         <p className="text-muted-foreground">
                           No plugins found matching your criteria.
@@ -703,22 +625,8 @@ export function PluginGallery() {
                                       e.stopPropagation();
                                       handleInstall(plugin.id);
                                     }}
-                                    disabled={
-                                      isInstalling && actionPlugin === plugin.id
-                                    }
                                   >
-                                    {isInstalling &&
-                                    actionPlugin === plugin.id ? (
-                                      <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Installing
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Download className="h-4 w-4" />
-                                        Install
-                                      </>
-                                    )}
+                                    Install
                                   </Button>
                                 )}
                               </CardFooter>
@@ -792,23 +700,8 @@ export function PluginGallery() {
                                         e.stopPropagation();
                                         handleInstall(plugin.id);
                                       }}
-                                      disabled={
-                                        isInstalling &&
-                                        actionPlugin === plugin.id
-                                      }
                                     >
-                                      {isInstalling &&
-                                      actionPlugin === plugin.id ? (
-                                        <>
-                                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                                          Installing
-                                        </>
-                                      ) : (
-                                        <>
-                                          <Download className="h-3 w-3" />
-                                          <span>Install</span>
-                                        </>
-                                      )}
+                                      Install
                                     </Button>
                                   )}
                                 </div>

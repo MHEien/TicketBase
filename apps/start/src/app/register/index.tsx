@@ -1,7 +1,8 @@
+"use client";
 import { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import Link from "next/link";
-import { signIn, signUp } from "@/lib/auth";
+import { useAuth } from "@repo/api-sdk";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,6 +53,7 @@ function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { register, login } = useAuth();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -70,7 +72,7 @@ function RegisterPage() {
 
     try {
       // Register the user using the SDK
-      await signUp({
+      await register({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -78,7 +80,7 @@ function RegisterPage() {
       });
 
       // On successful registration, sign the user in
-      await signIn({
+      await login({
         email: data.email,
         password: data.password,
       });
@@ -87,11 +89,13 @@ function RegisterPage() {
       router.navigate({ to: "/onboarding" });
     } catch (error: any) {
       console.error("Registration/Login error:", error);
-      
-      if (error.name === 'EmailAlreadyExistsError') {
+
+      if (error.name === "EmailAlreadyExistsError") {
         setError("This email is already registered. Please try logging in.");
-      } else if (error.name === 'InvalidCredentialsError') {
-        setError("Registration successful but sign-in failed. Please try logging in.");
+      } else if (error.name === "InvalidCredentialsError") {
+        setError(
+          "Registration successful but sign-in failed. Please try logging in.",
+        );
       } else {
         setError(error.message || "An error occurred. Please try again.");
       }

@@ -3,8 +3,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
+import react from "@vitejs/plugin-react";
+import federation from "@originjs/vite-plugin-federation";
 
 export default defineConfig({
   server: {
@@ -29,23 +29,28 @@ export default defineConfig({
     }),
     react(),
     federation({
-      name: 'storefront',
-      filename: 'remoteEntry.js',
+      name: "storefront",
+      filename: "remoteEntry.js",
       remotes: {
         // Dynamic remotes will be added at runtime
       },
       exposes: {
         // Expose components that plugins can use
-        './CheckoutContext': './src/components/checkout/CheckoutContext',
-        './PaymentContext': './src/components/checkout/PaymentContext',
+        "./CheckoutContext": "./src/components/checkout/CheckoutContext",
+        "./PaymentContext": "./src/components/checkout/PaymentContext",
       },
-      shared: ['react', 'react-dom', '@ticketsplatform/ui', '@ticketsplatform/plugin-sdk']
-    })
+      shared: [
+        "react",
+        "react-dom",
+        "@ticketsplatform/ui",
+        "@ticketsplatform/plugin-sdk",
+      ],
+    }),
   ],
   build: {
     modulePreload: false,
-    target: 'esnext',
+    target: "esnext",
     minify: false,
-    cssCodeSplit: false
-  }
+    cssCodeSplit: false,
+  },
 });

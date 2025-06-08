@@ -36,8 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/select";
-import { useEvents } from "@/hooks/use-events";
-import { type Event } from "@/lib/api/events-api";
+import { EventsControllerQuery, type EventResponseDto } from "@repo/api-sdk";
 import { EventsLoading } from "@repo/ui/loading-skeleton";
 
 export const Route = createFileRoute({
@@ -52,18 +51,11 @@ function EventsPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
 
   // Fetch events with real API
-  const {
-    events,
-    loading,
-    error,
-    deleteEventMutation,
-    publishEventMutation,
-    cancelEventMutation,
-  } = useEvents();
+  const { data, isLoading, error } = EventsControllerQuery.useFindAllQuery();
 
   // Filter and sort events
   const filteredAndSortedEvents = useMemo(() => {
-    let filtered = events.filter((event) => {
+    let filtered = data?.filter((event) => {
       const matchesSearch =
         searchQuery === "" ||
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -74,6 +66,10 @@ function EventsPage() {
 
       return matchesSearch && matchesCategory;
     });
+
+    if (!filtered) {
+      return [];
+    }
 
     // Sort events
     return filtered.sort((a, b) => {
@@ -88,7 +84,7 @@ function EventsPage() {
       }
       return 0;
     });
-  }, [events, searchQuery, filterCategory, sortBy]);
+  }, [data, searchQuery, filterCategory, sortBy]);
 
   // Group events by status
   const publishedEvents = filteredAndSortedEvents.filter(
@@ -119,7 +115,7 @@ function EventsPage() {
         "Are you sure you want to delete this event? This action cannot be undone.",
       )
     ) {
-      await deleteEventMutation(eventId);
+      await EventsControllerQuery.useRemoveMutation(eventId);
     }
   };
 
@@ -133,12 +129,12 @@ function EventsPage() {
   };
 
   const handlePublishEvent = async (eventId: string) => {
-    await publishEventMutation(eventId);
+    await EventsControllerQuery.usePublishMutation(eventId);
   };
 
   const handleCancelEvent = async (eventId: string) => {
     if (confirm("Are you sure you want to cancel this event?")) {
-      await cancelEventMutation(eventId);
+      await EventsControllerQuery.useCancelMutation(eventId);
     }
   };
 
@@ -149,7 +145,7 @@ function EventsPage() {
     [],
   );
 
-  const renderEventCard = (event: Event) => {
+  const renderEventCard = (event: EventResponseDto) => {
     const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
 
     return (
@@ -294,7 +290,7 @@ function EventsPage() {
     );
   };
 
-  const renderEventList = (event: Event) => {
+  const renderEventList = (event: EventResponseDto) => {
     const isPast = event.endDate ? new Date(event.endDate) < new Date() : false;
 
     return (
@@ -416,7 +412,7 @@ function EventsPage() {
   };
 
   // Loading state
-  if (loading) {
+    if (isLoading) {
     return (
       <div className="container mx-auto py-8">
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -502,6 +498,7 @@ function EventsPage() {
 
   // Error state
   if (error) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to load events";
     return (
       <div className="container mx-auto py-8">
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -523,7 +520,7 @@ function EventsPage() {
               <Clock className="h-6 w-6 text-destructive" />
             </div>
             <CardTitle className="mb-2">Error loading events</CardTitle>
-            <CardDescription className="mb-4 max-w-md">{error}</CardDescription>
+            <CardDescription className="mb-4 max-w-md">{errorMessage}</CardDescription>
             <Button onClick={() => window.location.reload()}>Try Again</Button>
           </CardContent>
         </Card>

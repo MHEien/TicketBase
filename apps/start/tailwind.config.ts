@@ -5,7 +5,7 @@ export default {
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
     "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
-    "./index.html"
+    "./index.html",
   ],
   // Most config is now handled in CSS via @theme
   theme: {

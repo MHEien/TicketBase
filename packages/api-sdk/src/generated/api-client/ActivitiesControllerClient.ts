@@ -17,7 +17,7 @@ import { getAxios, getBaseUrl } from './helpers';
  * Create a new activity
  * @return Activity created successfully
  */
-export function createActivity(config?: AxiosRequestConfig | undefined): Promise<void> {
+export function createActivity(config?: AxiosRequestConfig | undefined): Promise<Types.Activity> {
     let url_ = getBaseUrl() + "/api/activities";
       url_ = url_.replace(/[?&]$/, "");
 
@@ -28,6 +28,7 @@ export function createActivity(config?: AxiosRequestConfig | undefined): Promise
         url: url_,
         headers: {
             ..._requestConfigCreateActivity?.headers,
+            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -43,7 +44,7 @@ export function createActivity(config?: AxiosRequestConfig | undefined): Promise
     });
 }
 
-function processCreateActivity(response: AxiosResponse): Promise<void> {
+function processCreateActivity(response: AxiosResponse): Promise<Types.Activity> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -55,13 +56,16 @@ function processCreateActivity(response: AxiosResponse): Promise<void> {
     }
     if (status === 201) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result201: any = null;
+        let resultData201  = _responseText;
+        result201 = Types.Activity.fromJS(resultData201);
+        return Promise.resolve<Types.Activity>(result201);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<Types.Activity>(null as any);
 }
 
 /**
@@ -74,7 +78,7 @@ function processCreateActivity(response: AxiosResponse): Promise<void> {
  * @param offset (optional) Number of activities to skip
  * @return Activities retrieved successfully
  */
-export function getActivities(search?: string | undefined, type?: Types.Type | undefined, severity?: Types.Severity | undefined, dateRange?: string | undefined, limit?: number | undefined, offset?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function getActivities(search?: string | undefined, type?: Types.Type | undefined, severity?: Types.Severity | undefined, dateRange?: string | undefined, limit?: number | undefined, offset?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.Anonymous3> {
     let url_ = getBaseUrl() + "/api/activities?";
     if (search === null)
         throw new Error("The parameter 'search' cannot be null.");
@@ -109,6 +113,7 @@ export function getActivities(search?: string | undefined, type?: Types.Type | u
         url: url_,
         headers: {
             ..._requestConfigGetActivities?.headers,
+            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -124,7 +129,7 @@ export function getActivities(search?: string | undefined, type?: Types.Type | u
     });
 }
 
-function processGetActivities(response: AxiosResponse): Promise<void> {
+function processGetActivities(response: AxiosResponse): Promise<Types.Anonymous3> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -136,13 +141,16 @@ function processGetActivities(response: AxiosResponse): Promise<void> {
     }
     if (status === 200) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.Anonymous3.fromJS(resultData200);
+        return Promise.resolve<Types.Anonymous3>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<Types.Anonymous3>(null as any);
 }
 
 /**
@@ -150,7 +158,7 @@ function processGetActivities(response: AxiosResponse): Promise<void> {
  * @param dateRange (optional) Date range filter (1d, 7d, 30d, 90d)
  * @return Activity counts retrieved successfully
  */
-export function getActivityCounts(dateRange?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function getActivityCounts(dateRange?: string | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.Anonymous4> {
     let url_ = getBaseUrl() + "/api/activities/counts?";
     if (dateRange === null)
         throw new Error("The parameter 'dateRange' cannot be null.");
@@ -165,6 +173,7 @@ export function getActivityCounts(dateRange?: string | undefined, config?: Axios
         url: url_,
         headers: {
             ..._requestConfigGetActivityCounts?.headers,
+            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -180,7 +189,7 @@ export function getActivityCounts(dateRange?: string | undefined, config?: Axios
     });
 }
 
-function processGetActivityCounts(response: AxiosResponse): Promise<void> {
+function processGetActivityCounts(response: AxiosResponse): Promise<Types.Anonymous4> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -192,13 +201,16 @@ function processGetActivityCounts(response: AxiosResponse): Promise<void> {
     }
     if (status === 200) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.Anonymous4.fromJS(resultData200);
+        return Promise.resolve<Types.Anonymous4>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<Types.Anonymous4>(null as any);
 }
 
 /**
@@ -206,7 +218,7 @@ function processGetActivityCounts(response: AxiosResponse): Promise<void> {
  * @param limit (optional) Number of activities to return
  * @return Recent activities retrieved successfully
  */
-export function getRecentActivities(limit?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function getRecentActivities(limit?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.Activity[]> {
     let url_ = getBaseUrl() + "/api/activities/recent?";
     if (limit === null)
         throw new Error("The parameter 'limit' cannot be null.");
@@ -221,6 +233,7 @@ export function getRecentActivities(limit?: number | undefined, config?: AxiosRe
         url: url_,
         headers: {
             ..._requestConfigGetRecentActivities?.headers,
+            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -236,7 +249,7 @@ export function getRecentActivities(limit?: number | undefined, config?: AxiosRe
     });
 }
 
-function processGetRecentActivities(response: AxiosResponse): Promise<void> {
+function processGetRecentActivities(response: AxiosResponse): Promise<Types.Activity[]> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -248,13 +261,23 @@ function processGetRecentActivities(response: AxiosResponse): Promise<void> {
     }
     if (status === 200) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+            result200 = [] as any;
+            for (let item of resultData200)
+                result200!.push(Types.Activity.fromJS(item));
+        }
+        else {
+            result200 = <any>null;
+        }
+        return Promise.resolve<Types.Activity[]>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<Types.Activity[]>(null as any);
 }
 
 /**
@@ -262,7 +285,7 @@ function processGetRecentActivities(response: AxiosResponse): Promise<void> {
  * @param id Activity ID
  * @return Activity retrieved successfully
  */
-export function getActivityById(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function getActivityById(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.Activity> {
     let url_ = getBaseUrl() + "/api/activities/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
@@ -276,6 +299,7 @@ export function getActivityById(id: string, config?: AxiosRequestConfig | undefi
         url: url_,
         headers: {
             ..._requestConfigGetActivityById?.headers,
+            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -291,7 +315,7 @@ export function getActivityById(id: string, config?: AxiosRequestConfig | undefi
     });
 }
 
-function processGetActivityById(response: AxiosResponse): Promise<void> {
+function processGetActivityById(response: AxiosResponse): Promise<Types.Activity> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -303,13 +327,16 @@ function processGetActivityById(response: AxiosResponse): Promise<void> {
     }
     if (status === 200) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.Activity.fromJS(resultData200);
+        return Promise.resolve<Types.Activity>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<Types.Activity>(null as any);
 }
 
 /**
@@ -317,7 +344,7 @@ function processGetActivityById(response: AxiosResponse): Promise<void> {
  * @param id Activity ID
  * @return Activity deleted successfully
  */
-export function deleteActivity(id: string, config?: AxiosRequestConfig | undefined): Promise<void> {
+export function deleteActivity(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.Anonymous5> {
     let url_ = getBaseUrl() + "/api/activities/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
@@ -331,6 +358,7 @@ export function deleteActivity(id: string, config?: AxiosRequestConfig | undefin
         url: url_,
         headers: {
             ..._requestConfigDeleteActivity?.headers,
+            "Accept": "application/json",
             ...config?.headers,
         }
     };
@@ -346,7 +374,7 @@ export function deleteActivity(id: string, config?: AxiosRequestConfig | undefin
     });
 }
 
-function processDeleteActivity(response: AxiosResponse): Promise<void> {
+function processDeleteActivity(response: AxiosResponse): Promise<Types.Anonymous5> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -358,13 +386,16 @@ function processDeleteActivity(response: AxiosResponse): Promise<void> {
     }
     if (status === 200) {
         const _responseText = response.data;
-        return Promise.resolve<void>(null as any);
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.Anonymous5.fromJS(resultData200);
+        return Promise.resolve<Types.Anonymous5>(result200);
 
     } else if (status !== 200 && status !== 204) {
         const _responseText = response.data;
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
-    return Promise.resolve<void>(null as any);
+    return Promise.resolve<Types.Anonymous5>(null as any);
 }
 let _requestConfigCreateActivity: Partial<AxiosRequestConfig> | null;
 export function getCreateActivityRequestConfig() {

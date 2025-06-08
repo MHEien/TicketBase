@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
@@ -13,7 +13,7 @@ import { EventMedia } from "@/components/event-creation/event-media";
 import { EventPreview } from "@/components/event-creation/event-preview";
 import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
-import { createEvent, fetchEvent } from "@/lib/api/events-api";
+import { EventsControllerQuery, type EventResponseDto } from "@repo/api-sdk";
 
 export const Route = createFileRoute({
   component: CreateEventPage,
@@ -21,69 +21,13 @@ export const Route = createFileRoute({
 
 function CreateEventPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingDuplicate, setIsLoadingDuplicate] = useState(false);
   const { eventData, isValid, resetEventData, updateEventData } =
     useEventCreation();
-
-  const duplicateId = searchParams.get("duplicate");
-
-  // Load event data for duplication
-  useEffect(() => {
-    if (duplicateId) {
-      setIsLoadingDuplicate(true);
-      fetchEvent(duplicateId)
-        .then((event) => {
-          updateEventData({
-            title: `${event.title} (Copy)`,
-            description: event.description,
-            category: event.category,
-            startDate: null, // Reset dates for new event
-            endDate: null,
-            startTime: event.startTime,
-            endTime: event.endTime,
-            timeZone: event.timeZone || "UTC",
-            locationType: event.locationType,
-            venueName: event.venueName || "",
-            address: event.address || "",
-            city: event.city || "",
-            state: event.state || "",
-            zipCode: event.zipCode || "",
-            country: event.country || "",
-            virtualEventUrl: event.virtualEventUrl || "",
-            featuredImage: event.featuredImage || "",
-            galleryImages: event.galleryImages || [],
-            ticketTypes:
-              event.ticketTypes?.map((ticket) => ({
-                id: `${ticket.id}-copy-${Date.now()}`,
-                name: ticket.name,
-                price: ticket.price,
-                quantity: ticket.quantity,
-                description: ticket.description || "",
-              })) || [],
-          });
-          toast({
-            title: "Event Duplicated",
-            description:
-              "Event data has been loaded for duplication. Please update the dates and other details as needed.",
-          });
-        })
-        .catch((error) => {
-          console.error("Error loading event for duplication:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load event for duplication.",
-            variant: "destructive",
-          });
-        })
-        .finally(() => {
-          setIsLoadingDuplicate(false);
-        });
-    }
-  }, [duplicateId, updateEventData, toast]);
+    const newEvent = EventsControllerQuery.useCreateMutation()
 
   const steps = [
     { id: "basics", title: "Basic Details", component: EventBasicDetails },
@@ -120,40 +64,14 @@ function CreateEventPage() {
 
     try {
       // Create the event using the API
-      const newEvent = await createEvent({
+      const event = await newEvent.mutateAsync({
         title: eventData.title,
         description: eventData.description,
         category: eventData.category,
         startDate: new Date(eventData.startDate!).toISOString(),
         endDate: new Date(eventData.endDate!).toISOString(),
-        startTime: eventData.startTime,
-        endTime: eventData.endTime,
-        timeZone: eventData.timeZone,
-        locationType: eventData.locationType,
-        venueName: eventData.venueName,
-        address: eventData.address,
-        city: eventData.city,
-        state: eventData.state,
-        zipCode: eventData.zipCode,
-        country: eventData.country,
-        virtualEventUrl: eventData.virtualEventUrl,
-        featuredImage: eventData.featuredImage,
-        galleryImages: eventData.galleryImages,
-        visibility: "public", // Default to public
-        capacity: eventData.ticketTypes.reduce(
-          (sum, ticket) => sum + ticket.quantity,
-          0,
-        ),
-        ticketTypes: eventData.ticketTypes.map((ticket) => ({
-          name: ticket.name,
-          description: ticket.description,
-          price: ticket.price,
-          quantity: ticket.quantity,
-          isHidden: false,
-          isFree: ticket.price === 0,
-          requiresApproval: false,
-          sortOrder: 0,
-        })),
+        init: () => {},
+        toJSON: () => ({}),
       });
 
       toast({
@@ -163,7 +81,7 @@ function CreateEventPage() {
 
       // Reset form and navigate to the new event
       resetEventData();
-      router.push(`/events/${newEvent.id}`);
+      router.navigate({ to: `/admin/events/${event.id}` });
     } catch (error: any) {
       console.error("Error creating event:", error);
 
@@ -230,7 +148,7 @@ function CreateEventPage() {
       )
     ) {
       resetEventData();
-      router.push("/events");
+      router.navigate({ to: "/admin/events" });
     }
   };
   if (!steps[currentStep]?.component) {
@@ -259,13 +177,13 @@ function CreateEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/")}
+              onClick={() => router.navigate({ to: "/admin" })}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl font-semibold">
-              {duplicateId ? "Duplicate Event" : "Create New Event"}
+              Create New Event
             </h1>
           </div>
           <div className="flex items-center gap-2">

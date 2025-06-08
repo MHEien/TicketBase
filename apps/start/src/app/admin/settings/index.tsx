@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
-import { useSession } from "@/lib/auth";
+import { useSession } from "@repo/api-sdk";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -84,7 +84,7 @@ type DomainFormValues = z.infer<typeof domainSchema>;
 
 function SettingsPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user } = useSession();
   const [activeTab, setActiveTab] = useState("organization");
   const [isOrganizationLoading, setIsOrganizationLoading] = useState(false);
   const [isBrandingLoading, setIsBrandingLoading] = useState(false);
@@ -130,10 +130,10 @@ function SettingsPage() {
 
   // Fetch organization settings on component mount
   useEffect(() => {
-    if (session?.user) {
+    if (user?.organizationId) {
       fetchOrganizationSettings();
     }
-  }, [session]);
+  }, [user]);
 
   // Function to fetch organization settings
   const fetchOrganizationSettings = async () => {

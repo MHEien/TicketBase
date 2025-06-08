@@ -22,17 +22,17 @@
   --color-border: hsl(240 5.9% 90%);
   --color-input: hsl(240 5.9% 90%);
   --color-ring: hsl(262 83% 58%);
-  
+
   /* Chart colors */
   --color-chart-1: hsl(262 83% 58%);
   --color-chart-2: hsl(221 83% 53%);
   --color-chart-3: hsl(316 70% 50%);
   --color-chart-4: hsl(175 84% 32%);
   --color-chart-5: hsl(41 96% 50%);
-  
+
   /* Border radius */
   --radius: 0.75rem;
-  
+
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -88,13 +88,21 @@
 
 /* Custom keyframes for animations */
 @keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
 
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 /* Base styles */

@@ -72,6 +72,104 @@ export interface CheckoutConfirmationContext extends ExtensionPointContext {
   };
 }
 
+export interface EventDetailsContext extends ExtensionPointContext {
+  event: {
+    id: string;
+    name: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    venue: {
+      id: string;
+      name: string;
+      address: string;
+    };
+    capacity: number;
+    ticketTypes: Array<{
+      id: string;
+      name: string;
+      price: number;
+      available: number;
+      sold: number;
+    }>;
+    metadata?: Record<string, any>;
+  };
+  onUpdate: (eventData: Partial<EventDetailsContext["event"]>) => Promise<void>;
+}
+
+export interface SeatingMapContext extends ExtensionPointContext {
+  event: {
+    id: string;
+    name: string;
+    venue: {
+      id: string;
+      name: string;
+      capacity: number;
+    };
+  };
+  seats: Array<{
+    id: string;
+    row: string;
+    number: string;
+    section: string;
+    status: "available" | "reserved" | "sold" | "blocked";
+    price: number;
+    ticketType?: string;
+  }>;
+  onSeatSelect: (seatId: string) => void;
+  onSeatDeselect: (seatId: string) => void;
+  selectedSeats: string[];
+}
+
+export interface DashboardWidgetContext extends ExtensionPointContext {
+  timeRange: "today" | "week" | "month" | "year" | "custom";
+  startDate?: string;
+  endDate?: string;
+  filters: {
+    eventIds?: string[];
+    ticketTypes?: string[];
+    paymentMethods?: string[];
+  };
+  onFilterChange: (newFilters: DashboardWidgetContext["filters"]) => void;
+  onTimeRangeChange: (
+    range: DashboardWidgetContext["timeRange"],
+    start?: string,
+    end?: string,
+  ) => void;
+}
+
+export interface EventActionsContext extends ExtensionPointContext {
+  event: {
+    id: string;
+    name: string;
+    status: "draft" | "published" | "cancelled" | "completed";
+  };
+  onAction: (action: string, data?: any) => Promise<void>;
+}
+
+export interface CustomerFieldsContext extends ExtensionPointContext {
+  customer: {
+    id: string;
+    email: string;
+    name?: string;
+    metadata?: Record<string, any>;
+  };
+  onUpdate: (data: Partial<CustomerFieldsContext["customer"]>) => Promise<void>;
+}
+
+export interface TicketCustomizationContext extends ExtensionPointContext {
+  ticket: {
+    id: string;
+    eventId: string;
+    ticketType: string;
+    holderName: string;
+    qrCode: string;
+    barcode: string;
+    metadata?: Record<string, any>;
+  };
+  onCustomize: (customizations: Record<string, any>) => Promise<void>;
+}
+
 // =============================================================================
 // PLATFORM SDK INTERFACES
 // =============================================================================
@@ -212,6 +310,12 @@ export interface PluginDefinition {
     "payment-methods"?: ExtensionPointComponent<PaymentMethodContext>;
     "checkout-payment"?: ExtensionPointComponent<PaymentMethodContext>;
     "checkout-confirmation"?: ExtensionPointComponent<CheckoutConfirmationContext>;
+    "event-details"?: ExtensionPointComponent<EventDetailsContext>;
+    "seating-map"?: ExtensionPointComponent<SeatingMapContext>;
+    "dashboard-widget"?: ExtensionPointComponent<DashboardWidgetContext>;
+    "event-actions"?: ExtensionPointComponent<EventActionsContext>;
+    "customer-fields"?: ExtensionPointComponent<CustomerFieldsContext>;
+    "ticket-customization"?: ExtensionPointComponent<TicketCustomizationContext>;
     [key: string]: ExtensionPointComponent<any> | undefined;
   };
 }

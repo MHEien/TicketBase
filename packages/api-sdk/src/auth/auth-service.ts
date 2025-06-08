@@ -1,5 +1,10 @@
+import axios, { AxiosInstance } from "axios";
 import * as AuthController from "../generated/api-client/AuthControllerClient";
-import { getAxios, getBaseUrl } from "../generated/api-client/helpers";
+import {
+  getAxios,
+  getBaseUrl,
+  setBaseUrl,
+} from "../generated/api-client/helpers";
 import type {
   LoginDto,
   LoginResponseDto,
@@ -29,6 +34,7 @@ export class AuthService {
     error: null,
   };
   private refreshTimeout?: NodeJS.Timeout;
+  private axiosInstance: AxiosInstance;
 
   constructor(config: AuthConfig = {}) {
     // Set default config values
@@ -43,45 +49,38 @@ export class AuthService {
       ...config,
     };
 
-    // Initialize axios instance with auth interceptors
+    // Create our own axios instance to avoid circular dependencies
+    this.axiosInstance = axios.create({
+      baseURL: this.config.baseUrl,
+    });
+
+    // Set up interceptors
     this.setupAxiosInterceptors();
+
+    // Set the base URL for the API client
+    setBaseUrl(this.config.baseUrl);
 
     // Try to restore auth state from storage
     this.restoreAuthState();
   }
 
   private setupAxiosInterceptors() {
-    const axios = getAxios();
-
-    // Request interceptor to add auth header
-    axios.interceptors.request.use((config) => {
-      const tokens = this.state.tokens;
+    this.axiosInstance.interceptors.request.use(async (config) => {
+      const tokens = this.getStoredTokens();
       if (tokens?.accessToken) {
         config.headers.Authorization = `Bearer ${tokens.accessToken}`;
       }
       return config;
     });
 
-    // Response interceptor to handle 401s and refresh token
-    axios.interceptors.response.use(
+    this.axiosInstance.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const originalRequest = error.config;
-
-        // If error is not 401 or request already retried, reject
-        if (error.response?.status !== 401 || originalRequest._retry) {
-          return Promise.reject(error);
+        if (error.response?.status === 401) {
+          // Clear auth state on unauthorized
+          this.clearAuthState();
         }
-
-        try {
-          originalRequest._retry = true;
-          await this.refreshTokens();
-          return axios(originalRequest);
-        } catch (refreshError) {
-          // If refresh fails, logout and reject
-          await this.logout();
-          return Promise.reject(refreshError);
-        }
+        return Promise.reject(error);
       },
     );
   }
@@ -119,10 +118,10 @@ export class AuthService {
       // Store tokens
       try {
         // Check if we're in a browser environment
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           localStorage.setItem(
             `${this.config.storageKeyPrefix}_tokens`,
-            JSON.stringify(tokens)
+            JSON.stringify(tokens),
           );
         }
 
@@ -131,7 +130,10 @@ export class AuthService {
           const decoded = decodeJwt(tokens.accessToken);
           if (decoded?.exp) {
             const expiresIn = decoded.exp * 1000 - Date.now();
-            const refreshIn = Math.max(0, expiresIn - this.config.refreshBeforeExpiration * 1000);
+            const refreshIn = Math.max(
+              0,
+              expiresIn - this.config.refreshBeforeExpiration * 1000,
+            );
 
             if (this.refreshTimeout) {
               clearTimeout(this.refreshTimeout);
@@ -141,16 +143,19 @@ export class AuthService {
               this.refreshTokens().catch(this.handleError);
             }, refreshIn);
 
-            console.log('Refresh timer set for', new Date(Date.now() + refreshIn));
+            console.log(
+              "Refresh timer set for",
+              new Date(Date.now() + refreshIn),
+            );
           }
         }
       } catch (error) {
-        console.error('Failed to store tokens:', error);
+        console.error("Failed to store tokens:", error);
         this.handleError(error);
       }
     } else {
       // Clear stored tokens
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         localStorage.removeItem(`${this.config.storageKeyPrefix}_tokens`);
       }
 
@@ -164,26 +169,28 @@ export class AuthService {
   private getStoredTokens(): AuthTokens | null {
     try {
       // Check if we're in a browser environment
-      if (typeof window === 'undefined') {
+      if (typeof window === "undefined") {
         return null;
       }
 
-      const stored = localStorage.getItem(`${this.config.storageKeyPrefix}_tokens`);
+      const stored = localStorage.getItem(
+        `${this.config.storageKeyPrefix}_tokens`,
+      );
       if (!stored) return null;
 
       const tokens = JSON.parse(stored) as AuthTokens;
-      
+
       // Validate the tokens structure
       if (!tokens.accessToken || !tokens.refreshToken) {
-        console.error('Invalid tokens structure in storage');
+        console.error("Invalid tokens structure in storage");
         localStorage.removeItem(`${this.config.storageKeyPrefix}_tokens`);
         return null;
       }
 
       return tokens;
     } catch (error) {
-      console.error('Failed to get stored tokens:', error);
-      if (typeof window !== 'undefined') {
+      console.error("Failed to get stored tokens:", error);
+      if (typeof window !== "undefined") {
         localStorage.removeItem(`${this.config.storageKeyPrefix}_tokens`);
       }
       return null;
@@ -256,8 +263,10 @@ export class AuthService {
         }),
       };
 
-      const response = (await AuthController.login(loginDto)) as unknown as LoginResponseDto;
-      
+      const response = (await AuthController.login(
+        loginDto,
+      )) as unknown as LoginResponseDto;
+
       if (response) {
         // First set the tokens to ensure they're available immediately
         const tokens: AuthTokens = {
@@ -265,10 +274,10 @@ export class AuthService {
           refreshToken: response.refreshToken,
           expiresIn: response.expiresIn,
         };
-        
+
         // Validate tokens before storing
         if (!tokens.accessToken || !tokens.refreshToken) {
-          throw new Error('Invalid token data received from server');
+          throw new Error("Invalid token data received from server");
         }
 
         this.setTokens(tokens);
@@ -282,13 +291,13 @@ export class AuthService {
           permissions: response.permissions,
           organizationId: response.organizationId,
         };
-        
+
         this.setState({ user });
-        
-        console.log('Login successful, tokens stored and user state updated');
+
+        console.log("Login successful, tokens stored and user state updated");
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       this.handleError(error);
       // Clear any partial state on error
       this.clearAuthState();
@@ -355,7 +364,7 @@ export class AuthService {
 
       const storedTokens = this.getStoredTokens();
       if (!storedTokens?.refreshToken) {
-        throw new Error('No refresh token available');
+        throw new Error("No refresh token available");
       }
 
       const refreshTokenDto: RefreshTokenDto = {
@@ -379,16 +388,16 @@ export class AuthService {
 
         // Validate tokens before storing
         if (!tokens.accessToken || !tokens.refreshToken) {
-          throw new Error('Invalid token data received from server');
+          throw new Error("Invalid token data received from server");
         }
 
         this.setTokens(tokens);
         await this.fetchUser();
-        
-        console.log('Tokens refreshed successfully');
+
+        console.log("Tokens refreshed successfully");
       }
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      console.error("Token refresh failed:", error);
       this.clearAuthState();
       this.handleError(error);
     } finally {

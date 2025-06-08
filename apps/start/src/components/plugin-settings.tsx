@@ -16,14 +16,12 @@ import { Separator } from "@repo/ui/separator";
 import { Alert, AlertDescription } from "@repo/ui/alert";
 import { Loader2, ArrowLeft, Save, ExternalLink, Settings } from "lucide-react";
 import {
-  getPlugin,
-  updatePluginConfig,
-  setPluginEnabled,
-} from "@/lib/plugin-api";
+  PluginsControllerQuery,
+  useSession
+} from "@repo/api-sdk";
 import { useToast } from "@repo/ui/use-toast";
 import { ExtensionPoint } from "@/components/extension-point";
-import { usePluginSDK } from "@/lib/plugin-sdk-context";
-import { InstalledPlugin } from "@/lib/plugin-types";
+import { usePlugins } from "@/lib/plugins/plugin-context";
 
 interface PluginSettingsProps {
   pluginId: string;
@@ -32,48 +30,14 @@ interface PluginSettingsProps {
 
 export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
   const { toast } = useToast();
-  const [plugin, setPlugin] = useState<InstalledPlugin | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enabled, setEnabled] = useState(false);
-
-  // Use Plugin SDK for authentication and API access
-  const { api, auth, utils } = usePluginSDK();
-
-  // Load plugin data
-  useEffect(() => {
-    async function loadPlugin() {
-      try {
-        setLoading(true);
-        console.log(`Loading plugin settings for: ${pluginId}`);
-
-        const response = await getPlugin(pluginId);
-        if (response.success && response.data) {
-          setPlugin(response.data);
-          setEnabled(response.data.enabled);
-          setError(null);
-          console.log("Plugin settings loaded:", response.data);
-        } else {
-          setError(
-            response.error ||
-              "Failed to load plugin settings. The plugin may not be installed or you may not have permission to access it.",
-          );
-        }
-      } catch (err) {
-        console.error("Failed to load plugin:", err);
-        setError(
-          "Failed to load plugin settings. Please check your connection and try again.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (pluginId) {
-      loadPlugin();
-    }
-  }, [pluginId]);
+  const [configuration, setConfiguration] = useState<Record<string, any>>({});
+  const { user } = useSession();
+  const { data: plugin, isLoading, error: pluginError } = PluginsControllerQuery.useFindOneQuery(pluginId);
+  const { enablePlugin, disablePlugin, loadingPlugins } = usePlugins();
 
   // Handle enabling/disabling the plugin
   const handleToggleEnabled = async () => {
@@ -83,25 +47,20 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
       setSaving(true);
       const newState = !enabled;
 
-      const response = await setPluginEnabled(pluginId, newState);
-
-      if (response.success) {
-        setEnabled(newState);
-
-        toast({
-          title: newState ? "Plugin Enabled ✅" : "Plugin Disabled ⏸️",
-          description: `${plugin.name} has been ${newState ? "enabled" : "disabled"} successfully.`,
-        });
-
-        // Update plugin state
-        setPlugin((prev) => (prev ? { ...prev, enabled: newState } : null));
+      if (newState) {
+        await enablePlugin(pluginId);
       } else {
-        toast({
-          title: "Action Failed",
-          description: response.error || "Failed to update plugin status.",
-          variant: "destructive",
-        });
+        await disablePlugin(pluginId);
       }
+
+      setEnabled(newState);
+      toast({
+        title: newState ? "Plugin Enabled ✅" : "Plugin Disabled ⏸️",
+        description: `${plugin.name} has been ${newState ? "enabled" : "disabled"} successfully.`,
+      });
+
+      // Update plugin state
+      setEnabled(newState);
     } catch (err) {
       toast({
         title: "Action Failed",
@@ -125,10 +84,10 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
       console.log(`Saving configuration for plugin ${pluginId}:`, config);
 
       // Use Plugin SDK API to save configuration
-      await api.saveConfig(pluginId, config);
+      await PluginsControllerQuery.useConfigureMutation(pluginId, config);
 
       // Update plugin configuration in state
-      setPlugin((prev) => (prev ? { ...prev, configuration: config } : null));
+      setConfiguration(config);
 
       toast({
         title: "Settings Saved Successfully! 🎉",
@@ -198,9 +157,9 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
         <div className="space-y-1">
           <h2 className="text-2xl font-bold tracking-tight">{plugin.name}</h2>
           <p className="text-muted-foreground">{plugin.description}</p>
-          {auth.isAuthenticated && (
+          {user && (
             <p className="text-xs text-muted-foreground">
-              Authenticated as: {auth.user?.email}
+              Authenticated as: {user?.email}
             </p>
           )}
         </div>
@@ -283,8 +242,8 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
                 pluginId,
                 onSave: handleSaveConfig,
                 saving,
-                user: auth.user,
-                isAuthenticated: auth.isAuthenticated,
+                user: user,
+                isAuthenticated: user !== null,
               }}
               fallback={
                 <div className="text-center p-6 border rounded-md border-dashed">

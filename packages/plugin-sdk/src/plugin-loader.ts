@@ -1,5 +1,5 @@
-import { lazy } from 'react';
-import type { PluginDefinition, ExtensionPointComponent } from './index';
+import { lazy } from "react";
+import type { PluginDefinition, ExtensionPointComponent } from "./index";
 
 interface PluginManifest {
   scope: string;
@@ -18,7 +18,9 @@ const loadedPlugins = new Map<string, Promise<PluginDefinition>>();
 /**
  * Dynamically loads a remote plugin using Module Federation
  */
-async function loadRemotePlugin(manifest: PluginManifest): Promise<PluginDefinition> {
+async function loadRemotePlugin(
+  manifest: PluginManifest,
+): Promise<PluginDefinition> {
   // Ensure container is loaded
   // @ts-ignore - Module Federation types
   if (!window[manifest.scope]) {
@@ -30,7 +32,7 @@ async function loadRemotePlugin(manifest: PluginManifest): Promise<PluginDefinit
   // Get container
   // @ts-ignore - Module Federation types
   const container = window[manifest.scope];
-  
+
   // Get plugin module
   const factory = await container.get(manifest.module);
   const plugin = factory();
@@ -41,7 +43,9 @@ async function loadRemotePlugin(manifest: PluginManifest): Promise<PluginDefinit
 /**
  * Creates a React component that loads and renders a plugin extension point
  */
-export function createPluginComponent(options: LoadPluginOptions): ExtensionPointComponent {
+export function createPluginComponent(
+  options: LoadPluginOptions,
+): ExtensionPointComponent {
   const key = `${options.pluginId}@${options.version}:${options.extensionPoint}`;
 
   return lazy(async () => {
@@ -80,9 +84,9 @@ export function createPluginComponent(options: LoadPluginOptions): ExtensionPoin
  */
 export function usePlugin(options: LoadPluginOptions) {
   const Component = createPluginComponent(options);
-  
+
   return {
     Component,
     // Add additional plugin management functions here
   };
-} 
+}

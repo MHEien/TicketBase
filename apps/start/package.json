@@ -48,7 +48,7 @@
     "@tanstack/react-start": "^1.121.0-alpha.25",
     "@tanstack/start-vite-plugin": "^1.91.1",
     "@tanstack/zod-adapter": "^1.120.16",
-    "@ticketsmonorepo/api-sdk": "workspace:*",
+    "@repo/api-sdk": "workspace:*",
     "@types/canvas-confetti": "^1.9.0",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",

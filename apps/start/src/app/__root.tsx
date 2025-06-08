@@ -1,12 +1,11 @@
 import { SessionProvider } from "@/components/session-provider";
-import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
 import {
   Outlet,
   createRootRoute,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { AuthProvider } from "@ticketsmonorepo/api-sdk"
+import { AuthProvider } from "@repo/api-sdk";
 import { QueryProvider } from "@/components/query-provider";
 
 import appCss from "@/styles/app.css?url";
@@ -41,12 +40,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <AuthProvider>
+        <AuthProvider
+          baseUrl={process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}
+        >
           <QueryProvider>
-            <PluginSDKProvider> 
-              {children}
-              <Scripts />
-            </PluginSDKProvider>
+            {children}
+            <Scripts />
           </QueryProvider>
         </AuthProvider>
       </body>
