@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -54,7 +54,7 @@ import {
 } from "@/lib/user-data";
 import { useToast } from "@/hooks/use-toast";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/users/$id")({
   component: UserDetailPage,
 });
 

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useEffect, useState, Suspense, use } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   BarChart,
@@ -126,7 +126,7 @@ interface EventActionsContext extends ExtensionPointContext {
   onAction: (action: string, data?: any) => Promise<void>;
 }
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/events/$id/")({
   component: EventDetailsPage,
 });
 

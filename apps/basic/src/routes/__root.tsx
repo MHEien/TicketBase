@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   HeadContent,
   Link,
@@ -13,6 +14,8 @@ import { NotFound } from '~/components/NotFound.js'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo.js'
 import { useAppSession } from '~/utils/session.js'
+
+const queryClient = new QueryClient()
 
 const fetchUser = createServerFn({ method: 'GET' }).handler(async () => {
   // We need to auth on the server so we have access to secure cookies
@@ -87,7 +90,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
     </RootDocument>
   )
 }

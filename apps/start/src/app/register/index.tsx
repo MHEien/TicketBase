@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -27,7 +27,7 @@ import { Alert, AlertDescription } from "@repo/ui/alert";
 import { register } from "@repo/api-sdk";
 import { login } from "@repo/api-sdk";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/register/")({
   component: RegisterPage,
 });
 

@@ -1,7 +1,9 @@
 
+import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { Login } from '@/components/login'
-import { AuthControllerQuery } from '@repo/api-sdk'
+import { authControllerLogin } from '@repo/api-sdk'
+import { useAppSession } from '@/utils/session';
 
 export const loginFn = createServerFn({ method: 'POST' })
   .validator((d: { email: string; password: string }) => d)
@@ -10,27 +12,25 @@ export const loginFn = createServerFn({ method: 'POST' })
 
     try {
       // Use the API SDK login function
-      const user = AuthControllerQuery.useLoginMutation()
-
-      user.mutate({
+      const login = await authControllerLogin({
         email: data.email,
         password: data.password,
-        init: () => {},
-        toJSON: () => ({}),
-      })
+    })
 
-      return {
-        success: true
-      }
-    } catch (error: any) {
-      return {
-        error: true,
-        message: error.message || 'Authentication failed'
-      }
-    }
-  })
 
-export const Route = createFileRoute({
+    // Create a session
+    const session = await useAppSession()
+
+    // Store the user's email in the session
+    await session.update({
+      userEmail: login.email,
+    })
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+export const Route = createFileRoute('/_authed')({
   beforeLoad: ({ context }) => {
     if (!context.user) {
       throw new Error('Not authenticated')
@@ -38,7 +38,7 @@ export const Route = createFileRoute({
   },
   errorComponent: ({ error }) => {
     if (error.message === 'Not authenticated') {
-      return <Login search={{}} />
+      return <Login />
     }
 
     throw error

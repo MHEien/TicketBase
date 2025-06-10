@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@repo/api-sdk";
 import { Pencil, ArrowLeft, Users, BarChart, Settings } from "lucide-react";
@@ -20,7 +20,7 @@ import { toast } from "@repo/ui/use-toast";
 import { DepartmentsControllerQuery } from "@repo/api-sdk";
 import { Department } from "@repo/api-sdk";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/departments/$id/")({
   component: DepartmentDetailPage,
 });
 

@@ -8,11 +8,7 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
-
-// Import Routes
-
-import { Route as rootRoute } from './app/__root'
+import { Route as rootRouteImport } from './app/__root'
 import { Route as LogoutRouteImport } from './app/logout'
 import { Route as AuthedRouteImport } from './app/_authed'
 import { Route as AdminRouteRouteImport } from './app/admin/route'
@@ -34,500 +30,109 @@ import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin
 import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
 
-// Create/Update Routes
-
 const LogoutRoute = LogoutRouteImport.update({
   id: '/logout',
   path: '/logout',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const RegisterIndexRoute = RegisterIndexRouteImport.update({
   id: '/register/',
   path: '/register/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
   id: '/onboarding/',
   path: '/onboarding/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
   id: '/events/',
   path: '/events/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminDepartmentsIndexRoute = AdminDepartmentsIndexRouteImport.update({
   id: '/departments/',
   path: '/departments/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminCreateEventIndexRoute = AdminCreateEventIndexRouteImport.update({
   id: '/create-event/',
   path: '/create-event/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminUsersIdRoute = AdminUsersIdRouteImport.update({
   id: '/users/$id',
   path: '/users/$id',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminSettingsPluginsIndexRoute =
   AdminSettingsPluginsIndexRouteImport.update({
     id: '/settings/plugins/',
     path: '/settings/plugins/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-
 const AdminEventsNewIndexRoute = AdminEventsNewIndexRouteImport.update({
   id: '/events/new/',
   path: '/events/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminEventsIdIndexRoute = AdminEventsIdIndexRouteImport.update({
   id: '/events/$id/',
   path: '/events/$id/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminDepartmentsNewIndexRoute =
   AdminDepartmentsNewIndexRouteImport.update({
     id: '/departments/new/',
     path: '/departments/new/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-
 const AdminDepartmentsIdIndexRoute = AdminDepartmentsIdIndexRouteImport.update({
   id: '/departments/$id/',
   path: '/departments/$id/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
 const AdminSettingsPluginsSubmitIndexRoute =
   AdminSettingsPluginsSubmitIndexRouteImport.update({
     id: '/settings/plugins/submit/',
     path: '/settings/plugins/submit/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-
 const AdminSettingsPluginsIdIndexRoute =
   AdminSettingsPluginsIdIndexRouteImport.update({
     id: '/settings/plugins/$id/',
     path: '/settings/plugins/$id/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-
 const AdminEventsIdEditIndexRoute = AdminEventsIdEditIndexRouteImport.update({
   id: '/events/$id/edit/',
   path: '/events/$id/edit/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/_authed': {
-      id: '/_authed'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthedRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/logout': {
-      id: '/logout'
-      path: '/logout'
-      fullPath: '/logout'
-      preLoaderRoute: typeof LogoutRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/onboarding/': {
-      id: '/onboarding/'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingIndexRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/register/': {
-      id: '/register/'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterIndexRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/admin/users/$id': {
-      id: '/admin/users/$id'
-      path: '/users/$id'
-      fullPath: '/admin/users/$id'
-      preLoaderRoute: typeof AdminUsersIdRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/create-event/': {
-      id: '/admin/create-event/'
-      path: '/create-event'
-      fullPath: '/admin/create-event'
-      preLoaderRoute: typeof AdminCreateEventIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/departments/': {
-      id: '/admin/departments/'
-      path: '/departments'
-      fullPath: '/admin/departments'
-      preLoaderRoute: typeof AdminDepartmentsIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/events/': {
-      id: '/admin/events/'
-      path: '/events'
-      fullPath: '/admin/events'
-      preLoaderRoute: typeof AdminEventsIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/settings/': {
-      id: '/admin/settings/'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/users/': {
-      id: '/admin/users/'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/departments/$id/': {
-      id: '/admin/departments/$id/'
-      path: '/departments/$id'
-      fullPath: '/admin/departments/$id'
-      preLoaderRoute: typeof AdminDepartmentsIdIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/departments/new/': {
-      id: '/admin/departments/new/'
-      path: '/departments/new'
-      fullPath: '/admin/departments/new'
-      preLoaderRoute: typeof AdminDepartmentsNewIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/events/$id/': {
-      id: '/admin/events/$id/'
-      path: '/events/$id'
-      fullPath: '/admin/events/$id'
-      preLoaderRoute: typeof AdminEventsIdIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/events/new/': {
-      id: '/admin/events/new/'
-      path: '/events/new'
-      fullPath: '/admin/events/new'
-      preLoaderRoute: typeof AdminEventsNewIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/settings/plugins/': {
-      id: '/admin/settings/plugins/'
-      path: '/settings/plugins'
-      fullPath: '/admin/settings/plugins'
-      preLoaderRoute: typeof AdminSettingsPluginsIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/events/$id/edit/': {
-      id: '/admin/events/$id/edit/'
-      path: '/events/$id/edit'
-      fullPath: '/admin/events/$id/edit'
-      preLoaderRoute: typeof AdminEventsIdEditIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/settings/plugins/$id/': {
-      id: '/admin/settings/plugins/$id/'
-      path: '/settings/plugins/$id'
-      fullPath: '/admin/settings/plugins/$id'
-      preLoaderRoute: typeof AdminSettingsPluginsIdIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-    '/admin/settings/plugins/submit/': {
-      id: '/admin/settings/plugins/submit/'
-      path: '/settings/plugins/submit'
-      fullPath: '/admin/settings/plugins/submit'
-      preLoaderRoute: typeof AdminSettingsPluginsSubmitIndexRouteImport
-      parentRoute: typeof AdminRouteRouteImport
-    }
-  }
-}
-
-// Add type-safety to the createFileRoute function across the route tree
-
-declare module './app/admin/route' {
-  const createFileRoute: CreateFileRoute<
-    '/admin',
-    FileRoutesByPath['/admin']['parentRoute'],
-    FileRoutesByPath['/admin']['id'],
-    FileRoutesByPath['/admin']['path'],
-    FileRoutesByPath['/admin']['fullPath']
-  >
-}
-declare module './app/_authed' {
-  const createFileRoute: CreateFileRoute<
-    '/_authed',
-    FileRoutesByPath['/_authed']['parentRoute'],
-    FileRoutesByPath['/_authed']['id'],
-    FileRoutesByPath['/_authed']['path'],
-    FileRoutesByPath['/_authed']['fullPath']
-  >
-}
-declare module './app/logout' {
-  const createFileRoute: CreateFileRoute<
-    '/logout',
-    FileRoutesByPath['/logout']['parentRoute'],
-    FileRoutesByPath['/logout']['id'],
-    FileRoutesByPath['/logout']['path'],
-    FileRoutesByPath['/logout']['fullPath']
-  >
-}
-declare module './app/login/index' {
-  const createFileRoute: CreateFileRoute<
-    '/login/',
-    FileRoutesByPath['/login/']['parentRoute'],
-    FileRoutesByPath['/login/']['id'],
-    FileRoutesByPath['/login/']['path'],
-    FileRoutesByPath['/login/']['fullPath']
-  >
-}
-declare module './app/onboarding/index' {
-  const createFileRoute: CreateFileRoute<
-    '/onboarding/',
-    FileRoutesByPath['/onboarding/']['parentRoute'],
-    FileRoutesByPath['/onboarding/']['id'],
-    FileRoutesByPath['/onboarding/']['path'],
-    FileRoutesByPath['/onboarding/']['fullPath']
-  >
-}
-declare module './app/register/index' {
-  const createFileRoute: CreateFileRoute<
-    '/register/',
-    FileRoutesByPath['/register/']['parentRoute'],
-    FileRoutesByPath['/register/']['id'],
-    FileRoutesByPath['/register/']['path'],
-    FileRoutesByPath['/register/']['fullPath']
-  >
-}
-declare module './app/admin/users/$id' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/users/$id',
-    FileRoutesByPath['/admin/users/$id']['parentRoute'],
-    FileRoutesByPath['/admin/users/$id']['id'],
-    FileRoutesByPath['/admin/users/$id']['path'],
-    FileRoutesByPath['/admin/users/$id']['fullPath']
-  >
-}
-declare module './app/admin/create-event/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/create-event/',
-    FileRoutesByPath['/admin/create-event/']['parentRoute'],
-    FileRoutesByPath['/admin/create-event/']['id'],
-    FileRoutesByPath['/admin/create-event/']['path'],
-    FileRoutesByPath['/admin/create-event/']['fullPath']
-  >
-}
-declare module './app/admin/departments/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/departments/',
-    FileRoutesByPath['/admin/departments/']['parentRoute'],
-    FileRoutesByPath['/admin/departments/']['id'],
-    FileRoutesByPath['/admin/departments/']['path'],
-    FileRoutesByPath['/admin/departments/']['fullPath']
-  >
-}
-declare module './app/admin/events/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/events/',
-    FileRoutesByPath['/admin/events/']['parentRoute'],
-    FileRoutesByPath['/admin/events/']['id'],
-    FileRoutesByPath['/admin/events/']['path'],
-    FileRoutesByPath['/admin/events/']['fullPath']
-  >
-}
-declare module './app/admin/settings/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/settings/',
-    FileRoutesByPath['/admin/settings/']['parentRoute'],
-    FileRoutesByPath['/admin/settings/']['id'],
-    FileRoutesByPath['/admin/settings/']['path'],
-    FileRoutesByPath['/admin/settings/']['fullPath']
-  >
-}
-declare module './app/admin/users/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/users/',
-    FileRoutesByPath['/admin/users/']['parentRoute'],
-    FileRoutesByPath['/admin/users/']['id'],
-    FileRoutesByPath['/admin/users/']['path'],
-    FileRoutesByPath['/admin/users/']['fullPath']
-  >
-}
-declare module './app/admin/departments/$id/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/departments/$id/',
-    FileRoutesByPath['/admin/departments/$id/']['parentRoute'],
-    FileRoutesByPath['/admin/departments/$id/']['id'],
-    FileRoutesByPath['/admin/departments/$id/']['path'],
-    FileRoutesByPath['/admin/departments/$id/']['fullPath']
-  >
-}
-declare module './app/admin/departments/new/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/departments/new/',
-    FileRoutesByPath['/admin/departments/new/']['parentRoute'],
-    FileRoutesByPath['/admin/departments/new/']['id'],
-    FileRoutesByPath['/admin/departments/new/']['path'],
-    FileRoutesByPath['/admin/departments/new/']['fullPath']
-  >
-}
-declare module './app/admin/events/$id/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/events/$id/',
-    FileRoutesByPath['/admin/events/$id/']['parentRoute'],
-    FileRoutesByPath['/admin/events/$id/']['id'],
-    FileRoutesByPath['/admin/events/$id/']['path'],
-    FileRoutesByPath['/admin/events/$id/']['fullPath']
-  >
-}
-declare module './app/admin/events/new/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/events/new/',
-    FileRoutesByPath['/admin/events/new/']['parentRoute'],
-    FileRoutesByPath['/admin/events/new/']['id'],
-    FileRoutesByPath['/admin/events/new/']['path'],
-    FileRoutesByPath['/admin/events/new/']['fullPath']
-  >
-}
-declare module './app/admin/settings/plugins/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/settings/plugins/',
-    FileRoutesByPath['/admin/settings/plugins/']['parentRoute'],
-    FileRoutesByPath['/admin/settings/plugins/']['id'],
-    FileRoutesByPath['/admin/settings/plugins/']['path'],
-    FileRoutesByPath['/admin/settings/plugins/']['fullPath']
-  >
-}
-declare module './app/admin/events/$id/edit/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/events/$id/edit/',
-    FileRoutesByPath['/admin/events/$id/edit/']['parentRoute'],
-    FileRoutesByPath['/admin/events/$id/edit/']['id'],
-    FileRoutesByPath['/admin/events/$id/edit/']['path'],
-    FileRoutesByPath['/admin/events/$id/edit/']['fullPath']
-  >
-}
-declare module './app/admin/settings/plugins/$id/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/settings/plugins/$id/',
-    FileRoutesByPath['/admin/settings/plugins/$id/']['parentRoute'],
-    FileRoutesByPath['/admin/settings/plugins/$id/']['id'],
-    FileRoutesByPath['/admin/settings/plugins/$id/']['path'],
-    FileRoutesByPath['/admin/settings/plugins/$id/']['fullPath']
-  >
-}
-declare module './app/admin/settings/plugins/submit/index' {
-  const createFileRoute: CreateFileRoute<
-    '/admin/settings/plugins/submit/',
-    FileRoutesByPath['/admin/settings/plugins/submit/']['parentRoute'],
-    FileRoutesByPath['/admin/settings/plugins/submit/']['id'],
-    FileRoutesByPath['/admin/settings/plugins/submit/']['path'],
-    FileRoutesByPath['/admin/settings/plugins/submit/']['fullPath']
-  >
-}
-
-// Create and export the route tree
-
-interface AdminRouteRouteChildren {
-  AdminUsersIdRoute: typeof AdminUsersIdRoute
-  AdminCreateEventIndexRoute: typeof AdminCreateEventIndexRoute
-  AdminDepartmentsIndexRoute: typeof AdminDepartmentsIndexRoute
-  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
-  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
-  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
-  AdminDepartmentsIdIndexRoute: typeof AdminDepartmentsIdIndexRoute
-  AdminDepartmentsNewIndexRoute: typeof AdminDepartmentsNewIndexRoute
-  AdminEventsIdIndexRoute: typeof AdminEventsIdIndexRoute
-  AdminEventsNewIndexRoute: typeof AdminEventsNewIndexRoute
-  AdminSettingsPluginsIndexRoute: typeof AdminSettingsPluginsIndexRoute
-  AdminEventsIdEditIndexRoute: typeof AdminEventsIdEditIndexRoute
-  AdminSettingsPluginsIdIndexRoute: typeof AdminSettingsPluginsIdIndexRoute
-  AdminSettingsPluginsSubmitIndexRoute: typeof AdminSettingsPluginsSubmitIndexRoute
-}
-
-const AdminRouteRouteChildren: AdminRouteRouteChildren = {
-  AdminUsersIdRoute: AdminUsersIdRoute,
-  AdminCreateEventIndexRoute: AdminCreateEventIndexRoute,
-  AdminDepartmentsIndexRoute: AdminDepartmentsIndexRoute,
-  AdminEventsIndexRoute: AdminEventsIndexRoute,
-  AdminSettingsIndexRoute: AdminSettingsIndexRoute,
-  AdminUsersIndexRoute: AdminUsersIndexRoute,
-  AdminDepartmentsIdIndexRoute: AdminDepartmentsIdIndexRoute,
-  AdminDepartmentsNewIndexRoute: AdminDepartmentsNewIndexRoute,
-  AdminEventsIdIndexRoute: AdminEventsIdIndexRoute,
-  AdminEventsNewIndexRoute: AdminEventsNewIndexRoute,
-  AdminSettingsPluginsIndexRoute: AdminSettingsPluginsIndexRoute,
-  AdminEventsIdEditIndexRoute: AdminEventsIdEditIndexRoute,
-  AdminSettingsPluginsIdIndexRoute: AdminSettingsPluginsIdIndexRoute,
-  AdminSettingsPluginsSubmitIndexRoute: AdminSettingsPluginsSubmitIndexRoute,
-}
-
-const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
-  AdminRouteRouteChildren,
-)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
@@ -551,7 +156,6 @@ export interface FileRoutesByFullPath {
   '/admin/settings/plugins/$id': typeof AdminSettingsPluginsIdIndexRoute
   '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
 }
-
 export interface FileRoutesByTo {
   '/admin': typeof AdminRouteRouteWithChildren
   '': typeof AuthedRoute
@@ -574,9 +178,8 @@ export interface FileRoutesByTo {
   '/admin/settings/plugins/$id': typeof AdminSettingsPluginsIdIndexRoute
   '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/admin': typeof AdminRouteRouteWithChildren
   '/_authed': typeof AuthedRoute
   '/logout': typeof LogoutRoute
@@ -598,7 +201,6 @@ export interface FileRoutesById {
   '/admin/settings/plugins/$id/': typeof AdminSettingsPluginsIdIndexRoute
   '/admin/settings/plugins/submit/': typeof AdminSettingsPluginsSubmitIndexRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -668,7 +270,6 @@ export interface FileRouteTypes {
     | '/admin/settings/plugins/submit/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AuthedRoute: typeof AuthedRoute
@@ -678,6 +279,287 @@ export interface RootRouteChildren {
   RegisterIndexRoute: typeof RegisterIndexRoute
 }
 
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ssr': {
+      id: '/ssr'
+      path: ''
+      fullPath: '/ssr'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/layout': {
+      id: '/onboarding/layout'
+      path: ''
+      fullPath: '/onboarding/layout'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: ''
+      fullPath: '/admin'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register/': {
+      id: '/register/'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/organizations/branding': {
+      id: '/api/organizations/branding'
+      path: ''
+      fullPath: '/api/organizations/branding'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/organizations/domain': {
+      id: '/api/organizations/domain'
+      path: ''
+      fullPath: '/api/organizations/domain'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/organizations/settings': {
+      id: '/api/organizations/settings'
+      path: ''
+      fullPath: '/api/organizations/settings'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/events/loading': {
+      id: '/admin/events/loading'
+      path: ''
+      fullPath: '/admin/events/loading'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users/$id': {
+      id: '/admin/users/$id'
+      path: '/users/$id'
+      fullPath: '/admin/users/$id'
+      preLoaderRoute: typeof AdminUsersIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/users/loading': {
+      id: '/admin/users/loading'
+      path: ''
+      fullPath: '/admin/users/loading'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/steps/brand-settings': {
+      id: '/onboarding/steps/brand-settings'
+      path: ''
+      fullPath: '/onboarding/steps/brand-settings'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/steps/event-preferences': {
+      id: '/onboarding/steps/event-preferences'
+      path: ''
+      fullPath: '/onboarding/steps/event-preferences'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/steps/onboarding-complete': {
+      id: '/onboarding/steps/onboarding-complete'
+      path: ''
+      fullPath: '/onboarding/steps/onboarding-complete'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/steps/organization-details': {
+      id: '/onboarding/steps/organization-details'
+      path: ''
+      fullPath: '/onboarding/steps/organization-details'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/steps/payment-details': {
+      id: '/onboarding/steps/payment-details'
+      path: ''
+      fullPath: '/onboarding/steps/payment-details'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/create-event/': {
+      id: '/admin/create-event/'
+      path: '/create-event'
+      fullPath: '/admin/create-event'
+      preLoaderRoute: typeof AdminCreateEventIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/departments/': {
+      id: '/admin/departments/'
+      path: '/departments'
+      fullPath: '/admin/departments'
+      preLoaderRoute: typeof AdminDepartmentsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/events/': {
+      id: '/admin/events/'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings/': {
+      id: '/admin/settings/'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings/plugins/page': {
+      id: '/admin/settings/plugins/page'
+      path: ''
+      fullPath: '/admin/settings/plugins/page'
+      preLoaderRoute: unknown
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/departments/$id/': {
+      id: '/admin/departments/$id/'
+      path: '/departments/$id'
+      fullPath: '/admin/departments/$id'
+      preLoaderRoute: typeof AdminDepartmentsIdIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/departments/new/': {
+      id: '/admin/departments/new/'
+      path: '/departments/new'
+      fullPath: '/admin/departments/new'
+      preLoaderRoute: typeof AdminDepartmentsNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/events/$id/': {
+      id: '/admin/events/$id/'
+      path: '/events/$id'
+      fullPath: '/admin/events/$id'
+      preLoaderRoute: typeof AdminEventsIdIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/events/new/': {
+      id: '/admin/events/new/'
+      path: '/events/new'
+      fullPath: '/admin/events/new'
+      preLoaderRoute: typeof AdminEventsNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings/plugins/': {
+      id: '/admin/settings/plugins/'
+      path: '/settings/plugins'
+      fullPath: '/admin/settings/plugins'
+      preLoaderRoute: typeof AdminSettingsPluginsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/events/$id/edit/': {
+      id: '/admin/events/$id/edit/'
+      path: '/events/$id/edit'
+      fullPath: '/admin/events/$id/edit'
+      preLoaderRoute: typeof AdminEventsIdEditIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings/plugins/$id/': {
+      id: '/admin/settings/plugins/$id/'
+      path: '/settings/plugins/$id'
+      fullPath: '/admin/settings/plugins/$id'
+      preLoaderRoute: typeof AdminSettingsPluginsIdIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings/plugins/submit/': {
+      id: '/admin/settings/plugins/submit/'
+      path: '/settings/plugins/submit'
+      fullPath: '/admin/settings/plugins/submit'
+      preLoaderRoute: typeof AdminSettingsPluginsSubmitIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+  }
+}
+
+interface AdminRouteRouteChildren {
+  AdminUsersIdRoute: typeof AdminUsersIdRoute
+  AdminCreateEventIndexRoute: typeof AdminCreateEventIndexRoute
+  AdminDepartmentsIndexRoute: typeof AdminDepartmentsIndexRoute
+  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
+  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+  AdminDepartmentsIdIndexRoute: typeof AdminDepartmentsIdIndexRoute
+  AdminDepartmentsNewIndexRoute: typeof AdminDepartmentsNewIndexRoute
+  AdminEventsIdIndexRoute: typeof AdminEventsIdIndexRoute
+  AdminEventsNewIndexRoute: typeof AdminEventsNewIndexRoute
+  AdminSettingsPluginsIndexRoute: typeof AdminSettingsPluginsIndexRoute
+  AdminEventsIdEditIndexRoute: typeof AdminEventsIdEditIndexRoute
+  AdminSettingsPluginsIdIndexRoute: typeof AdminSettingsPluginsIdIndexRoute
+  AdminSettingsPluginsSubmitIndexRoute: typeof AdminSettingsPluginsSubmitIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminUsersIdRoute: AdminUsersIdRoute,
+  AdminCreateEventIndexRoute: AdminCreateEventIndexRoute,
+  AdminDepartmentsIndexRoute: AdminDepartmentsIndexRoute,
+  AdminEventsIndexRoute: AdminEventsIndexRoute,
+  AdminSettingsIndexRoute: AdminSettingsIndexRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
+  AdminDepartmentsIdIndexRoute: AdminDepartmentsIdIndexRoute,
+  AdminDepartmentsNewIndexRoute: AdminDepartmentsNewIndexRoute,
+  AdminEventsIdIndexRoute: AdminEventsIdIndexRoute,
+  AdminEventsNewIndexRoute: AdminEventsNewIndexRoute,
+  AdminSettingsPluginsIndexRoute: AdminSettingsPluginsIndexRoute,
+  AdminEventsIdEditIndexRoute: AdminEventsIdEditIndexRoute,
+  AdminSettingsPluginsIdIndexRoute: AdminSettingsPluginsIdIndexRoute,
+  AdminSettingsPluginsSubmitIndexRoute: AdminSettingsPluginsSubmitIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   AuthedRoute: AuthedRoute,
@@ -686,115 +568,6 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingIndexRoute: OnboardingIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/admin",
-        "/_authed",
-        "/logout",
-        "/login/",
-        "/onboarding/",
-        "/register/"
-      ]
-    },
-    "/admin": {
-      "filePath": "admin/route.tsx",
-      "children": [
-        "/admin/users/$id",
-        "/admin/create-event/",
-        "/admin/departments/",
-        "/admin/events/",
-        "/admin/settings/",
-        "/admin/users/",
-        "/admin/departments/$id/",
-        "/admin/departments/new/",
-        "/admin/events/$id/",
-        "/admin/events/new/",
-        "/admin/settings/plugins/",
-        "/admin/events/$id/edit/",
-        "/admin/settings/plugins/$id/",
-        "/admin/settings/plugins/submit/"
-      ]
-    },
-    "/_authed": {
-      "filePath": "_authed.tsx"
-    },
-    "/logout": {
-      "filePath": "logout.tsx"
-    },
-    "/login/": {
-      "filePath": "login/index.tsx"
-    },
-    "/onboarding/": {
-      "filePath": "onboarding/index.tsx"
-    },
-    "/register/": {
-      "filePath": "register/index.tsx"
-    },
-    "/admin/users/$id": {
-      "filePath": "admin/users/$id.tsx",
-      "parent": "/admin"
-    },
-    "/admin/create-event/": {
-      "filePath": "admin/create-event/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/departments/": {
-      "filePath": "admin/departments/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/events/": {
-      "filePath": "admin/events/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/settings/": {
-      "filePath": "admin/settings/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/users/": {
-      "filePath": "admin/users/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/departments/$id/": {
-      "filePath": "admin/departments/$id/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/departments/new/": {
-      "filePath": "admin/departments/new/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/events/$id/": {
-      "filePath": "admin/events/$id/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/events/new/": {
-      "filePath": "admin/events/new/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/settings/plugins/": {
-      "filePath": "admin/settings/plugins/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/events/$id/edit/": {
-      "filePath": "admin/events/$id/edit/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/settings/plugins/$id/": {
-      "filePath": "admin/settings/plugins/$id/index.tsx",
-      "parent": "/admin"
-    },
-    "/admin/settings/plugins/submit/": {
-      "filePath": "admin/settings/plugins/submit/index.tsx",
-      "parent": "/admin"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

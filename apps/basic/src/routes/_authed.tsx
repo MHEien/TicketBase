@@ -1,39 +1,29 @@
+import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { Login } from '~/components/Login'
 import { useAppSession } from '~/utils/session'
 import { hashPassword } from '~/utils/hashPassword'
-import { AuthControllerClient, AuthControllerQuery } from '@repo/api-sdk'
+import { authControllerLogin } from '@repo/api-sdk'
 
 export const loginFn = createServerFn({ method: 'POST' })
   .validator((d: { email: string; password: string }) => d)
   .handler(async ({ data }) => {
     // Find the user
-    const userMutation = await AuthControllerClient.login({
-      email: data.email,
-      password: data.password,
-      init: () => ({}),
-      toJSON: () => ({}),
+    const login = await authControllerLogin({
+        email: data.email,
+        password: data.password,
     })
-
-    // Check if the user exists
-    if (!userMutation.data) {
-      return {
-        error: true,
-        userNotFound: true,
-        message: 'User not found',
-      }
-    }
 
     // Create a session
     const session = await useAppSession()
 
     // Store the user's email in the session
     await session.update({
-      userEmail: userMutation.data.email,
+      userEmail: login.email,
     })
   })
 
-export const Route = createFileRoute({
+export const Route = createFileRoute('/_authed')({
   beforeLoad: ({ context }) => {
     if (!context.user) {
       throw new Error('Not authenticated')

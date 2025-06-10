@@ -1,9 +1,10 @@
-"use client";
+"use client";;
+import { createFileRoute } from "@tanstack/react-router"
 
 import { PluginGallery } from "@/components/plugin-gallery";
 import { Separator } from "@repo/ui/separator";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/settings/plugins/")({
   component: PluginsPage,
 });
 

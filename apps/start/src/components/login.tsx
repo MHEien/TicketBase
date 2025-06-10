@@ -45,7 +45,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export function Login({ search }: { search: LoginSearchParams }) {
+export function Login({ search }: { search?: LoginSearchParams | undefined }) {
   const router = useRouter();
   const [loginError, setLoginError] = useState<string | null>(null);
 
