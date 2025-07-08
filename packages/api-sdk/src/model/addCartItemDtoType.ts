@@ -9,12 +9,12 @@
 /**
  * Item type
  */
-export type AddCartItemDtoType = typeof AddCartItemDtoType[keyof typeof AddCartItemDtoType];
-
+export type AddCartItemDtoType =
+  (typeof AddCartItemDtoType)[keyof typeof AddCartItemDtoType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AddCartItemDtoType = {
-  ticket: 'ticket',
-  merchandise: 'merchandise',
-  fee: 'fee',
+  ticket: "ticket",
+  merchandise: "merchandise",
+  fee: "fee",
 } as const;

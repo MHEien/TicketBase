@@ -9,14 +9,14 @@
 /**
  * Payment provider name
  */
-export type RegisterPaymentPluginDtoProvider = typeof RegisterPaymentPluginDtoProvider[keyof typeof RegisterPaymentPluginDtoProvider];
-
+export type RegisterPaymentPluginDtoProvider =
+  (typeof RegisterPaymentPluginDtoProvider)[keyof typeof RegisterPaymentPluginDtoProvider];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RegisterPaymentPluginDtoProvider = {
-  stripe: 'stripe',
-  paypal: 'paypal',
-  authorize_net: 'authorize_net',
-  square: 'square',
-  braintree: 'braintree',
+  stripe: "stripe",
+  paypal: "paypal",
+  authorize_net: "authorize_net",
+  square: "square",
+  braintree: "braintree",
 } as const;

@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { AddCartItemDtoType } from './addCartItemDtoType';
-import type { AddCartItemDtoMetadata } from './addCartItemDtoMetadata';
+import type { AddCartItemDtoType } from "./addCartItemDtoType";
+import type { AddCartItemDtoMetadata } from "./addCartItemDtoMetadata";
 
 export interface AddCartItemDto {
   /** Ticket type ID (for ticket items) */

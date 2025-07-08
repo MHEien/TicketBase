@@ -5,7 +5,7 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { DepartmentCustomFieldDtoType } from './departmentCustomFieldDtoType';
+import type { DepartmentCustomFieldDtoType } from "./departmentCustomFieldDtoType";
 
 export interface DepartmentCustomFieldDto {
   /** Field key */

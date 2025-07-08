@@ -9,13 +9,13 @@
 /**
  * Current status of the event
  */
-export type EventResponseDtoStatus = typeof EventResponseDtoStatus[keyof typeof EventResponseDtoStatus];
-
+export type EventResponseDtoStatus =
+  (typeof EventResponseDtoStatus)[keyof typeof EventResponseDtoStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventResponseDtoStatus = {
-  draft: 'draft',
-  published: 'published',
-  cancelled: 'cancelled',
-  completed: 'completed',
+  draft: "draft",
+  published: "published",
+  cancelled: "cancelled",
+  completed: "completed",
 } as const;

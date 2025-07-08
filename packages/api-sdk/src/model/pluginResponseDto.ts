@@ -5,9 +5,9 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { PluginCategory } from './pluginCategory';
-import type { PluginStatus } from './pluginStatus';
-import type { PluginResponseDtoMetadata } from './pluginResponseDtoMetadata';
+import type { PluginCategory } from "./pluginCategory";
+import type { PluginStatus } from "./pluginStatus";
+import type { PluginResponseDtoMetadata } from "./pluginResponseDtoMetadata";
 
 export interface PluginResponseDto {
   /** Unique identifier */

@@ -9,16 +9,16 @@
 /**
  * Plugin category
  */
-export type CreatePluginDtoCategory = typeof CreatePluginDtoCategory[keyof typeof CreatePluginDtoCategory];
-
+export type CreatePluginDtoCategory =
+  (typeof CreatePluginDtoCategory)[keyof typeof CreatePluginDtoCategory];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreatePluginDtoCategory = {
-  payment: 'payment',
-  marketing: 'marketing',
-  analytics: 'analytics',
-  social: 'social',
-  ticketing: 'ticketing',
-  layout: 'layout',
-  seating: 'seating',
+  payment: "payment",
+  marketing: "marketing",
+  analytics: "analytics",
+  social: "social",
+  ticketing: "ticketing",
+  layout: "layout",
+  seating: "seating",
 } as const;

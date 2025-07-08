@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { ExtensionPoint } from "@/components/extension-point";
 import { PluginsControllerClient, AuthControllerClient } from "@repo/api-sdk";
 import { Loader2 } from "lucide-react";
@@ -16,7 +16,7 @@ import { Button } from "@repo/ui/button";
 import { Separator } from "@repo/ui/separator";
 import { useToast } from "@repo/ui/use-toast";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/settings/plugins/$id/")({
   component: PluginSettingsPage,
 });
 

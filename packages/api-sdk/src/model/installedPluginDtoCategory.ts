@@ -9,15 +9,15 @@
 /**
  * Plugin category
  */
-export type InstalledPluginDtoCategory = typeof InstalledPluginDtoCategory[keyof typeof InstalledPluginDtoCategory];
-
+export type InstalledPluginDtoCategory =
+  (typeof InstalledPluginDtoCategory)[keyof typeof InstalledPluginDtoCategory];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InstalledPluginDtoCategory = {
-  payment: 'payment',
-  notification: 'notification',
-  analytics: 'analytics',
-  integration: 'integration',
-  ui: 'ui',
-  workflow: 'workflow',
+  payment: "payment",
+  notification: "notification",
+  analytics: "analytics",
+  integration: "integration",
+  ui: "ui",
+  workflow: "workflow",
 } as const;

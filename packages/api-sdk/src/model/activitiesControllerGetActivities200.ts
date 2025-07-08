@@ -5,7 +5,7 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { Activity } from './activity';
+import type { Activity } from "./activity";
 
 export type ActivitiesControllerGetActivities200 = {
   activities?: Activity[];

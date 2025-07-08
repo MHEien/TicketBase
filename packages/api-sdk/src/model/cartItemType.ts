@@ -9,12 +9,11 @@
 /**
  * Item type
  */
-export type CartItemType = typeof CartItemType[keyof typeof CartItemType];
-
+export type CartItemType = (typeof CartItemType)[keyof typeof CartItemType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CartItemType = {
-  ticket: 'ticket',
-  merchandise: 'merchandise',
-  fee: 'fee',
+  ticket: "ticket",
+  merchandise: "merchandise",
+  fee: "fee",
 } as const;

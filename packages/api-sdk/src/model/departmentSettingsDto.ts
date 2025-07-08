@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { DepartmentNotificationPreferencesDto } from './departmentNotificationPreferencesDto';
-import type { DepartmentCustomFieldDto } from './departmentCustomFieldDto';
+import type { DepartmentNotificationPreferencesDto } from "./departmentNotificationPreferencesDto";
+import type { DepartmentCustomFieldDto } from "./departmentCustomFieldDto";
 
 export interface DepartmentSettingsDto {
   /** Department color */

@@ -9,13 +9,13 @@
 /**
  * Plugin status
  */
-export type InstalledPluginDtoStatus = typeof InstalledPluginDtoStatus[keyof typeof InstalledPluginDtoStatus];
-
+export type InstalledPluginDtoStatus =
+  (typeof InstalledPluginDtoStatus)[keyof typeof InstalledPluginDtoStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InstalledPluginDtoStatus = {
-  active: 'active',
-  inactive: 'inactive',
-  deprecated: 'deprecated',
-  removed: 'removed',
+  active: "active",
+  inactive: "inactive",
+  deprecated: "deprecated",
+  removed: "removed",
 } as const;

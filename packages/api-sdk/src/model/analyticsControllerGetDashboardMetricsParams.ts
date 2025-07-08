@@ -7,12 +7,12 @@
  */
 
 export type AnalyticsControllerGetDashboardMetricsParams = {
-/**
- * Start date (ISO string)
- */
-start?: string;
-/**
- * End date (ISO string)
- */
-end?: string;
+  /**
+   * Start date (ISO string)
+   */
+  start?: string;
+  /**
+   * End date (ISO string)
+   */
+  end?: string;
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -39,7 +39,7 @@ import {
 import { EventsControllerQuery, type EventResponseDto } from "@repo/api-sdk";
 import { EventsLoading } from "@repo/ui/loading-skeleton";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/events/")({
   component: EventsPage,
 });
 

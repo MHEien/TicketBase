@@ -9,13 +9,13 @@
 /**
  * Organization plan type
  */
-export type OrganizationPlan = typeof OrganizationPlan[keyof typeof OrganizationPlan];
-
+export type OrganizationPlan =
+  (typeof OrganizationPlan)[keyof typeof OrganizationPlan];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationPlan = {
-  free: 'free',
-  basic: 'basic',
-  pro: 'pro',
-  enterprise: 'enterprise',
+  free: "free",
+  basic: "basic",
+  pro: "pro",
+  enterprise: "enterprise",
 } as const;

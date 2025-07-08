@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { PaymentConfirmationResponseDtoStatus } from './paymentConfirmationResponseDtoStatus';
-import type { PaymentConfirmationResponseDtoPaymentData } from './paymentConfirmationResponseDtoPaymentData';
+import type { PaymentConfirmationResponseDtoStatus } from "./paymentConfirmationResponseDtoStatus";
+import type { PaymentConfirmationResponseDtoPaymentData } from "./paymentConfirmationResponseDtoPaymentData";
 
 export interface PaymentConfirmationResponseDto {
   /** Status of the payment */

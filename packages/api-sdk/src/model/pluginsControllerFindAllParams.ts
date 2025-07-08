@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { PluginsControllerFindAllStatus } from './pluginsControllerFindAllStatus';
+import type { PluginsControllerFindAllStatus } from "./pluginsControllerFindAllStatus";
 
 export type PluginsControllerFindAllParams = {
-status?: PluginsControllerFindAllStatus;
+  status?: PluginsControllerFindAllStatus;
 };

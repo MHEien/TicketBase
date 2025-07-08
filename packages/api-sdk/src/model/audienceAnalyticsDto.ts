@@ -5,11 +5,11 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { AudienceAnalyticsDtoAgeDistribution } from './audienceAnalyticsDtoAgeDistribution';
-import type { AudienceAnalyticsDtoGenderDistribution } from './audienceAnalyticsDtoGenderDistribution';
-import type { AudienceAnalyticsDtoGeographicDistribution } from './audienceAnalyticsDtoGeographicDistribution';
-import type { AudienceAnalyticsDtoDeviceDistribution } from './audienceAnalyticsDtoDeviceDistribution';
-import type { AudienceAnalyticsDtoEngagement } from './audienceAnalyticsDtoEngagement';
+import type { AudienceAnalyticsDtoAgeDistribution } from "./audienceAnalyticsDtoAgeDistribution";
+import type { AudienceAnalyticsDtoGenderDistribution } from "./audienceAnalyticsDtoGenderDistribution";
+import type { AudienceAnalyticsDtoGeographicDistribution } from "./audienceAnalyticsDtoGeographicDistribution";
+import type { AudienceAnalyticsDtoDeviceDistribution } from "./audienceAnalyticsDtoDeviceDistribution";
+import type { AudienceAnalyticsDtoEngagement } from "./audienceAnalyticsDtoEngagement";
 
 export interface AudienceAnalyticsDto {
   /** Total number of unique visitors */

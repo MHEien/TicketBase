@@ -9,13 +9,13 @@
 /**
  * Transaction status
  */
-export type TransactionStatus = typeof TransactionStatus[keyof typeof TransactionStatus];
-
+export type TransactionStatus =
+  (typeof TransactionStatus)[keyof typeof TransactionStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const TransactionStatus = {
-  pending: 'pending',
-  completed: 'completed',
-  failed: 'failed',
-  cancelled: 'cancelled',
+  pending: "pending",
+  completed: "completed",
+  failed: "failed",
+  cancelled: "cancelled",
 } as const;

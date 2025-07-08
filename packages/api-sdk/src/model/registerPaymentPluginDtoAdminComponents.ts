@@ -9,4 +9,6 @@
 /**
  * Admin components provided by the plugin
  */
-export type RegisterPaymentPluginDtoAdminComponents = { [key: string]: unknown };
+export type RegisterPaymentPluginDtoAdminComponents = {
+  [key: string]: unknown;
+};

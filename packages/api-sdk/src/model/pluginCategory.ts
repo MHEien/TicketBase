@@ -9,15 +9,15 @@
 /**
  * Plugin category
  */
-export type PluginCategory = typeof PluginCategory[keyof typeof PluginCategory];
-
+export type PluginCategory =
+  (typeof PluginCategory)[keyof typeof PluginCategory];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PluginCategory = {
-  payment: 'payment',
-  notification: 'notification',
-  analytics: 'analytics',
-  integration: 'integration',
-  ui: 'ui',
-  workflow: 'workflow',
+  payment: "payment",
+  notification: "notification",
+  analytics: "analytics",
+  integration: "integration",
+  ui: "ui",
+  workflow: "workflow",
 } as const;

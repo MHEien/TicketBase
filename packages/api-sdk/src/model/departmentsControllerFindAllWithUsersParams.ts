@@ -7,5 +7,5 @@
  */
 
 export type DepartmentsControllerFindAllWithUsersParams = {
-organizationId: string;
+  organizationId: string;
 };

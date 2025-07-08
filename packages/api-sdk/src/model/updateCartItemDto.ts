@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { UpdateCartItemDtoType } from './updateCartItemDtoType';
-import type { UpdateCartItemDtoMetadata } from './updateCartItemDtoMetadata';
+import type { UpdateCartItemDtoType } from "./updateCartItemDtoType";
+import type { UpdateCartItemDtoMetadata } from "./updateCartItemDtoMetadata";
 
 export interface UpdateCartItemDto {
   /** Item name */

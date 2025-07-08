@@ -7,5 +7,5 @@
  */
 
 export type DepartmentsControllerFindBySlugParams = {
-organizationId: string;
+  organizationId: string;
 };

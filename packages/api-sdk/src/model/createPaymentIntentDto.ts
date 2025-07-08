@@ -5,7 +5,7 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { CreatePaymentIntentDtoMetadata } from './createPaymentIntentDtoMetadata';
+import type { CreatePaymentIntentDtoMetadata } from "./createPaymentIntentDtoMetadata";
 
 export interface CreatePaymentIntentDto {
   /** Organization ID */

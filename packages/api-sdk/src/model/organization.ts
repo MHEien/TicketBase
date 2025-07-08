@@ -5,9 +5,9 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { OrganizationAddress } from './organizationAddress';
-import type { OrganizationPlan } from './organizationPlan';
-import type { OrganizationSettings } from './organizationSettings';
+import type { OrganizationAddress } from "./organizationAddress";
+import type { OrganizationPlan } from "./organizationPlan";
+import type { OrganizationSettings } from "./organizationSettings";
 
 export interface Organization {
   /** Unique identifier for the organization */

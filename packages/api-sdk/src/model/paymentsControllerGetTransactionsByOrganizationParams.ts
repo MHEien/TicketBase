@@ -7,6 +7,6 @@
  */
 
 export type PaymentsControllerGetTransactionsByOrganizationParams = {
-fromDate?: string;
-toDate?: string;
+  fromDate?: string;
+  toDate?: string;
 };

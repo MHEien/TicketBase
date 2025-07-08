@@ -7,8 +7,8 @@
  */
 
 export type AnalyticsControllerGetRecentActivityParams = {
-/**
- * Number of activities to return
- */
-limit?: number;
+  /**
+   * Number of activities to return
+   */
+  limit?: number;
 };

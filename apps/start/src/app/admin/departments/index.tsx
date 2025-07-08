@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@repo/api-sdk";
 import {
@@ -63,7 +63,7 @@ import { toast } from "@repo/ui/use-toast";
 import { Department } from "@repo/api-sdk";
 import { DepartmentsControllerQuery } from "@repo/api-sdk";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/departments/")({
   component: DepartmentsPage,
 });
 

@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { CartItemType } from './cartItemType';
-import type { CartItemMetadata } from './cartItemMetadata';
+import type { CartItemType } from "./cartItemType";
+import type { CartItemMetadata } from "./cartItemMetadata";
 
 export interface CartItem {
   /** Unique identifier */

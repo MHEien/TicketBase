@@ -9,4 +9,6 @@
 /**
  * Additional payment data from the provider
  */
-export type PaymentConfirmationResponseDtoPaymentData = { [key: string]: unknown };
+export type PaymentConfirmationResponseDtoPaymentData = {
+  [key: string]: unknown;
+};

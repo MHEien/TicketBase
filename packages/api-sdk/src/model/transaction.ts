@@ -5,9 +5,9 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { TransactionType } from './transactionType';
-import type { TransactionStatus } from './transactionStatus';
-import type { TransactionMetadata } from './transactionMetadata';
+import type { TransactionType } from "./transactionType";
+import type { TransactionStatus } from "./transactionStatus";
+import type { TransactionMetadata } from "./transactionMetadata";
 
 export interface Transaction {
   /** Unique identifier */

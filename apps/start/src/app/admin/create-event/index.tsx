@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
@@ -12,7 +12,7 @@ import { EventPreview } from "@/components/event-creation/event-preview";
 import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/create-event/")({
   component: CreateEventPage,
 });
 

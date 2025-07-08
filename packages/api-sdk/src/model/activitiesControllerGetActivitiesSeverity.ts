@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ActivitiesControllerGetActivitiesSeverity = typeof ActivitiesControllerGetActivitiesSeverity[keyof typeof ActivitiesControllerGetActivitiesSeverity];
-
+export type ActivitiesControllerGetActivitiesSeverity =
+  (typeof ActivitiesControllerGetActivitiesSeverity)[keyof typeof ActivitiesControllerGetActivitiesSeverity];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ActivitiesControllerGetActivitiesSeverity = {
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
+  LOW: "LOW",
+  MEDIUM: "MEDIUM",
+  HIGH: "HIGH",
 } as const;

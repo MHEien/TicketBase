@@ -7,5 +7,5 @@
  */
 
 export type DepartmentsControllerGetHierarchyParams = {
-organizationId: string;
+  organizationId: string;
 };

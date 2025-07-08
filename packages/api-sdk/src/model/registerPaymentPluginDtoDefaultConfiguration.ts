@@ -9,4 +9,6 @@
 /**
  * Default plugin configuration
  */
-export type RegisterPaymentPluginDtoDefaultConfiguration = { [key: string]: unknown };
+export type RegisterPaymentPluginDtoDefaultConfiguration = {
+  [key: string]: unknown;
+};

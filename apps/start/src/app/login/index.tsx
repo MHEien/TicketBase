@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router"
 import { Login } from "@/components/login";
 
 type LoginSearchParams = {
@@ -8,7 +9,7 @@ type LoginSearchParams = {
     | "auth_error";
 };
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/login/")({
   component: LoginPage,
 
 });

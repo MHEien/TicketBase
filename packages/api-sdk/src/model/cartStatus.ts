@@ -9,13 +9,12 @@
 /**
  * Cart status
  */
-export type CartStatus = typeof CartStatus[keyof typeof CartStatus];
-
+export type CartStatus = (typeof CartStatus)[keyof typeof CartStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CartStatus = {
-  active: 'active',
-  abandoned: 'abandoned',
-  converted: 'converted',
-  expired: 'expired',
+  active: "active",
+  abandoned: "abandoned",
+  converted: "converted",
+  expired: "expired",
 } as const;

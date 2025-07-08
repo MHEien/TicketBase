@@ -7,5 +7,5 @@
  */
 
 export type CartsControllerAddItemParams = {
-organizationId: string;
+  organizationId: string;
 };

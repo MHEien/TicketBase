@@ -9,4 +9,4 @@
 /**
  * Age distribution of visitors
  */
-export type AudienceAnalyticsDtoAgeDistribution = {[key: string]: number};
+export type AudienceAnalyticsDtoAgeDistribution = { [key: string]: number };

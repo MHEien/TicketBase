@@ -7,5 +7,5 @@
  */
 
 export type DepartmentsControllerFindOneParams = {
-organizationId: string;
+  organizationId: string;
 };

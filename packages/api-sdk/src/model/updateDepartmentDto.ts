@@ -5,7 +5,7 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { DepartmentSettingsDto } from './departmentSettingsDto';
+import type { DepartmentSettingsDto } from "./departmentSettingsDto";
 
 export interface UpdateDepartmentDto {
   /** Department name */

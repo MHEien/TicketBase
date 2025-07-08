@@ -6,4 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface Activity { [key: string]: unknown }
+export interface Activity {
+  [key: string]: unknown;
+}

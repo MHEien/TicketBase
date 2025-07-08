@@ -7,5 +7,5 @@
  */
 
 export type CustomersControllerFindByEmailParams = {
-email: string;
+  email: string;
 };

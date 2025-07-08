@@ -5,19 +5,19 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { AnalyticsControllerGetRevenueChartDataGranularity } from './analyticsControllerGetRevenueChartDataGranularity';
+import type { AnalyticsControllerGetRevenueChartDataGranularity } from "./analyticsControllerGetRevenueChartDataGranularity";
 
 export type AnalyticsControllerGetRevenueChartDataParams = {
-/**
- * Start date (ISO string)
- */
-start: string;
-/**
- * End date (ISO string)
- */
-end: string;
-/**
- * Data granularity
- */
-granularity?: AnalyticsControllerGetRevenueChartDataGranularity;
+  /**
+   * Start date (ISO string)
+   */
+  start: string;
+  /**
+   * End date (ISO string)
+   */
+  end: string;
+  /**
+   * Data granularity
+   */
+  granularity?: AnalyticsControllerGetRevenueChartDataGranularity;
 };

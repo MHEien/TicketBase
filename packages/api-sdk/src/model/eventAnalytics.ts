@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { EventAnalyticsTicketTypeBreakdown } from './eventAnalyticsTicketTypeBreakdown';
-import type { EventAnalyticsReferrers } from './eventAnalyticsReferrers';
+import type { EventAnalyticsTicketTypeBreakdown } from "./eventAnalyticsTicketTypeBreakdown";
+import type { EventAnalyticsReferrers } from "./eventAnalyticsReferrers";
 
 export interface EventAnalytics {
   /** Unique identifier */

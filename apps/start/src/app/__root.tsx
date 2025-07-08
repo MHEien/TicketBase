@@ -11,6 +11,9 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { useAppSession } from "@/utils/session";
 
 import appCss from "@/styles/app.css?url";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient()
 
 export const Route = createRootRoute({
   head: () => ({
@@ -34,7 +37,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
     </RootDocument>
   );
 }
@@ -47,11 +52,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-    <QueryProvider>
+              <AuthProvider>
                 {children}
             <TanStackRouterDevtools position="bottom-right" />
             <Scripts />
-            </QueryProvider>
       </body>
     </html>
   );

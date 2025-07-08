@@ -7,5 +7,5 @@
  */
 
 export type CartsControllerFindAllParams = {
-organizationId: string;
+  organizationId: string;
 };

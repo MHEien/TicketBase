@@ -9,4 +9,6 @@
 /**
  * Storefront components provided by the plugin
  */
-export type RegisterPaymentPluginDtoStorefrontComponents = { [key: string]: unknown };
+export type RegisterPaymentPluginDtoStorefrontComponents = {
+  [key: string]: unknown;
+};

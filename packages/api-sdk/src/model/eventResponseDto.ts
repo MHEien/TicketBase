@@ -5,12 +5,12 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { Organization } from './organization';
-import type { EventResponseDtoLocationType } from './eventResponseDtoLocationType';
-import type { EventResponseDtoStatus } from './eventResponseDtoStatus';
-import type { EventResponseDtoVisibility } from './eventResponseDtoVisibility';
-import type { User } from './user';
-import type { TicketType } from './ticketType';
+import type { Organization } from "./organization";
+import type { EventResponseDtoLocationType } from "./eventResponseDtoLocationType";
+import type { EventResponseDtoStatus } from "./eventResponseDtoStatus";
+import type { EventResponseDtoVisibility } from "./eventResponseDtoVisibility";
+import type { User } from "./user";
+import type { TicketType } from "./ticketType";
 
 export interface EventResponseDto {
   /** Unique identifier of the event */

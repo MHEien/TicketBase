@@ -9,4 +9,4 @@
 /**
  * Gender distribution of visitors
  */
-export type AudienceAnalyticsDtoGenderDistribution = {[key: string]: number};
+export type AudienceAnalyticsDtoGenderDistribution = { [key: string]: number };

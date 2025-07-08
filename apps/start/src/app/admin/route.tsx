@@ -1,9 +1,10 @@
-import { redirect } from "@tanstack/react-router";
-import { authControllerGetSession } from "@repo/api-sdk";
+import { redirect, createFileRoute } from "@tanstack/react-router";
+import { validateSession } from "@repo/api-sdk";
 import { DashboardLayout } from "@/components/admin/dashboard-layout";
 import { useAppSession } from "@/utils/session";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin")({
+  /*
   beforeLoad: async () => {
     try {
       // Get the current session to retrieve the access token

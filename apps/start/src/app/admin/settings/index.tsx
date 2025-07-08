@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { useSession } from "@repo/api-sdk";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -37,7 +37,7 @@ import {
 } from "@repo/ui/card";
 import { toast } from "@repo/ui/use-toast";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/admin/settings/")({
   component: SettingsPage,
 });
 

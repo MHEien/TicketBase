@@ -7,5 +7,5 @@
  */
 
 export type CartsControllerApplyDiscountParams = {
-organizationId: string;
+  organizationId: string;
 };

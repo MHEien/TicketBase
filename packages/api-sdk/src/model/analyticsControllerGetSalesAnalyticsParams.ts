@@ -7,12 +7,12 @@
  */
 
 export type AnalyticsControllerGetSalesAnalyticsParams = {
-/**
- * Start date for analytics period
- */
-startDate?: string;
-/**
- * End date for analytics period
- */
-endDate?: string;
+  /**
+   * Start date for analytics period
+   */
+  startDate?: string;
+  /**
+   * End date for analytics period
+   */
+  endDate?: string;
 };

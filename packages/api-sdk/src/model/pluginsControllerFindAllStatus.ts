@@ -6,13 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PluginsControllerFindAllStatus = typeof PluginsControllerFindAllStatus[keyof typeof PluginsControllerFindAllStatus];
-
+export type PluginsControllerFindAllStatus =
+  (typeof PluginsControllerFindAllStatus)[keyof typeof PluginsControllerFindAllStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PluginsControllerFindAllStatus = {
-  active: 'active',
-  inactive: 'inactive',
-  deprecated: 'deprecated',
-  removed: 'removed',
+  active: "active",
+  inactive: "inactive",
+  deprecated: "deprecated",
+  removed: "removed",
 } as const;

@@ -9,4 +9,6 @@
 /**
  * Geographic distribution of visitors
  */
-export type AudienceAnalyticsDtoGeographicDistribution = {[key: string]: number};
+export type AudienceAnalyticsDtoGeographicDistribution = {
+  [key: string]: number;
+};

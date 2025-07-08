@@ -7,5 +7,5 @@
  */
 
 export type CartsControllerAbandonParams = {
-organizationId: string;
+  organizationId: string;
 };

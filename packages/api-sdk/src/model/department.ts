@@ -5,7 +5,7 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { DepartmentSettings } from './departmentSettings';
+import type { DepartmentSettings } from "./departmentSettings";
 
 export interface Department {
   /** Unique identifier for the department */

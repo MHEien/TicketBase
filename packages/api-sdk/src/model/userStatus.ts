@@ -9,12 +9,11 @@
 /**
  * User's status
  */
-export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
-
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserStatus = {
-  active: 'active',
-  inactive: 'inactive',
-  pending: 'pending',
+  active: "active",
+  inactive: "inactive",
+  pending: "pending",
 } as const;

@@ -6,15 +6,15 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ActivitiesControllerGetActivitiesType = typeof ActivitiesControllerGetActivitiesType[keyof typeof ActivitiesControllerGetActivitiesType];
-
+export type ActivitiesControllerGetActivitiesType =
+  (typeof ActivitiesControllerGetActivitiesType)[keyof typeof ActivitiesControllerGetActivitiesType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ActivitiesControllerGetActivitiesType = {
-  FINANCIAL: 'FINANCIAL',
-  EVENT_MANAGEMENT: 'EVENT_MANAGEMENT',
-  USER_MANAGEMENT: 'USER_MANAGEMENT',
-  ADMINISTRATIVE: 'ADMINISTRATIVE',
-  SECURITY: 'SECURITY',
-  MARKETING: 'MARKETING',
+  FINANCIAL: "FINANCIAL",
+  EVENT_MANAGEMENT: "EVENT_MANAGEMENT",
+  USER_MANAGEMENT: "USER_MANAGEMENT",
+  ADMINISTRATIVE: "ADMINISTRATIVE",
+  SECURITY: "SECURITY",
+  MARKETING: "MARKETING",
 } as const;

@@ -5,12 +5,12 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { EventsControllerFindAllStatus } from './eventsControllerFindAllStatus';
+import type { EventsControllerFindAllStatus } from "./eventsControllerFindAllStatus";
 
 export type EventsControllerFindAllParams = {
-endDate?: string;
-startDate?: string;
-search?: string;
-category?: string;
-status?: EventsControllerFindAllStatus;
+  endDate?: string;
+  startDate?: string;
+  search?: string;
+  category?: string;
+  status?: EventsControllerFindAllStatus;
 };

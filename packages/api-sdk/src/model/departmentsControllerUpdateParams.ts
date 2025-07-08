@@ -7,5 +7,5 @@
  */
 
 export type DepartmentsControllerUpdateParams = {
-organizationId: string;
+  organizationId: string;
 };

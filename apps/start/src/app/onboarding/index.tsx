@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 import { useOnboarding } from "@/lib/onboarding-context";
 import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
@@ -9,7 +9,7 @@ import BrandSettingsForm from "./steps/brand-settings";
 import PaymentDetailsForm from "./steps/payment-details";
 import OnboardingComplete from "./steps/onboarding-complete";
 
-export const Route = createFileRoute({
+export const Route = createFileRoute("/onboarding/")({
   component: OnboardingPage,
 });
 

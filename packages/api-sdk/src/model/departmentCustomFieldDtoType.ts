@@ -9,14 +9,14 @@
 /**
  * Field type
  */
-export type DepartmentCustomFieldDtoType = typeof DepartmentCustomFieldDtoType[keyof typeof DepartmentCustomFieldDtoType];
-
+export type DepartmentCustomFieldDtoType =
+  (typeof DepartmentCustomFieldDtoType)[keyof typeof DepartmentCustomFieldDtoType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DepartmentCustomFieldDtoType = {
-  text: 'text',
-  number: 'number',
-  date: 'date',
-  boolean: 'boolean',
-  select: 'select',
+  text: "text",
+  number: "number",
+  date: "date",
+  boolean: "boolean",
+  select: "select",
 } as const;

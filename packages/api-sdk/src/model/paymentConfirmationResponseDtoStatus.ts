@@ -9,14 +9,14 @@
 /**
  * Status of the payment
  */
-export type PaymentConfirmationResponseDtoStatus = typeof PaymentConfirmationResponseDtoStatus[keyof typeof PaymentConfirmationResponseDtoStatus];
-
+export type PaymentConfirmationResponseDtoStatus =
+  (typeof PaymentConfirmationResponseDtoStatus)[keyof typeof PaymentConfirmationResponseDtoStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PaymentConfirmationResponseDtoStatus = {
-  succeeded: 'succeeded',
-  processing: 'processing',
-  requires_payment_method: 'requires_payment_method',
-  requires_confirmation: 'requires_confirmation',
-  canceled: 'canceled',
+  succeeded: "succeeded",
+  processing: "processing",
+  requires_payment_method: "requires_payment_method",
+  requires_confirmation: "requires_confirmation",
+  canceled: "canceled",
 } as const;

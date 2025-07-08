@@ -6,13 +6,13 @@
  * OpenAPI spec version: 1.0
  */
 
-export type EventsControllerFindAllStatus = typeof EventsControllerFindAllStatus[keyof typeof EventsControllerFindAllStatus];
-
+export type EventsControllerFindAllStatus =
+  (typeof EventsControllerFindAllStatus)[keyof typeof EventsControllerFindAllStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventsControllerFindAllStatus = {
-  draft: 'draft',
-  published: 'published',
-  cancelled: 'cancelled',
-  completed: 'completed',
+  draft: "draft",
+  published: "published",
+  cancelled: "cancelled",
+  completed: "completed",
 } as const;

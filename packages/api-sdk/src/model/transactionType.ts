@@ -9,13 +9,13 @@
 /**
  * Transaction type
  */
-export type TransactionType = typeof TransactionType[keyof typeof TransactionType];
-
+export type TransactionType =
+  (typeof TransactionType)[keyof typeof TransactionType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const TransactionType = {
-  purchase: 'purchase',
-  refund: 'refund',
-  chargeback: 'chargeback',
-  payout: 'payout',
+  purchase: "purchase",
+  refund: "refund",
+  chargeback: "chargeback",
+  payout: "payout",
 } as const;

@@ -5,8 +5,8 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { UserRole } from './userRole';
-import type { UserStatus } from './userStatus';
+import type { UserRole } from "./userRole";
+import type { UserStatus } from "./userStatus";
 
 export interface User {
   /** Unique identifier for the user */

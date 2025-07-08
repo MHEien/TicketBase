@@ -9,12 +9,12 @@
 /**
  * Type of event location
  */
-export type EventResponseDtoLocationType = typeof EventResponseDtoLocationType[keyof typeof EventResponseDtoLocationType];
-
+export type EventResponseDtoLocationType =
+  (typeof EventResponseDtoLocationType)[keyof typeof EventResponseDtoLocationType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventResponseDtoLocationType = {
-  physical: 'physical',
-  virtual: 'virtual',
-  hybrid: 'hybrid',
+  physical: "physical",
+  virtual: "virtual",
+  hybrid: "hybrid",
 } as const;

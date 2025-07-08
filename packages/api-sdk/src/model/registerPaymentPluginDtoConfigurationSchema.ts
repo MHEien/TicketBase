@@ -9,4 +9,6 @@
 /**
  * Gateway-specific configuration schema
  */
-export type RegisterPaymentPluginDtoConfigurationSchema = { [key: string]: unknown };
+export type RegisterPaymentPluginDtoConfigurationSchema = {
+  [key: string]: unknown;
+};

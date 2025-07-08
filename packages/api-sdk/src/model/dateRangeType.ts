@@ -9,12 +9,11 @@
 /**
  * Date range type
  */
-export type DateRangeType = typeof DateRangeType[keyof typeof DateRangeType];
-
+export type DateRangeType = (typeof DateRangeType)[keyof typeof DateRangeType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DateRangeType = {
-  daily: 'daily',
-  weekly: 'weekly',
-  monthly: 'monthly',
+  daily: "daily",
+  weekly: "weekly",
+  monthly: "monthly",
 } as const;

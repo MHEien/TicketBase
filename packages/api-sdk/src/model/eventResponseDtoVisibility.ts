@@ -9,12 +9,12 @@
 /**
  * Visibility setting of the event
  */
-export type EventResponseDtoVisibility = typeof EventResponseDtoVisibility[keyof typeof EventResponseDtoVisibility];
-
+export type EventResponseDtoVisibility =
+  (typeof EventResponseDtoVisibility)[keyof typeof EventResponseDtoVisibility];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EventResponseDtoVisibility = {
-  public: 'public',
-  private: 'private',
-  unlisted: 'unlisted',
+  public: "public",
+  private: "private",
+  unlisted: "unlisted",
 } as const;

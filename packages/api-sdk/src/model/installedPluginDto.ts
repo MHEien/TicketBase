@@ -5,10 +5,10 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { InstalledPluginDtoCategory } from './installedPluginDtoCategory';
-import type { InstalledPluginDtoStatus } from './installedPluginDtoStatus';
-import type { InstalledPluginDtoConfiguration } from './installedPluginDtoConfiguration';
-import type { InstalledPluginDtoMetadata } from './installedPluginDtoMetadata';
+import type { InstalledPluginDtoCategory } from "./installedPluginDtoCategory";
+import type { InstalledPluginDtoStatus } from "./installedPluginDtoStatus";
+import type { InstalledPluginDtoConfiguration } from "./installedPluginDtoConfiguration";
+import type { InstalledPluginDtoMetadata } from "./installedPluginDtoMetadata";
 
 export interface InstalledPluginDto {
   /** Unique identifier for the installed plugin */

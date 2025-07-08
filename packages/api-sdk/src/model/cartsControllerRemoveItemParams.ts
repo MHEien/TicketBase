@@ -7,5 +7,5 @@
  */
 
 export type CartsControllerRemoveItemParams = {
-organizationId: string;
+  organizationId: string;
 };

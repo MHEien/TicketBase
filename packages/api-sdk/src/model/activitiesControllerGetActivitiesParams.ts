@@ -5,32 +5,32 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { ActivitiesControllerGetActivitiesType } from './activitiesControllerGetActivitiesType';
-import type { ActivitiesControllerGetActivitiesSeverity } from './activitiesControllerGetActivitiesSeverity';
+import type { ActivitiesControllerGetActivitiesType } from "./activitiesControllerGetActivitiesType";
+import type { ActivitiesControllerGetActivitiesSeverity } from "./activitiesControllerGetActivitiesSeverity";
 
 export type ActivitiesControllerGetActivitiesParams = {
-/**
- * Search in description, user name, or email
- */
-search?: string;
-/**
- * Filter by activity type
- */
-type?: ActivitiesControllerGetActivitiesType;
-/**
- * Filter by activity severity
- */
-severity?: ActivitiesControllerGetActivitiesSeverity;
-/**
- * Date range filter (1d, 7d, 30d, 90d)
- */
-dateRange?: string;
-/**
- * Number of activities to return
- */
-limit?: number;
-/**
- * Number of activities to skip
- */
-offset?: number;
+  /**
+   * Search in description, user name, or email
+   */
+  search?: string;
+  /**
+   * Filter by activity type
+   */
+  type?: ActivitiesControllerGetActivitiesType;
+  /**
+   * Filter by activity severity
+   */
+  severity?: ActivitiesControllerGetActivitiesSeverity;
+  /**
+   * Date range filter (1d, 7d, 30d, 90d)
+   */
+  dateRange?: string;
+  /**
+   * Number of activities to return
+   */
+  limit?: number;
+  /**
+   * Number of activities to skip
+   */
+  offset?: number;
 };

@@ -7,5 +7,5 @@
  */
 
 export type DepartmentsControllerRemoveParams = {
-organizationId: string;
+  organizationId: string;
 };

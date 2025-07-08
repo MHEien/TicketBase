@@ -7,5 +7,5 @@
  */
 
 export type CartsControllerFindBySessionParams = {
-organizationId: string;
+  organizationId: string;
 };

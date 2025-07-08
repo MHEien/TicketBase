@@ -5,13 +5,13 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { RegisterPaymentPluginDtoCategory } from './registerPaymentPluginDtoCategory';
-import type { RegisterPaymentPluginDtoAdminComponents } from './registerPaymentPluginDtoAdminComponents';
-import type { RegisterPaymentPluginDtoStorefrontComponents } from './registerPaymentPluginDtoStorefrontComponents';
-import type { RegisterPaymentPluginDtoMetadata } from './registerPaymentPluginDtoMetadata';
-import type { RegisterPaymentPluginDtoProvider } from './registerPaymentPluginDtoProvider';
-import type { RegisterPaymentPluginDtoConfigurationSchema } from './registerPaymentPluginDtoConfigurationSchema';
-import type { RegisterPaymentPluginDtoDefaultConfiguration } from './registerPaymentPluginDtoDefaultConfiguration';
+import type { RegisterPaymentPluginDtoCategory } from "./registerPaymentPluginDtoCategory";
+import type { RegisterPaymentPluginDtoAdminComponents } from "./registerPaymentPluginDtoAdminComponents";
+import type { RegisterPaymentPluginDtoStorefrontComponents } from "./registerPaymentPluginDtoStorefrontComponents";
+import type { RegisterPaymentPluginDtoMetadata } from "./registerPaymentPluginDtoMetadata";
+import type { RegisterPaymentPluginDtoProvider } from "./registerPaymentPluginDtoProvider";
+import type { RegisterPaymentPluginDtoConfigurationSchema } from "./registerPaymentPluginDtoConfigurationSchema";
+import type { RegisterPaymentPluginDtoDefaultConfiguration } from "./registerPaymentPluginDtoDefaultConfiguration";
 
 export interface RegisterPaymentPluginDto {
   /** Plugin name */

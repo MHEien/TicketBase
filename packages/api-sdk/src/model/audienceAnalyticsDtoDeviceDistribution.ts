@@ -9,4 +9,4 @@
 /**
  * Device types used by visitors
  */
-export type AudienceAnalyticsDtoDeviceDistribution = {[key: string]: number};
+export type AudienceAnalyticsDtoDeviceDistribution = { [key: string]: number };

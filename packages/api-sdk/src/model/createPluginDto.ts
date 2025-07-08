@@ -5,10 +5,10 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { CreatePluginDtoCategory } from './createPluginDtoCategory';
-import type { CreatePluginDtoAdminComponents } from './createPluginDtoAdminComponents';
-import type { CreatePluginDtoStorefrontComponents } from './createPluginDtoStorefrontComponents';
-import type { CreatePluginDtoMetadata } from './createPluginDtoMetadata';
+import type { CreatePluginDtoCategory } from "./createPluginDtoCategory";
+import type { CreatePluginDtoAdminComponents } from "./createPluginDtoAdminComponents";
+import type { CreatePluginDtoStorefrontComponents } from "./createPluginDtoStorefrontComponents";
+import type { CreatePluginDtoMetadata } from "./createPluginDtoMetadata";
 
 export interface CreatePluginDto {
   /** Plugin name */

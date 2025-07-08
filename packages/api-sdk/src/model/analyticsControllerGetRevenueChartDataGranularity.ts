@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type AnalyticsControllerGetRevenueChartDataGranularity = typeof AnalyticsControllerGetRevenueChartDataGranularity[keyof typeof AnalyticsControllerGetRevenueChartDataGranularity];
-
+export type AnalyticsControllerGetRevenueChartDataGranularity =
+  (typeof AnalyticsControllerGetRevenueChartDataGranularity)[keyof typeof AnalyticsControllerGetRevenueChartDataGranularity];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AnalyticsControllerGetRevenueChartDataGranularity = {
-  daily: 'daily',
-  weekly: 'weekly',
-  monthly: 'monthly',
+  daily: "daily",
+  weekly: "weekly",
+  monthly: "monthly",
 } as const;

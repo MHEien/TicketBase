@@ -5,9 +5,9 @@
  * The eTickets Platform API documentation
  * OpenAPI spec version: 1.0
  */
-import type { DateRangeType } from './dateRangeType';
-import type { SalesAnalyticsEventBreakdown } from './salesAnalyticsEventBreakdown';
-import type { SalesAnalyticsPaymentMethodBreakdown } from './salesAnalyticsPaymentMethodBreakdown';
+import type { DateRangeType } from "./dateRangeType";
+import type { SalesAnalyticsEventBreakdown } from "./salesAnalyticsEventBreakdown";
+import type { SalesAnalyticsPaymentMethodBreakdown } from "./salesAnalyticsPaymentMethodBreakdown";
 
 export interface SalesAnalytics {
   /** Unique identifier */

@@ -7,8 +7,8 @@
  */
 
 export type ActivitiesControllerGetActivityCountsParams = {
-/**
- * Date range filter (1d, 7d, 30d, 90d)
- */
-dateRange?: string;
+  /**
+   * Date range filter (1d, 7d, 30d, 90d)
+   */
+  dateRange?: string;
 };
