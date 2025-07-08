@@ -6,14 +6,26 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.mjs",
+      "require": "./dist/client.js"
+    }
+  },
   "files": [
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --external react --watch",
+    "build": "tsup src/index.ts src/client.ts --format esm,cjs --external react --external react-dom",
+    "dev": "tsup src/index.ts src/client.ts --format esm,cjs --external react --external react-dom --watch",
     "clean": "rm -rf dist",
-    "generate": "react-query-swagger /tanstack /input:../../openapi.json /output:./src/generated/api-client.ts /template:Axios /serviceHost:. /use-recommended-configuration",
+    "generate": "orval",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
