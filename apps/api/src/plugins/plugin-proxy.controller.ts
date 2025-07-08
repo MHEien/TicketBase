@@ -4,10 +4,12 @@ import {
   ApiOperation,
   ApiBearerAuth,
   ApiParam,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PluginsProxyService, ProxyResponse } from './plugins-proxy.service';
+import { PluginProxyResponseDto } from './dto/plugin-proxy-response.dto';
 
 @ApiTags('plugin-proxy')
 @Controller('api/plugins/proxy')
@@ -19,8 +21,23 @@ export class PluginProxyController {
   @All('/:pluginId/*path')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Proxy request to plugin server' })
-  @ApiParam({ name: 'pluginId', description: 'Plugin ID' })
-  @ApiParam({ name: 'path', description: 'Path to proxy' })
+  @ApiParam({ name: 'pluginId', description: 'Plugin ID', type: 'string' })
+  @ApiParam({ 
+    name: 'path', 
+    description: 'Path to proxy', 
+    type: 'string',
+    style: 'simple',
+    explode: false,
+    allowReserved: true
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully proxied request',
+    type: PluginProxyResponseDto
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Plugin not found' })
   @ApiBearerAuth()
   async proxyRequest(
     @Param('pluginId') pluginId: string,

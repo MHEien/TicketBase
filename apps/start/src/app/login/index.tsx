@@ -14,5 +14,5 @@ export const Route = createFileRoute({
 });
 
 function LoginPage() {
-  return <Login search={{}}/>;
+  return <Login />;
 }

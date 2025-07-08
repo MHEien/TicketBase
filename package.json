@@ -10,9 +10,11 @@
   },
   "devDependencies": {
     "@originjs/vite-plugin-federation": "^1.4.1",
+    "ajv": "^8.17.1",
     "prettier": "^3.5.3",
     "turbo": "^2.5.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "orval": "^7.9.0"
   },
   "engines": {
     "node": ">=18"
@@ -23,6 +25,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@tanstack/query-sync-storage-persister": "^5.80.6",
     "@tanstack/react-query": "^5.80.6",
     "react-query-swagger": "^15.12.7",
     "systemjs": "^6.15.1"

@@ -1,8 +1,16 @@
 import { useSession } from "@tanstack/react-start/server";
-import type { AuthUser } from "@repo/api-sdk";
+import type { AuthControllerGetSessionQueryResult } from "@repo/api-sdk";
 
 type SessionUser = {
-    userEmail: AuthUser["email"];
+    userEmail?: string
+    userId?: string
+    userName?: string
+    userRole?: string
+    organizationId?: string
+    accessToken?: string
+    refreshToken?: string
+    permissions?: string[]
+    expiresIn?: number
 }
 
 export function useAppSession() {

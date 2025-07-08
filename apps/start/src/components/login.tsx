@@ -45,14 +45,14 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export function Login({ search }: { search: LoginSearchParams }) {
+export function Login({ search }: { search?: LoginSearchParams }) {
   const router = useRouter();
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const loginMutation = useMutation({
     mutationFn: loginFn,
     onSuccess: async (ctx) => {
-        if (!ctx.error) {
+        if (ctx.success) {
             await router.invalidate()
             router.navigate({ to: "/admin" })
             return
@@ -73,26 +73,18 @@ export function Login({ search }: { search: LoginSearchParams }) {
     },
   });
 
-  async function onSubmit(data: LoginFormValues, event?: React.FormEvent) {
-    // Prevent default form submission
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
+  async function onSubmit(data: LoginFormValues) {
     console.log("Form submitted with:", { email: data.email });
     setLoginError(null);
 
     try {
       console.log("Calling login function...");
-      loginMutation.mutateAsync({
+      await loginMutation.mutateAsync({
         data: {
             email: data.email,
             password: data.password,
         }
-      })
-
-
+      });
     } catch (error: any) {
       console.error("Login error:", {
         name: error.name,
@@ -122,17 +114,13 @@ export function Login({ search }: { search: LoginSearchParams }) {
         <CardContent>
           <Form {...form}>
             <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-              }} 
+              onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-              {(search.error || loginError) && (
+              {(search?.error || loginError) && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {loginError || getErrorMessage(search.error)}
+                    {loginError || getErrorMessage(search?.error)}
                   </AlertDescription>
                 </Alert>
               )}
@@ -181,10 +169,6 @@ export function Login({ search }: { search: LoginSearchParams }) {
                 type="submit" 
                 className="w-full" 
                 disabled={loginMutation.isPending}
-                onClick={(e) => {
-                  e.preventDefault();
-                  form.handleSubmit((data) => onSubmit(data))();
-                }}
               >
                 {loginMutation.isPending ? "Signing in..." : "Sign in"}
               </Button>
