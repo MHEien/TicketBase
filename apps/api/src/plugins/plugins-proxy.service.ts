@@ -9,7 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
-import FormData from 'form-data';
+import { Blob } from 'buffer';
+import { FormData } from 'undici';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import { InstallPluginDto } from './dto/install-plugin.dto';
@@ -578,18 +579,16 @@ export class PluginsProxyService {
       // Create FormData for multipart upload
       const formData = new FormData();
 
-      // Add the file as a stream
-      formData.append('file', file, {
-        filename,
-        contentType: 'application/javascript',
-      });
+      // Create a Blob from the buffer
+      const blob = new Blob([file], { type: 'application/javascript' });
+
+      // Add the file as a blob
+      formData.append('file', blob, filename);
       formData.append('pluginId', pluginId);
       formData.append('version', version);
 
-      // Create headers including the FormData boundary
-      const headers = {
-        ...formData.getHeaders(),
-      };
+      // Create headers
+      const headers: Record<string, string> = {};
 
       if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`;

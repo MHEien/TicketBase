@@ -1,6 +1,9 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { auth } from "@/lib/auth";
 import { PluginBuildService, PluginUploadAPI } from "@/lib/plugin-build-system";
+import { promises as fs } from "fs";
+import * as path from "path";
+import * as os from "os";
+import JSZip from "jszip";
 
 const buildService = new PluginBuildService();
 const uploadAPI = new PluginUploadAPI(buildService);
@@ -89,37 +92,24 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
             );
           }
 
-          const fs = require("fs/promises");
           bundleBuffer = await fs.readFile(buildResult.bundlePath);
 
           // Extract plugin metadata from the ZIP (plugin.json)
           try {
-            const StreamZip = require("node-stream-zip");
-            const os = require("os");
-            const path = require("path");
-
-            // Create a temporary file from the ZIP buffer
-            const tmpPath = path.join(
-              os.tmpdir(),
-              "plugin-" + Date.now() + ".zip",
-            );
-            await fs.writeFile(tmpPath, zipBuffer);
-
-            // Extract and read plugin.json
-            const zip = new StreamZip.async({ file: tmpPath });
-            const entries = await zip.entries();
-
-            if (entries["plugin.json"]) {
-              const pluginJsonBuffer = await zip.entryData("plugin.json");
-              pluginMetadata = JSON.parse(pluginJsonBuffer.toString("utf8"));
+            // Load the ZIP buffer into JSZip
+            const zip = new JSZip();
+            await zip.loadAsync(zipBuffer);
+            
+            // Check for plugin.json
+            const pluginJsonFile = zip.file("plugin.json");
+            if (pluginJsonFile) {
+              const content = await pluginJsonFile.async("text");
+              pluginMetadata = JSON.parse(content);
 
               // Use metadata from plugin.json
               pluginId = pluginMetadata.id || pluginId;
               version = pluginMetadata.version || version;
             }
-
-            await zip.close();
-            await fs.unlink(tmpPath).catch(() => {}); // Clean up
           } catch (error) {
             console.warn("Could not extract plugin.json metadata:", error);
           }

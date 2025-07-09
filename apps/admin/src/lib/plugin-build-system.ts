@@ -10,11 +10,13 @@
  * - Production builds with caching
  */
 
-import { exec } from "child_process";
-import { promisify } from "util";
-import path from "path";
-import fs from "fs/promises";
-import { z } from "zod";
+import { promises as fs } from 'fs';
+import * as path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import * as os from 'os';
+import { z } from 'zod';
+import JSZip from 'jszip';
 
 const execAsync = promisify(exec);
 
@@ -475,31 +477,21 @@ export class PluginBuildService {
     return files;
   }
 
-  private async extractZip(zipBuffer: Buffer): Promise<Map<string, Buffer>> {
-    const StreamZip = require("node-stream-zip");
-    const os = require("os");
+  public async extractZip(zipBuffer: Buffer): Promise<Map<string, Buffer>> {
     const files = new Map<string, Buffer>();
 
     try {
-      // Create a temporary file from the buffer
-      const tmpPath = path.join(os.tmpdir(), "plugin-" + Date.now() + ".zip");
-      await fs.writeFile(tmpPath, zipBuffer);
-
-      // Extract ZIP file
-      const zip = new StreamZip.async({ file: tmpPath });
-      const entries = await zip.entries();
-
-      for (const entry of Object.values(entries) as any[]) {
-        if (!entry.isDirectory) {
-          const data = await zip.entryData(entry.name);
-          files.set(entry.name, Buffer.from(data));
+      // Load the ZIP buffer into JSZip
+      const zip = new JSZip();
+      await zip.loadAsync(zipBuffer);
+      
+      // Process each file in the ZIP
+      for (const [filename, file] of Object.entries(zip.files)) {
+        if (!file.dir) {
+          const content = await file.async('nodebuffer');
+          files.set(filename, content);
         }
       }
-
-      await zip.close();
-
-      // Clean up temporary file
-      await fs.unlink(tmpPath).catch(() => {}); // Ignore errors
 
       return files;
     } catch (error) {
@@ -525,7 +517,7 @@ export class PluginUploadAPI {
     zipBuffer: Buffer,
   ): Promise<BuildResult> {
     // Extract ZIP and parse files
-    const files = await this.extractZip(zipBuffer);
+    const files = await this.buildService.extractZip(zipBuffer);
 
     // Read and validate manifest
     const manifestContent = files.get("plugin.json");
@@ -569,39 +561,5 @@ export class PluginUploadAPI {
       type: "github",
       github: { repository, ...options },
     });
-  }
-
-  private async extractZip(zipBuffer: Buffer): Promise<Map<string, Buffer>> {
-    const StreamZip = require("node-stream-zip");
-    const os = require("os");
-    const files = new Map<string, Buffer>();
-
-    try {
-      // Create a temporary file from the buffer
-      const tmpPath = path.join(os.tmpdir(), "plugin-" + Date.now() + ".zip");
-      await fs.writeFile(tmpPath, zipBuffer);
-
-      // Extract ZIP file
-      const zip = new StreamZip.async({ file: tmpPath });
-      const entries = await zip.entries();
-
-      for (const entry of Object.values(entries) as any[]) {
-        if (!entry.isDirectory) {
-          const data = await zip.entryData(entry.name);
-          files.set(entry.name, Buffer.from(data));
-        }
-      }
-
-      await zip.close();
-
-      // Clean up temporary file
-      await fs.unlink(tmpPath).catch(() => {}); // Ignore errors
-
-      return files;
-    } catch (error) {
-      throw new Error(
-        `Failed to extract ZIP file: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    }
   }
 }
