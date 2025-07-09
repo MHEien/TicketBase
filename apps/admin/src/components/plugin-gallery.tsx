@@ -128,15 +128,20 @@ export function PluginGallery() {
   // Map available plugins to UI format
   const mappedPlugins = availablePlugins.map((plugin) => {
     // Check if this plugin is installed
-    const installed = installedPlugins.find((p) => p.id === plugin.id);
+    const installed = installedPlugins.find((p) => p.metadata.id === plugin.metadata.id);
 
     // Get the appropriate icon
-    const IconComponent = categoryIcons[plugin.category] || Layers;
+    const IconComponent = categoryIcons[plugin.metadata.category] || Layers;
 
     return {
-      ...plugin,
+      id: plugin.metadata.id,
+      name: plugin.metadata.name,
+      description: plugin.metadata.description,
+      category: plugin.metadata.category,
+      version: plugin.metadata.version,
+      metadata: plugin.metadata,
       installed: !!installed,
-      enabled: installed?.enabled || false,
+      enabled: installed?.isLoaded || false,
       icon: IconComponent,
       // Use real data from plugin metadata
       installs: plugin.metadata?.installCount || 0,
@@ -216,7 +221,7 @@ export function PluginGallery() {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => (window.location.href = "/settings/plugins/submit")}
+            onClick={() => (window.location.href = "/admin/settings/plugins/submit")}
             className="gap-2"
           >
             <Download className="h-4 w-4" />

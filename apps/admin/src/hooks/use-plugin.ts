@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { InstalledPlugin } from "@/lib/plugin-types";
-import { pluginRegistry } from "@/lib/plugin-registry";
-import { loadPluginComponent } from "@/lib/plugin-loader";
+import { pluginManager, type LoadedPlugin } from "@/lib/plugin-manager";
+import { pluginLoader } from "@/lib/plugin-loader";
 
 /**
  * Hook to load a plugin by ID
  */
 export function usePlugin(pluginId: string) {
-  const [plugin, setPlugin] = useState<InstalledPlugin | null>(null);
+  const [plugin, setPlugin] = useState<LoadedPlugin | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -18,21 +17,25 @@ export function usePlugin(pluginId: string) {
       try {
         setLoading(true);
 
-        // Make sure plugin registry is initialized
-        await pluginRegistry.initialize();
+        // Try to get already loaded plugin first
+        let loadedPlugin = pluginManager.getPlugin(pluginId);
+        
+        if (!loadedPlugin) {
+          // If not loaded, try to load it
+          await pluginLoader.loadPlugin(pluginId);
+          loadedPlugin = pluginManager.getPlugin(pluginId);
+        }
 
-        const plugin = pluginRegistry.getPlugin(pluginId);
-
-        if (!plugin) {
+        if (!loadedPlugin) {
           throw new Error(`Plugin ${pluginId} not found`);
         }
 
-        if (!plugin.enabled) {
-          throw new Error(`Plugin ${pluginId} is not enabled`);
+        if (!loadedPlugin.isLoaded) {
+          throw new Error(`Plugin ${pluginId} failed to load: ${loadedPlugin.error}`);
         }
 
         if (isMounted) {
-          setPlugin(plugin);
+          setPlugin(loadedPlugin);
           setError(null);
         }
       } catch (err) {
@@ -60,12 +63,10 @@ export function usePlugin(pluginId: string) {
  * Hook to load a plugin component
  */
 export function usePluginComponent<T = any>(
-  plugin: InstalledPlugin | null,
-  componentPath: string,
+  plugin: LoadedPlugin | null,
+  extensionPoint: string,
 ) {
-  const [component, setComponent] = useState<React.ComponentType<T> | null>(
-    null,
-  );
+  const [component, setComponent] = useState<React.ComponentType<T> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -80,19 +81,20 @@ export function usePluginComponent<T = any>(
           throw new Error("No plugin provided");
         }
 
-        const loadedComponent = await loadPluginComponent(
-          plugin,
-          componentPath,
-        );
+        if (!plugin.isLoaded) {
+          throw new Error(`Plugin ${plugin.metadata.id} is not loaded`);
+        }
 
-        if (!loadedComponent) {
+        const component = plugin.extensionPoints[extensionPoint];
+        
+        if (!component) {
           throw new Error(
-            `Component ${componentPath} not found in plugin ${plugin.id}`,
+            `Extension point ${extensionPoint} not found in plugin ${plugin.metadata.id}`,
           );
         }
 
         if (isMounted) {
-          setComponent(loadedComponent as React.ComponentType<T>);
+          setComponent(component as React.ComponentType<T>);
           setError(null);
         }
       } catch (err) {
@@ -111,16 +113,16 @@ export function usePluginComponent<T = any>(
     return () => {
       isMounted = false;
     };
-  }, [plugin, componentPath]);
+  }, [plugin, extensionPoint]);
 
   return { component, loading, error };
 }
 
 /**
- * Hook to get all installed plugins
+ * Hook to get all loaded plugins
  */
 export function usePlugins() {
-  const [plugins, setPlugins] = useState<InstalledPlugin[]>([]);
+  const [plugins, setPlugins] = useState<LoadedPlugin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -131,11 +133,11 @@ export function usePlugins() {
       try {
         setLoading(true);
 
-        // Make sure plugin registry is initialized
-        await pluginRegistry.initialize();
+        // Load installed plugins
+        await pluginLoader.loadInstalledPlugins();
 
         if (isMounted) {
-          setPlugins(pluginRegistry.getPlugins());
+          setPlugins(pluginManager.getAllPlugins());
           setError(null);
         }
       } catch (err) {
@@ -159,8 +161,9 @@ export function usePlugins() {
   const refreshPlugins = async () => {
     try {
       setLoading(true);
-      await pluginRegistry.refreshPlugins();
-      setPlugins(pluginRegistry.getPlugins());
+      pluginManager.clear();
+      await pluginLoader.loadInstalledPlugins();
+      setPlugins(pluginManager.getAllPlugins());
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
@@ -175,8 +178,8 @@ export function usePlugins() {
 /**
  * Hook to get plugins by category
  */
-export function usePluginsByCategory(category: InstalledPlugin["category"]) {
-  const [plugins, setPlugins] = useState<InstalledPlugin[]>([]);
+export function usePluginsByCategory(category: string) {
+  const [plugins, setPlugins] = useState<LoadedPlugin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -187,11 +190,14 @@ export function usePluginsByCategory(category: InstalledPlugin["category"]) {
       try {
         setLoading(true);
 
-        // Make sure plugin registry is initialized
-        await pluginRegistry.initialize();
+        await pluginLoader.loadInstalledPlugins();
 
         if (isMounted) {
-          setPlugins(pluginRegistry.getPluginsByCategory(category));
+          const allPlugins = pluginManager.getAllPlugins();
+          const filteredPlugins = allPlugins.filter(
+            plugin => plugin.metadata.category === category
+          );
+          setPlugins(filteredPlugins);
           setError(null);
         }
       } catch (err) {

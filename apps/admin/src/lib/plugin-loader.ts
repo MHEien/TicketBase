@@ -1,235 +1,271 @@
 /**
- * @deprecated This plugin loader is deprecated. Use context-aware-plugin-loader.ts instead.
- *
- * The old approach had issues with:
- * - __dirname not being defined in browser
- * - Environment variables not being accessible to external plugins
- * - Authentication context not being shared
- * - Complex dependency management
- *
- * The new context-aware-plugin-loader.ts solves these issues by:
- * - Providing PluginSDK context with auth, API client, components, etc.
- * - Proper browser-compatible loading
- * - Clean separation of concerns
- *
- * This file is kept for reference but should not be used in new code.
+ * Plugin Loader Service
+ * Fetches plugin metadata from API and loads them using the Plugin Manager
  */
 
-import { InstalledPlugin } from "./plugin-types";
-import React from "react";
+import { pluginManager, type PluginMetadata } from './plugin-manager';
 
-// Declare window with additional properties
-declare global {
-  interface Window {
-    React: typeof React;
-    devPlugin1: any;
-    __PLUGIN_REGISTRY: {
-      registered: Record<string, any>;
-      register: (pluginId: string, exports: any) => any;
-      get: (pluginId: string) => any;
+export interface PluginLoaderConfig {
+  apiBaseUrl: string;
+  organizationId?: string;
+  authToken?: string;
+}
+
+class PluginLoader {
+  private config: PluginLoaderConfig;
+  private isLoading = false;
+  private loadedPluginIds = new Set<string>();
+
+  constructor(config: PluginLoaderConfig) {
+    this.config = config;
+  }
+
+  /**
+   * Load all available plugins for the current organization
+   */
+  async loadAvailablePlugins(): Promise<void> {
+    if (this.isLoading) {
+      console.log('🔌 Plugin loading already in progress...');
+      return;
+    }
+
+    this.isLoading = true;
+
+    try {
+      console.log('🔌 Fetching available plugins...');
+      
+      // Fetch available plugins from the API
+      const plugins = await this.fetchAvailablePlugins();
+      
+      console.log(`🔌 Found ${plugins.length} available plugins`);
+
+      // Load plugins in batches to avoid overwhelming the browser
+      await this.loadPluginsInBatches(plugins, 3);
+
+    } catch (error) {
+      console.error('❌ Failed to load available plugins:', error);
+      throw error;
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Load installed plugins for the current organization
+   */
+  async loadInstalledPlugins(): Promise<void> {
+    if (this.isLoading) {
+      console.log('🔌 Plugin loading already in progress...');
+      return;
+    }
+
+    this.isLoading = true;
+
+    try {
+      console.log('🔌 Fetching installed plugins...');
+      
+      // Fetch installed plugins from the API
+      const plugins = await this.fetchInstalledPlugins();
+      
+      console.log(`🔌 Found ${plugins.length} installed plugins`);
+
+      // Load plugins in batches
+      await this.loadPluginsInBatches(plugins, 3);
+
+    } catch (error) {
+      console.error('❌ Failed to load installed plugins:', error);
+      throw error;
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * Load a specific plugin by ID
+   */
+  async loadPlugin(pluginId: string): Promise<void> {
+    try {
+      console.log(`🔌 Loading specific plugin: ${pluginId}`);
+      
+      const plugin = await this.fetchPluginById(pluginId);
+      
+      if (!plugin) {
+        throw new Error(`Plugin ${pluginId} not found`);
+      }
+
+      await pluginManager.loadPlugin(plugin);
+      this.loadedPluginIds.add(pluginId);
+
+    } catch (error) {
+      console.error(`❌ Failed to load plugin ${pluginId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch available plugins from API
+   */
+  private async fetchAvailablePlugins(): Promise<PluginMetadata[]> {
+    const response = await fetch(`${this.config.apiBaseUrl}/api/plugins/available`, {
+      headers: this.createHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch available plugins: ${response.status} ${response.statusText}`);
+    }
+
+    const plugins = await response.json();
+    return this.transformPluginsResponse(plugins);
+  }
+
+  /**
+   * Fetch installed plugins from API
+   */
+  private async fetchInstalledPlugins(): Promise<PluginMetadata[]> {
+    const url = new URL(`${this.config.apiBaseUrl}/api/plugins/installed`);
+    
+    if (this.config.organizationId) {
+      url.searchParams.set('organizationId', this.config.organizationId);
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: this.createHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch installed plugins: ${response.status} ${response.statusText}`);
+    }
+
+    const plugins = await response.json();
+    return this.transformPluginsResponse(plugins);
+  }
+
+  /**
+   * Fetch a specific plugin by ID
+   */
+  private async fetchPluginById(pluginId: string): Promise<PluginMetadata | null> {
+    const response = await fetch(`${this.config.apiBaseUrl}/api/plugins/${pluginId}`, {
+      headers: this.createHeaders(),
+    });
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch plugin ${pluginId}: ${response.status} ${response.statusText}`);
+    }
+
+    const plugin = await response.json();
+    return this.transformPluginResponse(plugin);
+  }
+
+  /**
+   * Load plugins in batches to avoid overwhelming the browser
+   */
+  private async loadPluginsInBatches(plugins: PluginMetadata[], batchSize: number): Promise<void> {
+    const batches = [];
+    
+    for (let i = 0; i < plugins.length; i += batchSize) {
+      batches.push(plugins.slice(i, i + batchSize));
+    }
+
+    for (const batch of batches) {
+      console.log(`🔌 Loading batch of ${batch.length} plugins...`);
+      
+      // Load batch concurrently
+      const promises = batch.map(async (plugin) => {
+        try {
+          if (!this.loadedPluginIds.has(plugin.id)) {
+            await pluginManager.loadPlugin(plugin);
+            this.loadedPluginIds.add(plugin.id);
+          }
+        } catch (error) {
+          console.error(`Failed to load plugin ${plugin.id}:`, error);
+        }
+      });
+
+      await Promise.allSettled(promises);
+      
+      // Small delay between batches to prevent overwhelming
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
+  /**
+   * Transform API response to PluginMetadata format
+   */
+  private transformPluginsResponse(plugins: any[]): PluginMetadata[] {
+    return plugins.map(plugin => this.transformPluginResponse(plugin));
+  }
+
+  /**
+   * Transform single plugin response to PluginMetadata format
+   */
+  private transformPluginResponse(plugin: any): PluginMetadata {
+    return {
+      id: plugin.id,
+      name: plugin.name || plugin.displayName,
+      version: plugin.version,
+      description: plugin.description,
+      category: plugin.category,
+      bundleUrl: plugin.bundleUrl || plugin.url,
+      requiredPermissions: plugin.requiredPermissions || [],
+      extensionPoints: plugin.extensionPoints || [],
+      priority: plugin.priority || 0,
     };
   }
-}
 
-// Expose React and NextAuth to plugins via window
-if (typeof window !== "undefined") {
-  window.React = React;
-}
+  /**
+   * Create HTTP headers for API requests
+   */
+  private createHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
 
-// Cache for loaded modules to avoid redundant loading
-const loadedModules: Record<string, any> = {};
-
-/**
- * Dynamically loads a plugin module
- */
-export async function loadPluginModule(plugin: InstalledPlugin): Promise<any> {
-  try {
-    // Skip loading if we're on the server
-    if (typeof window === "undefined") {
-      throw new Error("Plugin modules can only be loaded in the browser");
+    if (this.config.authToken) {
+      headers['Authorization'] = `Bearer ${this.config.authToken}`;
     }
 
-    // Check if the module is already cached
-    if (loadedModules[plugin.id]) {
-      return loadedModules[plugin.id];
-    }
+    return headers;
+  }
 
-    // For better error messages, log the URL we're trying to load
-    console.log(`Attempting to load plugin from: ${plugin.bundleUrl}`);
+  /**
+   * Check if currently loading
+   */
+  get loading(): boolean {
+    return this.isLoading;
+  }
 
-    // First, let's check what the server actually returns
-    try {
-      const response = await fetch(plugin.bundleUrl);
-      console.log(`Bundle URL Response Status: ${response.status}`);
-      console.log(
-        `Bundle URL Response Content-Type: ${response.headers.get("content-type")}`,
-      );
-      console.log(`Bundle URL Response OK: ${response.ok}`);
+  /**
+   * Get list of loaded plugin IDs
+   */
+  get loadedPlugins(): string[] {
+    return Array.from(this.loadedPluginIds);
+  }
 
-      if (!response.ok) {
-        const responseText = await response.text();
-        console.error(
-          `Bundle URL returned ${response.status}:`,
-          responseText.substring(0, 500),
-        );
-        throw new Error(
-          `Bundle URL returned ${response.status}: ${response.statusText}`,
-        );
-      }
+  /**
+   * Update configuration
+   */
+  updateConfig(config: Partial<PluginLoaderConfig>): void {
+    this.config = { ...this.config, ...config };
+  }
 
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("javascript")) {
-        const responseText = await response.text();
-        console.error(
-          `Bundle URL returned wrong content type (${contentType}):`,
-          responseText.substring(0, 500),
-        );
-        throw new Error(
-          `Bundle URL returned wrong content type: ${contentType}`,
-        );
-      }
-
-      // Content-Type check is sufficient - no need for additional content validation
-      // since JSX code can contain < and > characters which would trigger false positives
-    } catch (fetchError) {
-      console.error("Failed to fetch bundle URL:", fetchError);
-      throw fetchError;
-    }
-
-    // Check if the plugin is already loaded globally
-    const pluginId = plugin.id.replace(/-/g, "");
-    if (window[pluginId as keyof Window]) {
-      console.log(`Plugin ${plugin.id} is loaded globally`);
-      loadedModules[plugin.id] = {
-        default: window[pluginId as keyof Window],
-        extensionPoints: window[pluginId as keyof Window].extensionPoints,
-      };
-      return loadedModules[plugin.id];
-    }
-
-    // Check if the plugin is registered in the global registry
-    if (window.__PLUGIN_REGISTRY?.registered[plugin.id]) {
-      console.log(`Plugin ${plugin.id} found in registry`);
-      loadedModules[plugin.id] = {
-        default: window.__PLUGIN_REGISTRY.registered[plugin.id],
-        extensionPoints:
-          window.__PLUGIN_REGISTRY.registered[plugin.id].extensionPoints,
-      };
-      return loadedModules[plugin.id];
-    }
-
-    // Load the plugin bundle using dynamic import
-    // Using special webpack comments to mark this as an acceptable dynamic import
-    // webpackIgnore: true tells webpack not to try to analyze or parse this import
-    const importFn = new Function(
-      "url",
-      "return import(/* webpackIgnore: true */ url)",
-    );
-    const module = await importFn(plugin.bundleUrl);
-
-    // Cache the module
-    loadedModules[plugin.id] = module;
-
-    return module;
-  } catch (error) {
-    console.error(`Failed to load plugin module: ${plugin.id}`, error);
-    console.error("Error details:", error);
-    throw error;
+  /**
+   * Clear loaded plugins cache
+   */
+  clearCache(): void {
+    this.loadedPluginIds.clear();
+    pluginManager.clear();
   }
 }
 
-/**
- * Loads a specific component from a plugin
- */
-export async function loadPluginComponent(
-  plugin: InstalledPlugin,
-  componentPath: string,
-): Promise<React.ComponentType<any> | null> {
-  try {
-    // Load the plugin module
-    const module = await loadPluginModule(plugin);
+// Create and export singleton instance
+export const pluginLoader = new PluginLoader({
+  apiBaseUrl: typeof window !== 'undefined' 
+    ? window.location.origin 
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+});
 
-    // Get the component from the module
-    let component: any;
-
-    // Support nested paths like "admin.settings"
-    if (componentPath.includes(".")) {
-      const pathParts = componentPath.split(".");
-      let currentObj = module;
-
-      for (const part of pathParts) {
-        if (!currentObj || typeof currentObj !== "object") {
-          return null;
-        }
-        currentObj = currentObj[part];
-      }
-
-      component = currentObj;
-    } else {
-      component = module[componentPath];
-    }
-
-    // Make sure the component is valid
-    if (!component || typeof component !== "function") {
-      console.error(
-        `Component ${componentPath} not found in plugin ${plugin.id} or is not a valid component`,
-      );
-      return null;
-    }
-
-    return component;
-  } catch (error) {
-    console.error(
-      `Failed to load component ${componentPath} from plugin ${plugin.id}:`,
-      error,
-    );
-    return null;
-  }
-}
-
-/**
- * Loads an extension point component from a plugin
- */
-export async function loadExtensionPointComponent(
-  plugin: InstalledPlugin,
-  extensionPoint: string,
-): Promise<React.ComponentType<any> | null> {
-  try {
-    // Load the plugin module
-    const module = await loadPluginModule(plugin);
-
-    // Make sure the plugin implements the extension point
-    if (!plugin.extensionPoints?.includes(extensionPoint)) {
-      console.warn(
-        `Plugin ${plugin.id} does not implement extension point: ${extensionPoint}`,
-      );
-      return null;
-    }
-
-    // Get the extension point component
-    if (!module.extensionPoints || !module.extensionPoints[extensionPoint]) {
-      console.error(
-        `Extension point ${extensionPoint} not found in plugin ${plugin.id}`,
-      );
-      return null;
-    }
-
-    const component = module.extensionPoints[extensionPoint];
-
-    // Make sure the component is valid
-    if (typeof component !== "function") {
-      console.error(
-        `Extension point ${extensionPoint} in plugin ${plugin.id} is not a valid component`,
-      );
-      return null;
-    }
-
-    return component;
-  } catch (error) {
-    console.error(
-      `Failed to load extension point ${extensionPoint} from plugin ${plugin.id}:`,
-      error,
-    );
-    return null;
-  }
-}
+export default pluginLoader;

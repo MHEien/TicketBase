@@ -342,7 +342,7 @@ export class PluginBuildService {
   }
 
   /**
-   * Add compatibility wrapper to make bundle work with current plugin system
+   * Add compatibility wrapper to make bundle work with Module Federation
    */
   private async wrapBundle(
     bundlePath: string,
@@ -351,41 +351,87 @@ export class PluginBuildService {
     const originalBundle = await fs.readFile(bundlePath, "utf8");
 
     const wrappedBundle = `
-// Auto-generated plugin wrapper for ${manifest.name} v${manifest.version}
+// Auto-generated Module Federation compatible plugin for ${manifest.name} v${manifest.version}
 (function(window) {
   'use strict';
   
   // Ensure PluginSDK is available
   if (!window.PluginSDK) {
-    console.error('[${manifest.id}] PluginSDK not available');
-    return;
+    console.error('[${manifest.id}] PluginSDK not available - plugin may not function correctly');
   }
 
-  // Plugin bundle
-  ${originalBundle}
+  // Module Federation container setup
+  const pluginContainer = {
+    get: function(module) {
+      return Promise.resolve(() => {
+        // Plugin bundle execution
+        ${originalBundle}
 
-  // Extract plugin from bundle
-  const plugin = typeof PluginBundle !== 'undefined' ? PluginBundle.default || PluginBundle : null;
-  
-  if (!plugin || !plugin.extensionPoints) {
-    console.error('[${manifest.id}] Invalid plugin structure');
-    return;
-  }
+        // Extract plugin from bundle
+        const plugin = typeof PluginBundle !== 'undefined' ? PluginBundle.default || PluginBundle : null;
+        
+        if (!plugin || !plugin.extensionPoints) {
+          throw new Error('[${manifest.id}] Invalid plugin structure - missing extensionPoints');
+        }
 
-  // Register with current plugin system
-  window.__PLUGIN_REGISTRY = window.__PLUGIN_REGISTRY || { registered: {}, register: () => {}, get: () => {} };
-  window.__PLUGIN_REGISTRY.registered['${manifest.id}'] = {
-    metadata: plugin.metadata || ${JSON.stringify(manifest)},
-    extensionPoints: plugin.extensionPoints,
-    // Legacy compatibility
-    AdminSettingsComponent: plugin.extensionPoints['admin-settings'],
-    PaymentMethodComponent: plugin.extensionPoints['payment-methods'],
-    CheckoutConfirmationComponent: plugin.extensionPoints['checkout-confirmation']
+        return plugin;
+      });
+    },
+    init: function() {
+      // Initialize shared dependencies
+      return Promise.resolve();
+    }
   };
 
-  console.log('✅ Plugin ${manifest.name} loaded successfully');
+  // Register with Module Federation
+  if (!window.__FEDERATION__) {
+    window.__FEDERATION__ = {};
+  }
+  
+  window.__FEDERATION__['${manifest.id}'] = pluginContainer;
+
+  // Legacy compatibility - also register in global registry
+  window.__PLUGIN_REGISTRY = window.__PLUGIN_REGISTRY || { 
+    registered: {}, 
+    register: function(id, plugin) { this.registered[id] = plugin; },
+    get: function(id) { return this.registered[id]; }
+  };
+
+  // Execute the bundle to get the plugin
+  try {
+    ${originalBundle}
+
+    const plugin = typeof PluginBundle !== 'undefined' ? PluginBundle.default || PluginBundle : null;
+    
+    if (plugin && plugin.extensionPoints) {
+      // Register in legacy system
+      window.__PLUGIN_REGISTRY.registered['${manifest.id}'] = {
+        metadata: plugin.metadata || ${JSON.stringify(manifest)},
+        extensionPoints: plugin.extensionPoints,
+        // Legacy component names for backward compatibility
+        AdminSettingsComponent: plugin.extensionPoints['admin-settings'],
+        PaymentMethodComponent: plugin.extensionPoints['payment-methods'],
+        CheckoutConfirmationComponent: plugin.extensionPoints['checkout-confirmation']
+      };
+
+      console.log('✅ Plugin ${manifest.name} loaded successfully (Module Federation + Legacy)');
+    } else {
+      console.error('❌ Plugin ${manifest.name} failed to load - invalid structure');
+    }
+  } catch (error) {
+    console.error('❌ Plugin ${manifest.name} failed to execute:', error);
+  }
   
 })(window);
+
+// Module Federation export
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    './plugin': function() {
+      return window.__FEDERATION__['${manifest.id}'].get('./plugin')().then(factory => factory());
+    }
+  };
+}
 `;
 
     await fs.writeFile(bundlePath, wrappedBundle);

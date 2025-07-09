@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { pluginRegistry } from "@/lib/plugin-registry";
-import { loadPluginComponent } from "@/lib/plugin-loader";
+import React, { useState, useEffect } from "react";
+import { pluginManager } from "@/lib/plugin-manager";
+import { pluginLoader } from "@/lib/plugin-loader";
 import { Loader2 } from "lucide-react";
 
 interface PluginWidgetAreaProps {
@@ -13,16 +13,6 @@ interface PluginWidgetAreaProps {
 
 /**
  * A component that renders plugin widgets in a designated area of the storefront
- *
- * Widget areas can be placed throughout your storefront to allow plugins to
- * render components in specific locations. Plugins can register widgets for
- * specific areas in their metadata.
- *
- * Example areas:
- * - "event-detail-sidebar"
- * - "checkout-payment-methods"
- * - "ticket-selection-options"
- * - "event-detail-header"
  */
 export function PluginWidgetArea({
   areaName,
@@ -46,43 +36,26 @@ export function PluginWidgetArea({
       try {
         setLoading(true);
 
-        // Initialize the plugin registry if not already initialized
-        await pluginRegistry.initialize();
+        // Load installed plugins
+        await pluginLoader.loadInstalledPlugins();
 
-        // Get all plugins that have widgets for this area
-        const relevantPlugins = pluginRegistry.getPluginsWithWidget(areaName);
+        // Get plugins for this widget area (using extension point)
+        const relevantPlugins = pluginManager.getPluginsForExtensionPoint(areaName);
 
-        if (relevantPlugins.length === 0) {
-          setWidgets([]);
-          return;
-        }
-
-        // Load all widget components
         const loadedWidgets = [];
 
         for (const plugin of relevantPlugins) {
-          // Skip if the plugin is not enabled
-          if (!plugin.enabled) continue;
+          // Skip if the plugin is not loaded
+          if (!plugin.isLoaded) continue;
 
-          const widgetPath = plugin.storefrontComponents.widgets?.[areaName];
+          const Component = plugin.extensionPoints[areaName];
 
-          if (!widgetPath) continue;
-
-          try {
-            const Component = await loadPluginComponent(plugin, widgetPath);
-
-            if (Component) {
-              loadedWidgets.push({
-                pluginId: plugin.id,
-                component: Component,
-                config: plugin.configuration || {},
-              });
-            }
-          } catch (e) {
-            console.error(
-              `Failed to load widget from plugin ${plugin.id} for area ${areaName}:`,
-              e,
-            );
+          if (Component) {
+            loadedWidgets.push({
+              pluginId: plugin.metadata.id,
+              component: Component as React.ComponentType<any>,
+              config: {} as Record<string, any>,
+            });
           }
         }
 
