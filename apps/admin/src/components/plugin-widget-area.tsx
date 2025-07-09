@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { pluginRegistry } from "@/src/lib/plugin-registry";
-import { loadPluginComponent } from "@/src/lib/plugin-loader";
+import { pluginRegistry } from "@/lib/plugin-registry";
+import { loadPluginComponent } from "@/lib/plugin-loader";
 import { Loader2 } from "lucide-react";
 
 interface PluginWidgetAreaProps {

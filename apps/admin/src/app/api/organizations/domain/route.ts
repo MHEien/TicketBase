@@ -1,17 +1,18 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/src/lib/auth";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { getSession } from "@/lib/auth-client";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Update organization domain settings
-export async function PATCH(request: Request) {
+export const ServerRoute = createServerFileRoute("/api/organizations/domain").methods({
+  PATCH: async ({ request }) => {
   try {
-    const session = await auth();
+    const session = await getSession();
 
     // Ensure the user is authenticated
-    if (!session?.user || !session.accessToken) {
-      return NextResponse.json(
+    if (!session?.user || !session.session.token) {
+      return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
@@ -24,12 +25,12 @@ export async function PATCH(request: Request) {
     const userResponse = await fetch(`${apiBaseUrl}/auth/session`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${session.session.token}`,
       },
     });
 
     if (!userResponse.ok) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Failed to fetch user data" },
         { status: userResponse.status },
       );
@@ -39,7 +40,7 @@ export async function PATCH(request: Request) {
     const organizationId = userData.organizationId;
 
     if (!organizationId) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Organization ID not found" },
         { status: 400 },
       );
@@ -52,7 +53,7 @@ export async function PATCH(request: Request) {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${session.session.token}`,
         },
         body: JSON.stringify({
           customDomain: body.customDomain,
@@ -61,7 +62,7 @@ export async function PATCH(request: Request) {
     );
 
     if (!response.ok) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Failed to update domain settings" },
         { status: response.status },
       );
@@ -71,7 +72,7 @@ export async function PATCH(request: Request) {
     // In a real implementation, this might be done on the backend
     if (body.customDomain && body.customDomain !== "") {
       // If domain is set, generate a verification token and update it
-      const verificationToken = generateVerificationToken();
+      const verificationToken = crypto.randomUUID();
 
       const verifyResponse = await fetch(
         `${apiBaseUrl}/api/organizations/${organizationId}/domain-verification`,
@@ -79,7 +80,7 @@ export async function PATCH(request: Request) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.accessToken}`,
+            Authorization: `Bearer ${session.session.token}`,
           },
           body: JSON.stringify({
             domainVerificationToken: verificationToken,
@@ -93,23 +94,16 @@ export async function PATCH(request: Request) {
     }
 
     const data = await response.json();
-    return NextResponse.json({
+    return Response.json({
       message: "Domain settings updated successfully",
       data,
     });
   } catch (error) {
     console.error("Error updating domain settings:", error);
-    return NextResponse.json(
+    return Response.json(
       { message: "Failed to update domain settings" },
       { status: 500 },
     );
   }
 }
-
-// Helper function to generate a verification token
-function generateVerificationToken(): string {
-  return (
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-  );
-}
+});

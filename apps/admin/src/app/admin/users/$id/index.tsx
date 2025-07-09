@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -82,7 +82,7 @@ function UserDetailPage() {
       variant: "destructive",
     });
     setIsDeleteDialogOpen(false);
-    router.push("/users");
+    router.navigate({ to: "/admin/users" });
   };
 
   const handleResetPassword = () => {
@@ -143,7 +143,7 @@ function UserDetailPage() {
       <div className="container mx-auto py-12">
         <Button
           variant="ghost"
-          onClick={() => router.push("/users")}
+          onClick={() => router.navigate({ to: "/admin/users" })}
           className="mb-8 gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -158,7 +158,7 @@ function UserDetailPage() {
           <p className="mb-6 text-muted-foreground">
             The user you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => router.push("/users")} className="gap-2">
+          <Button onClick={() => router.navigate({ to: "/admin/users" })} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Users</span>
           </Button>
@@ -171,7 +171,7 @@ function UserDetailPage() {
     <div className="container mx-auto py-8">
       <Button
         variant="ghost"
-        onClick={() => router.push("/users")}
+        onClick={() => router.navigate({ to: "/admin/users" })}
         className="mb-4 gap-2"
       >
         <ArrowLeft className="h-4 w-4" />

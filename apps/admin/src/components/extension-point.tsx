@@ -4,10 +4,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   loadPluginWithContext,
   getPluginLoadingState,
-} from "@/src/lib/context-aware-plugin-loader";
-import { pluginRegistry } from "@/src/lib/plugin-registry";
-import { InstalledPlugin } from "@/src/lib/plugin-types";
-import "@/src/types/plugins"; // Import global types
+} from "@/lib/context-aware-plugin-loader";
+import { pluginRegistry } from "@/lib/plugin-registry";
+import { InstalledPlugin } from "@/lib/plugin-types";
+import "@/types/plugins"; // Import global types
 
 export interface ExtensionPointProps {
   name: string;

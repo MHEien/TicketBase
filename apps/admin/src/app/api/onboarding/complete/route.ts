@@ -1,27 +1,28 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/src/lib/auth";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { getSession } from "@/lib/auth-client";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-export async function POST(request: Request) {
+export const ServerRoute = createServerFileRoute("/api/onboarding/complete").methods({
+  POST: async ({ request }) => {
   console.log("=== ONBOARDING COMPLETION STARTED ===");
 
   try {
-    const session = await auth();
+    const session = await getSession();
 
     console.log("Session data:", {
       hasSession: !!session,
       hasUser: !!session?.user,
-      hasAccessToken: !!session?.accessToken,
+      hasAccessToken: !!session?.session.token,
       userId: session?.user?.id,
       fullSession: session,
     });
 
     // Ensure the user is authenticated
-    if (!session?.user || !session.accessToken) {
+    if (!session?.user || !session.session.token) {
       console.error("Authentication failed - missing session or token");
-      return NextResponse.json(
+      return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${session.session.token}`,
       },
       body: JSON.stringify({
         onboardingCompleted: true,
@@ -55,20 +56,21 @@ export async function POST(request: Request) {
     if (!userUpdateResponse.ok) {
       const errorText = await userUpdateResponse.text();
       console.error("Backend error:", userUpdateResponse.status, errorText);
-      return NextResponse.json(
+      return Response.json(
         { message: "Failed to update user settings", error: errorText },
         { status: userUpdateResponse.status },
       );
     }
 
-    return NextResponse.json({
+    return Response.json({
       message: "Onboarding completed successfully",
     });
   } catch (error) {
     console.error("Error completing onboarding:", error);
-    return NextResponse.json(
+    return Response.json(
       { message: "Failed to complete onboarding" },
       { status: 500 },
     );
   }
 }
+});

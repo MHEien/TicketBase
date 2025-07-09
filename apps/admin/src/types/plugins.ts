@@ -1,7 +1,7 @@
 // plugin-global-types.ts
 // Centralized global type definitions for the plugin system
 
-import { PluginSDK } from "@/src/lib/plugin-sdk-context";
+import { PluginSDK } from "@/lib/plugin-sdk-context";
 import React from "react";
 
 export interface PluginRegistry {

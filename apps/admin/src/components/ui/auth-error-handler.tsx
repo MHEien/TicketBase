@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@/components/session-provider";
 import { signOut } from "@/lib/auth-client";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
@@ -18,7 +18,7 @@ export function AuthErrorHandler() {
 
       // Sign out and redirect to login
       signOut({ redirect: false }).then(() => {
-        router.push("/login?error=session_expired");
+        router.navigate({ to: "/login", search: { error: "session_expired" } });
       });
     }
   }, [session, status, router]);
@@ -35,7 +35,7 @@ export function AuthErrorHandler() {
           <div className="mt-4 flex justify-end">
             <Button
               variant="destructive"
-              onClick={() => router.push("/login?error=session_expired")}
+              onClick={() => router.navigate({ to: "/login", search: { error: "session_expired" } })}
             >
               Sign in again
             </Button>

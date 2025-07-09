@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { useSession } from "@/components/session-provider";
 import { z } from "zod";
 import { useForm } from "react-hook-form";

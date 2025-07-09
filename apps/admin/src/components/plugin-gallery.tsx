@@ -43,9 +43,9 @@ import {
   fetchAvailablePlugins,
   installPlugin,
   uninstallPlugin,
-} from "@/src/lib/plugin-api";
+} from "@/lib/plugin-api";
 import { usePlugins } from "@/hooks/use-plugin";
-import { Plugin, InstalledPlugin } from "@/src/lib/plugin-types";
+import { Plugin, InstalledPlugin } from "@/lib/plugin-types";
 import { PluginSettings } from "@/components/plugin-settings";
 
 // Icons map for categories

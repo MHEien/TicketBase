@@ -33,7 +33,15 @@ import { Route as AdminDepartmentsIdIndexRouteImport } from './app/admin/departm
 import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin/settings/plugins/submit/index'
 import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './app/api/auth/$'
+import { ServerRoute as ApiRegisterRouteServerRouteImport } from './app/api/register/route'
+import { ServerRoute as ApiPluginsUploadRouteServerRouteImport } from './app/api/plugins/upload/route'
+import { ServerRoute as ApiPluginsSubmitRouteServerRouteImport } from './app/api/plugins/submit/route'
+import { ServerRoute as ApiPluginsGithubRouteServerRouteImport } from './app/api/plugins/github/route'
+import { ServerRoute as ApiOrganizationsSettingsRouteServerRouteImport } from './app/api/organizations/settings/route'
+import { ServerRoute as ApiOrganizationsDomainRouteServerRouteImport } from './app/api/organizations/domain/route'
+import { ServerRoute as ApiOrganizationsBrandingRouteServerRouteImport } from './app/api/organizations/branding/route'
+import { ServerRoute as ApiOnboardingCompleteRouteServerRouteImport } from './app/api/onboarding/complete/route'
+import { ServerRoute as ApiAuthSplatRouteServerRouteImport } from './app/api/auth/$/route'
 
 const rootServerRouteImport = createServerRootRoute()
 
@@ -152,7 +160,54 @@ const AdminEventsIdEditIndexRoute = AdminEventsIdEditIndexRouteImport.update({
   path: '/events/$id/edit/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
+const ApiRegisterRouteServerRoute = ApiRegisterRouteServerRouteImport.update({
+  id: '/api/register',
+  path: '/api/register',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiPluginsUploadRouteServerRoute =
+  ApiPluginsUploadRouteServerRouteImport.update({
+    id: '/api/plugins/upload',
+    path: '/api/plugins/upload',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiPluginsSubmitRouteServerRoute =
+  ApiPluginsSubmitRouteServerRouteImport.update({
+    id: '/api/plugins/submit',
+    path: '/api/plugins/submit',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiPluginsGithubRouteServerRoute =
+  ApiPluginsGithubRouteServerRouteImport.update({
+    id: '/api/plugins/github',
+    path: '/api/plugins/github',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiOrganizationsSettingsRouteServerRoute =
+  ApiOrganizationsSettingsRouteServerRouteImport.update({
+    id: '/api/organizations/settings',
+    path: '/api/organizations/settings',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiOrganizationsDomainRouteServerRoute =
+  ApiOrganizationsDomainRouteServerRouteImport.update({
+    id: '/api/organizations/domain',
+    path: '/api/organizations/domain',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiOrganizationsBrandingRouteServerRoute =
+  ApiOrganizationsBrandingRouteServerRouteImport.update({
+    id: '/api/organizations/branding',
+    path: '/api/organizations/branding',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiOnboardingCompleteRouteServerRoute =
+  ApiOnboardingCompleteRouteServerRouteImport.update({
+    id: '/api/onboarding/complete',
+    path: '/api/onboarding/complete',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAuthSplatRouteServerRoute = ApiAuthSplatRouteServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootServerRouteImport,
@@ -309,25 +364,85 @@ export interface RootRouteChildren {
   RegisterIndexRoute: typeof RegisterIndexRoute
 }
 export interface FileServerRoutesByFullPath {
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/register': typeof ApiRegisterRouteServerRoute
+  '/api/auth/$': typeof ApiAuthSplatRouteServerRoute
+  '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
+  '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
+  '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
+  '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
+  '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
+  '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
+  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
 }
 export interface FileServerRoutesByTo {
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/register': typeof ApiRegisterRouteServerRoute
+  '/api/auth/$': typeof ApiAuthSplatRouteServerRoute
+  '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
+  '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
+  '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
+  '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
+  '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
+  '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
+  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/register': typeof ApiRegisterRouteServerRoute
+  '/api/auth/$': typeof ApiAuthSplatRouteServerRoute
+  '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
+  '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
+  '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
+  '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
+  '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
+  '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
+  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/auth/$'
+  fullPaths:
+    | '/api/register'
+    | '/api/auth/$'
+    | '/api/onboarding/complete'
+    | '/api/organizations/branding'
+    | '/api/organizations/domain'
+    | '/api/organizations/settings'
+    | '/api/plugins/github'
+    | '/api/plugins/submit'
+    | '/api/plugins/upload'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/auth/$'
-  id: '__root__' | '/api/auth/$'
+  to:
+    | '/api/register'
+    | '/api/auth/$'
+    | '/api/onboarding/complete'
+    | '/api/organizations/branding'
+    | '/api/organizations/domain'
+    | '/api/organizations/settings'
+    | '/api/plugins/github'
+    | '/api/plugins/submit'
+    | '/api/plugins/upload'
+  id:
+    | '__root__'
+    | '/api/register'
+    | '/api/auth/$'
+    | '/api/onboarding/complete'
+    | '/api/organizations/branding'
+    | '/api/organizations/domain'
+    | '/api/organizations/settings'
+    | '/api/plugins/github'
+    | '/api/plugins/submit'
+    | '/api/plugins/upload'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiRegisterRouteServerRoute: typeof ApiRegisterRouteServerRoute
+  ApiAuthSplatRouteServerRoute: typeof ApiAuthSplatRouteServerRoute
+  ApiOnboardingCompleteRouteServerRoute: typeof ApiOnboardingCompleteRouteServerRoute
+  ApiOrganizationsBrandingRouteServerRoute: typeof ApiOrganizationsBrandingRouteServerRoute
+  ApiOrganizationsDomainRouteServerRoute: typeof ApiOrganizationsDomainRouteServerRoute
+  ApiOrganizationsSettingsRouteServerRoute: typeof ApiOrganizationsSettingsRouteServerRoute
+  ApiPluginsGithubRouteServerRoute: typeof ApiPluginsGithubRouteServerRoute
+  ApiPluginsSubmitRouteServerRoute: typeof ApiPluginsSubmitRouteServerRoute
+  ApiPluginsUploadRouteServerRoute: typeof ApiPluginsUploadRouteServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -490,11 +605,67 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/register': {
+      id: '/api/register'
+      path: '/api/register'
+      fullPath: '/api/register'
+      preLoaderRoute: typeof ApiRegisterRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/plugins/upload': {
+      id: '/api/plugins/upload'
+      path: '/api/plugins/upload'
+      fullPath: '/api/plugins/upload'
+      preLoaderRoute: typeof ApiPluginsUploadRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/plugins/submit': {
+      id: '/api/plugins/submit'
+      path: '/api/plugins/submit'
+      fullPath: '/api/plugins/submit'
+      preLoaderRoute: typeof ApiPluginsSubmitRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/plugins/github': {
+      id: '/api/plugins/github'
+      path: '/api/plugins/github'
+      fullPath: '/api/plugins/github'
+      preLoaderRoute: typeof ApiPluginsGithubRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/organizations/settings': {
+      id: '/api/organizations/settings'
+      path: '/api/organizations/settings'
+      fullPath: '/api/organizations/settings'
+      preLoaderRoute: typeof ApiOrganizationsSettingsRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/organizations/domain': {
+      id: '/api/organizations/domain'
+      path: '/api/organizations/domain'
+      fullPath: '/api/organizations/domain'
+      preLoaderRoute: typeof ApiOrganizationsDomainRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/organizations/branding': {
+      id: '/api/organizations/branding'
+      path: '/api/organizations/branding'
+      fullPath: '/api/organizations/branding'
+      preLoaderRoute: typeof ApiOrganizationsBrandingRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/onboarding/complete': {
+      id: '/api/onboarding/complete'
+      path: '/api/onboarding/complete'
+      fullPath: '/api/onboarding/complete'
+      preLoaderRoute: typeof ApiOnboardingCompleteRouteServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
+      preLoaderRoute: typeof ApiAuthSplatRouteServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
   }
@@ -566,7 +737,18 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+  ApiRegisterRouteServerRoute: ApiRegisterRouteServerRoute,
+  ApiAuthSplatRouteServerRoute: ApiAuthSplatRouteServerRoute,
+  ApiOnboardingCompleteRouteServerRoute: ApiOnboardingCompleteRouteServerRoute,
+  ApiOrganizationsBrandingRouteServerRoute:
+    ApiOrganizationsBrandingRouteServerRoute,
+  ApiOrganizationsDomainRouteServerRoute:
+    ApiOrganizationsDomainRouteServerRoute,
+  ApiOrganizationsSettingsRouteServerRoute:
+    ApiOrganizationsSettingsRouteServerRoute,
+  ApiPluginsGithubRouteServerRoute: ApiPluginsGithubRouteServerRoute,
+  ApiPluginsSubmitRouteServerRoute: ApiPluginsSubmitRouteServerRoute,
+  ApiPluginsUploadRouteServerRoute: ApiPluginsUploadRouteServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)

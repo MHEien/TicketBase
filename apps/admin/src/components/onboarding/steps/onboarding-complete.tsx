@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
-import { useOnboarding } from "@/src/lib/onboarding-context";
+import { useOnboarding } from "@/lib/onboarding-context";
 
 export default function OnboardingComplete() {
   const router = useRouter();
@@ -148,14 +148,14 @@ export default function OnboardingComplete() {
 
       <div className="space-x-4">
         <Button
-          onClick={() => router.push("/(admin)/create-event")}
+          onClick={() => router.navigate({ to: "/admin/(admin)/create-event" })}
           className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
           size="lg"
         >
           Create Your First Event
         </Button>
 
-        <Button variant="outline" onClick={() => router.push("/")}>
+        <Button variant="outline" onClick={() => router.navigate({ to: "/admin/" })}>
           Go to Dashboard
         </Button>
       </div>

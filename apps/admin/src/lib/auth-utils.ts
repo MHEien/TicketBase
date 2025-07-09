@@ -1,11 +1,11 @@
-import { auth } from "./auth";
-import { signOut } from "next-auth/react";
+import { getSession } from "./auth-client";
+import { signOut } from "./auth-client";
 
 /**
  * Check if a user has a specific permission
  */
 export async function hasPermission(permission: string): Promise<boolean> {
-  const session = await auth();
+  const session = await getSession();
 
   if (!session?.user?.permissions) {
     return false;
@@ -18,7 +18,7 @@ export async function hasPermission(permission: string): Promise<boolean> {
  * Check if a user has a specific role
  */
 export async function hasRole(role: string): Promise<boolean> {
-  const session = await auth();
+  const session = await getSession();
 
   if (!session?.user?.role) {
     return false;
@@ -31,7 +31,7 @@ export async function hasRole(role: string): Promise<boolean> {
  * Get the current user session
  */
 export async function getCurrentUser() {
-  const session = await auth();
+  const session = await getSession();
   return session?.user;
 }
 
@@ -39,7 +39,7 @@ export async function getCurrentUser() {
  * Check if a user is authenticated
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const session = await auth();
+  const session = await getSession();
   return !!session?.user;
 }
 

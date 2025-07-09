@@ -1,4 +1,4 @@
-import { signOut } from "next-auth/react";
+import { signOut } from "./auth-client";
 
 /**
  * Completely resets the authentication state

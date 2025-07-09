@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
+import { createServerFileRoute, createServerRoute } from "@tanstack/react-start/server";
+
+
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -11,14 +13,15 @@ const registerSchema = z.object({
   organizationName: z.string().min(2),
 });
 
-export async function POST(request: Request) {
+export const ServerRoute = createServerFileRoute("/api/register").methods({
+  POST: async ({ request }) => {
   try {
     // Parse and validate request body
     const body = await request.json();
     const result = registerSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Invalid input data", errors: result.error.flatten() },
         { status: 400 },
       );
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
 
     if (!authResponse.ok) {
       const authError = await authResponse.json();
-      return NextResponse.json(
+      return Response.json(
         { message: authError.message || "Registration failed" },
         { status: authResponse.status },
       );
@@ -59,7 +62,7 @@ export async function POST(request: Request) {
     const authData = await authResponse.json();
 
     // Return the registration data which already includes tokens
-    return NextResponse.json({
+    return Response.json({
       message: "Registration successful",
       user: {
         id: authData.user.id,
@@ -75,9 +78,10 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Registration error:", error);
-    return NextResponse.json(
+    return Response.json(
       { message: "An error occurred during registration" },
       { status: 500 },
     );
   }
 }
+});

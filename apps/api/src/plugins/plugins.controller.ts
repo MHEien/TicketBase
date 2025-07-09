@@ -924,7 +924,7 @@ export class PluginsController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadStorage(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body() storageDto: { pluginId: string; version: string },
   ): Promise<{ bundleUrl: string; pluginId: string; version: string }> {
     const operation = 'uploadStorage';

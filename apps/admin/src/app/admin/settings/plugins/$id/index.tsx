@@ -114,7 +114,7 @@ const PluginSettingsContent = () => {
             </ul>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button onClick={() => router.push("/settings/plugins")}>
+            <Button onClick={() => router.navigate({ to: "/admin/settings/plugins" })}>
               Back to Plugins
             </Button>
             <Button variant="outline" onClick={() => window.location.reload()}>

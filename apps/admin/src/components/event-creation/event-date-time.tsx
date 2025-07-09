@@ -26,7 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
 export function EventDateTime() {

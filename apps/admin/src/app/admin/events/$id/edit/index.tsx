@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
@@ -180,7 +180,7 @@ function EditEventPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-destructive">Error loading event data</p>
-          <Button onClick={() => router.push("/events")}>Back to Events</Button>
+          <Button onClick={() => router.navigate({ to: "/admin/events" })}>Back to Events</Button>
         </div>
       </div>
     );

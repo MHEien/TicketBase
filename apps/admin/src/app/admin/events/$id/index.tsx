@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import type React from "react";
 
 import { useEffect, useState, Suspense, use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   BarChart,
@@ -73,7 +73,7 @@ function EventDetailsPage() {
         title: "Success",
         description: "Event deleted successfully",
       });
-      router.push("/events");
+      router.navigate({ to: "/admin/events" });
     } catch (error) {
       toast({
         title: "Error",
@@ -164,7 +164,7 @@ function EventDetailsPage() {
     return (
       <div className="p-8 text-center">
         <p className="text-destructive">Error loading event details</p>
-        <Button onClick={() => router.push("/events")} className="mt-4">
+        <Button onClick={() => router.navigate({ to: "/admin/events" })} className="mt-4">
           Back to Events
         </Button>
       </div>
@@ -184,7 +184,7 @@ function EventDetailsPage() {
       <Button
         variant="outline"
         className="mb-6"
-        onClick={() => router.push("/events")}
+        onClick={() => router.navigate({ to: "/admin/events" })}
       >
         ← Back to Events
       </Button>

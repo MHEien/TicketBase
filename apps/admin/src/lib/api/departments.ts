@@ -3,7 +3,7 @@ import {
   Department,
   CreateDepartmentRequest,
   UpdateDepartmentRequest,
-} from "@/src/types/department";
+} from "@/types/department";
 
 // Get all departments for an organization
 export async function getDepartments(

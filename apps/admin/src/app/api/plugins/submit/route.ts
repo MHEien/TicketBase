@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/src/lib/auth";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { getSession } from "@/lib/auth-client";
 
 // Define a type for the plugin submission
 interface PluginSubmission {
@@ -52,12 +52,13 @@ interface PublishPluginDto {
   };
 }
 
-export async function POST(request: NextRequest) {
+export const ServerRoute = createServerFileRoute("/api/plugins/submit").methods({
+  POST: async ({ request }) => {
   try {
     // Check authentication first
-    const session = await auth();
-    if (!session?.accessToken) {
-      return NextResponse.json(
+    const session = await getSession();
+    if (!session?.session.token) {
+      return Response.json(
         { error: "Authentication required" },
         { status: 401 },
       );
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
     ];
     for (const field of requiredFields) {
       if (!data[field as keyof PluginSubmission]) {
-        return NextResponse.json(
+        return Response.json(
           { error: `Field '${field}' is required` },
           { status: 400 },
         );
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     // Validate terms agreement
     if (!data.termsAgreed) {
-      return NextResponse.json(
+      return Response.json(
         { error: "You must agree to the terms and conditions" },
         { status: 400 },
       );
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
       "seating",
     ];
     if (!validCategories.includes(data.category)) {
-      return NextResponse.json(
+      return Response.json(
         {
           error: `Invalid category. Must be one of: ${validCategories.join(", ")}`,
         },
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       !data.bundleUrl.startsWith("/plugins/") &&
       !data.bundleUrl.startsWith("http")
     ) {
-      return NextResponse.json(
+      return Response.json(
         {
           error:
             "Bundle URL must be a valid URL or a path to an uploaded plugin",
@@ -266,7 +267,7 @@ export async function POST(request: NextRequest) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${session.session.token}`,
         },
         body: JSON.stringify(pluginDto),
       });
@@ -284,7 +285,7 @@ export async function POST(request: NextRequest) {
           // Use default message if parsing fails
         }
 
-        return NextResponse.json(
+        return Response.json(
           { error: errorMessage },
           { status: response.status },
         );
@@ -299,7 +300,7 @@ export async function POST(request: NextRequest) {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${session.accessToken}`,
+              Authorization: `Bearer ${session.session.token}`,
             },
             body: JSON.stringify({
               extensionPoints: pluginMetadata.extensionPoints,
@@ -312,7 +313,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Return success response to the client
-      return NextResponse.json({
+      return Response.json({
         success: true,
         message: "Plugin submitted successfully. It will be reviewed shortly.",
         submissionId: uniquePluginId,
@@ -320,7 +321,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (serverError) {
       console.error("Error connecting to plugin server:", serverError);
-      return NextResponse.json(
+      return Response.json(
         {
           error: "Failed to connect to plugin server. Please try again later.",
         },
@@ -329,9 +330,10 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("Error processing plugin submission:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Failed to process plugin submission" },
       { status: 500 },
     );
   }
 }
+});

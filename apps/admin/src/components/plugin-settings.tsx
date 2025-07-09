@@ -19,11 +19,11 @@ import {
   getPlugin,
   updatePluginConfig,
   setPluginEnabled,
-} from "@/src/lib/plugin-api";
+} from "@/lib/plugin-api";
 import { useToast } from "@/components/ui/use-toast";
 import { ExtensionPoint } from "@/components/extension-point";
-import { usePluginSDK } from "@/src/lib/plugin-sdk-context";
-import { InstalledPlugin } from "@/src/lib/plugin-types";
+import { usePluginSDK } from "@/lib/plugin-sdk-context";
+import { InstalledPlugin } from "@/lib/plugin-types";
 
 interface PluginSettingsProps {
   pluginId: string;

@@ -11,7 +11,7 @@ import {
   type CreateEventDto,
   type UpdateEventDto,
   type EventsQueryParams,
-} from "@/src/lib/api/events-api";
+} from "@/lib/api/events-api";
 import { useToast } from "@/hooks/use-toast";
 
 interface UseEventsReturn {

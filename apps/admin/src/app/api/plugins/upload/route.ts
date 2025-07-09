@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/src/lib/auth";
-import { PluginBuildService, PluginUploadAPI } from "@/src/lib/plugin-build-system";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { auth } from "@/lib/auth";
+import { PluginBuildService, PluginUploadAPI } from "@/lib/plugin-build-system";
 
 const buildService = new PluginBuildService();
 const uploadAPI = new PluginUploadAPI(buildService);
@@ -11,7 +11,8 @@ const allowedExtensions = [".js", ".mjs", ".zip"];
 // Define max file size (10MB for ZIP files)
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-export async function POST(request: NextRequest) {
+export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods({
+  POST: async ({ request }) => {
   // TODO: Re-enable authentication once JWT issue is resolved
   // const session = await auth();
   // if (!session?.accessToken) {
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get("plugin") as File;
 
     if (!file) {
-      return NextResponse.json(
+      return Response.json(
         { error: "No plugin file provided" },
         { status: 400 },
       );
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
+      return Response.json(
         {
           error: `File size exceeds the maximum limit of ${Math.floor(MAX_FILE_SIZE / (1024 * 1024))}MB`,
         },
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
       const buildResult = await uploadAPI.uploadSource(pluginId, zipBuffer);
 
       if (!buildResult.success) {
-        return NextResponse.json(
+        return Response.json(
           {
             success: false,
             error: "Build failed",
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
 
       // Read the built bundle file
       if (!buildResult.bundlePath) {
-        return NextResponse.json(
+        return Response.json(
           {
             success: false,
             error: "Build succeeded but no bundle was generated",
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
         .toLowerCase()
         .replace(/[^a-z0-9-]/g, "-");
     } else {
-      return NextResponse.json(
+      return Response.json(
         {
           error:
             "Invalid file type. Please upload a .zip (TypeScript source) or .js/.mjs (built bundle) file",
@@ -172,7 +173,7 @@ export async function POST(request: NextRequest) {
           status: storageResponse.status,
           error: errorText,
         });
-        return NextResponse.json(
+        return Response.json(
           { error: "Failed to upload plugin bundle to storage" },
           { status: 500 },
         );
@@ -219,7 +220,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Return success response
-      return NextResponse.json({
+      return Response.json({
         success: true,
         bundleUrl: bundleUrl,
         fileName: file.name,
@@ -239,23 +240,21 @@ export async function POST(request: NextRequest) {
       });
     } catch (serverError) {
       console.error("Error during plugin upload process:", serverError);
-      return NextResponse.json(
+      return Response.json(
         { error: "Failed to process plugin upload" },
         { status: 500 },
       );
     }
   } catch (error) {
     console.error("Plugin upload error:", error);
-    return NextResponse.json(
+      return Response.json(
       { error: "Failed to process plugin upload" },
       { status: 500 },
     );
   }
-}
-
-// Handle preflight requests
-export async function OPTIONS() {
-  return new NextResponse(null, {
+},
+OPTIONS: async () => {
+  return new Response(null, {
     status: 200,
     headers: {
       "Access-Control-Allow-Origin": "*",
@@ -263,7 +262,9 @@ export async function OPTIONS() {
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
-}
+},
+});
+
 
 // Max file size for the route
 export const config = {

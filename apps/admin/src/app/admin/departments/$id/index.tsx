@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { Link } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
+import { useSession } from "@/components/session-provider";
 import { Pencil, ArrowLeft, Users, BarChart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,7 +65,7 @@ function DepartmentDetailPage() {
     return (
       <div className="container mx-auto py-6">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -81,7 +81,7 @@ function DepartmentDetailPage() {
     return (
       <div className="container mx-auto py-6">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -97,7 +97,7 @@ function DepartmentDetailPage() {
                 have permission to view it.
               </p>
               <Button asChild>
-                <Link href="/departments">Go to Departments</Link>
+                <Link to="/admin/departments">Go to Departments</Link>
               </Button>
             </div>
           </CardContent>
@@ -109,7 +109,7 @@ function DepartmentDetailPage() {
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+        <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -130,13 +130,13 @@ function DepartmentDetailPage() {
 
         <div className="flex space-x-2">
           <Button asChild variant="outline">
-            <Link href={`/departments/${department.id}/members`}>
+            <Link to="/admin/departments/$id" params={{ id: department.id }}>
               <Users className="mr-2 h-4 w-4" />
               Manage Members
             </Link>
           </Button>
           <Button asChild>
-            <Link href={`/departments/${department.id}/edit`}>
+            <Link to="/admin/departments/$id" params={{ id: department.id }}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit Department
             </Link>
@@ -192,7 +192,7 @@ function DepartmentDetailPage() {
                       <p className="text-sm mt-1">
                         {department.parentDepartment ? (
                           <Link
-                            href={`/departments/${department.parentDepartment.id}`}
+                            to="/admin/departments/$id" params={{ id: department.parentDepartment.id }}
                             className="text-primary hover:underline"
                           >
                             {department.parentDepartment.name}
@@ -269,7 +269,7 @@ function DepartmentDetailPage() {
                           {department.childDepartments.map((child) => (
                             <li key={child.id}>
                               <Link
-                                href={`/departments/${child.id}`}
+                                to="/admin/departments/$id" params={{ id: child.id }}
                                 className="text-sm text-primary hover:underline block p-2 rounded-md border"
                               >
                                 {child.name}
@@ -291,7 +291,7 @@ function DepartmentDetailPage() {
               <CardTitle className="flex justify-between items-center">
                 <span>Department Members</span>
                 <Button asChild size="sm">
-                  <Link href={`/departments/${department.id}/members`}>
+                  <Link to="/admin/departments/$id" params={{ id: department.id }}>
                     <Users className="mr-2 h-4 w-4" />
                     Manage Members
                   </Link>
@@ -337,7 +337,7 @@ function DepartmentDetailPage() {
                     No members in this department
                   </p>
                   <Button asChild>
-                    <Link href={`/departments/${department.id}/members`}>
+                    <Link to="/admin/departments/$id" params={{ id: department.id }}>
                       Add Members
                     </Link>
                   </Button>
@@ -353,7 +353,7 @@ function DepartmentDetailPage() {
               <CardTitle className="flex justify-between items-center">
                 <span>Department Settings</span>
                 <Button asChild size="sm">
-                  <Link href={`/departments/${department.id}/edit`}>
+                  <Link to="/admin/departments/$id" params={{ id: department.id }}>
                     <Settings className="mr-2 h-4 w-4" />
                     Edit Settings
                   </Link>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { InstalledPlugin } from "@/src/lib/plugin-types";
-import { pluginRegistry } from "@/src/lib/plugin-registry";
-import { loadPluginComponent } from "@/src/lib/plugin-loader";
+import { InstalledPlugin } from "@/lib/plugin-types";
+import { pluginRegistry } from "@/lib/plugin-registry";
+import { loadPluginComponent } from "@/lib/plugin-loader";
 
 /**
  * Hook to load a plugin by ID

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/admin/events/new/")({
 
 function CreateEventPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearch({ from: "__root__" });
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,7 +31,7 @@ function CreateEventPage() {
   const { eventData, isValid, resetEventData, updateEventData } =
     useEventCreation();
 
-  const duplicateId = searchParams.get("duplicate");
+  const duplicateId = searchParams.duplicate;
 
   // Load event data for duplication
   useEffect(() => {
@@ -231,7 +232,7 @@ function CreateEventPage() {
       )
     ) {
       resetEventData();
-      router.push("/events");
+      router.navigate({ to: "/admin/events" });
     }
   };
 
@@ -258,7 +259,7 @@ function CreateEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push("/")}
+              onClick={() => router.navigate({ to: "/admin/" })}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

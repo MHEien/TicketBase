@@ -338,7 +338,7 @@ export class PluginsController {
   @Public() // Temporarily make this endpoint public for testing
   @Post('upload')
   async uploadPlugin(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body()
     createDto: {
       id: string;
@@ -445,7 +445,7 @@ export class PluginsController {
   @Public() // Make this endpoint public for admin uploads
   @Post('storage/upload')
   async storePluginBundle(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body()
     storageDto: {
       pluginId: string;

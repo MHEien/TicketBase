@@ -1,5 +1,5 @@
 import { InstalledPlugin } from "./plugin-types";
-import "@/src/types/plugins";
+import "@/types/plugins";
 
 // Cache for loaded plugins to avoid redundant loading
 const loadedPlugins: Record<string, any> = {};

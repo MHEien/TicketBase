@@ -1,17 +1,18 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/src/lib/auth";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { getSession } from "@/lib/auth-client";
 
 // Configure API URL based on environment
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 // Update organization branding settings
-export async function PATCH(request: Request) {
+export const ServerRoute = createServerFileRoute("/api/organizations/branding").methods({
+  PATCH: async ({ request }) => {
   try {
-    const session = await auth();
+    const session = await getSession();
 
     // Ensure the user is authenticated
-    if (!session?.user || !session.accessToken) {
-      return NextResponse.json(
+    if (!session?.user || !session.session.token) {
+      return Response.json(
         { message: "Authentication required" },
         { status: 401 },
       );
@@ -28,7 +29,7 @@ export async function PATCH(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${session.session.token}`,
       },
       body: JSON.stringify({
         organizationSettings: body.settings,
@@ -36,22 +37,24 @@ export async function PATCH(request: Request) {
     });
 
     if (!response.ok) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Failed to update branding settings" },
         { status: response.status },
       );
     }
 
     const data = await response.json();
-    return NextResponse.json({
+    return Response.json({
       message: "Branding settings updated successfully",
       data,
     });
   } catch (error) {
     console.error("Error updating branding settings:", error);
-    return NextResponse.json(
+    return Response.json(
       { message: "Failed to update branding settings" },
       { status: 500 },
     );
   }
-}
+  },
+});
+

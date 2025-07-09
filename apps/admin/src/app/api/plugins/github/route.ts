@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PluginBuildService, PluginUploadAPI } from "@/src/lib/plugin-build-system";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { PluginBuildService, PluginUploadAPI } from "@/lib/plugin-build-system";
 import { z } from "zod";
 
 const GitHubSetupSchema = z.object({
@@ -12,7 +12,18 @@ const GitHubSetupSchema = z.object({
 const buildService = new PluginBuildService();
 const uploadAPI = new PluginUploadAPI(buildService);
 
-export async function POST(request: NextRequest) {
+export const ServerRoute = createServerFileRoute("/api/plugins/github").methods({
+  OPTIONS: async () => {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  },
+  POST: async ({ request }) => {
   try {
     const body = await request.json();
     const { repository, branch, path, webhook } = GitHubSetupSchema.parse(body);
@@ -22,7 +33,7 @@ export async function POST(request: NextRequest) {
       /github\.com\/[^\/]+\/([^\/]+)(?:\.git)?$/,
     );
     if (!repoMatch) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Invalid GitHub repository URL" },
         { status: 400 },
       );
@@ -47,10 +58,10 @@ export async function POST(request: NextRequest) {
       // This would involve GitHub API calls to register webhook
     }
 
-    return NextResponse.json(result);
+    return Response.json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      return Response.json(
         {
           success: false,
           errors: error.errors.map((e) => `${e.path.join(".")}: ${e.message}`),
@@ -63,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     console.error("GitHub integration error:", error);
 
-    return NextResponse.json(
+    return Response.json(
       {
         success: false,
         errors: [
@@ -76,14 +87,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
-}
+});

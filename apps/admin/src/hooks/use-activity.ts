@@ -7,7 +7,7 @@ import {
   ActivitySeverity,
   GetActivitiesParams,
   ActivityCounts,
-} from "@/src/lib/api/activity-api";
+} from "@/lib/api/activity-api";
 
 // Re-export types for backward compatibility
 export { ActivityType, ActivitySeverity };

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { signIn } from "@/lib/auth-client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -96,7 +96,7 @@ export default function RegisterPage() {
 
         if (result?.ok) {
           // On successful sign-in, redirect to the onboarding flow
-          router.push("/onboarding");
+          router.navigate({ to: "/onboarding" });
         } else {
           setError(
             "Registration successful but sign-in failed. Please try logging in.",
@@ -240,7 +240,7 @@ export default function RegisterPage() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
             <Link
-              href="/login"
+              to="/login"
               className="font-medium text-primary hover:underline"
             >
               Sign in

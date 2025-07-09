@@ -34,7 +34,7 @@ import { DashboardLoading } from "@/components/dashboard-loading";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useEvents } from "@/hooks/use-events";
 import { useRecentActivity } from "@/hooks/use-activity";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 
 export function WidgetDashboard() {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
@@ -450,7 +450,7 @@ export function WidgetDashboard() {
                 variant="ghost"
                 size="sm"
                 className="w-full"
-                onClick={() => router.push("/activity")}
+                onClick={() => router.navigate({ to: "/admin/activity" })}
               >
                 View All Activity
               </Button>

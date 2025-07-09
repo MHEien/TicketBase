@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   ArrowUpDown,

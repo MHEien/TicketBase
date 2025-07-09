@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -112,7 +112,7 @@ function EventsPage() {
   );
 
   const handleCreateEvent = () => {
-    router.push("/events/new");
+    router.navigate({ to: "/admin/events/new" });
   };
 
   const handleEditEvent = (eventId: string) => {

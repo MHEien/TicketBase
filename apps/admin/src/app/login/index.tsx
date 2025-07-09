@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { signIn } from "@/lib/auth-client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -31,6 +32,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/login/")({ 
   component: LoginPage,
+  
 })
 
 const loginSchema = z.object({
@@ -44,7 +46,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams = useSearch({ from: "__root__" });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -56,13 +58,6 @@ export default function LoginPage() {
     },
   });
 
-  // Check for error parameter in URL
-  useEffect(() => {
-    const errorParam = searchParams.get("error");
-    if (errorParam === "session_expired") {
-      setError("Your session has expired. Please sign in again.");
-    }
-  }, [searchParams]);
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
@@ -76,8 +71,8 @@ export default function LoginPage() {
       });
 
       if (!result?.error) {
-        router.push("/");
-        router.refresh();
+        router.navigate({ to: "/admin" });
+        window.location.reload();
       } else {
         // Show more detailed error message based on the error
         if (result.error === "CredentialsSignin") {
@@ -164,7 +159,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Don&apos;t have an account?{" "}
             <Link
-              href="/register"
+              to="/register"
               className="font-medium text-primary hover:underline"
             >
               Register

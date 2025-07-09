@@ -1,10 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSession } from "@/components/session-provider";
+import { useRouter } from "@tanstack/react-router";
 import { useToast } from "@/components/ui/use-toast";
-import "@/src/types/plugins"; // Import global types
+import "@/types/plugins"; // Import global types
 
 // Import your UI components that plugins can use
 import { Button } from "@/components/ui/button";
@@ -219,9 +219,9 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
     },
 
     navigation: {
-      push: router.push,
-      replace: router.replace,
-      back: router.back,
+      push: (url: string) => router.navigate({ to: url }),
+      replace: (url: string) => router.navigate({ to: url, replace: true }),
+      back: () => router.history.back(),
     },
 
     components: {

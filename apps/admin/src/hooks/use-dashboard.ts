@@ -8,7 +8,7 @@ import {
   UpcomingEvent,
   PerformanceMetric,
   PopularPlugin,
-} from "@/src/lib/api/analytics-api";
+} from "@/lib/api/analytics-api";
 
 interface UseDashboardOptions {
   refreshInterval?: number; // in milliseconds

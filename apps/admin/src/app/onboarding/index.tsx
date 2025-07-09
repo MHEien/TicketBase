@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { useOnboarding } from "@/lib/onboarding-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import OrganizationDetailsForm from "./steps/organization-details";
-import EventPreferencesForm from "./steps/event-preferences";
-import BrandSettingsForm from "./steps/brand-settings";
-import PaymentDetailsForm from "./steps/payment-details";
-import OnboardingComplete from "./steps/onboarding-complete";
+import OrganizationDetailsForm from "../../components/onboarding/steps/organization-details";
+import EventPreferencesForm from "../../components/onboarding/steps/event-preferences";
+import BrandSettingsForm from "../../components/onboarding/steps/brand-settings";
+import PaymentDetailsForm from "../../components/onboarding/steps/payment-details";
+import OnboardingComplete from "../../components/onboarding/steps/onboarding-complete";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/onboarding/")({ 
@@ -23,7 +23,7 @@ function OnboardingPage() {
   // Redirect to dashboard if onboarding is already completed
   useEffect(() => {
     if (isCompleted) {
-      router.push("/");
+      router.navigate({ to: "/admin" });
     }
   }, [isCompleted, router]);
 
