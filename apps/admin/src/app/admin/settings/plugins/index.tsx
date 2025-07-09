@@ -4,9 +4,9 @@ import { PluginGallery } from "@/components/plugin-gallery";
 import { Separator } from "@/components/ui/separator";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/settings/plugins/")({ 
+export const Route = createFileRoute("/admin/settings/plugins/")({
   component: PluginsPage,
-})
+});
 
 function PluginsPage() {
   return (

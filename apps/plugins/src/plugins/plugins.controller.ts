@@ -248,7 +248,10 @@ export class PluginsController {
   @Post()
   async createPlugin(@Body() createDto: CreatePluginDto) {
     const logger = new Logger('PluginsController.createPlugin');
-    logger.debug('Received CreatePluginDto:', JSON.stringify(createDto, null, 2));
+    logger.debug(
+      'Received CreatePluginDto:',
+      JSON.stringify(createDto, null, 2),
+    );
     logger.debug('bundleUrl:', createDto.bundleUrl);
     return this.pluginsService.createPlugin(
       createDto.id,

@@ -9,6 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
   // Setup validation pipe globally
   app.useGlobalPipes(
     new ValidationPipe({
@@ -40,7 +43,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   // Get port from config (defined as 4000 in app.config.ts)
   const port = configService.get<number>('port');
@@ -50,4 +53,7 @@ async function bootstrap() {
     `API documentation available at: http://localhost:${port}/api/docs`,
   );
 }
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Failed to start the application:', error);
+  process.exit(1);
+});

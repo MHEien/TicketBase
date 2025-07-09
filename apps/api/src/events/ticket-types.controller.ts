@@ -14,7 +14,7 @@ import { TicketTypesService } from './ticket-types.service';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
 
-@Controller('api/events/:eventId/ticket-types')
+@Controller('events/:eventId/ticket-types')
 @UseGuards(JwtAuthGuard)
 export class TicketTypesController {
   constructor(private readonly ticketTypesService: TicketTypesService) {}

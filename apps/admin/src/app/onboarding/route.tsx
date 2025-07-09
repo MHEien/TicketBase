@@ -3,9 +3,9 @@
 import { OnboardingProvider } from "@/lib/onboarding-context";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/onboarding")({ 
+export const Route = createFileRoute("/onboarding")({
   component: OnboardingLayout,
-})
+});
 
 function OnboardingLayout() {
   return (

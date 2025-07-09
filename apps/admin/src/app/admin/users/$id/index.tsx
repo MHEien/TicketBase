@@ -55,9 +55,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/users/$id/")({ 
+export const Route = createFileRoute("/admin/users/$id/")({
   component: UserDetailPage,
-})
+});
 
 function UserDetailPage() {
   const router = useRouter();
@@ -158,7 +158,10 @@ function UserDetailPage() {
           <p className="mb-6 text-muted-foreground">
             The user you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => router.navigate({ to: "/admin/users" })} className="gap-2">
+          <Button
+            onClick={() => router.navigate({ to: "/admin/users" })}
+            className="gap-2"
+          >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Users</span>
           </Button>

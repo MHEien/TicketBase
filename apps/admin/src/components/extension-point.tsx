@@ -42,7 +42,11 @@ export function ExtensionPoint({
     }
 
     // Check if React is available with hooks
-    if (!(window as any).React || !(window as any).React.useState || !(window as any).React.useEffect) {
+    if (
+      !(window as any).React ||
+      !(window as any).React.useState ||
+      !(window as any).React.useEffect
+    ) {
       console.error("React or React hooks not available in global scope");
       return false;
     }
@@ -69,7 +73,11 @@ export function ExtensionPoint({
     const timeout = setTimeout(() => {
       clearInterval(checkInterval);
       if (!reactReady) {
-        setError(new Error("React or PluginSDK dependencies not available after timeout"));
+        setError(
+          new Error(
+            "React or PluginSDK dependencies not available after timeout",
+          ),
+        );
       }
     }, 10000);
 
@@ -132,7 +140,10 @@ export function ExtensionPoint({
           }
 
           if (loadState.error) {
-            console.error(`Plugin ${plugin.id} has loading error:`, loadState.error);
+            console.error(
+              `Plugin ${plugin.id} has loading error:`,
+              loadState.error,
+            );
             continue;
           }
 
@@ -187,24 +198,27 @@ export function ExtensionPoint({
   }, [reactReady, loadExtensions]);
 
   // Error boundary for plugin components
-  const ErrorBoundary: React.FC<{ children: React.ReactNode; pluginId: string }> = ({
-    children,
-    pluginId,
-  }) => {
+  const ErrorBoundary: React.FC<{
+    children: React.ReactNode;
+    pluginId: string;
+  }> = ({ children, pluginId }) => {
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
       const handleError = (error: ErrorEvent) => {
-        if (error.filename?.includes(pluginId) || error.message?.includes(pluginId)) {
+        if (
+          error.filename?.includes(pluginId) ||
+          error.message?.includes(pluginId)
+        ) {
           console.error(`Plugin ${pluginId} error:`, error);
           setHasError(true);
           setErrorMessage(error.message || "Unknown plugin error");
         }
       };
 
-      window.addEventListener('error', handleError);
-      return () => window.removeEventListener('error', handleError);
+      window.addEventListener("error", handleError);
+      return () => window.removeEventListener("error", handleError);
     }, [pluginId]);
 
     if (hasError) {
@@ -248,9 +262,7 @@ export function ExtensionPoint({
         <p className="text-red-800 text-sm font-medium">
           Error loading plugins: {error.message}
         </p>
-        <p className="text-red-600 text-xs mt-1">
-          Extension point: {name}
-        </p>
+        <p className="text-red-600 text-xs mt-1">Extension point: {name}</p>
         <button
           onClick={() => {
             setError(null);

@@ -25,7 +25,7 @@ import { ConfigService } from '@nestjs/config';
 import { PluginStatus } from './types/plugin.types';
 
 @ApiTags('plugin-proxy')
-@Controller('api/plugins/proxy')
+@Controller('plugins/proxy')
 export class PluginProxyController {
   private readonly logger = new Logger(PluginProxyController.name);
 

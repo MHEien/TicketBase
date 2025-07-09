@@ -41,7 +41,6 @@ import { ServerRoute as ApiOrganizationsSettingsRouteServerRouteImport } from '.
 import { ServerRoute as ApiOrganizationsDomainRouteServerRouteImport } from './app/api/organizations/domain/route'
 import { ServerRoute as ApiOrganizationsBrandingRouteServerRouteImport } from './app/api/organizations/branding/route'
 import { ServerRoute as ApiOnboardingCompleteRouteServerRouteImport } from './app/api/onboarding/complete/route'
-import { ServerRoute as ApiAuthSplatRouteServerRouteImport } from './app/api/auth/$/route'
 
 const rootServerRouteImport = createServerRootRoute()
 
@@ -207,11 +206,6 @@ const ApiOnboardingCompleteRouteServerRoute =
     path: '/api/onboarding/complete',
     getParentRoute: () => rootServerRouteImport,
   } as any)
-const ApiAuthSplatRouteServerRoute = ApiAuthSplatRouteServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
@@ -365,7 +359,6 @@ export interface RootRouteChildren {
 }
 export interface FileServerRoutesByFullPath {
   '/api/register': typeof ApiRegisterRouteServerRoute
-  '/api/auth/$': typeof ApiAuthSplatRouteServerRoute
   '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
   '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
   '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
@@ -376,7 +369,6 @@ export interface FileServerRoutesByFullPath {
 }
 export interface FileServerRoutesByTo {
   '/api/register': typeof ApiRegisterRouteServerRoute
-  '/api/auth/$': typeof ApiAuthSplatRouteServerRoute
   '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
   '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
   '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
@@ -388,7 +380,6 @@ export interface FileServerRoutesByTo {
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/register': typeof ApiRegisterRouteServerRoute
-  '/api/auth/$': typeof ApiAuthSplatRouteServerRoute
   '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
   '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
   '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
@@ -401,7 +392,6 @@ export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
   fullPaths:
     | '/api/register'
-    | '/api/auth/$'
     | '/api/onboarding/complete'
     | '/api/organizations/branding'
     | '/api/organizations/domain'
@@ -412,7 +402,6 @@ export interface FileServerRouteTypes {
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
     | '/api/register'
-    | '/api/auth/$'
     | '/api/onboarding/complete'
     | '/api/organizations/branding'
     | '/api/organizations/domain'
@@ -423,7 +412,6 @@ export interface FileServerRouteTypes {
   id:
     | '__root__'
     | '/api/register'
-    | '/api/auth/$'
     | '/api/onboarding/complete'
     | '/api/organizations/branding'
     | '/api/organizations/domain'
@@ -435,7 +423,6 @@ export interface FileServerRouteTypes {
 }
 export interface RootServerRouteChildren {
   ApiRegisterRouteServerRoute: typeof ApiRegisterRouteServerRoute
-  ApiAuthSplatRouteServerRoute: typeof ApiAuthSplatRouteServerRoute
   ApiOnboardingCompleteRouteServerRoute: typeof ApiOnboardingCompleteRouteServerRoute
   ApiOrganizationsBrandingRouteServerRoute: typeof ApiOrganizationsBrandingRouteServerRoute
   ApiOrganizationsDomainRouteServerRoute: typeof ApiOrganizationsDomainRouteServerRoute
@@ -661,13 +648,6 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiOnboardingCompleteRouteServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
   }
 }
 
@@ -738,7 +718,6 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiRegisterRouteServerRoute: ApiRegisterRouteServerRoute,
-  ApiAuthSplatRouteServerRoute: ApiAuthSplatRouteServerRoute,
   ApiOnboardingCompleteRouteServerRoute: ApiOnboardingCompleteRouteServerRoute,
   ApiOrganizationsBrandingRouteServerRoute:
     ApiOrganizationsBrandingRouteServerRoute,

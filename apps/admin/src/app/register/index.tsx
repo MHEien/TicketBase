@@ -28,9 +28,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/register/")({ 
+export const Route = createFileRoute("/register/")({
   component: RegisterPage,
-})
+});
 
 const registerSchema = z
   .object({

@@ -46,9 +46,9 @@ import { type Event } from "@/lib/api/events-api";
 import { EventsLoading } from "@/components/ui/loading-skeleton";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/events/")({ 
+export const Route = createFileRoute("/admin/events/")({
   component: EventsPage,
-})
+});
 
 function EventsPage() {
   const router = useRouter();

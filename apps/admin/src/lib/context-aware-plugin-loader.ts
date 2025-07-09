@@ -70,7 +70,11 @@ export async function loadPluginWithContext(
     const module = await loadPluginBundle(plugin.bundleUrl);
 
     // Extract the component for the specific extension point
-    const component = await extractExtensionPointComponent(plugin, extensionPoint, module);
+    const component = await extractExtensionPointComponent(
+      plugin,
+      extensionPoint,
+      module,
+    );
 
     if (!component) {
       throw new Error(
@@ -114,17 +118,24 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
       fetch(bundleUrl)
         .then((response) => {
           if (!response.ok) {
-            throw new Error(`Failed to fetch bundle: ${response.status} ${response.statusText}`);
+            throw new Error(
+              `Failed to fetch bundle: ${response.status} ${response.statusText}`,
+            );
           }
           return response.text();
         })
         .then((code) => {
           console.log("Plugin bundle code loaded, preparing for execution...");
-          console.log("First 500 characters of plugin bundle:", code.substring(0, 500));
+          console.log(
+            "First 500 characters of plugin bundle:",
+            code.substring(0, 500),
+          );
 
           // Check for common syntax issues before wrapping
           if (code.includes("__dirname")) {
-            console.warn("⚠️ Plugin bundle contains __dirname - this will cause browser errors");
+            console.warn(
+              "⚠️ Plugin bundle contains __dirname - this will cause browser errors",
+            );
           }
 
           try {
@@ -132,7 +143,10 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             new Function(code);
             console.log("✅ Plugin bundle syntax appears valid");
           } catch (syntaxError) {
-            const errorMessage = syntaxError instanceof Error ? syntaxError.message : String(syntaxError);
+            const errorMessage =
+              syntaxError instanceof Error
+                ? syntaxError.message
+                : String(syntaxError);
             console.error("❌ Plugin bundle has syntax errors:", syntaxError);
             reject(new Error(`Plugin bundle syntax error: ${errorMessage}`));
             return;
@@ -142,7 +156,9 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             // Ensure React is available and has hooks - CRITICAL FIX
             const ReactInstance = window.React;
             if (!ReactInstance || !ReactInstance.useState) {
-              reject(new Error("React or React hooks not available in global scope"));
+              reject(
+                new Error("React or React hooks not available in global scope"),
+              );
               return;
             }
 
@@ -150,14 +166,14 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
               hasReact: !!ReactInstance,
               hasUseState: !!ReactInstance.useState,
               hasUseEffect: !!ReactInstance.useEffect,
-              reactKeys: Object.keys(ReactInstance)
+              reactKeys: Object.keys(ReactInstance),
             });
 
             // Create a robust React reference with validation
             const ReactReference = {
               // Core React
               ...ReactInstance,
-              
+
               // Essential hooks with validation
               useState: ReactInstance.useState,
               useEffect: ReactInstance.useEffect,
@@ -166,7 +182,7 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
               useContext: ReactInstance.useContext,
               useReducer: ReactInstance.useReducer,
               useRef: ReactInstance.useRef,
-              
+
               // Core functions
               createElement: ReactInstance.createElement,
               Fragment: ReactInstance.Fragment,
@@ -175,11 +191,20 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             };
 
             // Validate all required hooks are present
-            const requiredHooks = ['useState', 'useEffect', 'useCallback', 'useMemo'] as const;
-            const missingHooks = requiredHooks.filter(hook => !ReactReference[hook as keyof typeof ReactReference]);
-            
+            const requiredHooks = [
+              "useState",
+              "useEffect",
+              "useCallback",
+              "useMemo",
+            ] as const;
+            const missingHooks = requiredHooks.filter(
+              (hook) => !ReactReference[hook as keyof typeof ReactReference],
+            );
+
             if (missingHooks.length > 0) {
-              reject(new Error(`Missing React hooks: ${missingHooks.join(', ')}`));
+              reject(
+                new Error(`Missing React hooks: ${missingHooks.join(", ")}`),
+              );
               return;
             }
 
@@ -191,23 +216,25 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
               module: { exports: {} },
               PluginSDK: window.PluginSDK,
               React: ReactReference,
-              require: function(moduleName: string) {
-                console.log('Plugin requiring:', moduleName);
-                if (moduleName === 'react') return ReactReference;
-                if (moduleName === 'react-dom') return (window as any).ReactDOM;
-                if (moduleName === '@/components/ui/button') return { Button: window.PluginSDK?.components?.Button };
-                if (moduleName === '@/components/ui/input') return { Input: window.PluginSDK?.components?.Input };
+              require: function (moduleName: string) {
+                console.log("Plugin requiring:", moduleName);
+                if (moduleName === "react") return ReactReference;
+                if (moduleName === "react-dom") return (window as any).ReactDOM;
+                if (moduleName === "@/components/ui/button")
+                  return { Button: window.PluginSDK?.components?.Button };
+                if (moduleName === "@/components/ui/input")
+                  return { Input: window.PluginSDK?.components?.Input };
                 // Add more component mappings as needed
-                throw new Error('Module not available: ' + moduleName);
+                throw new Error("Module not available: " + moduleName);
               },
-              process: { env: { NODE_ENV: 'production' } },
-              __dirname: '/virtual/plugin',
-              __filename: '/virtual/plugin/index.js',
+              process: { env: { NODE_ENV: "production" } },
+              __dirname: "/virtual/plugin",
+              __filename: "/virtual/plugin/index.js",
               global: {
                 ...window,
                 React: ReactReference,
-                PluginSDK: window.PluginSDK
-              }
+                PluginSDK: window.PluginSDK,
+              },
             };
 
             // CRITICAL: Make React hooks available globally for plugins
@@ -295,11 +322,11 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             `;
 
             // Execute the wrapped code
-            console.log('Executing plugin code...');
+            console.log("Executing plugin code...");
             const result = eval(wrappedCode);
-            console.log('Plugin executed successfully, result:', result);
-            console.log('Result type:', typeof result);
-            console.log('Result keys:', Object.keys(result || {}));
+            console.log("Plugin executed successfully, result:", result);
+            console.log("Result type:", typeof result);
+            console.log("Result keys:", Object.keys(result || {}));
 
             // Store the result in the global scope for debugging
             const scriptId = Date.now().toString();
@@ -307,18 +334,23 @@ async function loadPluginBundle(bundleUrl: string): Promise<any> {
             (window as any)[globalVar] = result;
 
             // Validate that we got a valid result
-            if (!result || typeof result !== 'object') {
-              console.warn('Plugin did not return a valid object, wrapping in default structure');
+            if (!result || typeof result !== "object") {
+              console.warn(
+                "Plugin did not return a valid object, wrapping in default structure",
+              );
               resolve({
                 default: result,
-                extensionPoints: {}
+                extensionPoints: {},
               });
             } else {
               resolve(result);
             }
           } catch (error: unknown) {
-            console.error('Plugin execution error:', error);
-            console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace available');
+            console.error("Plugin execution error:", error);
+            console.error(
+              "Error stack:",
+              error instanceof Error ? error.stack : "No stack trace available",
+            );
             reject(error);
           }
         })
@@ -364,13 +396,13 @@ async function extractExtensionPointComponent(
   module: any, // Pass the module directly
 ): Promise<React.ComponentType<any> | null> {
   try {
-    console.log('Extracting extension point:', extensionPoint);
-    console.log('Module structure:', {
+    console.log("Extracting extension point:", extensionPoint);
+    console.log("Module structure:", {
       hasDefault: !!module.default,
       hasExtensionPoints: !!module.extensionPoints,
       defaultHasExtensionPoints: !!module.default?.extensionPoints,
       moduleKeys: Object.keys(module || {}),
-      defaultKeys: Object.keys(module.default || {})
+      defaultKeys: Object.keys(module.default || {}),
     });
 
     // Make sure the plugin implements the extension point
@@ -387,21 +419,26 @@ async function extractExtensionPointComponent(
     // Method 1: Check if module has extensionPoints directly
     if (module.extensionPoints && module.extensionPoints[extensionPoint]) {
       component = module.extensionPoints[extensionPoint];
-      console.log('Found component via module.extensionPoints');
+      console.log("Found component via module.extensionPoints");
     }
-    
+
     // Method 2: Check if module.default has extensionPoints
-    else if (module.default?.extensionPoints && module.default.extensionPoints[extensionPoint]) {
+    else if (
+      module.default?.extensionPoints &&
+      module.default.extensionPoints[extensionPoint]
+    ) {
       component = module.default.extensionPoints[extensionPoint];
-      console.log('Found component via module.default.extensionPoints');
+      console.log("Found component via module.default.extensionPoints");
     }
-    
+
     // Method 3: Check global plugin registry
     else {
-      const registeredPlugin = (window as any).__PLUGIN_REGISTRY?.registered[plugin.id];
+      const registeredPlugin = (window as any).__PLUGIN_REGISTRY?.registered[
+        plugin.id
+      ];
       if (registeredPlugin?.extensionPoints?.[extensionPoint]) {
         component = registeredPlugin.extensionPoints[extensionPoint];
-        console.log('Found component via plugin registry');
+        console.log("Found component via plugin registry");
       }
     }
 
@@ -432,7 +469,7 @@ async function extractExtensionPointComponent(
     if (!component || typeof component !== "function") {
       console.error(
         `Extension point ${extensionPoint} in plugin ${plugin.id} is not a valid component`,
-        { component, type: typeof component }
+        { component, type: typeof component },
       );
       return null;
     }

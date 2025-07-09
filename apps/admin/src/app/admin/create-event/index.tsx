@@ -1,5 +1,5 @@
-"use client";;
-import { createFileRoute } from "@tanstack/react-router"
+"use client";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,9 +15,9 @@ import { EventPreview } from "@/components/event-creation/event-preview";
 import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
 
-export const Route = createFileRoute("/admin/create-event/")({ 
+export const Route = createFileRoute("/admin/create-event/")({
   component: CreateEventPage,
-})
+});
 
 function CreateEventPage() {
   const router = useRouter();

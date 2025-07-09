@@ -4,7 +4,7 @@ import {
   createRootRoute,
   HeadContent,
   Scripts,
-} from "@tanstack/react-router"
+} from "@tanstack/react-router";
 import { SessionProvider } from "@/components/session-provider";
 import { AuthErrorHandler } from "@/components/ui/auth-error-handler";
 import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
@@ -17,11 +17,11 @@ export const Route = createRootRoute({
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      { title: "TanStack Start Starter" }
+      { title: "TanStack Start Starter" },
     ],
   }),
   component: RootLayout,
-})
+});
 
 function RootLayout() {
   return (

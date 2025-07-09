@@ -30,10 +30,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/login/")({ 
+export const Route = createFileRoute("/login/")({
   component: LoginPage,
-  
-})
+});
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -57,7 +56,6 @@ export default function LoginPage() {
       password: "",
     },
   });
-
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);

@@ -13,12 +13,11 @@ import { useCommandMenu } from "@/hooks/use-command-menu";
 import { useDashboardNav } from "@/hooks/useDashboardNav";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/")({ 
+export const Route = createFileRoute("/admin/")({
   component: Dashboard,
-}) 
+});
 
 type DashboardSection = "overview" | "analytics" | "plugins";
-
 
 function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);

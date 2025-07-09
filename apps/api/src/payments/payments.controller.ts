@@ -24,7 +24,7 @@ import { ConfirmPaymentDto } from './dto/confirm-payment.dto';
 import { ProcessRefundDto } from './dto/process-refund.dto';
 
 @ApiTags('payments')
-@Controller('api/payments')
+@Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 

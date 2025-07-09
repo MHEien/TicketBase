@@ -72,9 +72,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/users/")({ 
+export const Route = createFileRoute("/admin/users/")({
   component: UsersPage,
-})
+});
 
 function UsersPage() {
   const router = useRouter();

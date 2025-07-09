@@ -22,10 +22,9 @@ import { Department } from "@/types/department";
 import { getDepartmentById } from "@/lib/api/departments";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
-
-export const Route = createFileRoute("/admin/departments/$id/")({ 
+export const Route = createFileRoute("/admin/departments/$id/")({
   component: DepartmentDetailPage,
-}) 
+});
 
 function DepartmentDetailPage() {
   const [department, setDepartment] = useState<Department | null>(null);
@@ -65,7 +64,11 @@ function DepartmentDetailPage() {
     return (
       <div className="container mx-auto py-6">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.history.back()}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -81,7 +84,11 @@ function DepartmentDetailPage() {
     return (
       <div className="container mx-auto py-6">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.history.back()}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -192,7 +199,8 @@ function DepartmentDetailPage() {
                       <p className="text-sm mt-1">
                         {department.parentDepartment ? (
                           <Link
-                            to="/admin/departments/$id" params={{ id: department.parentDepartment.id }}
+                            to="/admin/departments/$id"
+                            params={{ id: department.parentDepartment.id }}
                             className="text-primary hover:underline"
                           >
                             {department.parentDepartment.name}
@@ -269,7 +277,8 @@ function DepartmentDetailPage() {
                           {department.childDepartments.map((child) => (
                             <li key={child.id}>
                               <Link
-                                to="/admin/departments/$id" params={{ id: child.id }}
+                                to="/admin/departments/$id"
+                                params={{ id: child.id }}
                                 className="text-sm text-primary hover:underline block p-2 rounded-md border"
                               >
                                 {child.name}
@@ -291,7 +300,10 @@ function DepartmentDetailPage() {
               <CardTitle className="flex justify-between items-center">
                 <span>Department Members</span>
                 <Button asChild size="sm">
-                  <Link to="/admin/departments/$id" params={{ id: department.id }}>
+                  <Link
+                    to="/admin/departments/$id"
+                    params={{ id: department.id }}
+                  >
                     <Users className="mr-2 h-4 w-4" />
                     Manage Members
                   </Link>
@@ -337,7 +349,10 @@ function DepartmentDetailPage() {
                     No members in this department
                   </p>
                   <Button asChild>
-                    <Link to="/admin/departments/$id" params={{ id: department.id }}>
+                    <Link
+                      to="/admin/departments/$id"
+                      params={{ id: department.id }}
+                    >
                       Add Members
                     </Link>
                   </Button>
@@ -353,7 +368,10 @@ function DepartmentDetailPage() {
               <CardTitle className="flex justify-between items-center">
                 <span>Department Settings</span>
                 <Button asChild size="sm">
-                  <Link to="/admin/departments/$id" params={{ id: department.id }}>
+                  <Link
+                    to="/admin/departments/$id"
+                    params={{ id: department.id }}
+                  >
                     <Settings className="mr-2 h-4 w-4" />
                     Edit Settings
                   </Link>

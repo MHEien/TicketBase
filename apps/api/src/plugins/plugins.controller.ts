@@ -57,7 +57,7 @@ export class SimpleInstallPluginDto {
 }
 
 @ApiTags('plugins')
-@Controller('api/plugins')
+@Controller('plugins')
 export class PluginsController {
   private readonly logger = new Logger(PluginsController.name);
 

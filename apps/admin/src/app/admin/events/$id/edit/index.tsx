@@ -17,9 +17,9 @@ import { useEvent } from "@/hooks/use-events";
 import { updateEvent } from "@/lib/api/events-api";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/events/$id/edit/")({ 
+export const Route = createFileRoute("/admin/events/$id/edit/")({
   component: EditEventPage,
-}) 
+});
 
 function EditEventPage() {
   const { id } = Route.useParams();
@@ -180,7 +180,9 @@ function EditEventPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-destructive">Error loading event data</p>
-          <Button onClick={() => router.navigate({ to: "/admin/events" })}>Back to Events</Button>
+          <Button onClick={() => router.navigate({ to: "/admin/events" })}>
+            Back to Events
+          </Button>
         </div>
       </div>
     );

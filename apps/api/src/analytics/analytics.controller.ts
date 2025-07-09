@@ -19,7 +19,7 @@ interface RequestWithUser extends Request {
 }
 
 @ApiTags('analytics')
-@Controller('api/analytics')
+@Controller('analytics')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AnalyticsController {

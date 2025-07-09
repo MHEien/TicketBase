@@ -1,5 +1,5 @@
-"use client";;
-import { createFileRoute } from "@tanstack/react-router"
+"use client";
+import { createFileRoute } from "@tanstack/react-router";
 
 import type React from "react";
 
@@ -44,9 +44,9 @@ import { useToast } from "@/hooks/use-toast";
 import { PluginWidgetArea } from "@/components/plugin-widget-area";
 import { deleteEvent, publishEvent, cancelEvent } from "@/lib/api/events-api";
 
-export const Route = createFileRoute("/admin/events/$id/")({ 
+export const Route = createFileRoute("/admin/events/$id/")({
   component: EventDetailsPage,
-})
+});
 
 function EventDetailsPage() {
   const { id } = Route.useParams();
@@ -164,7 +164,10 @@ function EventDetailsPage() {
     return (
       <div className="p-8 text-center">
         <p className="text-destructive">Error loading event details</p>
-        <Button onClick={() => router.navigate({ to: "/admin/events" })} className="mt-4">
+        <Button
+          onClick={() => router.navigate({ to: "/admin/events" })}
+          className="mt-4"
+        >
           Back to Events
         </Button>
       </div>

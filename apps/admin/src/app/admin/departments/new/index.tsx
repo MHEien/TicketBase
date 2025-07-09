@@ -39,9 +39,9 @@ import { createDepartment, getDepartments } from "@/lib/api/departments";
 import { Department, CreateDepartmentRequest } from "@/types/department";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/departments/new/")({ 
+export const Route = createFileRoute("/admin/departments/new/")({
   component: NewDepartmentPage,
-}) 
+});
 
 const formSchema = z.object({
   name: z

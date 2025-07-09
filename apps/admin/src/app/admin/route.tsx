@@ -11,15 +11,15 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/admin")({ 
+export const Route = createFileRoute("/admin")({
   component: () => {
     return (
       <DashboardNavProvider>
         <AdminLayout />
       </DashboardNavProvider>
-    )
-  }
-}) 
+    );
+  },
+});
 
 function AdminLayout() {
   const { activeSection, setActiveSection } = useDashboardNav();

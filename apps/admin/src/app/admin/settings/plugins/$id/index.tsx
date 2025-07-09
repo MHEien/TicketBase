@@ -18,9 +18,9 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/settings/plugins/$id/")({ 
+export const Route = createFileRoute("/admin/settings/plugins/$id/")({
   component: PluginSettingsPage,
-})
+});
 
 const PluginSettingsContent = () => {
   const router = useRouter();
@@ -114,7 +114,9 @@ const PluginSettingsContent = () => {
             </ul>
           </div>
           <div className="flex gap-2 mt-4">
-            <Button onClick={() => router.navigate({ to: "/admin/settings/plugins" })}>
+            <Button
+              onClick={() => router.navigate({ to: "/admin/settings/plugins" })}
+            >
               Back to Plugins
             </Button>
             <Button variant="outline" onClick={() => window.location.reload()}>

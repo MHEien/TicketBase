@@ -64,9 +64,9 @@ import { Department } from "@/types/department";
 import { getDepartments, deleteDepartment } from "@/lib/api/departments";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/departments/")({ 
+export const Route = createFileRoute("/admin/departments/")({
   component: DepartmentsPage,
-}) 
+});
 
 function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -263,12 +263,18 @@ function DepartmentsPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
-                            <Link to={`/admin/departments/$id`} params={{ id: department.id }}>
+                            <Link
+                              to={`/admin/departments/$id`}
+                              params={{ id: department.id }}
+                            >
                               View details
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link to={`/admin/departments/$id`} params={{ id: department.id }}>
+                            <Link
+                              to={`/admin/departments/$id`}
+                              params={{ id: department.id }}
+                            >
                               <Pencil className="mr-2 h-4 w-4" /> Edit
                             </Link>
                           </DropdownMenuItem>

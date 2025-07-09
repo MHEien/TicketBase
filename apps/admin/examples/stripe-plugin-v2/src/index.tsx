@@ -348,15 +348,15 @@ console.log("🔧 Stripe Plugin: Setting up exports...");
 export default stripePlugin;
 
 // Strategy 2: CommonJS style for broader compatibility
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = stripePlugin;
   module.exports.default = stripePlugin;
   console.log("✅ Stripe Plugin: CommonJS exports set");
 }
 
 // Strategy 3: Global registration (for legacy compatibility)
-if (typeof window !== 'undefined' && window.__PLUGIN_REGISTRY) {
-  window.__PLUGIN_REGISTRY.register('stripe-payment-plugin', {
+if (typeof window !== "undefined" && window.__PLUGIN_REGISTRY) {
+  window.__PLUGIN_REGISTRY.register("stripe-payment-plugin", {
     metadata,
     extensionPoints: {
       "admin-settings": AdminSettingsComponent,
@@ -386,7 +386,7 @@ const pluginExports = {
 };
 
 // Assign to global exports if available
-if (typeof exports !== 'undefined') {
+if (typeof exports !== "undefined") {
   Object.assign(exports, pluginExports);
   console.log("✅ Stripe Plugin: Global exports assigned");
 }
@@ -398,7 +398,7 @@ console.log("✅ Stripe Plugin: All export strategies completed", {
 });
 
 // For debugging: make components globally available during development
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   (window as any).StripePluginDebug = {
     AdminSettingsComponent,
     PaymentMethodComponent,

@@ -17,9 +17,9 @@ import { useEventCreation } from "@/hooks/use-event-creation";
 import { createEvent, fetchEvent } from "@/lib/api/events-api";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/events/new/")({ 
+export const Route = createFileRoute("/admin/events/new/")({
   component: CreateEventPage,
-})
+});
 
 function CreateEventPage() {
   const router = useRouter();

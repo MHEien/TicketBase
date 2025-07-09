@@ -56,9 +56,9 @@ import {
 } from "@/hooks/use-activity";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/activity/")({ 
+export const Route = createFileRoute("/admin/activity/")({
   component: ActivityPage,
-}) 
+});
 
 // Activity type configurations
 const ACTIVITY_TYPES: Record<

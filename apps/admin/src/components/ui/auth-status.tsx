@@ -43,7 +43,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            {'image' in sessionUser && sessionUser.image ? (
+            {"image" in sessionUser && sessionUser.image ? (
               <AvatarImage
                 src={sessionUser.image}
                 alt={sessionUser.name || ""}

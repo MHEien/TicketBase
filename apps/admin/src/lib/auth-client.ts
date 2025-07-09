@@ -1,102 +1,26 @@
-import { createAuthClient } from "better-auth/client";
-import type { BetterAuthClientPlugin } from "better-auth/client";
-import type { nestjsBackendPlugin } from "./auth";
+// Custom auth client implementation for NestJS backend integration
+// Maintains API compatibility with Better Auth while working directly with backend
 
-// Custom client plugin for NestJS backend integration
-const nestjsBackendClientPlugin = (): BetterAuthClientPlugin => {
-  return {
-    id: "nestjs-backend",
-    $InferServerPlugin: {} as ReturnType<typeof nestjsBackendPlugin>,
-  };
-};
+import {
+  authClient as customAuthClient,
+  signIn as customSignIn,
+  signOut as customSignOut,
+  getSession as customGetSession,
+} from "./custom-auth";
 
-export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
-  plugins: [nestjsBackendClientPlugin()],
-});
+// Export the custom auth client as the main authClient
+export const authClient = customAuthClient;
 
-// Export hooks and functions for easier migration from NextAuth
-export const { useSession } = authClient;
+// Export sign in function that matches NextAuth's signIn API
+export const signIn = customSignIn;
 
-// Custom sign in function that matches NextAuth's signIn
-export const signIn = async (
-  provider: "credentials",
-  options: {
-    email: string;
-    password: string;
-    callbackUrl?: string;
-    redirect?: boolean;
-  }
-) => {
-  try {
-    const result = await authClient.$fetch("/sign-in/credentials", {
-      method: "POST",
-      body: {
-        email: options.email,
-        password: options.password,
-      },
-    });
+// Export sign out function that matches NextAuth's signOut API
+export const signOut = customSignOut;
 
-    if (result.error) {
-      return {
-        error: result.error,
-        ok: false,
-        status: 401,
-        url: null,
-      };
-    }
+// Export getSession function (equivalent to NextAuth's getSession)
+export const getSession = customGetSession;
 
-    // Handle redirect
-    if (options.redirect !== false && options.callbackUrl) {
-      window.location.href = options.callbackUrl;
-    }
+// Re-export useSession from the custom session provider
+export { useSession } from "./custom-session-provider";
 
-    return {
-      error: null,
-      ok: true,
-      status: 200,
-      url: options.callbackUrl || null,
-    };
-  } catch (error) {
-    console.error("Sign in error:", error);
-    return {
-      error: "CredentialsSignin",
-      ok: false,
-      status: 401,
-      url: null,
-    };
-  }
-};
-
-// Custom sign out function that matches NextAuth's signOut
-export const signOut = async (options?: {
-  callbackUrl?: string;
-  redirect?: boolean;
-}) => {
-  try {
-    await authClient.signOut();
-
-    if (options?.redirect !== false && options?.callbackUrl) {
-      window.location.href = options.callbackUrl;
-    }
-
-    return {
-      url: options?.callbackUrl || "/login",
-    };
-  } catch (error) {
-    console.error("Sign out error:", error);
-  }
-};
-
-// Function to get session (equivalent to NextAuth's getSession)
-export const getSession = async () => {
-  try {
-    const session = await authClient.getSession();
-    return session.data;
-  } catch (error) {
-    console.error("Get session error:", error);
-    return null;
-  }
-};
-
-export { authClient as default }; 
+export { authClient as default };

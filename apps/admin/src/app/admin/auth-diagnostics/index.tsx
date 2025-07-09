@@ -13,9 +13,9 @@ import {
 import { resetAuthState, shouldResetAuth } from "@/lib/auth-reset";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/auth-diagnostics/")({ 
+export const Route = createFileRoute("/admin/auth-diagnostics/")({
   component: AuthDiagnosticsPage,
-}) 
+});
 
 function AuthDiagnosticsPage() {
   const { data: session, status } = useSession();

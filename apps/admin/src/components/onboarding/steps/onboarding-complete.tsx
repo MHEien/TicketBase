@@ -155,7 +155,10 @@ export default function OnboardingComplete() {
           Create Your First Event
         </Button>
 
-        <Button variant="outline" onClick={() => router.navigate({ to: "/admin/" })}>
+        <Button
+          variant="outline"
+          onClick={() => router.navigate({ to: "/admin/" })}
+        >
           Go to Dashboard
         </Button>
       </div>

@@ -38,9 +38,9 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/settings/")({ 
+export const Route = createFileRoute("/admin/settings/")({
   component: SettingsPage,
-})
+});
 
 const organizationSchema = z.object({
   name: z

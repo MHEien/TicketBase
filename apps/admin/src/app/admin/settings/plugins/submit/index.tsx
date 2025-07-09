@@ -7,9 +7,9 @@ import { useRouter } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/settings/plugins/submit/")({ 
+export const Route = createFileRoute("/admin/settings/plugins/submit/")({
   component: SubmitPluginPage,
-})
+});
 
 function SubmitPluginPage() {
   const router = useRouter();

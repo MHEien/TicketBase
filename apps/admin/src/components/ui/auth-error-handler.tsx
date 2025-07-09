@@ -13,7 +13,10 @@ export function AuthErrorHandler() {
 
   useEffect(() => {
     // Check if there's a token refresh error in the session
-    if (session?.error === "RefreshAccessTokenError" || status === "unauthenticated") {
+    if (
+      session?.error === "RefreshAccessTokenError" ||
+      status === "unauthenticated"
+    ) {
       console.error("Session expired. Please sign in again.");
 
       // Sign out and redirect to login
@@ -35,7 +38,12 @@ export function AuthErrorHandler() {
           <div className="mt-4 flex justify-end">
             <Button
               variant="destructive"
-              onClick={() => router.navigate({ to: "/login", search: { error: "session_expired" } })}
+              onClick={() =>
+                router.navigate({
+                  to: "/login",
+                  search: { error: "session_expired" },
+                })
+              }
             >
               Sign in again
             </Button>

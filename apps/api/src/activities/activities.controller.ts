@@ -33,7 +33,7 @@ interface RequestWithUser {
 }
 
 @ApiTags('activities')
-@Controller('api/activities')
+@Controller('activities')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ActivitiesController {

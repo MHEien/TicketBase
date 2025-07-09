@@ -18,7 +18,6 @@
 import { InstalledPlugin } from "./plugin-types";
 import React from "react";
 
-
 // Declare window with additional properties
 declare global {
   interface Window {
