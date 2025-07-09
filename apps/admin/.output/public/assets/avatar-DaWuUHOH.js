@@ -1,59 +1,80 @@
-import { r as reactExports, j as jsxRuntimeExports, q as createContextScope, P as Primitive, a9 as useCallbackRef, ab as useLayoutEffect2, e as cn } from './main-D54NVj6U.js';
+import {
+  r as reactExports,
+  j as jsxRuntimeExports,
+  q as createContextScope,
+  P as Primitive,
+  a9 as useCallbackRef,
+  ab as useLayoutEffect2,
+  e as cn,
+} from "./main-D54NVj6U.js";
 
 var AVATAR_NAME = "Avatar";
 var [createAvatarContext, createAvatarScope] = createContextScope(AVATAR_NAME);
 var [AvatarProvider, useAvatarContext] = createAvatarContext(AVATAR_NAME);
-var Avatar$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeAvatar, ...avatarProps } = props;
-    const [imageLoadingStatus, setImageLoadingStatus] = reactExports.useState("idle");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      AvatarProvider,
-      {
-        scope: __scopeAvatar,
-        imageLoadingStatus,
-        onImageLoadingStatusChange: setImageLoadingStatus,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { ...avatarProps, ref: forwardedRef })
-      }
-    );
-  }
-);
+var Avatar$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeAvatar, ...avatarProps } = props;
+  const [imageLoadingStatus, setImageLoadingStatus] =
+    reactExports.useState("idle");
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarProvider, {
+    scope: __scopeAvatar,
+    imageLoadingStatus,
+    onImageLoadingStatusChange: setImageLoadingStatus,
+    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, {
+      ...avatarProps,
+      ref: forwardedRef,
+    }),
+  });
+});
 Avatar$1.displayName = AVATAR_NAME;
 var IMAGE_NAME = "AvatarImage";
-var AvatarImage$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeAvatar, src, onLoadingStatusChange = () => {
-    }, ...imageProps } = props;
-    const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
-    const imageLoadingStatus = useImageLoadingStatus(src, imageProps.referrerPolicy);
-    const handleLoadingStatusChange = useCallbackRef((status) => {
-      onLoadingStatusChange(status);
-      context.onImageLoadingStatusChange(status);
-    });
-    useLayoutEffect2(() => {
-      if (imageLoadingStatus !== "idle") {
-        handleLoadingStatusChange(imageLoadingStatus);
-      }
-    }, [imageLoadingStatus, handleLoadingStatusChange]);
-    return imageLoadingStatus === "loaded" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.img, { ...imageProps, ref: forwardedRef, src }) : null;
-  }
-);
+var AvatarImage$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const {
+    __scopeAvatar,
+    src,
+    onLoadingStatusChange = () => {},
+    ...imageProps
+  } = props;
+  const context = useAvatarContext(IMAGE_NAME, __scopeAvatar);
+  const imageLoadingStatus = useImageLoadingStatus(
+    src,
+    imageProps.referrerPolicy,
+  );
+  const handleLoadingStatusChange = useCallbackRef((status) => {
+    onLoadingStatusChange(status);
+    context.onImageLoadingStatusChange(status);
+  });
+  useLayoutEffect2(() => {
+    if (imageLoadingStatus !== "idle") {
+      handleLoadingStatusChange(imageLoadingStatus);
+    }
+  }, [imageLoadingStatus, handleLoadingStatusChange]);
+  return imageLoadingStatus === "loaded"
+    ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.img, {
+        ...imageProps,
+        ref: forwardedRef,
+        src,
+      })
+    : null;
+});
 AvatarImage$1.displayName = IMAGE_NAME;
 var FALLBACK_NAME = "AvatarFallback";
-var AvatarFallback$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeAvatar, delayMs, ...fallbackProps } = props;
-    const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
-    const [canRender, setCanRender] = reactExports.useState(delayMs === void 0);
-    reactExports.useEffect(() => {
-      if (delayMs !== void 0) {
-        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
-        return () => window.clearTimeout(timerId);
-      }
-    }, [delayMs]);
-    return canRender && context.imageLoadingStatus !== "loaded" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { ...fallbackProps, ref: forwardedRef }) : null;
-  }
-);
+var AvatarFallback$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeAvatar, delayMs, ...fallbackProps } = props;
+  const context = useAvatarContext(FALLBACK_NAME, __scopeAvatar);
+  const [canRender, setCanRender] = reactExports.useState(delayMs === void 0);
+  reactExports.useEffect(() => {
+    if (delayMs !== void 0) {
+      const timerId = window.setTimeout(() => setCanRender(true), delayMs);
+      return () => window.clearTimeout(timerId);
+    }
+  }, [delayMs]);
+  return canRender && context.imageLoadingStatus !== "loaded"
+    ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, {
+        ...fallbackProps,
+        ref: forwardedRef,
+      })
+    : null;
+});
 AvatarFallback$1.displayName = FALLBACK_NAME;
 function useImageLoadingStatus(src, referrerPolicy) {
   const [loadingStatus, setLoadingStatus] = reactExports.useState("idle");
@@ -85,38 +106,35 @@ var Root = Avatar$1;
 var Image = AvatarImage$1;
 var Fallback = AvatarFallback$1;
 
-const Avatar = reactExports.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  Root,
-  {
+const Avatar = reactExports.forwardRef(({ className, ...props }, ref) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx(Root, {
     ref,
     className: cn(
       "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className
+      className,
     ),
-    ...props
-  }
-));
+    ...props,
+  }),
+);
 Avatar.displayName = Root.displayName;
-const AvatarImage = reactExports.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  Image,
-  {
+const AvatarImage = reactExports.forwardRef(({ className, ...props }, ref) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx(Image, {
     ref,
     className: cn("aspect-square h-full w-full", className),
-    ...props
-  }
-));
+    ...props,
+  }),
+);
 AvatarImage.displayName = Image.displayName;
-const AvatarFallback = reactExports.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  Fallback,
-  {
+const AvatarFallback = reactExports.forwardRef(({ className, ...props }, ref) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx(Fallback, {
     ref,
     className: cn(
       "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      className
+      className,
     ),
-    ...props
-  }
-));
+    ...props,
+  }),
+);
 AvatarFallback.displayName = Fallback.displayName;
 
 export { Avatar as A, AvatarImage as a, AvatarFallback as b };

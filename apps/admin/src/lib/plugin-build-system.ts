@@ -10,13 +10,13 @@
  * - Production builds with caching
  */
 
-import { promises as fs } from 'fs';
-import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import * as os from 'os';
-import { z } from 'zod';
-import JSZip from 'jszip';
+import { promises as fs } from "fs";
+import * as path from "path";
+import { exec } from "child_process";
+import { promisify } from "util";
+import * as os from "os";
+import { z } from "zod";
+import JSZip from "jszip";
 
 const execAsync = promisify(exec);
 
@@ -530,11 +530,11 @@ if (typeof module !== 'undefined' && module.exports) {
       // Load the ZIP buffer into JSZip
       const zip = new JSZip();
       await zip.loadAsync(zipBuffer);
-      
+
       // Process each file in the ZIP
       for (const [filename, file] of Object.entries(zip.files)) {
         if (!file.dir) {
-          const content = await file.async('nodebuffer');
+          const content = await file.async("nodebuffer");
           files.set(filename, content);
         }
       }

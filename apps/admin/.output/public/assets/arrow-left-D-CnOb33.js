@@ -1,4 +1,4 @@
-import { c as createLucideIcon } from './main-D54NVj6U.js';
+import { c as createLucideIcon } from "./main-D54NVj6U.js";
 
 /**
  * @license lucide-react v0.454.0 - ISC
@@ -7,10 +7,9 @@ import { c as createLucideIcon } from './main-D54NVj6U.js';
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const ArrowLeft = createLucideIcon("ArrowLeft", [
   ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ["path", { d: "M19 12H5", key: "x3x0zl" }],
 ]);
 
 export { ArrowLeft as A };

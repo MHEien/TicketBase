@@ -3,10 +3,14 @@
  * Renders all plugins registered for a specific extension point
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { pluginManager, type LoadedPlugin, type PluginContext } from '@/lib/plugin-manager';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  pluginManager,
+  type LoadedPlugin,
+  type PluginContext,
+} from "@/lib/plugin-manager";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PluginExtensionPointProps {
   /** The extension point to render plugins for */
@@ -20,8 +24,8 @@ interface PluginExtensionPointProps {
   /** Whether to show error states */
   showErrors?: boolean;
   /** Wrapper component for each plugin */
-  pluginWrapper?: React.ComponentType<{ 
-    plugin: LoadedPlugin; 
+  pluginWrapper?: React.ComponentType<{
+    plugin: LoadedPlugin;
     children: React.ReactNode;
     error?: string;
   }>;
@@ -43,16 +47,19 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
 }) => {
   const [plugins, setPlugins] = useState<LoadedPlugin[]>([]);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Array<{ plugin: LoadedPlugin; error: string }>>([]);
+  const [errors, setErrors] = useState<
+    Array<{ plugin: LoadedPlugin; error: string }>
+  >([]);
 
   // Get plugins for this extension point
   const availablePlugins = useMemo(() => {
-    let extensionPlugins = pluginManager.getPluginsForExtensionPoint(extensionPoint);
-    
+    let extensionPlugins =
+      pluginManager.getPluginsForExtensionPoint(extensionPoint);
+
     if (filter) {
       extensionPlugins = extensionPlugins.filter(filter);
     }
-    
+
     return extensionPlugins;
   }, [extensionPoint, filter]);
 
@@ -73,23 +80,32 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
     };
 
     const handlePluginUnloaded = ({ pluginId }: { pluginId: string }) => {
-      setPlugins(prev => prev.filter(p => p.metadata.id !== pluginId));
+      setPlugins((prev) => prev.filter((p) => p.metadata.id !== pluginId));
     };
 
-    const handlePluginError = ({ plugin, error }: { plugin: LoadedPlugin; error: any }) => {
+    const handlePluginError = ({
+      plugin,
+      error,
+    }: {
+      plugin: LoadedPlugin;
+      error: any;
+    }) => {
       if (plugin.metadata.extensionPoints?.includes(extensionPoint)) {
-        setErrors(prev => [...prev, { plugin, error: error.message || 'Unknown error' }]);
+        setErrors((prev) => [
+          ...prev,
+          { plugin, error: error.message || "Unknown error" },
+        ]);
       }
     };
 
-    pluginManager.on('plugin:loaded', handlePluginLoaded);
-    pluginManager.on('plugin:unloaded', handlePluginUnloaded);
-    pluginManager.on('plugin:error', handlePluginError);
+    pluginManager.on("plugin:loaded", handlePluginLoaded);
+    pluginManager.on("plugin:unloaded", handlePluginUnloaded);
+    pluginManager.on("plugin:error", handlePluginError);
 
     return () => {
-      pluginManager.off('plugin:loaded', handlePluginLoaded);
-      pluginManager.off('plugin:unloaded', handlePluginUnloaded);
-      pluginManager.off('plugin:error', handlePluginError);
+      pluginManager.off("plugin:loaded", handlePluginLoaded);
+      pluginManager.off("plugin:unloaded", handlePluginUnloaded);
+      pluginManager.off("plugin:error", handlePluginError);
     };
   }, [extensionPoint, availablePlugins]);
 
@@ -112,15 +128,23 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
   }
 
   return (
-    <div className="plugin-extension-point" data-extension-point={extensionPoint}>
+    <div
+      className="plugin-extension-point"
+      data-extension-point={extensionPoint}
+    >
       {/* Render error alerts */}
-      {showErrors && errors.map(({ plugin, error }, index) => (
-        <Alert key={`error-${plugin.metadata.id}-${index}`} variant="destructive" className="mb-4">
-          <AlertDescription>
-            Plugin "{plugin.metadata.name}" failed to load: {error}
-          </AlertDescription>
-        </Alert>
-      ))}
+      {showErrors &&
+        errors.map(({ plugin, error }, index) => (
+          <Alert
+            key={`error-${plugin.metadata.id}-${index}`}
+            variant="destructive"
+            className="mb-4"
+          >
+            <AlertDescription>
+              Plugin "{plugin.metadata.name}" failed to load: {error}
+            </AlertDescription>
+          </Alert>
+        ))}
 
       {/* Render plugin components */}
       {plugins.map((plugin) => {
@@ -129,14 +153,16 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
         }
 
         const Component = plugin.extensionPoints[extensionPoint];
-        
+
         try {
           const pluginElement = (
             <Component
               key={plugin.metadata.id}
               context={context}
               pluginId={plugin.metadata.id}
-              sdk={typeof window !== 'undefined' ? (window as any).PluginSDK : null}
+              sdk={
+                typeof window !== "undefined" ? (window as any).PluginSDK : null
+              }
               {...pluginProps}
             />
           );
@@ -153,17 +179,22 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
           return pluginElement;
         } catch (error) {
           console.error(`Error rendering plugin ${plugin.metadata.id}:`, error);
-          
+
           if (showErrors) {
             return (
-              <Alert key={`render-error-${plugin.metadata.id}`} variant="destructive" className="mb-4">
+              <Alert
+                key={`render-error-${plugin.metadata.id}`}
+                variant="destructive"
+                className="mb-4"
+              >
                 <AlertDescription>
-                  Error rendering plugin "{plugin.metadata.name}": {error instanceof Error ? error.message : 'Unknown error'}
+                  Error rendering plugin "{plugin.metadata.name}":{" "}
+                  {error instanceof Error ? error.message : "Unknown error"}
                 </AlertDescription>
               </Alert>
             );
           }
-          
+
           return null;
         }
       })}
@@ -174,30 +205,34 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
 /**
  * Hook to get plugins for an extension point
  */
-export const usePlugins = (extensionPoint: string, filter?: (plugin: LoadedPlugin) => boolean) => {
+export const usePlugins = (
+  extensionPoint: string,
+  filter?: (plugin: LoadedPlugin) => boolean,
+) => {
   const [plugins, setPlugins] = useState<LoadedPlugin[]>([]);
 
   useEffect(() => {
     const updatePlugins = () => {
-      let extensionPlugins = pluginManager.getPluginsForExtensionPoint(extensionPoint);
-      
+      let extensionPlugins =
+        pluginManager.getPluginsForExtensionPoint(extensionPoint);
+
       if (filter) {
         extensionPlugins = extensionPlugins.filter(filter);
       }
-      
+
       setPlugins(extensionPlugins);
     };
 
     updatePlugins();
 
     const handlePluginChange = () => updatePlugins();
-    
-    pluginManager.on('plugin:loaded', handlePluginChange);
-    pluginManager.on('plugin:unloaded', handlePluginChange);
+
+    pluginManager.on("plugin:loaded", handlePluginChange);
+    pluginManager.on("plugin:unloaded", handlePluginChange);
 
     return () => {
-      pluginManager.off('plugin:loaded', handlePluginChange);
-      pluginManager.off('plugin:unloaded', handlePluginChange);
+      pluginManager.off("plugin:loaded", handlePluginChange);
+      pluginManager.off("plugin:unloaded", handlePluginChange);
     };
   }, [extensionPoint, filter]);
 
@@ -219,22 +254,26 @@ export const usePluginLoaded = (pluginId: string) => {
       }
     };
 
-    const handlePluginUnloaded = ({ pluginId: unloadedId }: { pluginId: string }) => {
+    const handlePluginUnloaded = ({
+      pluginId: unloadedId,
+    }: {
+      pluginId: string;
+    }) => {
       if (unloadedId === pluginId) {
         setIsLoaded(false);
       }
     };
 
-    pluginManager.on('plugin:loaded', handlePluginLoaded);
-    pluginManager.on('plugin:unloaded', handlePluginUnloaded);
+    pluginManager.on("plugin:loaded", handlePluginLoaded);
+    pluginManager.on("plugin:unloaded", handlePluginUnloaded);
 
     return () => {
-      pluginManager.off('plugin:loaded', handlePluginLoaded);
-      pluginManager.off('plugin:unloaded', handlePluginUnloaded);
+      pluginManager.off("plugin:loaded", handlePluginLoaded);
+      pluginManager.off("plugin:unloaded", handlePluginUnloaded);
     };
   }, [pluginId]);
 
   return isLoaded;
 };
 
-export default PluginExtensionPoint; 
+export default PluginExtensionPoint;

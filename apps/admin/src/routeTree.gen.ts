@@ -8,667 +8,667 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
+import { createServerRootRoute } from "@tanstack/react-start/server";
 
-import { Route as rootRouteImport } from './app/__root'
-import { Route as OnboardingRouteRouteImport } from './app/onboarding/route'
-import { Route as AdminRouteRouteImport } from './app/admin/route'
-import { Route as RegisterIndexRouteImport } from './app/register/index'
-import { Route as OnboardingIndexRouteImport } from './app/onboarding/index'
-import { Route as LoginIndexRouteImport } from './app/login/index'
-import { Route as AdminIndexRouteImport } from './app/admin/index'
-import { Route as AdminUsersIndexRouteImport } from './app/admin/users/index'
-import { Route as AdminSettingsIndexRouteImport } from './app/admin/settings/index'
-import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
-import { Route as AdminDepartmentsIndexRouteImport } from './app/admin/departments/index'
-import { Route as AdminCreateEventIndexRouteImport } from './app/admin/create-event/index'
-import { Route as AdminAuthDiagnosticsIndexRouteImport } from './app/admin/auth-diagnostics/index'
-import { Route as AdminActivityIndexRouteImport } from './app/admin/activity/index'
-import { Route as AdminUsersIdIndexRouteImport } from './app/admin/users/$id/index'
-import { Route as AdminSettingsPluginsIndexRouteImport } from './app/admin/settings/plugins/index'
-import { Route as AdminEventsNewIndexRouteImport } from './app/admin/events/new/index'
-import { Route as AdminEventsIdIndexRouteImport } from './app/admin/events/$id/index'
-import { Route as AdminDepartmentsNewIndexRouteImport } from './app/admin/departments/new/index'
-import { Route as AdminDepartmentsIdIndexRouteImport } from './app/admin/departments/$id/index'
-import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin/settings/plugins/submit/index'
-import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
-import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
-import { ServerRoute as ApiRegisterRouteServerRouteImport } from './app/api/register/route'
-import { ServerRoute as ApiPluginsUploadRouteServerRouteImport } from './app/api/plugins/upload/route'
-import { ServerRoute as ApiPluginsSubmitRouteServerRouteImport } from './app/api/plugins/submit/route'
-import { ServerRoute as ApiPluginsGithubRouteServerRouteImport } from './app/api/plugins/github/route'
-import { ServerRoute as ApiOrganizationsSettingsRouteServerRouteImport } from './app/api/organizations/settings/route'
-import { ServerRoute as ApiOrganizationsDomainRouteServerRouteImport } from './app/api/organizations/domain/route'
-import { ServerRoute as ApiOrganizationsBrandingRouteServerRouteImport } from './app/api/organizations/branding/route'
-import { ServerRoute as ApiOnboardingCompleteRouteServerRouteImport } from './app/api/onboarding/complete/route'
+import { Route as rootRouteImport } from "./app/__root";
+import { Route as OnboardingRouteRouteImport } from "./app/onboarding/route";
+import { Route as AdminRouteRouteImport } from "./app/admin/route";
+import { Route as RegisterIndexRouteImport } from "./app/register/index";
+import { Route as OnboardingIndexRouteImport } from "./app/onboarding/index";
+import { Route as LoginIndexRouteImport } from "./app/login/index";
+import { Route as AdminIndexRouteImport } from "./app/admin/index";
+import { Route as AdminUsersIndexRouteImport } from "./app/admin/users/index";
+import { Route as AdminSettingsIndexRouteImport } from "./app/admin/settings/index";
+import { Route as AdminEventsIndexRouteImport } from "./app/admin/events/index";
+import { Route as AdminDepartmentsIndexRouteImport } from "./app/admin/departments/index";
+import { Route as AdminCreateEventIndexRouteImport } from "./app/admin/create-event/index";
+import { Route as AdminAuthDiagnosticsIndexRouteImport } from "./app/admin/auth-diagnostics/index";
+import { Route as AdminActivityIndexRouteImport } from "./app/admin/activity/index";
+import { Route as AdminUsersIdIndexRouteImport } from "./app/admin/users/$id/index";
+import { Route as AdminSettingsPluginsIndexRouteImport } from "./app/admin/settings/plugins/index";
+import { Route as AdminEventsNewIndexRouteImport } from "./app/admin/events/new/index";
+import { Route as AdminEventsIdIndexRouteImport } from "./app/admin/events/$id/index";
+import { Route as AdminDepartmentsNewIndexRouteImport } from "./app/admin/departments/new/index";
+import { Route as AdminDepartmentsIdIndexRouteImport } from "./app/admin/departments/$id/index";
+import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from "./app/admin/settings/plugins/submit/index";
+import { Route as AdminSettingsPluginsIdIndexRouteImport } from "./app/admin/settings/plugins/$id/index";
+import { Route as AdminEventsIdEditIndexRouteImport } from "./app/admin/events/$id/edit/index";
+import { ServerRoute as ApiRegisterRouteServerRouteImport } from "./app/api/register/route";
+import { ServerRoute as ApiPluginsUploadRouteServerRouteImport } from "./app/api/plugins/upload/route";
+import { ServerRoute as ApiPluginsSubmitRouteServerRouteImport } from "./app/api/plugins/submit/route";
+import { ServerRoute as ApiPluginsGithubRouteServerRouteImport } from "./app/api/plugins/github/route";
+import { ServerRoute as ApiOrganizationsSettingsRouteServerRouteImport } from "./app/api/organizations/settings/route";
+import { ServerRoute as ApiOrganizationsDomainRouteServerRouteImport } from "./app/api/organizations/domain/route";
+import { ServerRoute as ApiOrganizationsBrandingRouteServerRouteImport } from "./app/api/organizations/branding/route";
+import { ServerRoute as ApiOnboardingCompleteRouteServerRouteImport } from "./app/api/onboarding/complete/route";
 
-const rootServerRouteImport = createServerRootRoute()
+const rootServerRouteImport = createServerRootRoute();
 
 const OnboardingRouteRoute = OnboardingRouteRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
+  id: "/onboarding",
+  path: "/onboarding",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AdminRouteRoute = AdminRouteRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+  id: "/admin",
+  path: "/admin",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const RegisterIndexRoute = RegisterIndexRouteImport.update({
-  id: '/register/',
-  path: '/register/',
+  id: "/register/",
+  path: "/register/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => OnboardingRouteRoute,
-} as any)
+} as any);
 const LoginIndexRoute = LoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
+  id: "/login/",
+  path: "/login/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
+  id: "/users/",
+  path: "/users/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
+  id: "/settings/",
+  path: "/settings/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
-  id: '/events/',
-  path: '/events/',
+  id: "/events/",
+  path: "/events/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminDepartmentsIndexRoute = AdminDepartmentsIndexRouteImport.update({
-  id: '/departments/',
-  path: '/departments/',
+  id: "/departments/",
+  path: "/departments/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminCreateEventIndexRoute = AdminCreateEventIndexRouteImport.update({
-  id: '/create-event/',
-  path: '/create-event/',
+  id: "/create-event/",
+  path: "/create-event/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminAuthDiagnosticsIndexRoute =
   AdminAuthDiagnosticsIndexRouteImport.update({
-    id: '/auth-diagnostics/',
-    path: '/auth-diagnostics/',
+    id: "/auth-diagnostics/",
+    path: "/auth-diagnostics/",
     getParentRoute: () => AdminRouteRoute,
-  } as any)
+  } as any);
 const AdminActivityIndexRoute = AdminActivityIndexRouteImport.update({
-  id: '/activity/',
-  path: '/activity/',
+  id: "/activity/",
+  path: "/activity/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminUsersIdIndexRoute = AdminUsersIdIndexRouteImport.update({
-  id: '/users/$id/',
-  path: '/users/$id/',
+  id: "/users/$id/",
+  path: "/users/$id/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminSettingsPluginsIndexRoute =
   AdminSettingsPluginsIndexRouteImport.update({
-    id: '/settings/plugins/',
-    path: '/settings/plugins/',
+    id: "/settings/plugins/",
+    path: "/settings/plugins/",
     getParentRoute: () => AdminRouteRoute,
-  } as any)
+  } as any);
 const AdminEventsNewIndexRoute = AdminEventsNewIndexRouteImport.update({
-  id: '/events/new/',
-  path: '/events/new/',
+  id: "/events/new/",
+  path: "/events/new/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminEventsIdIndexRoute = AdminEventsIdIndexRouteImport.update({
-  id: '/events/$id/',
-  path: '/events/$id/',
+  id: "/events/$id/",
+  path: "/events/$id/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminDepartmentsNewIndexRoute =
   AdminDepartmentsNewIndexRouteImport.update({
-    id: '/departments/new/',
-    path: '/departments/new/',
+    id: "/departments/new/",
+    path: "/departments/new/",
     getParentRoute: () => AdminRouteRoute,
-  } as any)
+  } as any);
 const AdminDepartmentsIdIndexRoute = AdminDepartmentsIdIndexRouteImport.update({
-  id: '/departments/$id/',
-  path: '/departments/$id/',
+  id: "/departments/$id/",
+  path: "/departments/$id/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const AdminSettingsPluginsSubmitIndexRoute =
   AdminSettingsPluginsSubmitIndexRouteImport.update({
-    id: '/settings/plugins/submit/',
-    path: '/settings/plugins/submit/',
+    id: "/settings/plugins/submit/",
+    path: "/settings/plugins/submit/",
     getParentRoute: () => AdminRouteRoute,
-  } as any)
+  } as any);
 const AdminSettingsPluginsIdIndexRoute =
   AdminSettingsPluginsIdIndexRouteImport.update({
-    id: '/settings/plugins/$id/',
-    path: '/settings/plugins/$id/',
+    id: "/settings/plugins/$id/",
+    path: "/settings/plugins/$id/",
     getParentRoute: () => AdminRouteRoute,
-  } as any)
+  } as any);
 const AdminEventsIdEditIndexRoute = AdminEventsIdEditIndexRouteImport.update({
-  id: '/events/$id/edit/',
-  path: '/events/$id/edit/',
+  id: "/events/$id/edit/",
+  path: "/events/$id/edit/",
   getParentRoute: () => AdminRouteRoute,
-} as any)
+} as any);
 const ApiRegisterRouteServerRoute = ApiRegisterRouteServerRouteImport.update({
-  id: '/api/register',
-  path: '/api/register',
+  id: "/api/register",
+  path: "/api/register",
   getParentRoute: () => rootServerRouteImport,
-} as any)
+} as any);
 const ApiPluginsUploadRouteServerRoute =
   ApiPluginsUploadRouteServerRouteImport.update({
-    id: '/api/plugins/upload',
-    path: '/api/plugins/upload',
+    id: "/api/plugins/upload",
+    path: "/api/plugins/upload",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 const ApiPluginsSubmitRouteServerRoute =
   ApiPluginsSubmitRouteServerRouteImport.update({
-    id: '/api/plugins/submit',
-    path: '/api/plugins/submit',
+    id: "/api/plugins/submit",
+    path: "/api/plugins/submit",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 const ApiPluginsGithubRouteServerRoute =
   ApiPluginsGithubRouteServerRouteImport.update({
-    id: '/api/plugins/github',
-    path: '/api/plugins/github',
+    id: "/api/plugins/github",
+    path: "/api/plugins/github",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 const ApiOrganizationsSettingsRouteServerRoute =
   ApiOrganizationsSettingsRouteServerRouteImport.update({
-    id: '/api/organizations/settings',
-    path: '/api/organizations/settings',
+    id: "/api/organizations/settings",
+    path: "/api/organizations/settings",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 const ApiOrganizationsDomainRouteServerRoute =
   ApiOrganizationsDomainRouteServerRouteImport.update({
-    id: '/api/organizations/domain',
-    path: '/api/organizations/domain',
+    id: "/api/organizations/domain",
+    path: "/api/organizations/domain",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 const ApiOrganizationsBrandingRouteServerRoute =
   ApiOrganizationsBrandingRouteServerRouteImport.update({
-    id: '/api/organizations/branding',
-    path: '/api/organizations/branding',
+    id: "/api/organizations/branding",
+    path: "/api/organizations/branding",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 const ApiOnboardingCompleteRouteServerRoute =
   ApiOnboardingCompleteRouteServerRouteImport.update({
-    id: '/api/onboarding/complete',
-    path: '/api/onboarding/complete',
+    id: "/api/onboarding/complete",
+    path: "/api/onboarding/complete",
     getParentRoute: () => rootServerRouteImport,
-  } as any)
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/admin': typeof AdminRouteRouteWithChildren
-  '/onboarding': typeof OnboardingRouteRouteWithChildren
-  '/admin/': typeof AdminIndexRoute
-  '/login': typeof LoginIndexRoute
-  '/onboarding/': typeof OnboardingIndexRoute
-  '/register': typeof RegisterIndexRoute
-  '/admin/activity': typeof AdminActivityIndexRoute
-  '/admin/auth-diagnostics': typeof AdminAuthDiagnosticsIndexRoute
-  '/admin/create-event': typeof AdminCreateEventIndexRoute
-  '/admin/departments': typeof AdminDepartmentsIndexRoute
-  '/admin/events': typeof AdminEventsIndexRoute
-  '/admin/settings': typeof AdminSettingsIndexRoute
-  '/admin/users': typeof AdminUsersIndexRoute
-  '/admin/departments/$id': typeof AdminDepartmentsIdIndexRoute
-  '/admin/departments/new': typeof AdminDepartmentsNewIndexRoute
-  '/admin/events/$id': typeof AdminEventsIdIndexRoute
-  '/admin/events/new': typeof AdminEventsNewIndexRoute
-  '/admin/settings/plugins': typeof AdminSettingsPluginsIndexRoute
-  '/admin/users/$id': typeof AdminUsersIdIndexRoute
-  '/admin/events/$id/edit': typeof AdminEventsIdEditIndexRoute
-  '/admin/settings/plugins/$id': typeof AdminSettingsPluginsIdIndexRoute
-  '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
+  "/admin": typeof AdminRouteRouteWithChildren;
+  "/onboarding": typeof OnboardingRouteRouteWithChildren;
+  "/admin/": typeof AdminIndexRoute;
+  "/login": typeof LoginIndexRoute;
+  "/onboarding/": typeof OnboardingIndexRoute;
+  "/register": typeof RegisterIndexRoute;
+  "/admin/activity": typeof AdminActivityIndexRoute;
+  "/admin/auth-diagnostics": typeof AdminAuthDiagnosticsIndexRoute;
+  "/admin/create-event": typeof AdminCreateEventIndexRoute;
+  "/admin/departments": typeof AdminDepartmentsIndexRoute;
+  "/admin/events": typeof AdminEventsIndexRoute;
+  "/admin/settings": typeof AdminSettingsIndexRoute;
+  "/admin/users": typeof AdminUsersIndexRoute;
+  "/admin/departments/$id": typeof AdminDepartmentsIdIndexRoute;
+  "/admin/departments/new": typeof AdminDepartmentsNewIndexRoute;
+  "/admin/events/$id": typeof AdminEventsIdIndexRoute;
+  "/admin/events/new": typeof AdminEventsNewIndexRoute;
+  "/admin/settings/plugins": typeof AdminSettingsPluginsIndexRoute;
+  "/admin/users/$id": typeof AdminUsersIdIndexRoute;
+  "/admin/events/$id/edit": typeof AdminEventsIdEditIndexRoute;
+  "/admin/settings/plugins/$id": typeof AdminSettingsPluginsIdIndexRoute;
+  "/admin/settings/plugins/submit": typeof AdminSettingsPluginsSubmitIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/admin': typeof AdminIndexRoute
-  '/login': typeof LoginIndexRoute
-  '/onboarding': typeof OnboardingIndexRoute
-  '/register': typeof RegisterIndexRoute
-  '/admin/activity': typeof AdminActivityIndexRoute
-  '/admin/auth-diagnostics': typeof AdminAuthDiagnosticsIndexRoute
-  '/admin/create-event': typeof AdminCreateEventIndexRoute
-  '/admin/departments': typeof AdminDepartmentsIndexRoute
-  '/admin/events': typeof AdminEventsIndexRoute
-  '/admin/settings': typeof AdminSettingsIndexRoute
-  '/admin/users': typeof AdminUsersIndexRoute
-  '/admin/departments/$id': typeof AdminDepartmentsIdIndexRoute
-  '/admin/departments/new': typeof AdminDepartmentsNewIndexRoute
-  '/admin/events/$id': typeof AdminEventsIdIndexRoute
-  '/admin/events/new': typeof AdminEventsNewIndexRoute
-  '/admin/settings/plugins': typeof AdminSettingsPluginsIndexRoute
-  '/admin/users/$id': typeof AdminUsersIdIndexRoute
-  '/admin/events/$id/edit': typeof AdminEventsIdEditIndexRoute
-  '/admin/settings/plugins/$id': typeof AdminSettingsPluginsIdIndexRoute
-  '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
+  "/admin": typeof AdminIndexRoute;
+  "/login": typeof LoginIndexRoute;
+  "/onboarding": typeof OnboardingIndexRoute;
+  "/register": typeof RegisterIndexRoute;
+  "/admin/activity": typeof AdminActivityIndexRoute;
+  "/admin/auth-diagnostics": typeof AdminAuthDiagnosticsIndexRoute;
+  "/admin/create-event": typeof AdminCreateEventIndexRoute;
+  "/admin/departments": typeof AdminDepartmentsIndexRoute;
+  "/admin/events": typeof AdminEventsIndexRoute;
+  "/admin/settings": typeof AdminSettingsIndexRoute;
+  "/admin/users": typeof AdminUsersIndexRoute;
+  "/admin/departments/$id": typeof AdminDepartmentsIdIndexRoute;
+  "/admin/departments/new": typeof AdminDepartmentsNewIndexRoute;
+  "/admin/events/$id": typeof AdminEventsIdIndexRoute;
+  "/admin/events/new": typeof AdminEventsNewIndexRoute;
+  "/admin/settings/plugins": typeof AdminSettingsPluginsIndexRoute;
+  "/admin/users/$id": typeof AdminUsersIdIndexRoute;
+  "/admin/events/$id/edit": typeof AdminEventsIdEditIndexRoute;
+  "/admin/settings/plugins/$id": typeof AdminSettingsPluginsIdIndexRoute;
+  "/admin/settings/plugins/submit": typeof AdminSettingsPluginsSubmitIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/admin': typeof AdminRouteRouteWithChildren
-  '/onboarding': typeof OnboardingRouteRouteWithChildren
-  '/admin/': typeof AdminIndexRoute
-  '/login/': typeof LoginIndexRoute
-  '/onboarding/': typeof OnboardingIndexRoute
-  '/register/': typeof RegisterIndexRoute
-  '/admin/activity/': typeof AdminActivityIndexRoute
-  '/admin/auth-diagnostics/': typeof AdminAuthDiagnosticsIndexRoute
-  '/admin/create-event/': typeof AdminCreateEventIndexRoute
-  '/admin/departments/': typeof AdminDepartmentsIndexRoute
-  '/admin/events/': typeof AdminEventsIndexRoute
-  '/admin/settings/': typeof AdminSettingsIndexRoute
-  '/admin/users/': typeof AdminUsersIndexRoute
-  '/admin/departments/$id/': typeof AdminDepartmentsIdIndexRoute
-  '/admin/departments/new/': typeof AdminDepartmentsNewIndexRoute
-  '/admin/events/$id/': typeof AdminEventsIdIndexRoute
-  '/admin/events/new/': typeof AdminEventsNewIndexRoute
-  '/admin/settings/plugins/': typeof AdminSettingsPluginsIndexRoute
-  '/admin/users/$id/': typeof AdminUsersIdIndexRoute
-  '/admin/events/$id/edit/': typeof AdminEventsIdEditIndexRoute
-  '/admin/settings/plugins/$id/': typeof AdminSettingsPluginsIdIndexRoute
-  '/admin/settings/plugins/submit/': typeof AdminSettingsPluginsSubmitIndexRoute
+  __root__: typeof rootRouteImport;
+  "/admin": typeof AdminRouteRouteWithChildren;
+  "/onboarding": typeof OnboardingRouteRouteWithChildren;
+  "/admin/": typeof AdminIndexRoute;
+  "/login/": typeof LoginIndexRoute;
+  "/onboarding/": typeof OnboardingIndexRoute;
+  "/register/": typeof RegisterIndexRoute;
+  "/admin/activity/": typeof AdminActivityIndexRoute;
+  "/admin/auth-diagnostics/": typeof AdminAuthDiagnosticsIndexRoute;
+  "/admin/create-event/": typeof AdminCreateEventIndexRoute;
+  "/admin/departments/": typeof AdminDepartmentsIndexRoute;
+  "/admin/events/": typeof AdminEventsIndexRoute;
+  "/admin/settings/": typeof AdminSettingsIndexRoute;
+  "/admin/users/": typeof AdminUsersIndexRoute;
+  "/admin/departments/$id/": typeof AdminDepartmentsIdIndexRoute;
+  "/admin/departments/new/": typeof AdminDepartmentsNewIndexRoute;
+  "/admin/events/$id/": typeof AdminEventsIdIndexRoute;
+  "/admin/events/new/": typeof AdminEventsNewIndexRoute;
+  "/admin/settings/plugins/": typeof AdminSettingsPluginsIndexRoute;
+  "/admin/users/$id/": typeof AdminUsersIdIndexRoute;
+  "/admin/events/$id/edit/": typeof AdminEventsIdEditIndexRoute;
+  "/admin/settings/plugins/$id/": typeof AdminSettingsPluginsIdIndexRoute;
+  "/admin/settings/plugins/submit/": typeof AdminSettingsPluginsSubmitIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/admin'
-    | '/onboarding'
-    | '/admin/'
-    | '/login'
-    | '/onboarding/'
-    | '/register'
-    | '/admin/activity'
-    | '/admin/auth-diagnostics'
-    | '/admin/create-event'
-    | '/admin/departments'
-    | '/admin/events'
-    | '/admin/settings'
-    | '/admin/users'
-    | '/admin/departments/$id'
-    | '/admin/departments/new'
-    | '/admin/events/$id'
-    | '/admin/events/new'
-    | '/admin/settings/plugins'
-    | '/admin/users/$id'
-    | '/admin/events/$id/edit'
-    | '/admin/settings/plugins/$id'
-    | '/admin/settings/plugins/submit'
-  fileRoutesByTo: FileRoutesByTo
+    | "/admin"
+    | "/onboarding"
+    | "/admin/"
+    | "/login"
+    | "/onboarding/"
+    | "/register"
+    | "/admin/activity"
+    | "/admin/auth-diagnostics"
+    | "/admin/create-event"
+    | "/admin/departments"
+    | "/admin/events"
+    | "/admin/settings"
+    | "/admin/users"
+    | "/admin/departments/$id"
+    | "/admin/departments/new"
+    | "/admin/events/$id"
+    | "/admin/events/new"
+    | "/admin/settings/plugins"
+    | "/admin/users/$id"
+    | "/admin/events/$id/edit"
+    | "/admin/settings/plugins/$id"
+    | "/admin/settings/plugins/submit";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/admin'
-    | '/login'
-    | '/onboarding'
-    | '/register'
-    | '/admin/activity'
-    | '/admin/auth-diagnostics'
-    | '/admin/create-event'
-    | '/admin/departments'
-    | '/admin/events'
-    | '/admin/settings'
-    | '/admin/users'
-    | '/admin/departments/$id'
-    | '/admin/departments/new'
-    | '/admin/events/$id'
-    | '/admin/events/new'
-    | '/admin/settings/plugins'
-    | '/admin/users/$id'
-    | '/admin/events/$id/edit'
-    | '/admin/settings/plugins/$id'
-    | '/admin/settings/plugins/submit'
+    | "/admin"
+    | "/login"
+    | "/onboarding"
+    | "/register"
+    | "/admin/activity"
+    | "/admin/auth-diagnostics"
+    | "/admin/create-event"
+    | "/admin/departments"
+    | "/admin/events"
+    | "/admin/settings"
+    | "/admin/users"
+    | "/admin/departments/$id"
+    | "/admin/departments/new"
+    | "/admin/events/$id"
+    | "/admin/events/new"
+    | "/admin/settings/plugins"
+    | "/admin/users/$id"
+    | "/admin/events/$id/edit"
+    | "/admin/settings/plugins/$id"
+    | "/admin/settings/plugins/submit";
   id:
-    | '__root__'
-    | '/admin'
-    | '/onboarding'
-    | '/admin/'
-    | '/login/'
-    | '/onboarding/'
-    | '/register/'
-    | '/admin/activity/'
-    | '/admin/auth-diagnostics/'
-    | '/admin/create-event/'
-    | '/admin/departments/'
-    | '/admin/events/'
-    | '/admin/settings/'
-    | '/admin/users/'
-    | '/admin/departments/$id/'
-    | '/admin/departments/new/'
-    | '/admin/events/$id/'
-    | '/admin/events/new/'
-    | '/admin/settings/plugins/'
-    | '/admin/users/$id/'
-    | '/admin/events/$id/edit/'
-    | '/admin/settings/plugins/$id/'
-    | '/admin/settings/plugins/submit/'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/admin"
+    | "/onboarding"
+    | "/admin/"
+    | "/login/"
+    | "/onboarding/"
+    | "/register/"
+    | "/admin/activity/"
+    | "/admin/auth-diagnostics/"
+    | "/admin/create-event/"
+    | "/admin/departments/"
+    | "/admin/events/"
+    | "/admin/settings/"
+    | "/admin/users/"
+    | "/admin/departments/$id/"
+    | "/admin/departments/new/"
+    | "/admin/events/$id/"
+    | "/admin/events/new/"
+    | "/admin/settings/plugins/"
+    | "/admin/users/$id/"
+    | "/admin/events/$id/edit/"
+    | "/admin/settings/plugins/$id/"
+    | "/admin/settings/plugins/submit/";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
-  LoginIndexRoute: typeof LoginIndexRoute
-  RegisterIndexRoute: typeof RegisterIndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren;
+  OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren;
+  LoginIndexRoute: typeof LoginIndexRoute;
+  RegisterIndexRoute: typeof RegisterIndexRoute;
 }
 export interface FileServerRoutesByFullPath {
-  '/api/register': typeof ApiRegisterRouteServerRoute
-  '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
-  '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
-  '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
-  '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
-  '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
-  '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
-  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
+  "/api/register": typeof ApiRegisterRouteServerRoute;
+  "/api/onboarding/complete": typeof ApiOnboardingCompleteRouteServerRoute;
+  "/api/organizations/branding": typeof ApiOrganizationsBrandingRouteServerRoute;
+  "/api/organizations/domain": typeof ApiOrganizationsDomainRouteServerRoute;
+  "/api/organizations/settings": typeof ApiOrganizationsSettingsRouteServerRoute;
+  "/api/plugins/github": typeof ApiPluginsGithubRouteServerRoute;
+  "/api/plugins/submit": typeof ApiPluginsSubmitRouteServerRoute;
+  "/api/plugins/upload": typeof ApiPluginsUploadRouteServerRoute;
 }
 export interface FileServerRoutesByTo {
-  '/api/register': typeof ApiRegisterRouteServerRoute
-  '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
-  '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
-  '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
-  '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
-  '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
-  '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
-  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
+  "/api/register": typeof ApiRegisterRouteServerRoute;
+  "/api/onboarding/complete": typeof ApiOnboardingCompleteRouteServerRoute;
+  "/api/organizations/branding": typeof ApiOrganizationsBrandingRouteServerRoute;
+  "/api/organizations/domain": typeof ApiOrganizationsDomainRouteServerRoute;
+  "/api/organizations/settings": typeof ApiOrganizationsSettingsRouteServerRoute;
+  "/api/plugins/github": typeof ApiPluginsGithubRouteServerRoute;
+  "/api/plugins/submit": typeof ApiPluginsSubmitRouteServerRoute;
+  "/api/plugins/upload": typeof ApiPluginsUploadRouteServerRoute;
 }
 export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/register': typeof ApiRegisterRouteServerRoute
-  '/api/onboarding/complete': typeof ApiOnboardingCompleteRouteServerRoute
-  '/api/organizations/branding': typeof ApiOrganizationsBrandingRouteServerRoute
-  '/api/organizations/domain': typeof ApiOrganizationsDomainRouteServerRoute
-  '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
-  '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
-  '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
-  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
+  __root__: typeof rootServerRouteImport;
+  "/api/register": typeof ApiRegisterRouteServerRoute;
+  "/api/onboarding/complete": typeof ApiOnboardingCompleteRouteServerRoute;
+  "/api/organizations/branding": typeof ApiOrganizationsBrandingRouteServerRoute;
+  "/api/organizations/domain": typeof ApiOrganizationsDomainRouteServerRoute;
+  "/api/organizations/settings": typeof ApiOrganizationsSettingsRouteServerRoute;
+  "/api/plugins/github": typeof ApiPluginsGithubRouteServerRoute;
+  "/api/plugins/submit": typeof ApiPluginsSubmitRouteServerRoute;
+  "/api/plugins/upload": typeof ApiPluginsUploadRouteServerRoute;
 }
 export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
+  fileServerRoutesByFullPath: FileServerRoutesByFullPath;
   fullPaths:
-    | '/api/register'
-    | '/api/onboarding/complete'
-    | '/api/organizations/branding'
-    | '/api/organizations/domain'
-    | '/api/organizations/settings'
-    | '/api/plugins/github'
-    | '/api/plugins/submit'
-    | '/api/plugins/upload'
-  fileServerRoutesByTo: FileServerRoutesByTo
+    | "/api/register"
+    | "/api/onboarding/complete"
+    | "/api/organizations/branding"
+    | "/api/organizations/domain"
+    | "/api/organizations/settings"
+    | "/api/plugins/github"
+    | "/api/plugins/submit"
+    | "/api/plugins/upload";
+  fileServerRoutesByTo: FileServerRoutesByTo;
   to:
-    | '/api/register'
-    | '/api/onboarding/complete'
-    | '/api/organizations/branding'
-    | '/api/organizations/domain'
-    | '/api/organizations/settings'
-    | '/api/plugins/github'
-    | '/api/plugins/submit'
-    | '/api/plugins/upload'
+    | "/api/register"
+    | "/api/onboarding/complete"
+    | "/api/organizations/branding"
+    | "/api/organizations/domain"
+    | "/api/organizations/settings"
+    | "/api/plugins/github"
+    | "/api/plugins/submit"
+    | "/api/plugins/upload";
   id:
-    | '__root__'
-    | '/api/register'
-    | '/api/onboarding/complete'
-    | '/api/organizations/branding'
-    | '/api/organizations/domain'
-    | '/api/organizations/settings'
-    | '/api/plugins/github'
-    | '/api/plugins/submit'
-    | '/api/plugins/upload'
-  fileServerRoutesById: FileServerRoutesById
+    | "__root__"
+    | "/api/register"
+    | "/api/onboarding/complete"
+    | "/api/organizations/branding"
+    | "/api/organizations/domain"
+    | "/api/organizations/settings"
+    | "/api/plugins/github"
+    | "/api/plugins/submit"
+    | "/api/plugins/upload";
+  fileServerRoutesById: FileServerRoutesById;
 }
 export interface RootServerRouteChildren {
-  ApiRegisterRouteServerRoute: typeof ApiRegisterRouteServerRoute
-  ApiOnboardingCompleteRouteServerRoute: typeof ApiOnboardingCompleteRouteServerRoute
-  ApiOrganizationsBrandingRouteServerRoute: typeof ApiOrganizationsBrandingRouteServerRoute
-  ApiOrganizationsDomainRouteServerRoute: typeof ApiOrganizationsDomainRouteServerRoute
-  ApiOrganizationsSettingsRouteServerRoute: typeof ApiOrganizationsSettingsRouteServerRoute
-  ApiPluginsGithubRouteServerRoute: typeof ApiPluginsGithubRouteServerRoute
-  ApiPluginsSubmitRouteServerRoute: typeof ApiPluginsSubmitRouteServerRoute
-  ApiPluginsUploadRouteServerRoute: typeof ApiPluginsUploadRouteServerRoute
+  ApiRegisterRouteServerRoute: typeof ApiRegisterRouteServerRoute;
+  ApiOnboardingCompleteRouteServerRoute: typeof ApiOnboardingCompleteRouteServerRoute;
+  ApiOrganizationsBrandingRouteServerRoute: typeof ApiOrganizationsBrandingRouteServerRoute;
+  ApiOrganizationsDomainRouteServerRoute: typeof ApiOrganizationsDomainRouteServerRoute;
+  ApiOrganizationsSettingsRouteServerRoute: typeof ApiOrganizationsSettingsRouteServerRoute;
+  ApiPluginsGithubRouteServerRoute: typeof ApiPluginsGithubRouteServerRoute;
+  ApiPluginsSubmitRouteServerRoute: typeof ApiPluginsSubmitRouteServerRoute;
+  ApiPluginsUploadRouteServerRoute: typeof ApiPluginsUploadRouteServerRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/register/': {
-      id: '/register/'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding/': {
-      id: '/onboarding/'
-      path: '/'
-      fullPath: '/onboarding/'
-      preLoaderRoute: typeof OnboardingIndexRouteImport
-      parentRoute: typeof OnboardingRouteRoute
-    }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/users/': {
-      id: '/admin/users/'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/settings/': {
-      id: '/admin/settings/'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/events/': {
-      id: '/admin/events/'
-      path: '/events'
-      fullPath: '/admin/events'
-      preLoaderRoute: typeof AdminEventsIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/departments/': {
-      id: '/admin/departments/'
-      path: '/departments'
-      fullPath: '/admin/departments'
-      preLoaderRoute: typeof AdminDepartmentsIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/create-event/': {
-      id: '/admin/create-event/'
-      path: '/create-event'
-      fullPath: '/admin/create-event'
-      preLoaderRoute: typeof AdminCreateEventIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/auth-diagnostics/': {
-      id: '/admin/auth-diagnostics/'
-      path: '/auth-diagnostics'
-      fullPath: '/admin/auth-diagnostics'
-      preLoaderRoute: typeof AdminAuthDiagnosticsIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/activity/': {
-      id: '/admin/activity/'
-      path: '/activity'
-      fullPath: '/admin/activity'
-      preLoaderRoute: typeof AdminActivityIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/users/$id/': {
-      id: '/admin/users/$id/'
-      path: '/users/$id'
-      fullPath: '/admin/users/$id'
-      preLoaderRoute: typeof AdminUsersIdIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/settings/plugins/': {
-      id: '/admin/settings/plugins/'
-      path: '/settings/plugins'
-      fullPath: '/admin/settings/plugins'
-      preLoaderRoute: typeof AdminSettingsPluginsIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/events/new/': {
-      id: '/admin/events/new/'
-      path: '/events/new'
-      fullPath: '/admin/events/new'
-      preLoaderRoute: typeof AdminEventsNewIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/events/$id/': {
-      id: '/admin/events/$id/'
-      path: '/events/$id'
-      fullPath: '/admin/events/$id'
-      preLoaderRoute: typeof AdminEventsIdIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/departments/new/': {
-      id: '/admin/departments/new/'
-      path: '/departments/new'
-      fullPath: '/admin/departments/new'
-      preLoaderRoute: typeof AdminDepartmentsNewIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/departments/$id/': {
-      id: '/admin/departments/$id/'
-      path: '/departments/$id'
-      fullPath: '/admin/departments/$id'
-      preLoaderRoute: typeof AdminDepartmentsIdIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/settings/plugins/submit/': {
-      id: '/admin/settings/plugins/submit/'
-      path: '/settings/plugins/submit'
-      fullPath: '/admin/settings/plugins/submit'
-      preLoaderRoute: typeof AdminSettingsPluginsSubmitIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/settings/plugins/$id/': {
-      id: '/admin/settings/plugins/$id/'
-      path: '/settings/plugins/$id'
-      fullPath: '/admin/settings/plugins/$id'
-      preLoaderRoute: typeof AdminSettingsPluginsIdIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/events/$id/edit/': {
-      id: '/admin/events/$id/edit/'
-      path: '/events/$id/edit'
-      fullPath: '/admin/events/$id/edit'
-      preLoaderRoute: typeof AdminEventsIdEditIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
+    "/onboarding": {
+      id: "/onboarding";
+      path: "/onboarding";
+      fullPath: "/onboarding";
+      preLoaderRoute: typeof OnboardingRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/admin": {
+      id: "/admin";
+      path: "/admin";
+      fullPath: "/admin";
+      preLoaderRoute: typeof AdminRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/register/": {
+      id: "/register/";
+      path: "/register";
+      fullPath: "/register";
+      preLoaderRoute: typeof RegisterIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/onboarding/": {
+      id: "/onboarding/";
+      path: "/";
+      fullPath: "/onboarding/";
+      preLoaderRoute: typeof OnboardingIndexRouteImport;
+      parentRoute: typeof OnboardingRouteRoute;
+    };
+    "/login/": {
+      id: "/login/";
+      path: "/login";
+      fullPath: "/login";
+      preLoaderRoute: typeof LoginIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/admin/": {
+      id: "/admin/";
+      path: "/";
+      fullPath: "/admin/";
+      preLoaderRoute: typeof AdminIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/users/": {
+      id: "/admin/users/";
+      path: "/users";
+      fullPath: "/admin/users";
+      preLoaderRoute: typeof AdminUsersIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/settings/": {
+      id: "/admin/settings/";
+      path: "/settings";
+      fullPath: "/admin/settings";
+      preLoaderRoute: typeof AdminSettingsIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/events/": {
+      id: "/admin/events/";
+      path: "/events";
+      fullPath: "/admin/events";
+      preLoaderRoute: typeof AdminEventsIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/departments/": {
+      id: "/admin/departments/";
+      path: "/departments";
+      fullPath: "/admin/departments";
+      preLoaderRoute: typeof AdminDepartmentsIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/create-event/": {
+      id: "/admin/create-event/";
+      path: "/create-event";
+      fullPath: "/admin/create-event";
+      preLoaderRoute: typeof AdminCreateEventIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/auth-diagnostics/": {
+      id: "/admin/auth-diagnostics/";
+      path: "/auth-diagnostics";
+      fullPath: "/admin/auth-diagnostics";
+      preLoaderRoute: typeof AdminAuthDiagnosticsIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/activity/": {
+      id: "/admin/activity/";
+      path: "/activity";
+      fullPath: "/admin/activity";
+      preLoaderRoute: typeof AdminActivityIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/users/$id/": {
+      id: "/admin/users/$id/";
+      path: "/users/$id";
+      fullPath: "/admin/users/$id";
+      preLoaderRoute: typeof AdminUsersIdIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/settings/plugins/": {
+      id: "/admin/settings/plugins/";
+      path: "/settings/plugins";
+      fullPath: "/admin/settings/plugins";
+      preLoaderRoute: typeof AdminSettingsPluginsIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/events/new/": {
+      id: "/admin/events/new/";
+      path: "/events/new";
+      fullPath: "/admin/events/new";
+      preLoaderRoute: typeof AdminEventsNewIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/events/$id/": {
+      id: "/admin/events/$id/";
+      path: "/events/$id";
+      fullPath: "/admin/events/$id";
+      preLoaderRoute: typeof AdminEventsIdIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/departments/new/": {
+      id: "/admin/departments/new/";
+      path: "/departments/new";
+      fullPath: "/admin/departments/new";
+      preLoaderRoute: typeof AdminDepartmentsNewIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/departments/$id/": {
+      id: "/admin/departments/$id/";
+      path: "/departments/$id";
+      fullPath: "/admin/departments/$id";
+      preLoaderRoute: typeof AdminDepartmentsIdIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/settings/plugins/submit/": {
+      id: "/admin/settings/plugins/submit/";
+      path: "/settings/plugins/submit";
+      fullPath: "/admin/settings/plugins/submit";
+      preLoaderRoute: typeof AdminSettingsPluginsSubmitIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/settings/plugins/$id/": {
+      id: "/admin/settings/plugins/$id/";
+      path: "/settings/plugins/$id";
+      fullPath: "/admin/settings/plugins/$id";
+      preLoaderRoute: typeof AdminSettingsPluginsIdIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
+    "/admin/events/$id/edit/": {
+      id: "/admin/events/$id/edit/";
+      path: "/events/$id/edit";
+      fullPath: "/admin/events/$id/edit";
+      preLoaderRoute: typeof AdminEventsIdEditIndexRouteImport;
+      parentRoute: typeof AdminRouteRoute;
+    };
   }
 }
-declare module '@tanstack/react-start/server' {
+declare module "@tanstack/react-start/server" {
   interface ServerFileRoutesByPath {
-    '/api/register': {
-      id: '/api/register'
-      path: '/api/register'
-      fullPath: '/api/register'
-      preLoaderRoute: typeof ApiRegisterRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/plugins/upload': {
-      id: '/api/plugins/upload'
-      path: '/api/plugins/upload'
-      fullPath: '/api/plugins/upload'
-      preLoaderRoute: typeof ApiPluginsUploadRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/plugins/submit': {
-      id: '/api/plugins/submit'
-      path: '/api/plugins/submit'
-      fullPath: '/api/plugins/submit'
-      preLoaderRoute: typeof ApiPluginsSubmitRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/plugins/github': {
-      id: '/api/plugins/github'
-      path: '/api/plugins/github'
-      fullPath: '/api/plugins/github'
-      preLoaderRoute: typeof ApiPluginsGithubRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/organizations/settings': {
-      id: '/api/organizations/settings'
-      path: '/api/organizations/settings'
-      fullPath: '/api/organizations/settings'
-      preLoaderRoute: typeof ApiOrganizationsSettingsRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/organizations/domain': {
-      id: '/api/organizations/domain'
-      path: '/api/organizations/domain'
-      fullPath: '/api/organizations/domain'
-      preLoaderRoute: typeof ApiOrganizationsDomainRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/organizations/branding': {
-      id: '/api/organizations/branding'
-      path: '/api/organizations/branding'
-      fullPath: '/api/organizations/branding'
-      preLoaderRoute: typeof ApiOrganizationsBrandingRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/onboarding/complete': {
-      id: '/api/onboarding/complete'
-      path: '/api/onboarding/complete'
-      fullPath: '/api/onboarding/complete'
-      preLoaderRoute: typeof ApiOnboardingCompleteRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
+    "/api/register": {
+      id: "/api/register";
+      path: "/api/register";
+      fullPath: "/api/register";
+      preLoaderRoute: typeof ApiRegisterRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/plugins/upload": {
+      id: "/api/plugins/upload";
+      path: "/api/plugins/upload";
+      fullPath: "/api/plugins/upload";
+      preLoaderRoute: typeof ApiPluginsUploadRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/plugins/submit": {
+      id: "/api/plugins/submit";
+      path: "/api/plugins/submit";
+      fullPath: "/api/plugins/submit";
+      preLoaderRoute: typeof ApiPluginsSubmitRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/plugins/github": {
+      id: "/api/plugins/github";
+      path: "/api/plugins/github";
+      fullPath: "/api/plugins/github";
+      preLoaderRoute: typeof ApiPluginsGithubRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/organizations/settings": {
+      id: "/api/organizations/settings";
+      path: "/api/organizations/settings";
+      fullPath: "/api/organizations/settings";
+      preLoaderRoute: typeof ApiOrganizationsSettingsRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/organizations/domain": {
+      id: "/api/organizations/domain";
+      path: "/api/organizations/domain";
+      fullPath: "/api/organizations/domain";
+      preLoaderRoute: typeof ApiOrganizationsDomainRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/organizations/branding": {
+      id: "/api/organizations/branding";
+      path: "/api/organizations/branding";
+      fullPath: "/api/organizations/branding";
+      preLoaderRoute: typeof ApiOrganizationsBrandingRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
+    "/api/onboarding/complete": {
+      id: "/api/onboarding/complete";
+      path: "/api/onboarding/complete";
+      fullPath: "/api/onboarding/complete";
+      preLoaderRoute: typeof ApiOnboardingCompleteRouteServerRouteImport;
+      parentRoute: typeof rootServerRouteImport;
+    };
   }
 }
 
 interface AdminRouteRouteChildren {
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminActivityIndexRoute: typeof AdminActivityIndexRoute
-  AdminAuthDiagnosticsIndexRoute: typeof AdminAuthDiagnosticsIndexRoute
-  AdminCreateEventIndexRoute: typeof AdminCreateEventIndexRoute
-  AdminDepartmentsIndexRoute: typeof AdminDepartmentsIndexRoute
-  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
-  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
-  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
-  AdminDepartmentsIdIndexRoute: typeof AdminDepartmentsIdIndexRoute
-  AdminDepartmentsNewIndexRoute: typeof AdminDepartmentsNewIndexRoute
-  AdminEventsIdIndexRoute: typeof AdminEventsIdIndexRoute
-  AdminEventsNewIndexRoute: typeof AdminEventsNewIndexRoute
-  AdminSettingsPluginsIndexRoute: typeof AdminSettingsPluginsIndexRoute
-  AdminUsersIdIndexRoute: typeof AdminUsersIdIndexRoute
-  AdminEventsIdEditIndexRoute: typeof AdminEventsIdEditIndexRoute
-  AdminSettingsPluginsIdIndexRoute: typeof AdminSettingsPluginsIdIndexRoute
-  AdminSettingsPluginsSubmitIndexRoute: typeof AdminSettingsPluginsSubmitIndexRoute
+  AdminIndexRoute: typeof AdminIndexRoute;
+  AdminActivityIndexRoute: typeof AdminActivityIndexRoute;
+  AdminAuthDiagnosticsIndexRoute: typeof AdminAuthDiagnosticsIndexRoute;
+  AdminCreateEventIndexRoute: typeof AdminCreateEventIndexRoute;
+  AdminDepartmentsIndexRoute: typeof AdminDepartmentsIndexRoute;
+  AdminEventsIndexRoute: typeof AdminEventsIndexRoute;
+  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute;
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute;
+  AdminDepartmentsIdIndexRoute: typeof AdminDepartmentsIdIndexRoute;
+  AdminDepartmentsNewIndexRoute: typeof AdminDepartmentsNewIndexRoute;
+  AdminEventsIdIndexRoute: typeof AdminEventsIdIndexRoute;
+  AdminEventsNewIndexRoute: typeof AdminEventsNewIndexRoute;
+  AdminSettingsPluginsIndexRoute: typeof AdminSettingsPluginsIndexRoute;
+  AdminUsersIdIndexRoute: typeof AdminUsersIdIndexRoute;
+  AdminEventsIdEditIndexRoute: typeof AdminEventsIdEditIndexRoute;
+  AdminSettingsPluginsIdIndexRoute: typeof AdminSettingsPluginsIdIndexRoute;
+  AdminSettingsPluginsSubmitIndexRoute: typeof AdminSettingsPluginsSubmitIndexRoute;
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
@@ -689,33 +689,33 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminEventsIdEditIndexRoute: AdminEventsIdEditIndexRoute,
   AdminSettingsPluginsIdIndexRoute: AdminSettingsPluginsIdIndexRoute,
   AdminSettingsPluginsSubmitIndexRoute: AdminSettingsPluginsSubmitIndexRoute,
-}
+};
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
-)
+);
 
 interface OnboardingRouteRouteChildren {
-  OnboardingIndexRoute: typeof OnboardingIndexRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute;
 }
 
 const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
   OnboardingIndexRoute: OnboardingIndexRoute,
-}
+};
 
 const OnboardingRouteRouteWithChildren = OnboardingRouteRoute._addFileChildren(
   OnboardingRouteRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
   LoginIndexRoute: LoginIndexRoute,
   RegisterIndexRoute: RegisterIndexRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiRegisterRouteServerRoute: ApiRegisterRouteServerRoute,
   ApiOnboardingCompleteRouteServerRoute: ApiOnboardingCompleteRouteServerRoute,
@@ -728,7 +728,7 @@ const rootServerRouteChildren: RootServerRouteChildren = {
   ApiPluginsGithubRouteServerRoute: ApiPluginsGithubRouteServerRoute,
   ApiPluginsSubmitRouteServerRoute: ApiPluginsSubmitRouteServerRoute,
   ApiPluginsUploadRouteServerRoute: ApiPluginsUploadRouteServerRoute,
-}
+};
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()
+  ._addFileTypes<FileServerRouteTypes>();

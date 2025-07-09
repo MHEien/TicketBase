@@ -40,7 +40,8 @@ export function PluginWidgetArea({
         await pluginLoader.loadInstalledPlugins();
 
         // Get plugins for this widget area (using extension point)
-        const relevantPlugins = pluginManager.getPluginsForExtensionPoint(areaName);
+        const relevantPlugins =
+          pluginManager.getPluginsForExtensionPoint(areaName);
 
         const loadedWidgets = [];
 

@@ -1,21 +1,88 @@
-import { c as createLucideIcon, a as useRouter, r as reactExports, j as jsxRuntimeExports, B as Button, I as Input, S as Select, K as SelectTrigger, L as SelectValue, M as SelectContent, N as SelectItem, T as Card, $ as CardHeader, a1 as CardTitle, a2 as CardDescription, _ as CardContent, b as Badge, a5 as Label, Q as Switch, a6 as Check } from './main-D54NVj6U.js';
-import { A as Avatar, a as AvatarImage, b as AvatarFallback } from './avatar-DaWuUHOH.js';
-import { D as DropdownMenu, a as DropdownMenuTrigger, b as DropdownMenuContent, e as DropdownMenuItem, d as DropdownMenuSeparator } from './dropdown-menu-Cc3wlmA0.js';
-import { T as Table, a as TableHeader, b as TableRow, c as TableHead, d as TableBody, e as TableCell } from './table-DDJ6ebWY.js';
-import { D as Dialog, a as DialogContent, b as DialogHeader, c as DialogTitle, d as DialogDescription, e as DialogFooter } from './dialog-DgPdtaM4.js';
-import { T as Tabs, a as TabsList, b as TabsTrigger, c as TabsContent } from './tabs-DWHFZA6o.js';
-import { g as getAllUsers, a as availablePermissions, U as UserCog } from './user-data-D8whqKuv.js';
-import { u as useToast } from './use-toast-nfgjIcjL.js';
-import { S as Search } from './search-BS6yzFHd.js';
-import { F as Filter } from './filter-CxrQxdgK.js';
-import { t as toDate, c as constructFrom, n as normalizeDates, g as getTimezoneOffsetInMilliseconds, a as getDefaultOptions, e as enUS, m as minutesInDay, b as minutesInMonth, f as format } from './format-DdtoHLaj.js';
-import { e as endOfMonth, d as differenceInCalendarMonths } from './endOfMonth-Dv1-wySt.js';
-import { E as Ellipsis } from './ellipsis-pC1tMovR.js';
-import { T as Trash2 } from './trash-2-N6yWrD4G.js';
-import { S as Shield } from './shield-BJrRhV_W.js';
-import './index-DACOVT_t.js';
-import './chevron-right-VQ7fFc8Y.js';
-import './index-B18GAnIN.js';
+import {
+  c as createLucideIcon,
+  a as useRouter,
+  r as reactExports,
+  j as jsxRuntimeExports,
+  B as Button,
+  I as Input,
+  S as Select,
+  K as SelectTrigger,
+  L as SelectValue,
+  M as SelectContent,
+  N as SelectItem,
+  T as Card,
+  $ as CardHeader,
+  a1 as CardTitle,
+  a2 as CardDescription,
+  _ as CardContent,
+  b as Badge,
+  a5 as Label,
+  Q as Switch,
+  a6 as Check,
+} from "./main-D54NVj6U.js";
+import {
+  A as Avatar,
+  a as AvatarImage,
+  b as AvatarFallback,
+} from "./avatar-DaWuUHOH.js";
+import {
+  D as DropdownMenu,
+  a as DropdownMenuTrigger,
+  b as DropdownMenuContent,
+  e as DropdownMenuItem,
+  d as DropdownMenuSeparator,
+} from "./dropdown-menu-Cc3wlmA0.js";
+import {
+  T as Table,
+  a as TableHeader,
+  b as TableRow,
+  c as TableHead,
+  d as TableBody,
+  e as TableCell,
+} from "./table-DDJ6ebWY.js";
+import {
+  D as Dialog,
+  a as DialogContent,
+  b as DialogHeader,
+  c as DialogTitle,
+  d as DialogDescription,
+  e as DialogFooter,
+} from "./dialog-DgPdtaM4.js";
+import {
+  T as Tabs,
+  a as TabsList,
+  b as TabsTrigger,
+  c as TabsContent,
+} from "./tabs-DWHFZA6o.js";
+import {
+  g as getAllUsers,
+  a as availablePermissions,
+  U as UserCog,
+} from "./user-data-D8whqKuv.js";
+import { u as useToast } from "./use-toast-nfgjIcjL.js";
+import { S as Search } from "./search-BS6yzFHd.js";
+import { F as Filter } from "./filter-CxrQxdgK.js";
+import {
+  t as toDate,
+  c as constructFrom,
+  n as normalizeDates,
+  g as getTimezoneOffsetInMilliseconds,
+  a as getDefaultOptions,
+  e as enUS,
+  m as minutesInDay,
+  b as minutesInMonth,
+  f as format,
+} from "./format-DdtoHLaj.js";
+import {
+  e as endOfMonth,
+  d as differenceInCalendarMonths,
+} from "./endOfMonth-Dv1-wySt.js";
+import { E as Ellipsis } from "./ellipsis-pC1tMovR.js";
+import { T as Trash2 } from "./trash-2-N6yWrD4G.js";
+import { S as Shield } from "./shield-BJrRhV_W.js";
+import "./index-DACOVT_t.js";
+import "./chevron-right-VQ7fFc8Y.js";
+import "./index-B18GAnIN.js";
 
 /**
  * @license lucide-react v0.454.0 - ISC
@@ -24,12 +91,11 @@ import './index-B18GAnIN.js';
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const ArrowUpDown = createLucideIcon("ArrowUpDown", [
   ["path", { d: "m21 16-4 4-4-4", key: "f6ql7i" }],
   ["path", { d: "M17 20V4", key: "1ejh1v" }],
   ["path", { d: "m3 8 4-4 4 4", key: "11wl7u" }],
-  ["path", { d: "M7 4v16", key: "1glfcx" }]
+  ["path", { d: "M7 4v16", key: "1glfcx" }],
 ]);
 
 /**
@@ -38,18 +104,17 @@ const ArrowUpDown = createLucideIcon("ArrowUpDown", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-
 
 const ShieldAlert = createLucideIcon("ShieldAlert", [
   [
     "path",
     {
       d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
+      key: "oel41y",
+    },
   ],
   ["path", { d: "M12 8v4", key: "1got3b" }],
-  ["path", { d: "M12 16h.01", key: "1drbdi" }]
+  ["path", { d: "M12 16h.01", key: "1drbdi" }],
 ]);
 
 /**
@@ -58,17 +123,16 @@ const ShieldAlert = createLucideIcon("ShieldAlert", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-
 
 const ShieldCheck = createLucideIcon("ShieldCheck", [
   [
     "path",
     {
       d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
+      key: "oel41y",
+    },
   ],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }],
 ]);
 
 /**
@@ -77,18 +141,17 @@ const ShieldCheck = createLucideIcon("ShieldCheck", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-
 
 const ShieldQuestion = createLucideIcon("ShieldQuestion", [
   [
     "path",
     {
       d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
+      key: "oel41y",
+    },
   ],
   ["path", { d: "M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3", key: "mhlwft" }],
-  ["path", { d: "M12 17h.01", key: "p32p05" }]
+  ["path", { d: "M12 17h.01", key: "p32p05" }],
 ]);
 
 /**
@@ -98,12 +161,11 @@ const ShieldQuestion = createLucideIcon("ShieldQuestion", [
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const UserPlus = createLucideIcon("UserPlus", [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
   ["line", { x1: "19", x2: "19", y1: "8", y2: "14", key: "1bvyxn" }],
-  ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }]
+  ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }],
 ]);
 
 /**
@@ -634,13 +696,19 @@ function formatDistanceToNow(date, options) {
 }
 
 function Checkbox(props) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", className: "h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary", ...props }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+    className: "flex items-center",
+    children: /* @__PURE__ */ jsxRuntimeExports.jsx("input", {
+      type: "checkbox",
+      className:
+        "h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary",
+      ...props,
+    }),
+  });
 }
 const SplitComponent = function UsersPage() {
   useRouter();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = reactExports.useState("");
   const [filterRole, setFilterRole] = reactExports.useState(null);
   const [filterStatus, setFilterStatus] = reactExports.useState(null);
@@ -652,7 +720,10 @@ const SplitComponent = function UsersPage() {
   const [isDeleteUserOpen, setIsDeleteUserOpen] = reactExports.useState(false);
   const allUsers = getAllUsers();
   const filteredUsers = allUsers.filter((user) => {
-    const matchesSearch = searchQuery === "" || user.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      searchQuery === "" ||
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = !filterRole || user.role === filterRole;
     const matchesStatus = !filterStatus || user.status === filterStatus;
     return matchesSearch && matchesRole && matchesStatus;
@@ -664,7 +735,8 @@ const SplitComponent = function UsersPage() {
     } else if (sortBy === "role") {
       comparison = a.role.localeCompare(b.role);
     } else if (sortBy === "lastActive") {
-      comparison = new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime();
+      comparison =
+        new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime();
     }
     return sortOrder === "asc" ? comparison : -comparison;
   });
@@ -679,7 +751,7 @@ const SplitComponent = function UsersPage() {
   const handleAddUser = () => {
     toast({
       title: "User Added",
-      description: "The new user has been added successfully."
+      description: "The new user has been added successfully.",
     });
     setIsAddUserOpen(false);
   };
@@ -687,7 +759,7 @@ const SplitComponent = function UsersPage() {
     if (!selectedUser) return;
     toast({
       title: "User Updated",
-      description: `${selectedUser.name}'s information has been updated.`
+      description: `${selectedUser.name}'s information has been updated.`,
     });
     setIsEditUserOpen(false);
   };
@@ -696,7 +768,7 @@ const SplitComponent = function UsersPage() {
     toast({
       title: "User Deleted",
       description: `${selectedUser.name} has been removed from the platform.`,
-      variant: "destructive"
+      variant: "destructive",
     });
     setIsDeleteUserOpen(false);
   };
@@ -719,15 +791,25 @@ const SplitComponent = function UsersPage() {
   const getRoleIcon = (role) => {
     switch (role) {
       case "owner":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "h-4 w-4" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, {
+          className: "h-4 w-4",
+        });
       case "admin":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "h-4 w-4" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, {
+          className: "h-4 w-4",
+        });
       case "manager":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "h-4 w-4" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, {
+          className: "h-4 w-4",
+        });
       case "support":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(UserCog, { className: "h-4 w-4" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(UserCog, {
+          className: "h-4 w-4",
+        });
       case "analyst":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldQuestion, { className: "h-4 w-4" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldQuestion, {
+          className: "h-4 w-4",
+        });
       default:
         return null;
     }
@@ -744,306 +826,1181 @@ const SplitComponent = function UsersPage() {
         return "secondary";
     }
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto py-8", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-bold", children: "User Management" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-muted-foreground", children: "Manage user accounts and permissions" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setIsAddUserOpen(true), className: "gap-2 rounded-full", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, { className: "h-4 w-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Add User" })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-6 flex flex-col gap-4 md:flex-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative flex-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Input, { placeholder: "Search users...", className: "pl-9", value: searchQuery, onChange: (e) => setSearchQuery(e.target.value) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: filterRole || "all", onValueChange: (value) => setFilterRole(value === "all" ? null : value), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectTrigger, { className: "w-[150px] gap-1", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Filter, { className: "h-4 w-4" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "All Roles" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "all", children: "All Roles" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "owner", children: "Owner" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "admin", children: "Admin" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "manager", children: "Manager" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "support", children: "Support" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "analyst", children: "Analyst" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { value: filterStatus || "all", onValueChange: (value) => setFilterStatus(value === "all" ? null : value), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectTrigger, { className: "w-[150px] gap-1", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Filter, { className: "h-4 w-4" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "All Statuses" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "all", children: "All Statuses" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "active", children: "Active" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "inactive", children: "Inactive" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "pending", children: "Pending" })
-          ] })
-        ] })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: "Platform Users" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(CardDescription, { children: [
-          sortedUsers.length,
-          " users total"
-        ] })
-      ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { className: "p-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "w-[250px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "ghost", className: "gap-1 p-0 hover:bg-transparent", onClick: () => handleSort("name"), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Name" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUpDown, { className: "h-3 w-3" })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Email" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "ghost", className: "gap-1 p-0 hover:bg-transparent", onClick: () => handleSort("role"), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Role" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUpDown, { className: "h-3 w-3" })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: "Status" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "ghost", className: "gap-1 p-0 hover:bg-transparent", onClick: () => handleSort("lastActive"), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Last Active" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowUpDown, { className: "h-3 w-3" })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, { className: "text-right", children: "Actions" })
-        ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, { children: sortedUsers.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(TableRow, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { colSpan: 6, className: "h-24 text-center", children: "No users found." }) }) : sortedUsers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "font-medium", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Avatar, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImage, { src: user.avatar || "/abstract-profile.png", alt: user.name }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, { children: user.name.charAt(0) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium", children: user.name }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-muted-foreground", children: [
-                "Created",
-                " ",
-                format(new Date(user.createdAt), "MMM d, yyyy")
-              ] })
-            ] })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: user.email }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: getRoleBadgeVariant(user.role), className: "gap-1", children: [
-            getRoleIcon(user.role),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: user.role.charAt(0).toUpperCase() + user.role.slice(1) })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge, { variant: getStatusBadgeVariant(user.status), children: user.status.charAt(0).toUpperCase() + user.status.slice(1) }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: formatDistanceToNow(new Date(user.lastActive), {
-            addSuffix: true
-          }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenu, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "icon", className: "h-8 w-8 rounded-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Ellipsis, { className: "h-4 w-4" }) }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuContent, { align: "end", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuItem, { onClick: () => {
-                setSelectedUser(user);
-                setIsEditUserOpen(true);
-              }, children: "Edit User" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuItem, { children: "View Activity Log" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuItem, { children: "Reset Password" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(DropdownMenuSeparator, {}),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(DropdownMenuItem, { onClick: () => {
-                setSelectedUser(user);
-                setIsDeleteUserOpen(true);
-              }, className: "text-destructive focus:text-destructive", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "mr-2 h-4 w-4" }),
-                "Delete User"
-              ] })
-            ] })
-          ] }) })
-        ] }, user.id)) })
-      ] }) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isAddUserOpen, onOpenChange: setIsAddUserOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Add New User" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Create a new user account and set their permissions." })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 py-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "name", children: "Full Name" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Input, { id: "name", placeholder: "Enter full name" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "email", children: "Email Address" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Input, { id: "email", type: "email", placeholder: "Enter email address" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "role", children: "Role" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { defaultValue: "support", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { id: "role", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select role" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "admin", children: "Admin" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "manager", children: "Manager" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "support", children: "Support" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "analyst", children: "Analyst" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "status", children: "Status" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { defaultValue: "pending", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { id: "status", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select status" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "active", children: "Active" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "inactive", children: "Inactive" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "pending", children: "Pending" })
-              ] })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { children: "Security Settings" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-md border p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between space-y-0", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-0.5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "two-factor", children: "Two-factor Authentication" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Require two-factor authentication for this user" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { id: "two-factor" })
-          ] }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { children: "Permissions" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(Tabs, { defaultValue: "preset", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, { className: "grid w-full grid-cols-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(TabsTrigger, { value: "preset", children: "Role Presets" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(TabsTrigger, { value: "custom", children: "Custom Permissions" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, { value: "preset", className: "space-y-4 pt-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "This user will have all permissions associated with the selected role." }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, { value: "custom", className: "space-y-4 pt-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-2", children: availablePermissions.map((permission) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox, { id: `permission-${permission.id}` }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5 leading-none", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: `permission-${permission.id}`, className: "text-sm font-medium", children: permission.name }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: permission.description })
-              ] })
-            ] }, permission.id)) }) })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", onClick: () => setIsAddUserOpen(false), children: "Cancel" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleAddUser, children: "Add User" })
-      ] })
-    ] }) }),
-    selectedUser && /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isEditUserOpen, onOpenChange: setIsEditUserOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Edit User" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Update user information and permissions." })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 py-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(Avatar, { className: "h-16 w-16", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImage, { src: selectedUser.avatar || "/abstract-profile.png", alt: selectedUser.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, { children: selectedUser.name.charAt(0) })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-medium", children: selectedUser.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: selectedUser.email })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "edit-name", children: "Full Name" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Input, { id: "edit-name", defaultValue: selectedUser.name })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "edit-email", children: "Email Address" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Input, { id: "edit-email", type: "email", defaultValue: selectedUser.email })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "edit-role", children: "Role" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { defaultValue: selectedUser.role, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { id: "edit-role", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select role" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "owner", children: "Owner" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "admin", children: "Admin" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "manager", children: "Manager" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "support", children: "Support" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "analyst", children: "Analyst" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "edit-status", children: "Status" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, { defaultValue: selectedUser.status, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(SelectTrigger, { id: "edit-status", children: /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, { placeholder: "Select status" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "active", children: "Active" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "inactive", children: "Inactive" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, { value: "pending", children: "Pending" })
-              ] })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { children: "Security Settings" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-md border p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between space-y-0", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-0.5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: "edit-two-factor", children: "Two-factor Authentication" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: "Require two-factor authentication for this user" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, { id: "edit-two-factor", defaultChecked: selectedUser.twoFactorEnabled })
-          ] }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { children: "Permissions" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "outline", size: "sm", className: "gap-1 text-xs", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "h-3 w-3" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Reset to Role Default" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-h-[200px] overflow-y-auto rounded-md border p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-2", children: availablePermissions.map((permission) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox, { id: `edit-permission-${permission.id}`, defaultChecked: selectedUser.permissions.includes(permission.id) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-1.5 leading-none", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { htmlFor: `edit-permission-${permission.id}`, className: "text-sm font-medium", children: permission.name }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: permission.description })
-            ] })
-          ] }, permission.id)) }) })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", onClick: () => setIsEditUserOpen(false), children: "Cancel" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleEditUser, children: "Save Changes" })
-      ] })
-    ] }) }),
-    selectedUser && /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, { open: isDeleteUserOpen, onOpenChange: setIsDeleteUserOpen, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Delete User" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, { children: "Are you sure you want to delete this user? This action cannot be undone." })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 py-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Avatar, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImage, { src: selectedUser.avatar || "/abstract-profile.png", alt: selectedUser.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, { children: selectedUser.name.charAt(0) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-medium", children: selectedUser.name }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-muted-foreground", children: selectedUser.email }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, { variant: getRoleBadgeVariant(selectedUser.role), className: "mt-1 gap-1", children: [
-            getRoleIcon(selectedUser.role),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1) })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outline", onClick: () => setIsDeleteUserOpen(false), children: "Cancel" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "destructive", onClick: handleDeleteUser, children: "Delete User" })
-      ] })
-    ] }) })
-  ] });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+    className: "container mx-auto py-8",
+    children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+        className:
+          "mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", {
+                className: "text-3xl font-bold",
+                children: "User Management",
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", {
+                className: "text-muted-foreground",
+                children: "Manage user accounts and permissions",
+              }),
+            ],
+          }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, {
+            onClick: () => setIsAddUserOpen(true),
+            className: "gap-2 rounded-full",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(UserPlus, {
+                className: "h-4 w-4",
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                children: "Add User",
+              }),
+            ],
+          }),
+        ],
+      }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+        className: "mb-6 flex flex-col gap-4 md:flex-row",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+            className: "relative flex-1",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Search, {
+                className:
+                  "absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground",
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Input, {
+                placeholder: "Search users...",
+                className: "pl-9",
+                value: searchQuery,
+                onChange: (e) => setSearchQuery(e.target.value),
+              }),
+            ],
+          }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+            className: "flex gap-2",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, {
+                value: filterRole || "all",
+                onValueChange: (value) =>
+                  setFilterRole(value === "all" ? null : value),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectTrigger, {
+                    className: "w-[150px] gap-1",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Filter, {
+                        className: "h-4 w-4",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {
+                        placeholder: "All Roles",
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, {
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "all",
+                        children: "All Roles",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "owner",
+                        children: "Owner",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "admin",
+                        children: "Admin",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "manager",
+                        children: "Manager",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "support",
+                        children: "Support",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "analyst",
+                        children: "Analyst",
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, {
+                value: filterStatus || "all",
+                onValueChange: (value) =>
+                  setFilterStatus(value === "all" ? null : value),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectTrigger, {
+                    className: "w-[150px] gap-1",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Filter, {
+                        className: "h-4 w-4",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectValue, {
+                        placeholder: "All Statuses",
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(SelectContent, {
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "all",
+                        children: "All Statuses",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "active",
+                        children: "Active",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "inactive",
+                        children: "Inactive",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(SelectItem, {
+                        value: "pending",
+                        children: "Pending",
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, {
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, {
+            className: "p-4",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+              className: "flex items-center justify-between",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, {
+                  children: "Platform Users",
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(CardDescription, {
+                  children: [sortedUsers.length, " users total"],
+                }),
+              ],
+            }),
+          }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, {
+            className: "p-0",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Table, {
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TableHeader, {
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsxs(TableRow, {
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, {
+                        className: "w-[250px]",
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          Button,
+                          {
+                            variant: "ghost",
+                            className: "gap-1 p-0 hover:bg-transparent",
+                            onClick: () => handleSort("name"),
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                                children: "Name",
+                              }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                ArrowUpDown,
+                                { className: "h-3 w-3" },
+                              ),
+                            ],
+                          },
+                        ),
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, {
+                        children: "Email",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, {
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          Button,
+                          {
+                            variant: "ghost",
+                            className: "gap-1 p-0 hover:bg-transparent",
+                            onClick: () => handleSort("role"),
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                                children: "Role",
+                              }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                ArrowUpDown,
+                                { className: "h-3 w-3" },
+                              ),
+                            ],
+                          },
+                        ),
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, {
+                        children: "Status",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, {
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          Button,
+                          {
+                            variant: "ghost",
+                            className: "gap-1 p-0 hover:bg-transparent",
+                            onClick: () => handleSort("lastActive"),
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                                children: "Last Active",
+                              }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                ArrowUpDown,
+                                { className: "h-3 w-3" },
+                              ),
+                            ],
+                          },
+                        ),
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TableHead, {
+                        className: "text-right",
+                        children: "Actions",
+                      }),
+                    ],
+                  }),
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TableBody, {
+                  children:
+                    sortedUsers.length === 0
+                      ? /* @__PURE__ */ jsxRuntimeExports.jsx(TableRow, {
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            TableCell,
+                            {
+                              colSpan: 6,
+                              className: "h-24 text-center",
+                              children: "No users found.",
+                            },
+                          ),
+                        })
+                      : sortedUsers.map((user) =>
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            TableRow,
+                            {
+                              children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  TableCell,
+                                  {
+                                    className: "font-medium",
+                                    children:
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                        "div",
+                                        {
+                                          className: "flex items-center gap-3",
+                                          children: [
+                                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                              Avatar,
+                                              {
+                                                children: [
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    AvatarImage,
+                                                    {
+                                                      src:
+                                                        user.avatar ||
+                                                        "/abstract-profile.png",
+                                                      alt: user.name,
+                                                    },
+                                                  ),
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    AvatarFallback,
+                                                    {
+                                                      children:
+                                                        user.name.charAt(0),
+                                                    },
+                                                  ),
+                                                ],
+                                              },
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                              "div",
+                                              {
+                                                children: [
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    "div",
+                                                    {
+                                                      className: "font-medium",
+                                                      children: user.name,
+                                                    },
+                                                  ),
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                                    "div",
+                                                    {
+                                                      className:
+                                                        "text-xs text-muted-foreground",
+                                                      children: [
+                                                        "Created",
+                                                        " ",
+                                                        format(
+                                                          new Date(
+                                                            user.createdAt,
+                                                          ),
+                                                          "MMM d, yyyy",
+                                                        ),
+                                                      ],
+                                                    },
+                                                  ),
+                                                ],
+                                              },
+                                            ),
+                                          ],
+                                        },
+                                      ),
+                                  },
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  TableCell,
+                                  { children: user.email },
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  TableCell,
+                                  {
+                                    children:
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                        Badge,
+                                        {
+                                          variant: getRoleBadgeVariant(
+                                            user.role,
+                                          ),
+                                          className: "gap-1",
+                                          children: [
+                                            getRoleIcon(user.role),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              "span",
+                                              {
+                                                children:
+                                                  user.role
+                                                    .charAt(0)
+                                                    .toUpperCase() +
+                                                  user.role.slice(1),
+                                              },
+                                            ),
+                                          ],
+                                        },
+                                      ),
+                                  },
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  TableCell,
+                                  {
+                                    children:
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Badge,
+                                        {
+                                          variant: getStatusBadgeVariant(
+                                            user.status,
+                                          ),
+                                          children:
+                                            user.status
+                                              .charAt(0)
+                                              .toUpperCase() +
+                                            user.status.slice(1),
+                                        },
+                                      ),
+                                  },
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  TableCell,
+                                  {
+                                    children: formatDistanceToNow(
+                                      new Date(user.lastActive),
+                                      {
+                                        addSuffix: true,
+                                      },
+                                    ),
+                                  },
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  TableCell,
+                                  {
+                                    className: "text-right",
+                                    children:
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                        DropdownMenu,
+                                        {
+                                          children: [
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              DropdownMenuTrigger,
+                                              {
+                                                asChild: true,
+                                                children:
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    Button,
+                                                    {
+                                                      variant: "ghost",
+                                                      size: "icon",
+                                                      className:
+                                                        "h-8 w-8 rounded-full",
+                                                      children:
+                                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                          Ellipsis,
+                                                          {
+                                                            className:
+                                                              "h-4 w-4",
+                                                          },
+                                                        ),
+                                                    },
+                                                  ),
+                                              },
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                              DropdownMenuContent,
+                                              {
+                                                align: "end",
+                                                children: [
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    DropdownMenuItem,
+                                                    {
+                                                      onClick: () => {
+                                                        setSelectedUser(user);
+                                                        setIsEditUserOpen(true);
+                                                      },
+                                                      children: "Edit User",
+                                                    },
+                                                  ),
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    DropdownMenuItem,
+                                                    {
+                                                      children:
+                                                        "View Activity Log",
+                                                    },
+                                                  ),
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    DropdownMenuItem,
+                                                    {
+                                                      children:
+                                                        "Reset Password",
+                                                    },
+                                                  ),
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                    DropdownMenuSeparator,
+                                                    {},
+                                                  ),
+                                                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                                    DropdownMenuItem,
+                                                    {
+                                                      onClick: () => {
+                                                        setSelectedUser(user);
+                                                        setIsDeleteUserOpen(
+                                                          true,
+                                                        );
+                                                      },
+                                                      className:
+                                                        "text-destructive focus:text-destructive",
+                                                      children: [
+                                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                                          Trash2,
+                                                          {
+                                                            className:
+                                                              "mr-2 h-4 w-4",
+                                                          },
+                                                        ),
+                                                        "Delete User",
+                                                      ],
+                                                    },
+                                                  ),
+                                                ],
+                                              },
+                                            ),
+                                          ],
+                                        },
+                                      ),
+                                  },
+                                ),
+                              ],
+                            },
+                            user.id,
+                          ),
+                        ),
+                }),
+              ],
+            }),
+          }),
+        ],
+      }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, {
+        open: isAddUserOpen,
+        onOpenChange: setIsAddUserOpen,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, {
+          className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, {
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, {
+                  children: "Add New User",
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, {
+                  children:
+                    "Create a new user account and set their permissions.",
+                }),
+              ],
+            }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+              className: "grid gap-4 py-4",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                  className: "grid grid-cols-2 gap-4",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                      className: "space-y-2",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                          htmlFor: "name",
+                          children: "Full Name",
+                        }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Input, {
+                          id: "name",
+                          placeholder: "Enter full name",
+                        }),
+                      ],
+                    }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                      className: "space-y-2",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                          htmlFor: "email",
+                          children: "Email Address",
+                        }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Input, {
+                          id: "email",
+                          type: "email",
+                          placeholder: "Enter email address",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                  className: "grid grid-cols-2 gap-4",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                      className: "space-y-2",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                          htmlFor: "role",
+                          children: "Role",
+                        }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, {
+                          defaultValue: "support",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              SelectTrigger,
+                              {
+                                id: "role",
+                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  SelectValue,
+                                  { placeholder: "Select role" },
+                                ),
+                              },
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              SelectContent,
+                              {
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "admin", children: "Admin" },
+                                  ),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "manager", children: "Manager" },
+                                  ),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "support", children: "Support" },
+                                  ),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "analyst", children: "Analyst" },
+                                  ),
+                                ],
+                              },
+                            ),
+                          ],
+                        }),
+                      ],
+                    }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                      className: "space-y-2",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                          htmlFor: "status",
+                          children: "Status",
+                        }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, {
+                          defaultValue: "pending",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              SelectTrigger,
+                              {
+                                id: "status",
+                                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  SelectValue,
+                                  { placeholder: "Select status" },
+                                ),
+                              },
+                            ),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              SelectContent,
+                              {
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "active", children: "Active" },
+                                  ),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "inactive", children: "Inactive" },
+                                  ),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    SelectItem,
+                                    { value: "pending", children: "Pending" },
+                                  ),
+                                ],
+                              },
+                            ),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                  className: "space-y-2",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                      children: "Security Settings",
+                    }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+                      className: "rounded-md border p-4",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        className:
+                          "flex items-center justify-between space-y-0",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                            className: "space-y-0.5",
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                                htmlFor: "two-factor",
+                                children: "Two-factor Authentication",
+                              }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("p", {
+                                className: "text-sm text-muted-foreground",
+                                children:
+                                  "Require two-factor authentication for this user",
+                              }),
+                            ],
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, {
+                            id: "two-factor",
+                          }),
+                        ],
+                      }),
+                    }),
+                  ],
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                  className: "space-y-2",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                      children: "Permissions",
+                    }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(Tabs, {
+                      defaultValue: "preset",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(TabsList, {
+                          className: "grid w-full grid-cols-2",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(TabsTrigger, {
+                              value: "preset",
+                              children: "Role Presets",
+                            }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(TabsTrigger, {
+                              value: "custom",
+                              children: "Custom Permissions",
+                            }),
+                          ],
+                        }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, {
+                          value: "preset",
+                          className: "space-y-4 pt-4",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", {
+                            className: "text-sm text-muted-foreground",
+                            children:
+                              "This user will have all permissions associated with the selected role.",
+                          }),
+                        }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(TabsContent, {
+                          value: "custom",
+                          className: "space-y-4 pt-4",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "div",
+                            {
+                              className: "grid gap-2",
+                              children: availablePermissions.map((permission) =>
+                                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                  "div",
+                                  {
+                                    className: "flex items-center space-x-2",
+                                    children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        Checkbox,
+                                        { id: `permission-${permission.id}` },
+                                      ),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                        "div",
+                                        {
+                                          className:
+                                            "grid gap-1.5 leading-none",
+                                          children: [
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              Label,
+                                              {
+                                                htmlFor: `permission-${permission.id}`,
+                                                className:
+                                                  "text-sm font-medium",
+                                                children: permission.name,
+                                              },
+                                            ),
+                                            /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                              "p",
+                                              {
+                                                className:
+                                                  "text-xs text-muted-foreground",
+                                                children:
+                                                  permission.description,
+                                              },
+                                            ),
+                                          ],
+                                        },
+                                      ),
+                                    ],
+                                  },
+                                  permission.id,
+                                ),
+                              ),
+                            },
+                          ),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, {
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, {
+                  variant: "outline",
+                  onClick: () => setIsAddUserOpen(false),
+                  children: "Cancel",
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Button, {
+                  onClick: handleAddUser,
+                  children: "Add User",
+                }),
+              ],
+            }),
+          ],
+        }),
+      }),
+      selectedUser &&
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, {
+          open: isEditUserOpen,
+          onOpenChange: setIsEditUserOpen,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, {
+            className: "max-h-[90vh] overflow-y-auto sm:max-w-[600px]",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, {
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, {
+                    children: "Edit User",
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, {
+                    children: "Update user information and permissions.",
+                  }),
+                ],
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                className: "grid gap-4 py-4",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                    className: "flex items-center gap-4",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(Avatar, {
+                        className: "h-16 w-16",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImage, {
+                            src: selectedUser.avatar || "/abstract-profile.png",
+                            alt: selectedUser.name,
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            AvatarFallback,
+                            { children: selectedUser.name.charAt(0) },
+                          ),
+                        ],
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", {
+                            className: "text-lg font-medium",
+                            children: selectedUser.name,
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("p", {
+                            className: "text-sm text-muted-foreground",
+                            children: selectedUser.email,
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                    className: "grid grid-cols-2 gap-4",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        className: "space-y-2",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                            htmlFor: "edit-name",
+                            children: "Full Name",
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Input, {
+                            id: "edit-name",
+                            defaultValue: selectedUser.name,
+                          }),
+                        ],
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        className: "space-y-2",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                            htmlFor: "edit-email",
+                            children: "Email Address",
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Input, {
+                            id: "edit-email",
+                            type: "email",
+                            defaultValue: selectedUser.email,
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                    className: "grid grid-cols-2 gap-4",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        className: "space-y-2",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                            htmlFor: "edit-role",
+                            children: "Role",
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, {
+                            defaultValue: selectedUser.role,
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                SelectTrigger,
+                                {
+                                  id: "edit-role",
+                                  children:
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectValue,
+                                      { placeholder: "Select role" },
+                                    ),
+                                },
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                SelectContent,
+                                {
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "owner", children: "Owner" },
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "admin", children: "Admin" },
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "manager", children: "Manager" },
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "support", children: "Support" },
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "analyst", children: "Analyst" },
+                                    ),
+                                  ],
+                                },
+                              ),
+                            ],
+                          }),
+                        ],
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        className: "space-y-2",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                            htmlFor: "edit-status",
+                            children: "Status",
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs(Select, {
+                            defaultValue: selectedUser.status,
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                SelectTrigger,
+                                {
+                                  id: "edit-status",
+                                  children:
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectValue,
+                                      { placeholder: "Select status" },
+                                    ),
+                                },
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                SelectContent,
+                                {
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "active", children: "Active" },
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      {
+                                        value: "inactive",
+                                        children: "Inactive",
+                                      },
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      SelectItem,
+                                      { value: "pending", children: "Pending" },
+                                    ),
+                                  ],
+                                },
+                              ),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                    className: "space-y-2",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                        children: "Security Settings",
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+                        className: "rounded-md border p-4",
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "div",
+                          {
+                            className:
+                              "flex items-center justify-between space-y-0",
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                                className: "space-y-0.5",
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                                    htmlFor: "edit-two-factor",
+                                    children: "Two-factor Authentication",
+                                  }),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", {
+                                    className: "text-sm text-muted-foreground",
+                                    children:
+                                      "Require two-factor authentication for this user",
+                                  }),
+                                ],
+                              }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(Switch, {
+                                id: "edit-two-factor",
+                                defaultChecked: selectedUser.twoFactorEnabled,
+                              }),
+                            ],
+                          },
+                        ),
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                    className: "space-y-2",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                        className: "flex items-center justify-between",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Label, {
+                            children: "Permissions",
+                          }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, {
+                            variant: "outline",
+                            size: "sm",
+                            className: "gap-1 text-xs",
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(Check, {
+                                className: "h-3 w-3",
+                              }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                                children: "Reset to Role Default",
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+                        className:
+                          "max-h-[200px] overflow-y-auto rounded-md border p-4",
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+                          className: "grid gap-2",
+                          children: availablePermissions.map((permission) =>
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                              "div",
+                              {
+                                className: "flex items-center space-x-2",
+                                children: [
+                                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                    Checkbox,
+                                    {
+                                      id: `edit-permission-${permission.id}`,
+                                      defaultChecked:
+                                        selectedUser.permissions.includes(
+                                          permission.id,
+                                        ),
+                                    },
+                                  ),
+                                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                    "div",
+                                    {
+                                      className: "grid gap-1.5 leading-none",
+                                      children: [
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                          Label,
+                                          {
+                                            htmlFor: `edit-permission-${permission.id}`,
+                                            className: "text-sm font-medium",
+                                            children: permission.name,
+                                          },
+                                        ),
+                                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                          "p",
+                                          {
+                                            className:
+                                              "text-xs text-muted-foreground",
+                                            children: permission.description,
+                                          },
+                                        ),
+                                      ],
+                                    },
+                                  ),
+                                ],
+                              },
+                              permission.id,
+                            ),
+                          ),
+                        }),
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, {
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Button, {
+                    variant: "outline",
+                    onClick: () => setIsEditUserOpen(false),
+                    children: "Cancel",
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Button, {
+                    onClick: handleEditUser,
+                    children: "Save Changes",
+                  }),
+                ],
+              }),
+            ],
+          }),
+        }),
+      selectedUser &&
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog, {
+          open: isDeleteUserOpen,
+          onOpenChange: setIsDeleteUserOpen,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, {
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogHeader, {
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, {
+                    children: "Delete User",
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDescription, {
+                    children:
+                      "Are you sure you want to delete this user? This action cannot be undone.",
+                  }),
+                ],
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                className: "flex items-center gap-4 py-4",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(Avatar, {
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImage, {
+                        src: selectedUser.avatar || "/abstract-profile.png",
+                        alt: selectedUser.name,
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarFallback, {
+                        children: selectedUser.name.charAt(0),
+                      }),
+                    ],
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", {
+                        className: "font-medium",
+                        children: selectedUser.name,
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", {
+                        className: "text-sm text-muted-foreground",
+                        children: selectedUser.email,
+                      }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(Badge, {
+                        variant: getRoleBadgeVariant(selectedUser.role),
+                        className: "mt-1 gap-1",
+                        children: [
+                          getRoleIcon(selectedUser.role),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                            children:
+                              selectedUser.role.charAt(0).toUpperCase() +
+                              selectedUser.role.slice(1),
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogFooter, {
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Button, {
+                    variant: "outline",
+                    onClick: () => setIsDeleteUserOpen(false),
+                    children: "Cancel",
+                  }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Button, {
+                    variant: "destructive",
+                    onClick: handleDeleteUser,
+                    children: "Delete User",
+                  }),
+                ],
+              }),
+            ],
+          }),
+        }),
+    ],
+  });
 };
 
 export { SplitComponent as component };

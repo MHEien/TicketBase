@@ -1,2 +1,2 @@
 /// <reference types="vite/client" />
-import './routeTree.gen';
+import "./routeTree.gen";

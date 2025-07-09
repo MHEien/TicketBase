@@ -1,5 +1,9 @@
-import { c as createLucideIcon, a0 as apiClient, r as reactExports } from './main-D54NVj6U.js';
-import { u as useToast } from './use-toast-nfgjIcjL.js';
+import {
+  c as createLucideIcon,
+  a0 as apiClient,
+  r as reactExports,
+} from "./main-D54NVj6U.js";
+import { u as useToast } from "./use-toast-nfgjIcjL.js";
 
 /**
  * @license lucide-react v0.454.0 - ISC
@@ -8,12 +12,17 @@ import { u as useToast } from './use-toast-nfgjIcjL.js';
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const RefreshCw = createLucideIcon("RefreshCw", [
-  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+  [
+    "path",
+    { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" },
+  ],
   ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-  ["path", { d: "M8 16H3v5", key: "1cv678" }]
+  [
+    "path",
+    { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" },
+  ],
+  ["path", { d: "M8 16H3v5", key: "1cv678" }],
 ]);
 
 /**
@@ -23,10 +32,9 @@ const RefreshCw = createLucideIcon("RefreshCw", [
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const TrendingUp = createLucideIcon("TrendingUp", [
   ["polyline", { points: "22 7 13.5 15.5 8.5 10.5 2 17", key: "126l90" }],
-  ["polyline", { points: "16 7 22 7 22 13", key: "kwv8wd" }]
+  ["polyline", { points: "16 7 22 7 22 13", key: "kwv8wd" }],
 ]);
 
 var ActivityType = /* @__PURE__ */ ((ActivityType2) => {
@@ -55,7 +63,7 @@ const activityApi = {
     if (params.limit) searchParams.append("limit", params.limit.toString());
     if (params.offset) searchParams.append("offset", params.offset.toString());
     const response = await apiClient.get(
-      `/api/activities?${searchParams.toString()}`
+      `/api/activities?${searchParams.toString()}`,
     );
     return response.data;
   },
@@ -64,7 +72,7 @@ const activityApi = {
     const searchParams = new URLSearchParams();
     if (dateRange) searchParams.append("dateRange", dateRange);
     const response = await apiClient.get(
-      `/api/activities/counts?${searchParams.toString()}`
+      `/api/activities/counts?${searchParams.toString()}`,
     );
     return response.data;
   },
@@ -73,7 +81,7 @@ const activityApi = {
     const searchParams = new URLSearchParams();
     if (limit) searchParams.append("limit", limit.toString());
     const response = await apiClient.get(
-      `/api/activities/recent?${searchParams.toString()}`
+      `/api/activities/recent?${searchParams.toString()}`,
     );
     return response.data;
   },
@@ -100,16 +108,14 @@ const activityApi = {
       metadata: options?.metadata,
       relatedEntityId: options?.relatedEntityId,
       relatedEntityType: options?.relatedEntityType,
-      relatedEntityName: options?.relatedEntityName
+      relatedEntityName: options?.relatedEntityName,
     });
-  }
+  },
 };
 
 function useActivity(options = {}) {
   const [activities, setActivities] = reactExports.useState([]);
-  const [activityCounts, setActivityCounts] = reactExports.useState(
-    null
-  );
+  const [activityCounts, setActivityCounts] = reactExports.useState(null);
   const [total, setTotal] = reactExports.useState(0);
   const [loading, setLoading] = reactExports.useState(true);
   const [error, setError] = reactExports.useState(null);
@@ -122,7 +128,7 @@ function useActivity(options = {}) {
     limit = 50,
     offset = 0,
     autoRefresh = false,
-    refreshInterval = 3e4
+    refreshInterval = 3e4,
     // 30 seconds
   } = options;
   const fetchActivities = reactExports.useCallback(async () => {
@@ -135,22 +141,23 @@ function useActivity(options = {}) {
         severity,
         dateRange,
         limit,
-        offset
+        offset,
       };
       const [activitiesResponse, countsResponse] = await Promise.all([
         activityApi.getActivities(params),
-        activityApi.getActivityCounts(dateRange)
+        activityApi.getActivityCounts(dateRange),
       ]);
       setActivities(activitiesResponse.activities);
       setTotal(activitiesResponse.total);
       setActivityCounts(countsResponse);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch activities";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch activities";
       setError(errorMessage);
       toast({
         title: "Error",
         description: errorMessage,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -168,7 +175,7 @@ function useActivity(options = {}) {
         dateRange,
         limit: 1e4,
         // Large limit for export
-        offset: 0
+        offset: 0,
       };
       const response = await activityApi.getActivities(params);
       const activities2 = response.activities;
@@ -181,12 +188,12 @@ function useActivity(options = {}) {
         "Email",
         "Date",
         "IP Address",
-        "Related Entity"
+        "Related Entity",
       ];
       const csvContent = [
         headers.join(","),
-        ...activities2.map(
-          (activity) => [
+        ...activities2.map((activity) =>
+          [
             activity.id,
             activity.type,
             activity.severity,
@@ -195,9 +202,9 @@ function useActivity(options = {}) {
             activity.user.email,
             new Date(activity.createdAt).toISOString(),
             activity.ipAddress || "",
-            activity.relatedEntityName || ""
-          ].join(",")
-        )
+            activity.relatedEntityName || "",
+          ].join(","),
+        ),
       ].join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
@@ -205,7 +212,7 @@ function useActivity(options = {}) {
       link.setAttribute("href", url);
       link.setAttribute(
         "download",
-        `activities-${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.csv`
+        `activities-${/* @__PURE__ */ new Date().toISOString().split("T")[0]}.csv`,
       );
       link.style.visibility = "hidden";
       document.body.appendChild(link);
@@ -213,14 +220,15 @@ function useActivity(options = {}) {
       document.body.removeChild(link);
       toast({
         title: "Export Successful",
-        description: `Exported ${activities2.length} activities to CSV`
+        description: `Exported ${activities2.length} activities to CSV`,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to export activities";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to export activities";
       toast({
         title: "Export Failed",
         description: errorMessage,
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   }, [search, type, severity, dateRange, toast]);
@@ -241,7 +249,7 @@ function useActivity(options = {}) {
     loading,
     error,
     refresh,
-    exportActivities
+    exportActivities,
   };
 }
 function useRecentActivity(limit = 10) {
@@ -255,7 +263,10 @@ function useRecentActivity(limit = 10) {
       const recentActivities = await activityApi.getRecentActivities(limit);
       setActivities(recentActivities);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch recent activities";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to fetch recent activities";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -268,8 +279,15 @@ function useRecentActivity(limit = 10) {
     activities,
     loading,
     error,
-    refresh: fetchRecentActivities
+    refresh: fetchRecentActivities,
   };
 }
 
-export { ActivityType as A, RefreshCw as R, TrendingUp as T, useActivity as a, ActivitySeverity as b, useRecentActivity as u };
+export {
+  ActivityType as A,
+  RefreshCw as R,
+  TrendingUp as T,
+  useActivity as a,
+  ActivitySeverity as b,
+  useRecentActivity as u,
+};

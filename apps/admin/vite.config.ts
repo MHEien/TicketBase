@@ -6,8 +6,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { federation } from "@module-federation/vite";
 
 export default defineConfig(({ mode }) => {
-  const isProduction = mode === 'production';
-  
+  const isProduction = mode === "production";
+
   const plugins = [
     tailwindcss(),
     // Enables Vite to resolve imports using path aliases.
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
   ];
 
   // Only add Module Federation in production or when explicitly enabled
-  if (isProduction || process.env.ENABLE_MF === 'true') {
+  if (isProduction || process.env.ENABLE_MF === "true") {
     plugins.push(
       federation({
         name: "tickets-platform-admin",
@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
           },
         },
         dev: false,
-      })
+      }),
     );
   }
 

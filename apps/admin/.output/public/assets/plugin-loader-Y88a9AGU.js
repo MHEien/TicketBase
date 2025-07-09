@@ -1,4 +1,4 @@
-import { aM as React } from './main-D54NVj6U.js';
+import { aM as React } from "./main-D54NVj6U.js";
 
 class PluginManager {
   constructor() {
@@ -21,11 +21,13 @@ class PluginManager {
         metadata,
         module: pluginModule,
         extensionPoints: {},
-        isLoaded: true
+        isLoaded: true,
       };
       if (pluginModule.default && pluginModule.default.extensionPoints) {
         loadedPlugin.extensionPoints = pluginModule.default.extensionPoints;
-        for (const [extensionPoint, component] of Object.entries(loadedPlugin.extensionPoints)) {
+        for (const [extensionPoint, component] of Object.entries(
+          loadedPlugin.extensionPoints,
+        )) {
           this.registerExtensionPoint(extensionPoint, loadedPlugin);
         }
       }
@@ -40,7 +42,7 @@ class PluginManager {
         module: null,
         extensionPoints: {},
         isLoaded: false,
-        error: error instanceof Error ? error.message : "Unknown error"
+        error: error instanceof Error ? error.message : "Unknown error",
       };
       this.loadedPlugins.set(id, failedPlugin);
       this.emit("plugin:error", { plugin: failedPlugin, error });
@@ -54,8 +56,12 @@ class PluginManager {
     console.log(`🔌 Loading ${plugins.length} plugins...`);
     const loadPromises = plugins.map((plugin) => this.loadPlugin(plugin));
     const results = await Promise.allSettled(loadPromises);
-    const loadedPlugins = results.filter((result) => result.status === "fulfilled").map((result) => result.value);
-    console.log(`✅ Successfully loaded ${loadedPlugins.length}/${plugins.length} plugins`);
+    const loadedPlugins = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+    console.log(
+      `✅ Successfully loaded ${loadedPlugins.length}/${plugins.length} plugins`,
+    );
     return loadedPlugins;
   }
   /**
@@ -89,7 +95,10 @@ class PluginManager {
   unloadPlugin(id) {
     const plugin = this.loadedPlugins.get(id);
     if (!plugin) return false;
-    for (const [extensionPoint, plugins] of this.extensionPointRegistry.entries()) {
+    for (const [
+      extensionPoint,
+      plugins,
+    ] of this.extensionPointRegistry.entries()) {
       const index = plugins.findIndex((p) => p.metadata.id === id);
       if (index > -1) {
         plugins.splice(index, 1);
@@ -112,7 +121,7 @@ class PluginManager {
     }
     const plugins = this.extensionPointRegistry.get(extensionPoint);
     const insertIndex = plugins.findIndex(
-      (p) => (p.metadata.priority || 0) < (plugin.metadata.priority || 0)
+      (p) => (p.metadata.priority || 0) < (plugin.metadata.priority || 0),
     );
     if (insertIndex === -1) {
       plugins.push(plugin);
@@ -134,16 +143,21 @@ class PluginManager {
             return { default: await factory() };
           }
         } catch (mfError) {
-          console.warn(`Module Federation failed for ${pluginId}, falling back to script loading:`, mfError);
+          console.warn(
+            `Module Federation failed for ${pluginId}, falling back to script loading:`,
+            mfError,
+          );
         }
       }
       await this.injectPluginScript(bundleUrl, pluginId);
       const plugin = window.__PLUGIN_REGISTRY?.registered?.[pluginId];
       if (!plugin) {
-        throw new Error(`Plugin ${pluginId} not found in registry after loading`);
+        throw new Error(
+          `Plugin ${pluginId} not found in registry after loading`,
+        );
       }
       return {
-        default: plugin
+        default: plugin,
       };
     } catch (error) {
       throw new Error(`Failed to load remote plugin: ${error}`);
@@ -181,18 +195,22 @@ class PluginManager {
     if (filter) {
       plugins = plugins.filter(filter);
     }
-    return plugins.filter((plugin) => plugin.isLoaded && plugin.extensionPoints[extensionPoint]).map((plugin) => {
-      const Component = plugin.extensionPoints[extensionPoint];
-      return function PluginWrapper(props) {
-        return React.createElement(Component, {
-          ...props,
-          context,
-          pluginId: plugin.metadata.id,
-          sdk: window.PluginSDK
-          // Make SDK available
-        });
-      };
-    });
+    return plugins
+      .filter(
+        (plugin) => plugin.isLoaded && plugin.extensionPoints[extensionPoint],
+      )
+      .map((plugin) => {
+        const Component = plugin.extensionPoints[extensionPoint];
+        return function PluginWrapper(props) {
+          return React.createElement(Component, {
+            ...props,
+            context,
+            pluginId: plugin.metadata.id,
+            sdk: window.PluginSDK,
+            // Make SDK available
+          });
+        };
+      });
   }
   /**
    * Event system for plugin lifecycle
@@ -306,11 +324,16 @@ class PluginLoader {
    * Fetch available plugins from API
    */
   async fetchAvailablePlugins() {
-    const response = await fetch(`${this.config.apiBaseUrl}/api/plugins/available`, {
-      headers: this.createHeaders()
-    });
+    const response = await fetch(
+      `${this.config.apiBaseUrl}/api/plugins/available`,
+      {
+        headers: this.createHeaders(),
+      },
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch available plugins: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch available plugins: ${response.status} ${response.statusText}`,
+      );
     }
     const plugins = await response.json();
     return this.transformPluginsResponse(plugins);
@@ -324,10 +347,12 @@ class PluginLoader {
       url.searchParams.set("organizationId", this.config.organizationId);
     }
     const response = await fetch(url.toString(), {
-      headers: this.createHeaders()
+      headers: this.createHeaders(),
     });
     if (!response.ok) {
-      throw new Error(`Failed to fetch installed plugins: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch installed plugins: ${response.status} ${response.statusText}`,
+      );
     }
     const plugins = await response.json();
     return this.transformPluginsResponse(plugins);
@@ -336,14 +361,19 @@ class PluginLoader {
    * Fetch a specific plugin by ID
    */
   async fetchPluginById(pluginId) {
-    const response = await fetch(`${this.config.apiBaseUrl}/api/plugins/${pluginId}`, {
-      headers: this.createHeaders()
-    });
+    const response = await fetch(
+      `${this.config.apiBaseUrl}/api/plugins/${pluginId}`,
+      {
+        headers: this.createHeaders(),
+      },
+    );
     if (response.status === 404) {
       return null;
     }
     if (!response.ok) {
-      throw new Error(`Failed to fetch plugin ${pluginId}: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch plugin ${pluginId}: ${response.status} ${response.statusText}`,
+      );
     }
     const plugin = await response.json();
     return this.transformPluginResponse(plugin);
@@ -391,7 +421,7 @@ class PluginLoader {
       bundleUrl: plugin.bundleUrl || plugin.url,
       requiredPermissions: plugin.requiredPermissions || [],
       extensionPoints: plugin.extensionPoints || [],
-      priority: plugin.priority || 0
+      priority: plugin.priority || 0,
     };
   }
   /**
@@ -399,7 +429,7 @@ class PluginLoader {
    */
   createHeaders() {
     const headers = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     };
     if (this.config.authToken) {
       headers["Authorization"] = `Bearer ${this.config.authToken}`;
@@ -433,7 +463,11 @@ class PluginLoader {
   }
 }
 const pluginLoader = new PluginLoader({
-  apiBaseUrl: typeof window !== "undefined" ? window.location.origin : define_process_env_default.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+  apiBaseUrl:
+    typeof window !== "undefined"
+      ? window.location.origin
+      : define_process_env_default.NEXT_PUBLIC_API_URL ||
+        "http://localhost:3000",
 });
 
 export { pluginManager as a, pluginLoader as p };

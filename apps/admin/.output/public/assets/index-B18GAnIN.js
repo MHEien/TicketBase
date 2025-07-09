@@ -1,4 +1,10 @@
-import { c as createLucideIcon, r as reactExports, j as jsxRuntimeExports, X as reactDomExports, ac as ReactDOM } from './main-D54NVj6U.js';
+import {
+  c as createLucideIcon,
+  r as reactExports,
+  j as jsxRuntimeExports,
+  X as reactDomExports,
+  ac as ReactDOM,
+} from "./main-D54NVj6U.js";
 
 /**
  * @license lucide-react v0.454.0 - ISC
@@ -7,14 +13,17 @@ import { c as createLucideIcon, r as reactExports, j as jsxRuntimeExports, X as 
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const X = createLucideIcon("X", [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+  ["path", { d: "m6 6 12 12", key: "d8bk6v" }],
 ]);
 
 // packages/core/primitive/src/primitive.tsx
-function composeEventHandlers(originalEventHandler, ourEventHandler, { checkForDefaultPrevented = true } = {}) {
+function composeEventHandlers(
+  originalEventHandler,
+  ourEventHandler,
+  { checkForDefaultPrevented = true } = {},
+) {
   return function handleEvent(event) {
     originalEventHandler?.(event);
     if (checkForDefaultPrevented === false || !event.defaultPrevented) {
@@ -71,15 +80,28 @@ function createSlot$2(ownerName) {
       const newElement = slottable.props.children;
       const newChildren = childrenArray.map((child) => {
         if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
+          if (reactExports.Children.count(newElement) > 1)
+            return reactExports.Children.only(null);
+          return reactExports.isValidElement(newElement)
+            ? newElement.props.children
+            : null;
         } else {
           return child;
         }
       });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+        ...slotProps,
+        ref: forwardedRef,
+        children: reactExports.isValidElement(newElement)
+          ? reactExports.cloneElement(newElement, void 0, newChildren)
+          : null,
+      });
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+      ...slotProps,
+      ref: forwardedRef,
+      children,
+    });
   });
   Slot2.displayName = `${ownerName}.Slot`;
   return Slot2;
@@ -92,18 +114,27 @@ function createSlotClone$2(ownerName) {
       const childrenRef = getElementRef$2(children);
       const props2 = mergeProps$2(slotProps, children.props);
       if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs$2(forwardedRef, childrenRef) : childrenRef;
+        props2.ref = forwardedRef
+          ? composeRefs$2(forwardedRef, childrenRef)
+          : childrenRef;
       }
       return reactExports.cloneElement(children, props2);
     }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
+    return reactExports.Children.count(children) > 1
+      ? reactExports.Children.only(null)
+      : null;
   });
   SlotClone.displayName = `${ownerName}.SlotClone`;
   return SlotClone;
 }
 var SLOTTABLE_IDENTIFIER$2 = Symbol("radix.slottable");
 function isSlottable$2(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER$2;
+  return (
+    reactExports.isValidElement(child) &&
+    typeof child.type === "function" &&
+    "__radixId" in child.type &&
+    child.type.__radixId === SLOTTABLE_IDENTIFIER$2
+  );
 }
 function mergeProps$2(slotProps, childProps) {
   const overrideProps = { ...childProps };
@@ -124,7 +155,9 @@ function mergeProps$2(slotProps, childProps) {
     } else if (propName === "style") {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
     } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
+      overrideProps[propName] = [slotPropValue, childPropValue]
+        .filter(Boolean)
+        .join(" ");
     }
   }
   return { ...slotProps, ...overrideProps };
@@ -161,7 +194,7 @@ var NODES$2 = [
   "select",
   "span",
   "svg",
-  "ul"
+  "ul",
 ];
 var Primitive$2 = NODES$2.reduce((primitive, node) => {
   const Slot = createSlot$2(`Primitive.${node}`);
@@ -171,7 +204,10 @@ var Primitive$2 = NODES$2.reduce((primitive, node) => {
     if (typeof window !== "undefined") {
       window[Symbol.for("radix-ui")] = true;
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, { ...primitiveProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, {
+      ...primitiveProps,
+      ref: forwardedRef,
+    });
   });
   Node.displayName = `Primitive.${node}`;
   return { ...primitive, [node]: Node };
@@ -186,7 +222,12 @@ function useCallbackRef$2(callback) {
   reactExports.useEffect(() => {
     callbackRef.current = callback;
   });
-  return reactExports.useMemo(() => (...args) => callbackRef.current?.(...args), []);
+  return reactExports.useMemo(
+    () =>
+      (...args) =>
+        callbackRef.current?.(...args),
+    [],
+  );
 }
 
 // packages/react/use-callback-ref/src/use-callback-ref.tsx
@@ -195,11 +236,19 @@ function useCallbackRef$1(callback) {
   reactExports.useEffect(() => {
     callbackRef.current = callback;
   });
-  return reactExports.useMemo(() => (...args) => callbackRef.current?.(...args), []);
+  return reactExports.useMemo(
+    () =>
+      (...args) =>
+        callbackRef.current?.(...args),
+    [],
+  );
 }
 
 // packages/react/use-escape-keydown/src/use-escape-keydown.tsx
-function useEscapeKeydown(onEscapeKeyDownProp, ownerDocument = globalThis?.document) {
+function useEscapeKeydown(
+  onEscapeKeyDownProp,
+  ownerDocument = globalThis?.document,
+) {
   const onEscapeKeyDown = useCallbackRef$1(onEscapeKeyDownProp);
   reactExports.useEffect(() => {
     const handleKeyDown = (event) => {
@@ -208,7 +257,10 @@ function useEscapeKeydown(onEscapeKeyDownProp, ownerDocument = globalThis?.docum
       }
     };
     ownerDocument.addEventListener("keydown", handleKeyDown, { capture: true });
-    return () => ownerDocument.removeEventListener("keydown", handleKeyDown, { capture: true });
+    return () =>
+      ownerDocument.removeEventListener("keydown", handleKeyDown, {
+        capture: true,
+      });
   }, [onEscapeKeyDown, ownerDocument]);
 }
 
@@ -220,104 +272,124 @@ var originalBodyPointerEvents;
 var DismissableLayerContext = reactExports.createContext({
   layers: /* @__PURE__ */ new Set(),
   layersWithOutsidePointerEventsDisabled: /* @__PURE__ */ new Set(),
-  branches: /* @__PURE__ */ new Set()
+  branches: /* @__PURE__ */ new Set(),
 });
-var DismissableLayer = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const {
-      disableOutsidePointerEvents = false,
-      onEscapeKeyDown,
-      onPointerDownOutside,
-      onFocusOutside,
-      onInteractOutside,
-      onDismiss,
-      ...layerProps
-    } = props;
-    const context = reactExports.useContext(DismissableLayerContext);
-    const [node, setNode] = reactExports.useState(null);
-    const ownerDocument = node?.ownerDocument ?? globalThis?.document;
-    const [, force] = reactExports.useState({});
-    const composedRefs = useComposedRefs$1(forwardedRef, (node2) => setNode(node2));
-    const layers = Array.from(context.layers);
-    const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1);
-    const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(highestLayerWithOutsidePointerEventsDisabled);
-    const index = node ? layers.indexOf(node) : -1;
-    const isBodyPointerEventsDisabled = context.layersWithOutsidePointerEventsDisabled.size > 0;
-    const isPointerEventsEnabled = index >= highestLayerWithOutsidePointerEventsDisabledIndex;
-    const pointerDownOutside = usePointerDownOutside((event) => {
-      const target = event.target;
-      const isPointerDownOnBranch = [...context.branches].some((branch) => branch.contains(target));
-      if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
-      onPointerDownOutside?.(event);
-      onInteractOutside?.(event);
-      if (!event.defaultPrevented) onDismiss?.();
-    }, ownerDocument);
-    const focusOutside = useFocusOutside((event) => {
-      const target = event.target;
-      const isFocusInBranch = [...context.branches].some((branch) => branch.contains(target));
-      if (isFocusInBranch) return;
-      onFocusOutside?.(event);
-      onInteractOutside?.(event);
-      if (!event.defaultPrevented) onDismiss?.();
-    }, ownerDocument);
-    useEscapeKeydown((event) => {
-      const isHighestLayer = index === context.layers.size - 1;
-      if (!isHighestLayer) return;
-      onEscapeKeyDown?.(event);
-      if (!event.defaultPrevented && onDismiss) {
-        event.preventDefault();
-        onDismiss();
-      }
-    }, ownerDocument);
-    reactExports.useEffect(() => {
-      if (!node) return;
-      if (disableOutsidePointerEvents) {
-        if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
-          originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
-          ownerDocument.body.style.pointerEvents = "none";
-        }
-        context.layersWithOutsidePointerEventsDisabled.add(node);
-      }
-      context.layers.add(node);
-      dispatchUpdate();
-      return () => {
-        if (disableOutsidePointerEvents && context.layersWithOutsidePointerEventsDisabled.size === 1) {
-          ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
-        }
-      };
-    }, [node, ownerDocument, disableOutsidePointerEvents, context]);
-    reactExports.useEffect(() => {
-      return () => {
-        if (!node) return;
-        context.layers.delete(node);
-        context.layersWithOutsidePointerEventsDisabled.delete(node);
-        dispatchUpdate();
-      };
-    }, [node, context]);
-    reactExports.useEffect(() => {
-      const handleUpdate = () => force({});
-      document.addEventListener(CONTEXT_UPDATE, handleUpdate);
-      return () => document.removeEventListener(CONTEXT_UPDATE, handleUpdate);
-    }, []);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$2.div,
-      {
-        ...layerProps,
-        ref: composedRefs,
-        style: {
-          pointerEvents: isBodyPointerEventsDisabled ? isPointerEventsEnabled ? "auto" : "none" : void 0,
-          ...props.style
-        },
-        onFocusCapture: composeEventHandlers(props.onFocusCapture, focusOutside.onFocusCapture),
-        onBlurCapture: composeEventHandlers(props.onBlurCapture, focusOutside.onBlurCapture),
-        onPointerDownCapture: composeEventHandlers(
-          props.onPointerDownCapture,
-          pointerDownOutside.onPointerDownCapture
-        )
-      }
+var DismissableLayer = reactExports.forwardRef((props, forwardedRef) => {
+  const {
+    disableOutsidePointerEvents = false,
+    onEscapeKeyDown,
+    onPointerDownOutside,
+    onFocusOutside,
+    onInteractOutside,
+    onDismiss,
+    ...layerProps
+  } = props;
+  const context = reactExports.useContext(DismissableLayerContext);
+  const [node, setNode] = reactExports.useState(null);
+  const ownerDocument = node?.ownerDocument ?? globalThis?.document;
+  const [, force] = reactExports.useState({});
+  const composedRefs = useComposedRefs$1(forwardedRef, (node2) =>
+    setNode(node2),
+  );
+  const layers = Array.from(context.layers);
+  const [highestLayerWithOutsidePointerEventsDisabled] = [
+    ...context.layersWithOutsidePointerEventsDisabled,
+  ].slice(-1);
+  const highestLayerWithOutsidePointerEventsDisabledIndex = layers.indexOf(
+    highestLayerWithOutsidePointerEventsDisabled,
+  );
+  const index = node ? layers.indexOf(node) : -1;
+  const isBodyPointerEventsDisabled =
+    context.layersWithOutsidePointerEventsDisabled.size > 0;
+  const isPointerEventsEnabled =
+    index >= highestLayerWithOutsidePointerEventsDisabledIndex;
+  const pointerDownOutside = usePointerDownOutside((event) => {
+    const target = event.target;
+    const isPointerDownOnBranch = [...context.branches].some((branch) =>
+      branch.contains(target),
     );
-  }
-);
+    if (!isPointerEventsEnabled || isPointerDownOnBranch) return;
+    onPointerDownOutside?.(event);
+    onInteractOutside?.(event);
+    if (!event.defaultPrevented) onDismiss?.();
+  }, ownerDocument);
+  const focusOutside = useFocusOutside((event) => {
+    const target = event.target;
+    const isFocusInBranch = [...context.branches].some((branch) =>
+      branch.contains(target),
+    );
+    if (isFocusInBranch) return;
+    onFocusOutside?.(event);
+    onInteractOutside?.(event);
+    if (!event.defaultPrevented) onDismiss?.();
+  }, ownerDocument);
+  useEscapeKeydown((event) => {
+    const isHighestLayer = index === context.layers.size - 1;
+    if (!isHighestLayer) return;
+    onEscapeKeyDown?.(event);
+    if (!event.defaultPrevented && onDismiss) {
+      event.preventDefault();
+      onDismiss();
+    }
+  }, ownerDocument);
+  reactExports.useEffect(() => {
+    if (!node) return;
+    if (disableOutsidePointerEvents) {
+      if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+        originalBodyPointerEvents = ownerDocument.body.style.pointerEvents;
+        ownerDocument.body.style.pointerEvents = "none";
+      }
+      context.layersWithOutsidePointerEventsDisabled.add(node);
+    }
+    context.layers.add(node);
+    dispatchUpdate();
+    return () => {
+      if (
+        disableOutsidePointerEvents &&
+        context.layersWithOutsidePointerEventsDisabled.size === 1
+      ) {
+        ownerDocument.body.style.pointerEvents = originalBodyPointerEvents;
+      }
+    };
+  }, [node, ownerDocument, disableOutsidePointerEvents, context]);
+  reactExports.useEffect(() => {
+    return () => {
+      if (!node) return;
+      context.layers.delete(node);
+      context.layersWithOutsidePointerEventsDisabled.delete(node);
+      dispatchUpdate();
+    };
+  }, [node, context]);
+  reactExports.useEffect(() => {
+    const handleUpdate = () => force({});
+    document.addEventListener(CONTEXT_UPDATE, handleUpdate);
+    return () => document.removeEventListener(CONTEXT_UPDATE, handleUpdate);
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$2.div, {
+    ...layerProps,
+    ref: composedRefs,
+    style: {
+      pointerEvents: isBodyPointerEventsDisabled
+        ? isPointerEventsEnabled
+          ? "auto"
+          : "none"
+        : void 0,
+      ...props.style,
+    },
+    onFocusCapture: composeEventHandlers(
+      props.onFocusCapture,
+      focusOutside.onFocusCapture,
+    ),
+    onBlurCapture: composeEventHandlers(
+      props.onBlurCapture,
+      focusOutside.onBlurCapture,
+    ),
+    onPointerDownCapture: composeEventHandlers(
+      props.onPointerDownCapture,
+      pointerDownOutside.onPointerDownCapture,
+    ),
+  });
+});
 DismissableLayer.displayName = DISMISSABLE_LAYER_NAME;
 var BRANCH_NAME = "DismissableLayerBranch";
 var DismissableLayerBranch = reactExports.forwardRef((props, forwardedRef) => {
@@ -333,30 +405,37 @@ var DismissableLayerBranch = reactExports.forwardRef((props, forwardedRef) => {
       };
     }
   }, [context.branches]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$2.div, { ...props, ref: composedRefs });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$2.div, {
+    ...props,
+    ref: composedRefs,
+  });
 });
 DismissableLayerBranch.displayName = BRANCH_NAME;
-function usePointerDownOutside(onPointerDownOutside, ownerDocument = globalThis?.document) {
+function usePointerDownOutside(
+  onPointerDownOutside,
+  ownerDocument = globalThis?.document,
+) {
   const handlePointerDownOutside = useCallbackRef$2(onPointerDownOutside);
   const isPointerInsideReactTreeRef = reactExports.useRef(false);
-  const handleClickRef = reactExports.useRef(() => {
-  });
+  const handleClickRef = reactExports.useRef(() => {});
   reactExports.useEffect(() => {
     const handlePointerDown = (event) => {
       if (event.target && !isPointerInsideReactTreeRef.current) {
-        let handleAndDispatchPointerDownOutsideEvent2 = function() {
+        let handleAndDispatchPointerDownOutsideEvent2 = function () {
           handleAndDispatchCustomEvent(
             POINTER_DOWN_OUTSIDE,
             handlePointerDownOutside,
             eventDetail,
-            { discrete: true }
+            { discrete: true },
           );
         };
         const eventDetail = { originalEvent: event };
         if (event.pointerType === "touch") {
           ownerDocument.removeEventListener("click", handleClickRef.current);
           handleClickRef.current = handleAndDispatchPointerDownOutsideEvent2;
-          ownerDocument.addEventListener("click", handleClickRef.current, { once: true });
+          ownerDocument.addEventListener("click", handleClickRef.current, {
+            once: true,
+          });
         } else {
           handleAndDispatchPointerDownOutsideEvent2();
         }
@@ -376,7 +455,7 @@ function usePointerDownOutside(onPointerDownOutside, ownerDocument = globalThis?
   }, [ownerDocument, handlePointerDownOutside]);
   return {
     // ensures we check React component tree (not just DOM tree)
-    onPointerDownCapture: () => isPointerInsideReactTreeRef.current = true
+    onPointerDownCapture: () => (isPointerInsideReactTreeRef.current = true),
   };
 }
 function useFocusOutside(onFocusOutside, ownerDocument = globalThis?.document) {
@@ -386,17 +465,22 @@ function useFocusOutside(onFocusOutside, ownerDocument = globalThis?.document) {
     const handleFocus = (event) => {
       if (event.target && !isFocusInsideReactTreeRef.current) {
         const eventDetail = { originalEvent: event };
-        handleAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
-          discrete: false
-        });
+        handleAndDispatchCustomEvent(
+          FOCUS_OUTSIDE,
+          handleFocusOutside,
+          eventDetail,
+          {
+            discrete: false,
+          },
+        );
       }
     };
     ownerDocument.addEventListener("focusin", handleFocus);
     return () => ownerDocument.removeEventListener("focusin", handleFocus);
   }, [ownerDocument, handleFocusOutside]);
   return {
-    onFocusCapture: () => isFocusInsideReactTreeRef.current = true,
-    onBlurCapture: () => isFocusInsideReactTreeRef.current = false
+    onFocusCapture: () => (isFocusInsideReactTreeRef.current = true),
+    onBlurCapture: () => (isFocusInsideReactTreeRef.current = false),
   };
 }
 function dispatchUpdate() {
@@ -405,7 +489,11 @@ function dispatchUpdate() {
 }
 function handleAndDispatchCustomEvent(name, handler, detail, { discrete }) {
   const target = detail.originalEvent.target;
-  const event = new CustomEvent(name, { bubbles: false, cancelable: true, detail });
+  const event = new CustomEvent(name, {
+    bubbles: false,
+    cancelable: true,
+    detail,
+  });
   if (handler) target.addEventListener(name, handler, { once: true });
   if (discrete) {
     dispatchDiscreteCustomEvent(target, event);
@@ -462,15 +550,28 @@ function createSlot$1(ownerName) {
       const newElement = slottable.props.children;
       const newChildren = childrenArray.map((child) => {
         if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
+          if (reactExports.Children.count(newElement) > 1)
+            return reactExports.Children.only(null);
+          return reactExports.isValidElement(newElement)
+            ? newElement.props.children
+            : null;
         } else {
           return child;
         }
       });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+        ...slotProps,
+        ref: forwardedRef,
+        children: reactExports.isValidElement(newElement)
+          ? reactExports.cloneElement(newElement, void 0, newChildren)
+          : null,
+      });
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+      ...slotProps,
+      ref: forwardedRef,
+      children,
+    });
   });
   Slot2.displayName = `${ownerName}.Slot`;
   return Slot2;
@@ -483,18 +584,27 @@ function createSlotClone$1(ownerName) {
       const childrenRef = getElementRef$1(children);
       const props2 = mergeProps$1(slotProps, children.props);
       if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs$1(forwardedRef, childrenRef) : childrenRef;
+        props2.ref = forwardedRef
+          ? composeRefs$1(forwardedRef, childrenRef)
+          : childrenRef;
       }
       return reactExports.cloneElement(children, props2);
     }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
+    return reactExports.Children.count(children) > 1
+      ? reactExports.Children.only(null)
+      : null;
   });
   SlotClone.displayName = `${ownerName}.SlotClone`;
   return SlotClone;
 }
 var SLOTTABLE_IDENTIFIER$1 = Symbol("radix.slottable");
 function isSlottable$1(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER$1;
+  return (
+    reactExports.isValidElement(child) &&
+    typeof child.type === "function" &&
+    "__radixId" in child.type &&
+    child.type.__radixId === SLOTTABLE_IDENTIFIER$1
+  );
 }
 function mergeProps$1(slotProps, childProps) {
   const overrideProps = { ...childProps };
@@ -515,7 +625,9 @@ function mergeProps$1(slotProps, childProps) {
     } else if (propName === "style") {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
     } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
+      overrideProps[propName] = [slotPropValue, childPropValue]
+        .filter(Boolean)
+        .join(" ");
     }
   }
   return { ...slotProps, ...overrideProps };
@@ -552,7 +664,7 @@ var NODES$1 = [
   "select",
   "span",
   "svg",
-  "ul"
+  "ul",
 ];
 var Primitive$1 = NODES$1.reduce((primitive, node) => {
   const Slot = createSlot$1(`Primitive.${node}`);
@@ -562,7 +674,10 @@ var Primitive$1 = NODES$1.reduce((primitive, node) => {
     if (typeof window !== "undefined") {
       window[Symbol.for("radix-ui")] = true;
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, { ...primitiveProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, {
+      ...primitiveProps,
+      ref: forwardedRef,
+    });
   });
   Node.displayName = `Primitive.${node}`;
   return { ...primitive, [node]: Node };
@@ -574,7 +689,12 @@ function useCallbackRef(callback) {
   reactExports.useEffect(() => {
     callbackRef.current = callback;
   });
-  return reactExports.useMemo(() => (...args) => callbackRef.current?.(...args), []);
+  return reactExports.useMemo(
+    () =>
+      (...args) =>
+        callbackRef.current?.(...args),
+    [],
+  );
 }
 
 var AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
@@ -593,7 +713,9 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
   const onMountAutoFocus = useCallbackRef(onMountAutoFocusProp);
   const onUnmountAutoFocus = useCallbackRef(onUnmountAutoFocusProp);
   const lastFocusedElementRef = reactExports.useRef(null);
-  const composedRefs = useComposedRefs(forwardedRef, (node) => setContainer(node));
+  const composedRefs = useComposedRefs(forwardedRef, (node) =>
+    setContainer(node),
+  );
   const focusScope = reactExports.useRef({
     paused: false,
     pause() {
@@ -601,36 +723,39 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
     },
     resume() {
       this.paused = false;
-    }
+    },
   }).current;
   reactExports.useEffect(() => {
     if (trapped) {
-      let handleFocusIn2 = function(event) {
-        if (focusScope.paused || !container) return;
-        const target = event.target;
-        if (container.contains(target)) {
-          lastFocusedElementRef.current = target;
-        } else {
-          focus(lastFocusedElementRef.current, { select: true });
-        }
-      }, handleFocusOut2 = function(event) {
-        if (focusScope.paused || !container) return;
-        const relatedTarget = event.relatedTarget;
-        if (relatedTarget === null) return;
-        if (!container.contains(relatedTarget)) {
-          focus(lastFocusedElementRef.current, { select: true });
-        }
-      }, handleMutations2 = function(mutations) {
-        const focusedElement = document.activeElement;
-        if (focusedElement !== document.body) return;
-        for (const mutation of mutations) {
-          if (mutation.removedNodes.length > 0) focus(container);
-        }
-      };
+      let handleFocusIn2 = function (event) {
+          if (focusScope.paused || !container) return;
+          const target = event.target;
+          if (container.contains(target)) {
+            lastFocusedElementRef.current = target;
+          } else {
+            focus(lastFocusedElementRef.current, { select: true });
+          }
+        },
+        handleFocusOut2 = function (event) {
+          if (focusScope.paused || !container) return;
+          const relatedTarget = event.relatedTarget;
+          if (relatedTarget === null) return;
+          if (!container.contains(relatedTarget)) {
+            focus(lastFocusedElementRef.current, { select: true });
+          }
+        },
+        handleMutations2 = function (mutations) {
+          const focusedElement = document.activeElement;
+          if (focusedElement !== document.body) return;
+          for (const mutation of mutations) {
+            if (mutation.removedNodes.length > 0) focus(container);
+          }
+        };
       document.addEventListener("focusin", handleFocusIn2);
       document.addEventListener("focusout", handleFocusOut2);
       const mutationObserver = new MutationObserver(handleMutations2);
-      if (container) mutationObserver.observe(container, { childList: true, subtree: true });
+      if (container)
+        mutationObserver.observe(container, { childList: true, subtree: true });
       return () => {
         document.removeEventListener("focusin", handleFocusIn2);
         document.removeEventListener("focusout", handleFocusOut2);
@@ -648,7 +773,9 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
         container.addEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
         container.dispatchEvent(mountEvent);
         if (!mountEvent.defaultPrevented) {
-          focusFirst(removeLinks(getTabbableCandidates(container)), { select: true });
+          focusFirst(removeLinks(getTabbableCandidates(container)), {
+            select: true,
+          });
           if (document.activeElement === previouslyFocusedElement) {
             focus(container);
           }
@@ -657,13 +784,19 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
       return () => {
         container.removeEventListener(AUTOFOCUS_ON_MOUNT, onMountAutoFocus);
         setTimeout(() => {
-          const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+          const unmountEvent = new CustomEvent(
+            AUTOFOCUS_ON_UNMOUNT,
+            EVENT_OPTIONS,
+          );
           container.addEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
           container.dispatchEvent(unmountEvent);
           if (!unmountEvent.defaultPrevented) {
             focus(previouslyFocusedElement ?? document.body, { select: true });
           }
-          container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, onUnmountAutoFocus);
+          container.removeEventListener(
+            AUTOFOCUS_ON_UNMOUNT,
+            onUnmountAutoFocus,
+          );
           focusScopesStack.remove(focusScope);
         }, 0);
       };
@@ -673,7 +806,11 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
     (event) => {
       if (!loop && !trapped) return;
       if (focusScope.paused) return;
-      const isTabKey = event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey;
+      const isTabKey =
+        event.key === "Tab" &&
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey;
       const focusedElement = document.activeElement;
       if (isTabKey && focusedElement) {
         const container2 = event.currentTarget;
@@ -692,9 +829,14 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
         }
       }
     },
-    [loop, trapped, focusScope.paused]
+    [loop, trapped, focusScope.paused],
   );
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { tabIndex: -1, ...scopeProps, ref: composedRefs, onKeyDown: handleKeyDown });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, {
+    tabIndex: -1,
+    ...scopeProps,
+    ref: composedRefs,
+    onKeyDown: handleKeyDown,
+  });
 });
 FocusScope.displayName = FOCUS_SCOPE_NAME;
 function focusFirst(candidates, { select = false } = {}) {
@@ -715,9 +857,12 @@ function getTabbableCandidates(container) {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node) => {
       const isHiddenInput = node.tagName === "INPUT" && node.type === "hidden";
-      if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
-      return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-    }
+      if (node.disabled || node.hidden || isHiddenInput)
+        return NodeFilter.FILTER_SKIP;
+      return node.tabIndex >= 0
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_SKIP;
+    },
   });
   while (walker.nextNode()) nodes.push(walker.currentNode);
   return nodes;
@@ -743,7 +888,11 @@ function focus(element, { select = false } = {}) {
   if (element && element.focus) {
     const previouslyFocusedElement = document.activeElement;
     element.focus({ preventScroll: true });
-    if (element !== previouslyFocusedElement && isSelectableInput(element) && select)
+    if (
+      element !== previouslyFocusedElement &&
+      isSelectableInput(element) &&
+      select
+    )
       element.select();
   }
 }
@@ -762,7 +911,7 @@ function createFocusScopesStack() {
     remove(focusScope) {
       stack = arrayRemove(stack, focusScope);
       stack[0]?.resume();
-    }
+    },
   };
 }
 function arrayRemove(array, item) {
@@ -822,15 +971,28 @@ function createSlot(ownerName) {
       const newElement = slottable.props.children;
       const newChildren = childrenArray.map((child) => {
         if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
+          if (reactExports.Children.count(newElement) > 1)
+            return reactExports.Children.only(null);
+          return reactExports.isValidElement(newElement)
+            ? newElement.props.children
+            : null;
         } else {
           return child;
         }
       });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+        ...slotProps,
+        ref: forwardedRef,
+        children: reactExports.isValidElement(newElement)
+          ? reactExports.cloneElement(newElement, void 0, newChildren)
+          : null,
+      });
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+      ...slotProps,
+      ref: forwardedRef,
+      children,
+    });
   });
   Slot2.displayName = `${ownerName}.Slot`;
   return Slot2;
@@ -843,18 +1005,27 @@ function createSlotClone(ownerName) {
       const childrenRef = getElementRef(children);
       const props2 = mergeProps(slotProps, children.props);
       if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+        props2.ref = forwardedRef
+          ? composeRefs(forwardedRef, childrenRef)
+          : childrenRef;
       }
       return reactExports.cloneElement(children, props2);
     }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
+    return reactExports.Children.count(children) > 1
+      ? reactExports.Children.only(null)
+      : null;
   });
   SlotClone.displayName = `${ownerName}.SlotClone`;
   return SlotClone;
 }
 var SLOTTABLE_IDENTIFIER = Symbol("radix.slottable");
 function isSlottable(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER;
+  return (
+    reactExports.isValidElement(child) &&
+    typeof child.type === "function" &&
+    "__radixId" in child.type &&
+    child.type.__radixId === SLOTTABLE_IDENTIFIER
+  );
 }
 function mergeProps(slotProps, childProps) {
   const overrideProps = { ...childProps };
@@ -875,7 +1046,9 @@ function mergeProps(slotProps, childProps) {
     } else if (propName === "style") {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
     } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
+      overrideProps[propName] = [slotPropValue, childPropValue]
+        .filter(Boolean)
+        .join(" ");
     }
   }
   return { ...slotProps, ...overrideProps };
@@ -912,7 +1085,7 @@ var NODES = [
   "select",
   "span",
   "svg",
-  "ul"
+  "ul",
 ];
 var Primitive = NODES.reduce((primitive, node) => {
   const Slot = createSlot(`Primitive.${node}`);
@@ -922,23 +1095,35 @@ var Primitive = NODES.reduce((primitive, node) => {
     if (typeof window !== "undefined") {
       window[Symbol.for("radix-ui")] = true;
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, { ...primitiveProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, {
+      ...primitiveProps,
+      ref: forwardedRef,
+    });
   });
   Node.displayName = `Primitive.${node}`;
   return { ...primitive, [node]: Node };
 }, {});
 
 // packages/react/use-layout-effect/src/use-layout-effect.tsx
-var useLayoutEffect2 = globalThis?.document ? reactExports.useLayoutEffect : () => {
-};
+var useLayoutEffect2 = globalThis?.document
+  ? reactExports.useLayoutEffect
+  : () => {};
 
 var PORTAL_NAME = "Portal";
 var Portal = reactExports.forwardRef((props, forwardedRef) => {
   const { container: containerProp, ...portalProps } = props;
   const [mounted, setMounted] = reactExports.useState(false);
   useLayoutEffect2(() => setMounted(true), []);
-  const container = containerProp || mounted && globalThis?.document?.body;
-  return container ? ReactDOM.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...portalProps, ref: forwardedRef }), container) : null;
+  const container = containerProp || (mounted && globalThis?.document?.body);
+  return container
+    ? ReactDOM.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, {
+          ...portalProps,
+          ref: forwardedRef,
+        }),
+        container,
+      )
+    : null;
 });
 Portal.displayName = PORTAL_NAME;
 
@@ -946,12 +1131,20 @@ var count = 0;
 function useFocusGuards() {
   reactExports.useEffect(() => {
     const edgeGuards = document.querySelectorAll("[data-radix-focus-guard]");
-    document.body.insertAdjacentElement("afterbegin", edgeGuards[0] ?? createFocusGuard());
-    document.body.insertAdjacentElement("beforeend", edgeGuards[1] ?? createFocusGuard());
+    document.body.insertAdjacentElement(
+      "afterbegin",
+      edgeGuards[0] ?? createFocusGuard(),
+    );
+    document.body.insertAdjacentElement(
+      "beforeend",
+      edgeGuards[1] ?? createFocusGuard(),
+    );
     count++;
     return () => {
       if (count === 1) {
-        document.querySelectorAll("[data-radix-focus-guard]").forEach((node) => node.remove());
+        document
+          .querySelectorAll("[data-radix-focus-guard]")
+          .forEach((node) => node.remove());
       }
       count--;
     };
@@ -968,4 +1161,10 @@ function createFocusGuard() {
   return element;
 }
 
-export { DismissableLayer as D, FocusScope as F, Portal as P, X, useFocusGuards as u };
+export {
+  DismissableLayer as D,
+  FocusScope as F,
+  Portal as P,
+  X,
+  useFocusGuards as u,
+};

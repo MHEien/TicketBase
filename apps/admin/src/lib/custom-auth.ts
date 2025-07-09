@@ -1,6 +1,6 @@
 // Custom authentication implementation for NestJS backend integration
 // Maintains API compatibility with Better Auth while working directly with backend
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 interface User {
   id: string;
@@ -68,23 +68,23 @@ class TokenStorage {
     // Set cookies with secure attributes
     Cookies.set(ACCESS_TOKEN_KEY, tokens.accessToken, {
       secure: true,
-      sameSite: 'strict',
-      expires: 7 // days
+      sameSite: "strict",
+      expires: 7, // days
     });
     Cookies.set(REFRESH_TOKEN_KEY, tokens.refreshToken, {
       secure: true,
-      sameSite: 'strict',
-      expires: 30 // days
+      sameSite: "strict",
+      expires: 30, // days
     });
     Cookies.set(USER_DATA_KEY, JSON.stringify(user), {
       secure: true,
-      sameSite: 'strict',
-      expires: 7 // days
+      sameSite: "strict",
+      expires: 7, // days
     });
     Cookies.set(EXPIRES_AT_KEY, expiresAt.toString(), {
       secure: true,
-      sameSite: 'strict',
-      expires: 7 // days
+      sameSite: "strict",
+      expires: 7, // days
     });
   }
 

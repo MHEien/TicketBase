@@ -3,7 +3,7 @@
  * Fetches plugin metadata from API and loads them using the Plugin Manager
  */
 
-import { pluginManager, type PluginMetadata } from './plugin-manager';
+import { pluginManager, type PluginMetadata } from "./plugin-manager";
 
 export interface PluginLoaderConfig {
   apiBaseUrl: string;
@@ -25,25 +25,24 @@ class PluginLoader {
    */
   async loadAvailablePlugins(): Promise<void> {
     if (this.isLoading) {
-      console.log('🔌 Plugin loading already in progress...');
+      console.log("🔌 Plugin loading already in progress...");
       return;
     }
 
     this.isLoading = true;
 
     try {
-      console.log('🔌 Fetching available plugins...');
-      
+      console.log("🔌 Fetching available plugins...");
+
       // Fetch available plugins from the API
       const plugins = await this.fetchAvailablePlugins();
-      
+
       console.log(`🔌 Found ${plugins.length} available plugins`);
 
       // Load plugins in batches to avoid overwhelming the browser
       await this.loadPluginsInBatches(plugins, 3);
-
     } catch (error) {
-      console.error('❌ Failed to load available plugins:', error);
+      console.error("❌ Failed to load available plugins:", error);
       throw error;
     } finally {
       this.isLoading = false;
@@ -55,25 +54,24 @@ class PluginLoader {
    */
   async loadInstalledPlugins(): Promise<void> {
     if (this.isLoading) {
-      console.log('🔌 Plugin loading already in progress...');
+      console.log("🔌 Plugin loading already in progress...");
       return;
     }
 
     this.isLoading = true;
 
     try {
-      console.log('🔌 Fetching installed plugins...');
-      
+      console.log("🔌 Fetching installed plugins...");
+
       // Fetch installed plugins from the API
       const plugins = await this.fetchInstalledPlugins();
-      
+
       console.log(`🔌 Found ${plugins.length} installed plugins`);
 
       // Load plugins in batches
       await this.loadPluginsInBatches(plugins, 3);
-
     } catch (error) {
-      console.error('❌ Failed to load installed plugins:', error);
+      console.error("❌ Failed to load installed plugins:", error);
       throw error;
     } finally {
       this.isLoading = false;
@@ -86,16 +84,15 @@ class PluginLoader {
   async loadPlugin(pluginId: string): Promise<void> {
     try {
       console.log(`🔌 Loading specific plugin: ${pluginId}`);
-      
+
       const plugin = await this.fetchPluginById(pluginId);
-      
+
       if (!plugin) {
         throw new Error(`Plugin ${pluginId} not found`);
       }
 
       await pluginManager.loadPlugin(plugin);
       this.loadedPluginIds.add(pluginId);
-
     } catch (error) {
       console.error(`❌ Failed to load plugin ${pluginId}:`, error);
       throw error;
@@ -106,12 +103,17 @@ class PluginLoader {
    * Fetch available plugins from API
    */
   private async fetchAvailablePlugins(): Promise<PluginMetadata[]> {
-    const response = await fetch(`${this.config.apiBaseUrl}/api/plugins/available`, {
-      headers: this.createHeaders(),
-    });
+    const response = await fetch(
+      `${this.config.apiBaseUrl}/api/plugins/available`,
+      {
+        headers: this.createHeaders(),
+      },
+    );
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch available plugins: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch available plugins: ${response.status} ${response.statusText}`,
+      );
     }
 
     const plugins = await response.json();
@@ -123,9 +125,9 @@ class PluginLoader {
    */
   private async fetchInstalledPlugins(): Promise<PluginMetadata[]> {
     const url = new URL(`${this.config.apiBaseUrl}/api/plugins/installed`);
-    
+
     if (this.config.organizationId) {
-      url.searchParams.set('organizationId', this.config.organizationId);
+      url.searchParams.set("organizationId", this.config.organizationId);
     }
 
     const response = await fetch(url.toString(), {
@@ -133,7 +135,9 @@ class PluginLoader {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch installed plugins: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch installed plugins: ${response.status} ${response.statusText}`,
+      );
     }
 
     const plugins = await response.json();
@@ -143,17 +147,24 @@ class PluginLoader {
   /**
    * Fetch a specific plugin by ID
    */
-  private async fetchPluginById(pluginId: string): Promise<PluginMetadata | null> {
-    const response = await fetch(`${this.config.apiBaseUrl}/api/plugins/${pluginId}`, {
-      headers: this.createHeaders(),
-    });
+  private async fetchPluginById(
+    pluginId: string,
+  ): Promise<PluginMetadata | null> {
+    const response = await fetch(
+      `${this.config.apiBaseUrl}/api/plugins/${pluginId}`,
+      {
+        headers: this.createHeaders(),
+      },
+    );
 
     if (response.status === 404) {
       return null;
     }
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch plugin ${pluginId}: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch plugin ${pluginId}: ${response.status} ${response.statusText}`,
+      );
     }
 
     const plugin = await response.json();
@@ -163,16 +174,19 @@ class PluginLoader {
   /**
    * Load plugins in batches to avoid overwhelming the browser
    */
-  private async loadPluginsInBatches(plugins: PluginMetadata[], batchSize: number): Promise<void> {
+  private async loadPluginsInBatches(
+    plugins: PluginMetadata[],
+    batchSize: number,
+  ): Promise<void> {
     const batches = [];
-    
+
     for (let i = 0; i < plugins.length; i += batchSize) {
       batches.push(plugins.slice(i, i + batchSize));
     }
 
     for (const batch of batches) {
       console.log(`🔌 Loading batch of ${batch.length} plugins...`);
-      
+
       // Load batch concurrently
       const promises = batch.map(async (plugin) => {
         try {
@@ -186,9 +200,9 @@ class PluginLoader {
       });
 
       await Promise.allSettled(promises);
-      
+
       // Small delay between batches to prevent overwhelming
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 
@@ -196,7 +210,7 @@ class PluginLoader {
    * Transform API response to PluginMetadata format
    */
   private transformPluginsResponse(plugins: any[]): PluginMetadata[] {
-    return plugins.map(plugin => this.transformPluginResponse(plugin));
+    return plugins.map((plugin) => this.transformPluginResponse(plugin));
   }
 
   /**
@@ -221,11 +235,11 @@ class PluginLoader {
    */
   private createHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (this.config.authToken) {
-      headers['Authorization'] = `Bearer ${this.config.authToken}`;
+      headers["Authorization"] = `Bearer ${this.config.authToken}`;
     }
 
     return headers;
@@ -263,9 +277,10 @@ class PluginLoader {
 
 // Create and export singleton instance
 export const pluginLoader = new PluginLoader({
-  apiBaseUrl: typeof window !== 'undefined' 
-    ? window.location.origin 
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  apiBaseUrl:
+    typeof window !== "undefined"
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
 });
 
 export default pluginLoader;

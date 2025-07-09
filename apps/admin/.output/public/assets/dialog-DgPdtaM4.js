@@ -1,8 +1,25 @@
-import { r as reactExports, j as jsxRuntimeExports, aq as React, af as hideOthers, ag as ReactRemoveScroll, e as cn } from './main-D54NVj6U.js';
-import { P as Portal$1, u as useFocusGuards, F as FocusScope, D as DismissableLayer, X } from './index-B18GAnIN.js';
+import {
+  r as reactExports,
+  j as jsxRuntimeExports,
+  aq as React,
+  af as hideOthers,
+  ag as ReactRemoveScroll,
+  e as cn,
+} from "./main-D54NVj6U.js";
+import {
+  P as Portal$1,
+  u as useFocusGuards,
+  F as FocusScope,
+  D as DismissableLayer,
+  X,
+} from "./index-B18GAnIN.js";
 
 // packages/core/primitive/src/primitive.tsx
-function composeEventHandlers(originalEventHandler, ourEventHandler, { checkForDefaultPrevented = true } = {}) {
+function composeEventHandlers(
+  originalEventHandler,
+  ourEventHandler,
+  { checkForDefaultPrevented = true } = {},
+) {
   return function handleEvent(event) {
     originalEventHandler?.(event);
     if (checkForDefaultPrevented === false || !event.defaultPrevented) {
@@ -53,14 +70,19 @@ function createContext2(rootComponentName, defaultContext) {
   const Provider = (props) => {
     const { children, ...context } = props;
     const value = reactExports.useMemo(() => context, Object.values(context));
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, {
+      value,
+      children,
+    });
   };
   Provider.displayName = rootComponentName + "Provider";
   function useContext2(consumerName) {
     const context = reactExports.useContext(Context);
     if (context) return context;
     if (defaultContext !== void 0) return defaultContext;
-    throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+    throw new Error(
+      `\`${consumerName}\` must be used within \`${rootComponentName}\``,
+    );
   }
   return [Provider, useContext2];
 }
@@ -74,7 +96,10 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
       const { scope, children, ...context } = props;
       const Context = scope?.[scopeName]?.[index] || BaseContext;
       const value = reactExports.useMemo(() => context, Object.values(context));
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, { value, children });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Context.Provider, {
+        value,
+        children,
+      });
     };
     Provider.displayName = rootComponentName + "Provider";
     function useContext2(consumerName, scope) {
@@ -82,7 +107,9 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
       const context = reactExports.useContext(Context);
       if (context) return context;
       if (defaultContext !== void 0) return defaultContext;
-      throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
+      throw new Error(
+        `\`${consumerName}\` must be used within \`${rootComponentName}\``,
+      );
     }
     return [Provider, useContext2];
   }
@@ -93,13 +120,18 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
     return function useScope(scope) {
       const contexts = scope?.[scopeName] || scopeContexts;
       return reactExports.useMemo(
-        () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
-        [scope, contexts]
+        () => ({
+          [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts },
+        }),
+        [scope, contexts],
       );
     };
   };
   createScope.scopeName = scopeName;
-  return [createContext3, composeContextScopes(createScope, ...createContextScopeDeps)];
+  return [
+    createContext3,
+    composeContextScopes(createScope, ...createContextScopeDeps),
+  ];
 }
 function composeContextScopes(...scopes) {
   const baseScope = scopes[0];
@@ -107,15 +139,21 @@ function composeContextScopes(...scopes) {
   const createScope = () => {
     const scopeHooks = scopes.map((createScope2) => ({
       useScope: createScope2(),
-      scopeName: createScope2.scopeName
+      scopeName: createScope2.scopeName,
     }));
     return function useComposedScopes(overrideScopes) {
-      const nextScopes = scopeHooks.reduce((nextScopes2, { useScope, scopeName }) => {
-        const scopeProps = useScope(overrideScopes);
-        const currentScope = scopeProps[`__scope${scopeName}`];
-        return { ...nextScopes2, ...currentScope };
-      }, {});
-      return reactExports.useMemo(() => ({ [`__scope${baseScope.scopeName}`]: nextScopes }), [nextScopes]);
+      const nextScopes = scopeHooks.reduce(
+        (nextScopes2, { useScope, scopeName }) => {
+          const scopeProps = useScope(overrideScopes);
+          const currentScope = scopeProps[`__scope${scopeName}`];
+          return { ...nextScopes2, ...currentScope };
+        },
+        {},
+      );
+      return reactExports.useMemo(
+        () => ({ [`__scope${baseScope.scopeName}`]: nextScopes }),
+        [nextScopes],
+      );
     };
   };
   createScope.scopeName = baseScope.scopeName;
@@ -123,8 +161,9 @@ function composeContextScopes(...scopes) {
 }
 
 // packages/react/use-layout-effect/src/use-layout-effect.tsx
-var useLayoutEffect2$2 = globalThis?.document ? reactExports.useLayoutEffect : () => {
-};
+var useLayoutEffect2$2 = globalThis?.document
+  ? reactExports.useLayoutEffect
+  : () => {};
 
 // packages/react/id/src/id.tsx
 var useReactId = React[" useId ".trim().toString()] || (() => void 0);
@@ -138,22 +177,24 @@ function useId(deterministicId) {
 }
 
 // packages/react/use-layout-effect/src/use-layout-effect.tsx
-var useLayoutEffect2$1 = globalThis?.document ? reactExports.useLayoutEffect : () => {
-};
+var useLayoutEffect2$1 = globalThis?.document
+  ? reactExports.useLayoutEffect
+  : () => {};
 
 // src/use-controllable-state.tsx
-var useInsertionEffect = React[" useInsertionEffect ".trim().toString()] || useLayoutEffect2$1;
+var useInsertionEffect =
+  React[" useInsertionEffect ".trim().toString()] || useLayoutEffect2$1;
 function useControllableState({
   prop,
   defaultProp,
-  onChange = () => {
-  },
-  caller
+  onChange = () => {},
+  caller,
 }) {
-  const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
-    defaultProp,
-    onChange
-  });
+  const [uncontrolledProp, setUncontrolledProp, onChangeRef] =
+    useUncontrolledState({
+      defaultProp,
+      onChange,
+    });
   const isControlled = prop !== void 0;
   const value = isControlled ? prop : uncontrolledProp;
   {
@@ -164,7 +205,7 @@ function useControllableState({
         const from = wasControlled ? "controlled" : "uncontrolled";
         const to = isControlled ? "controlled" : "uncontrolled";
         console.warn(
-          `${caller} is changing from ${from} to ${to}. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.`
+          `${caller} is changing from ${from} to ${to}. Components should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled value for the lifetime of the component.`,
         );
       }
       isControlledRef.current = isControlled;
@@ -181,14 +222,11 @@ function useControllableState({
         setUncontrolledProp(nextValue);
       }
     },
-    [isControlled, prop, setUncontrolledProp, onChangeRef]
+    [isControlled, prop, setUncontrolledProp, onChangeRef],
   );
   return [value, setValue];
 }
-function useUncontrolledState({
-  defaultProp,
-  onChange
-}) {
+function useUncontrolledState({ defaultProp, onChange }) {
   const [value, setValue] = reactExports.useState(defaultProp);
   const prevValueRef = reactExports.useRef(value);
   const onChangeRef = reactExports.useRef(onChange);
@@ -208,8 +246,9 @@ function isFunction(value) {
 }
 
 // packages/react/use-layout-effect/src/use-layout-effect.tsx
-var useLayoutEffect2 = globalThis?.document ? reactExports.useLayoutEffect : () => {
-};
+var useLayoutEffect2 = globalThis?.document
+  ? reactExports.useLayoutEffect
+  : () => {};
 
 function useStateMachine(initialState, machine) {
   return reactExports.useReducer((state, event) => {
@@ -222,10 +261,15 @@ function useStateMachine(initialState, machine) {
 var Presence = (props) => {
   const { present, children } = props;
   const presence = usePresence(present);
-  const child = typeof children === "function" ? children({ present: presence.isPresent }) : reactExports.Children.only(children);
+  const child =
+    typeof children === "function"
+      ? children({ present: presence.isPresent })
+      : reactExports.Children.only(children);
   const ref = useComposedRefs(presence.ref, getElementRef$1(child));
   const forceMount = typeof children === "function";
-  return forceMount || presence.isPresent ? reactExports.cloneElement(child, { ref }) : null;
+  return forceMount || presence.isPresent
+    ? reactExports.cloneElement(child, { ref })
+    : null;
 };
 Presence.displayName = "Presence";
 function usePresence(present) {
@@ -237,19 +281,20 @@ function usePresence(present) {
   const [state, send] = useStateMachine(initialState, {
     mounted: {
       UNMOUNT: "unmounted",
-      ANIMATION_OUT: "unmountSuspended"
+      ANIMATION_OUT: "unmountSuspended",
     },
     unmountSuspended: {
       MOUNT: "mounted",
-      ANIMATION_END: "unmounted"
+      ANIMATION_END: "unmounted",
     },
     unmounted: {
-      MOUNT: "mounted"
-    }
+      MOUNT: "mounted",
+    },
   });
   reactExports.useEffect(() => {
     const currentAnimationName = getAnimationName(stylesRef.current);
-    prevAnimationNameRef.current = state === "mounted" ? currentAnimationName : "none";
+    prevAnimationNameRef.current =
+      state === "mounted" ? currentAnimationName : "none";
   }, [state]);
   useLayoutEffect2(() => {
     const styles = stylesRef.current;
@@ -260,7 +305,10 @@ function usePresence(present) {
       const currentAnimationName = getAnimationName(styles);
       if (present) {
         send("MOUNT");
-      } else if (currentAnimationName === "none" || styles?.display === "none") {
+      } else if (
+        currentAnimationName === "none" ||
+        styles?.display === "none"
+      ) {
         send("UNMOUNT");
       } else {
         const isAnimating = prevAnimationName !== currentAnimationName;
@@ -279,7 +327,9 @@ function usePresence(present) {
       const ownerWindow = node.ownerDocument.defaultView ?? window;
       const handleAnimationEnd = (event) => {
         const currentAnimationName = getAnimationName(stylesRef.current);
-        const isCurrentAnimation = currentAnimationName.includes(event.animationName);
+        const isCurrentAnimation = currentAnimationName.includes(
+          event.animationName,
+        );
         if (event.target === node && isCurrentAnimation) {
           send("ANIMATION_END");
           if (!prevPresentRef.current) {
@@ -316,7 +366,7 @@ function usePresence(present) {
     ref: reactExports.useCallback((node2) => {
       stylesRef.current = node2 ? getComputedStyle(node2) : null;
       setNode(node2);
-    }, [])
+    }, []),
   };
 }
 function getAnimationName(styles) {
@@ -348,15 +398,28 @@ function createSlot(ownerName) {
       const newElement = slottable.props.children;
       const newChildren = childrenArray.map((child) => {
         if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
+          if (reactExports.Children.count(newElement) > 1)
+            return reactExports.Children.only(null);
+          return reactExports.isValidElement(newElement)
+            ? newElement.props.children
+            : null;
         } else {
           return child;
         }
       });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+        ...slotProps,
+        ref: forwardedRef,
+        children: reactExports.isValidElement(newElement)
+          ? reactExports.cloneElement(newElement, void 0, newChildren)
+          : null,
+      });
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, {
+      ...slotProps,
+      ref: forwardedRef,
+      children,
+    });
   });
   Slot2.displayName = `${ownerName}.Slot`;
   return Slot2;
@@ -369,18 +432,27 @@ function createSlotClone(ownerName) {
       const childrenRef = getElementRef(children);
       const props2 = mergeProps(slotProps, children.props);
       if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
+        props2.ref = forwardedRef
+          ? composeRefs(forwardedRef, childrenRef)
+          : childrenRef;
       }
       return reactExports.cloneElement(children, props2);
     }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
+    return reactExports.Children.count(children) > 1
+      ? reactExports.Children.only(null)
+      : null;
   });
   SlotClone.displayName = `${ownerName}.SlotClone`;
   return SlotClone;
 }
 var SLOTTABLE_IDENTIFIER = Symbol("radix.slottable");
 function isSlottable(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER;
+  return (
+    reactExports.isValidElement(child) &&
+    typeof child.type === "function" &&
+    "__radixId" in child.type &&
+    child.type.__radixId === SLOTTABLE_IDENTIFIER
+  );
 }
 function mergeProps(slotProps, childProps) {
   const overrideProps = { ...childProps };
@@ -401,7 +473,9 @@ function mergeProps(slotProps, childProps) {
     } else if (propName === "style") {
       overrideProps[propName] = { ...slotPropValue, ...childPropValue };
     } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
+      overrideProps[propName] = [slotPropValue, childPropValue]
+        .filter(Boolean)
+        .join(" ");
     }
   }
   return { ...slotProps, ...overrideProps };
@@ -438,7 +512,7 @@ var NODES = [
   "select",
   "span",
   "svg",
-  "ul"
+  "ul",
 ];
 var Primitive = NODES.reduce((primitive, node) => {
   const Slot = createSlot(`Primitive.${node}`);
@@ -448,7 +522,10 @@ var Primitive = NODES.reduce((primitive, node) => {
     if (typeof window !== "undefined") {
       window[Symbol.for("radix-ui")] = true;
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, { ...primitiveProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, {
+      ...primitiveProps,
+      ref: forwardedRef,
+    });
   });
   Node.displayName = `Primitive.${node}`;
   return { ...primitive, [node]: Node };
@@ -464,7 +541,7 @@ var Dialog$1 = (props) => {
     open: openProp,
     defaultOpen,
     onOpenChange,
-    modal = true
+    modal = true,
   } = props;
   const triggerRef = reactExports.useRef(null);
   const contentRef = reactExports.useRef(null);
@@ -472,244 +549,276 @@ var Dialog$1 = (props) => {
     prop: openProp,
     defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
-    caller: DIALOG_NAME
+    caller: DIALOG_NAME,
   });
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    DialogProvider,
-    {
-      scope: __scopeDialog,
-      triggerRef,
-      contentRef,
-      contentId: useId(),
-      titleId: useId(),
-      descriptionId: useId(),
-      open,
-      onOpenChange: setOpen,
-      onOpenToggle: reactExports.useCallback(() => setOpen((prevOpen) => !prevOpen), [setOpen]),
-      modal,
-      children
-    }
-  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogProvider, {
+    scope: __scopeDialog,
+    triggerRef,
+    contentRef,
+    contentId: useId(),
+    titleId: useId(),
+    descriptionId: useId(),
+    open,
+    onOpenChange: setOpen,
+    onOpenToggle: reactExports.useCallback(
+      () => setOpen((prevOpen) => !prevOpen),
+      [setOpen],
+    ),
+    modal,
+    children,
+  });
 };
 Dialog$1.displayName = DIALOG_NAME;
 var TRIGGER_NAME = "DialogTrigger";
-var DialogTrigger = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeDialog, ...triggerProps } = props;
-    const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive.button,
-      {
-        type: "button",
-        "aria-haspopup": "dialog",
-        "aria-expanded": context.open,
-        "aria-controls": context.contentId,
-        "data-state": getState(context.open),
-        ...triggerProps,
-        ref: composedTriggerRef,
-        onClick: composeEventHandlers(props.onClick, context.onOpenToggle)
-      }
-    );
-  }
-);
+var DialogTrigger = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeDialog, ...triggerProps } = props;
+  const context = useDialogContext(TRIGGER_NAME, __scopeDialog);
+  const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.button, {
+    type: "button",
+    "aria-haspopup": "dialog",
+    "aria-expanded": context.open,
+    "aria-controls": context.contentId,
+    "data-state": getState(context.open),
+    ...triggerProps,
+    ref: composedTriggerRef,
+    onClick: composeEventHandlers(props.onClick, context.onOpenToggle),
+  });
+});
 DialogTrigger.displayName = TRIGGER_NAME;
 var PORTAL_NAME = "DialogPortal";
 var [PortalProvider, usePortalContext] = createDialogContext(PORTAL_NAME, {
-  forceMount: void 0
+  forceMount: void 0,
 });
 var DialogPortal$1 = (props) => {
   const { __scopeDialog, forceMount, children, container } = props;
   const context = useDialogContext(PORTAL_NAME, __scopeDialog);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(PortalProvider, { scope: __scopeDialog, forceMount, children: reactExports.Children.map(children, (child) => /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || context.open, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$1, { asChild: true, container, children: child }) })) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(PortalProvider, {
+    scope: __scopeDialog,
+    forceMount,
+    children: reactExports.Children.map(children, (child) =>
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, {
+        present: forceMount || context.open,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(Portal$1, {
+          asChild: true,
+          container,
+          children: child,
+        }),
+      }),
+    ),
+  });
 };
 DialogPortal$1.displayName = PORTAL_NAME;
 var OVERLAY_NAME = "DialogOverlay";
-var DialogOverlay$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const portalContext = usePortalContext(OVERLAY_NAME, props.__scopeDialog);
-    const { forceMount = portalContext.forceMount, ...overlayProps } = props;
-    const context = useDialogContext(OVERLAY_NAME, props.__scopeDialog);
-    return context.modal ? /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || context.open, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogOverlayImpl, { ...overlayProps, ref: forwardedRef }) }) : null;
-  }
-);
-DialogOverlay$1.displayName = OVERLAY_NAME;
-var Slot = createSlot("DialogOverlay.RemoveScroll");
-var DialogOverlayImpl = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeDialog, ...overlayProps } = props;
-    const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
-    return (
-      // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
-      // ie. when `Overlay` and `Content` are siblings
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, { as: Slot, allowPinchZoom: true, shards: [context.contentRef], children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive.div,
-        {
-          "data-state": getState(context.open),
+var DialogOverlay$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const portalContext = usePortalContext(OVERLAY_NAME, props.__scopeDialog);
+  const { forceMount = portalContext.forceMount, ...overlayProps } = props;
+  const context = useDialogContext(OVERLAY_NAME, props.__scopeDialog);
+  return context.modal
+    ? /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, {
+        present: forceMount || context.open,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogOverlayImpl, {
           ...overlayProps,
           ref: forwardedRef,
-          style: { pointerEvents: "auto", ...overlayProps.style }
-        }
-      ) })
-    );
-  }
-);
-var CONTENT_NAME = "DialogContent";
-var DialogContent$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const portalContext = usePortalContext(CONTENT_NAME, props.__scopeDialog);
-    const { forceMount = portalContext.forceMount, ...contentProps } = props;
-    const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, { present: forceMount || context.open, children: context.modal ? /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentModal, { ...contentProps, ref: forwardedRef }) : /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentNonModal, { ...contentProps, ref: forwardedRef }) });
-  }
-);
-DialogContent$1.displayName = CONTENT_NAME;
-var DialogContentModal = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
-    const contentRef = reactExports.useRef(null);
-    const composedRefs = useComposedRefs(forwardedRef, context.contentRef, contentRef);
-    reactExports.useEffect(() => {
-      const content = contentRef.current;
-      if (content) return hideOthers(content);
-    }, []);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      DialogContentImpl,
-      {
-        ...props,
-        ref: composedRefs,
-        trapFocus: context.open,
-        disableOutsidePointerEvents: true,
-        onCloseAutoFocus: composeEventHandlers(props.onCloseAutoFocus, (event) => {
-          event.preventDefault();
-          context.triggerRef.current?.focus();
         }),
-        onPointerDownOutside: composeEventHandlers(props.onPointerDownOutside, (event) => {
-          const originalEvent = event.detail.originalEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-          if (isRightClick) event.preventDefault();
-        }),
-        onFocusOutside: composeEventHandlers(
-          props.onFocusOutside,
-          (event) => event.preventDefault()
-        )
-      }
-    );
-  }
-);
-var DialogContentNonModal = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
-    const hasInteractedOutsideRef = reactExports.useRef(false);
-    const hasPointerDownOutsideRef = reactExports.useRef(false);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      DialogContentImpl,
-      {
-        ...props,
+      })
+    : null;
+});
+DialogOverlay$1.displayName = OVERLAY_NAME;
+var Slot = createSlot("DialogOverlay.RemoveScroll");
+var DialogOverlayImpl = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeDialog, ...overlayProps } = props;
+  const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
+  return (
+    // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
+    // ie. when `Overlay` and `Content` are siblings
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ReactRemoveScroll, {
+      as: Slot,
+      allowPinchZoom: true,
+      shards: [context.contentRef],
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, {
+        "data-state": getState(context.open),
+        ...overlayProps,
         ref: forwardedRef,
-        trapFocus: false,
-        disableOutsidePointerEvents: false,
-        onCloseAutoFocus: (event) => {
-          props.onCloseAutoFocus?.(event);
-          if (!event.defaultPrevented) {
-            if (!hasInteractedOutsideRef.current) context.triggerRef.current?.focus();
-            event.preventDefault();
-          }
-          hasInteractedOutsideRef.current = false;
-          hasPointerDownOutsideRef.current = false;
-        },
-        onInteractOutside: (event) => {
-          props.onInteractOutside?.(event);
-          if (!event.defaultPrevented) {
-            hasInteractedOutsideRef.current = true;
-            if (event.detail.originalEvent.type === "pointerdown") {
-              hasPointerDownOutsideRef.current = true;
-            }
-          }
-          const target = event.target;
-          const targetIsTrigger = context.triggerRef.current?.contains(target);
-          if (targetIsTrigger) event.preventDefault();
-          if (event.detail.originalEvent.type === "focusin" && hasPointerDownOutsideRef.current) {
-            event.preventDefault();
-          }
+        style: { pointerEvents: "auto", ...overlayProps.style },
+      }),
+    })
+  );
+});
+var CONTENT_NAME = "DialogContent";
+var DialogContent$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const portalContext = usePortalContext(CONTENT_NAME, props.__scopeDialog);
+  const { forceMount = portalContext.forceMount, ...contentProps } = props;
+  const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Presence, {
+    present: forceMount || context.open,
+    children: context.modal
+      ? /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentModal, {
+          ...contentProps,
+          ref: forwardedRef,
+        })
+      : /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentNonModal, {
+          ...contentProps,
+          ref: forwardedRef,
+        }),
+  });
+});
+DialogContent$1.displayName = CONTENT_NAME;
+var DialogContentModal = reactExports.forwardRef((props, forwardedRef) => {
+  const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
+  const contentRef = reactExports.useRef(null);
+  const composedRefs = useComposedRefs(
+    forwardedRef,
+    context.contentRef,
+    contentRef,
+  );
+  reactExports.useEffect(() => {
+    const content = contentRef.current;
+    if (content) return hideOthers(content);
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentImpl, {
+    ...props,
+    ref: composedRefs,
+    trapFocus: context.open,
+    disableOutsidePointerEvents: true,
+    onCloseAutoFocus: composeEventHandlers(props.onCloseAutoFocus, (event) => {
+      event.preventDefault();
+      context.triggerRef.current?.focus();
+    }),
+    onPointerDownOutside: composeEventHandlers(
+      props.onPointerDownOutside,
+      (event) => {
+        const originalEvent = event.detail.originalEvent;
+        const ctrlLeftClick =
+          originalEvent.button === 0 && originalEvent.ctrlKey === true;
+        const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+        if (isRightClick) event.preventDefault();
+      },
+    ),
+    onFocusOutside: composeEventHandlers(props.onFocusOutside, (event) =>
+      event.preventDefault(),
+    ),
+  });
+});
+var DialogContentNonModal = reactExports.forwardRef((props, forwardedRef) => {
+  const context = useDialogContext(CONTENT_NAME, props.__scopeDialog);
+  const hasInteractedOutsideRef = reactExports.useRef(false);
+  const hasPointerDownOutsideRef = reactExports.useRef(false);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentImpl, {
+    ...props,
+    ref: forwardedRef,
+    trapFocus: false,
+    disableOutsidePointerEvents: false,
+    onCloseAutoFocus: (event) => {
+      props.onCloseAutoFocus?.(event);
+      if (!event.defaultPrevented) {
+        if (!hasInteractedOutsideRef.current)
+          context.triggerRef.current?.focus();
+        event.preventDefault();
+      }
+      hasInteractedOutsideRef.current = false;
+      hasPointerDownOutsideRef.current = false;
+    },
+    onInteractOutside: (event) => {
+      props.onInteractOutside?.(event);
+      if (!event.defaultPrevented) {
+        hasInteractedOutsideRef.current = true;
+        if (event.detail.originalEvent.type === "pointerdown") {
+          hasPointerDownOutsideRef.current = true;
         }
       }
-    );
-  }
-);
-var DialogContentImpl = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeDialog, trapFocus, onOpenAutoFocus, onCloseAutoFocus, ...contentProps } = props;
-    const context = useDialogContext(CONTENT_NAME, __scopeDialog);
-    const contentRef = reactExports.useRef(null);
-    const composedRefs = useComposedRefs(forwardedRef, contentRef);
-    useFocusGuards();
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        FocusScope,
-        {
-          asChild: true,
-          loop: true,
-          trapped: trapFocus,
-          onMountAutoFocus: onOpenAutoFocus,
-          onUnmountAutoFocus: onCloseAutoFocus,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            DismissableLayer,
-            {
-              role: "dialog",
-              id: context.contentId,
-              "aria-describedby": context.descriptionId,
-              "aria-labelledby": context.titleId,
-              "data-state": getState(context.open),
-              ...contentProps,
-              ref: composedRefs,
-              onDismiss: () => context.onOpenChange(false)
-            }
-          )
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TitleWarning, { titleId: context.titleId }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DescriptionWarning, { contentRef, descriptionId: context.descriptionId })
-      ] })
-    ] });
-  }
-);
+      const target = event.target;
+      const targetIsTrigger = context.triggerRef.current?.contains(target);
+      if (targetIsTrigger) event.preventDefault();
+      if (
+        event.detail.originalEvent.type === "focusin" &&
+        hasPointerDownOutsideRef.current
+      ) {
+        event.preventDefault();
+      }
+    },
+  });
+});
+var DialogContentImpl = reactExports.forwardRef((props, forwardedRef) => {
+  const {
+    __scopeDialog,
+    trapFocus,
+    onOpenAutoFocus,
+    onCloseAutoFocus,
+    ...contentProps
+  } = props;
+  const context = useDialogContext(CONTENT_NAME, __scopeDialog);
+  const contentRef = reactExports.useRef(null);
+  const composedRefs = useComposedRefs(forwardedRef, contentRef);
+  useFocusGuards();
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, {
+    children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(FocusScope, {
+        asChild: true,
+        loop: true,
+        trapped: trapFocus,
+        onMountAutoFocus: onOpenAutoFocus,
+        onUnmountAutoFocus: onCloseAutoFocus,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DismissableLayer, {
+          role: "dialog",
+          id: context.contentId,
+          "aria-describedby": context.descriptionId,
+          "aria-labelledby": context.titleId,
+          "data-state": getState(context.open),
+          ...contentProps,
+          ref: composedRefs,
+          onDismiss: () => context.onOpenChange(false),
+        }),
+      }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, {
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TitleWarning, {
+            titleId: context.titleId,
+          }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DescriptionWarning, {
+            contentRef,
+            descriptionId: context.descriptionId,
+          }),
+        ],
+      }),
+    ],
+  });
+});
 var TITLE_NAME = "DialogTitle";
-var DialogTitle$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeDialog, ...titleProps } = props;
-    const context = useDialogContext(TITLE_NAME, __scopeDialog);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.h2, { id: context.titleId, ...titleProps, ref: forwardedRef });
-  }
-);
+var DialogTitle$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeDialog, ...titleProps } = props;
+  const context = useDialogContext(TITLE_NAME, __scopeDialog);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.h2, {
+    id: context.titleId,
+    ...titleProps,
+    ref: forwardedRef,
+  });
+});
 DialogTitle$1.displayName = TITLE_NAME;
 var DESCRIPTION_NAME = "DialogDescription";
-var DialogDescription$1 = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeDialog, ...descriptionProps } = props;
-    const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.p, { id: context.descriptionId, ...descriptionProps, ref: forwardedRef });
-  }
-);
+var DialogDescription$1 = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeDialog, ...descriptionProps } = props;
+  const context = useDialogContext(DESCRIPTION_NAME, __scopeDialog);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.p, {
+    id: context.descriptionId,
+    ...descriptionProps,
+    ref: forwardedRef,
+  });
+});
 DialogDescription$1.displayName = DESCRIPTION_NAME;
 var CLOSE_NAME = "DialogClose";
-var DialogClose = reactExports.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopeDialog, ...closeProps } = props;
-    const context = useDialogContext(CLOSE_NAME, __scopeDialog);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive.button,
-      {
-        type: "button",
-        ...closeProps,
-        ref: forwardedRef,
-        onClick: composeEventHandlers(props.onClick, () => context.onOpenChange(false))
-      }
-    );
-  }
-);
+var DialogClose = reactExports.forwardRef((props, forwardedRef) => {
+  const { __scopeDialog, ...closeProps } = props;
+  const context = useDialogContext(CLOSE_NAME, __scopeDialog);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.button, {
+    type: "button",
+    ...closeProps,
+    ref: forwardedRef,
+    onClick: composeEventHandlers(props.onClick, () =>
+      context.onOpenChange(false),
+    ),
+  });
+});
 DialogClose.displayName = CLOSE_NAME;
 function getState(open) {
   return open ? "open" : "closed";
@@ -718,7 +827,7 @@ var TITLE_WARNING_NAME = "DialogTitleWarning";
 var [WarningProvider, useWarningContext] = createContext2(TITLE_WARNING_NAME, {
   contentName: CONTENT_NAME,
   titleName: TITLE_NAME,
-  docsSlug: "dialog"
+  docsSlug: "dialog",
 });
 var TitleWarning = ({ titleId }) => {
   const titleWarningContext = useWarningContext(TITLE_WARNING_NAME);
@@ -758,88 +867,98 @@ var Close = DialogClose;
 
 const Dialog = Root;
 const DialogPortal = Portal;
-const DialogOverlay = reactExports.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  Overlay,
-  {
+const DialogOverlay = reactExports.forwardRef(({ className, ...props }, ref) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx(Overlay, {
     ref,
     className: cn(
       "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
+      className,
     ),
-    ...props
-  }
-));
+    ...props,
+  }),
+);
 DialogOverlay.displayName = Overlay.displayName;
-const DialogContent = reactExports.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogPortal, { children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsx(DialogOverlay, {}),
-  /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    Content,
-    {
-      ref,
-      className: cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
-        className
-      ),
-      ...props,
+const DialogContent = reactExports.forwardRef(
+  ({ className, children, ...props }, ref) =>
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogPortal, {
       children: [
-        children,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Close, { className: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-4 w-4" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sr-only", children: "Close" })
-        ] })
-      ]
-    }
-  )
-] }));
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogOverlay, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Content, {
+          ref,
+          className: cn(
+            "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+            className,
+          ),
+          ...props,
+          children: [
+            children,
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(Close, {
+              className:
+                "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(X, {
+                  className: "h-4 w-4",
+                }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", {
+                  className: "sr-only",
+                  children: "Close",
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+);
 DialogContent.displayName = Content.displayName;
-const DialogHeader = ({
-  className,
-  ...props
-}) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  "div",
-  {
+const DialogHeader = ({ className, ...props }) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
     className: cn(
       "flex flex-col space-y-1.5 text-center sm:text-left",
-      className
+      className,
     ),
-    ...props
-  }
-);
+    ...props,
+  });
 DialogHeader.displayName = "DialogHeader";
-const DialogFooter = ({
-  className,
-  ...props
-}) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  "div",
-  {
+const DialogFooter = ({ className, ...props }) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
     className: cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className
+      className,
     ),
-    ...props
-  }
-);
+    ...props,
+  });
 DialogFooter.displayName = "DialogFooter";
-const DialogTitle = reactExports.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  Title,
-  {
+const DialogTitle = reactExports.forwardRef(({ className, ...props }, ref) =>
+  /* @__PURE__ */ jsxRuntimeExports.jsx(Title, {
     ref,
     className: cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className
+      className,
     ),
-    ...props
-  }
-));
+    ...props,
+  }),
+);
 DialogTitle.displayName = Title.displayName;
-const DialogDescription = reactExports.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-  Description,
-  {
-    ref,
-    className: cn("text-sm text-muted-foreground", className),
-    ...props
-  }
-));
+const DialogDescription = reactExports.forwardRef(
+  ({ className, ...props }, ref) =>
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Description, {
+      ref,
+      className: cn("text-sm text-muted-foreground", className),
+      ...props,
+    }),
+);
 DialogDescription.displayName = Description.displayName;
 
-export { Content as C, Dialog as D, Overlay as O, Portal as P, Root as R, DialogContent as a, DialogHeader as b, DialogTitle as c, DialogDescription as d, DialogFooter as e };
+export {
+  Content as C,
+  Dialog as D,
+  Overlay as O,
+  Portal as P,
+  Root as R,
+  DialogContent as a,
+  DialogHeader as b,
+  DialogTitle as c,
+  DialogDescription as d,
+  DialogFooter as e,
+};

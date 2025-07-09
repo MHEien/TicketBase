@@ -1,13 +1,13 @@
-import { a0 as apiClient } from './main-D54NVj6U.js';
+import { a0 as apiClient } from "./main-D54NVj6U.js";
 
 async function fetchEvents(params) {
   try {
     const queryParams = new URLSearchParams();
-    if (params?.status) ;
-    if (params?.category) ;
-    if (params?.search) ;
-    if (params?.startDate) ;
-    if (params?.endDate) ;
+    if (params?.status);
+    if (params?.category);
+    if (params?.search);
+    if (params?.startDate);
+    if (params?.endDate);
     const url = `/api/events${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
     const response = await apiClient.get(url);
     return response.data.map((event) => ({
@@ -16,8 +16,10 @@ async function fetchEvents(params) {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : void 0,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : void 0,
+      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0,
     }));
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -34,8 +36,10 @@ async function fetchEvent(id) {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : void 0,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : void 0,
+      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0,
     };
   } catch (error) {
     console.error("Error fetching event:", error);
@@ -52,8 +56,10 @@ async function createEvent(eventData) {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : void 0,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : void 0,
+      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0,
     };
   } catch (error) {
     console.error("Error creating event:", error);
@@ -70,8 +76,10 @@ async function updateEvent(id, eventData) {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : void 0,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : void 0,
+      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0,
     };
   } catch (error) {
     console.error("Error updating event:", error);
@@ -96,8 +104,10 @@ async function publishEvent(id) {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : void 0,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : void 0,
+      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0,
     };
   } catch (error) {
     console.error("Error publishing event:", error);
@@ -114,8 +124,10 @@ async function cancelEvent(id) {
       endDate: new Date(event.endDate),
       createdAt: new Date(event.createdAt),
       updatedAt: new Date(event.updatedAt),
-      salesStartDate: event.salesStartDate ? new Date(event.salesStartDate) : void 0,
-      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0
+      salesStartDate: event.salesStartDate
+        ? new Date(event.salesStartDate)
+        : void 0,
+      salesEndDate: event.salesEndDate ? new Date(event.salesEndDate) : void 0,
     };
   } catch (error) {
     console.error("Error cancelling event:", error);
@@ -123,4 +135,12 @@ async function cancelEvent(id) {
   }
 }
 
-export { cancelEvent as a, fetchEvents as b, createEvent as c, deleteEvent as d, fetchEvent as f, publishEvent as p, updateEvent as u };
+export {
+  cancelEvent as a,
+  fetchEvents as b,
+  createEvent as c,
+  deleteEvent as d,
+  fetchEvent as f,
+  publishEvent as p,
+  updateEvent as u,
+};

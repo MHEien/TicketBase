@@ -1,35 +1,31 @@
-import { r as reactExports, j as jsxRuntimeExports } from './main-D54NVj6U.js';
+import { r as reactExports, j as jsxRuntimeExports } from "./main-D54NVj6U.js";
 
 const defaultOnboardingData = {
   organizationDetails: {
-    name: ""
+    name: "",
   },
   eventPreferences: {
     categories: [],
     typicalAttendees: 0,
-    frequency: "occasionally"
+    frequency: "occasionally",
   },
   brandSettings: {
     primaryColor: "#3b82f6",
     buttonStyle: "rounded",
     headerStyle: "centered",
     allowGuestCheckout: true,
-    defaultCurrency: "USD"
+    defaultCurrency: "USD",
   },
   paymentDetails: {
     preferredPaymentMethods: ["credit_card"],
-    defaultFeeStrategy: "pass-to-attendee"
-  }
+    defaultFeeStrategy: "pass-to-attendee",
+  },
 };
-const OnboardingContext = reactExports.createContext(
-  void 0
-);
-function OnboardingProvider({
-  children
-}) {
+const OnboardingContext = reactExports.createContext(void 0);
+function OnboardingProvider({ children }) {
   const [currentStep, setCurrentStep] = reactExports.useState(1);
   const [onboardingData, setOnboardingData] = reactExports.useState(
-    defaultOnboardingData
+    defaultOnboardingData,
   );
   const [isCompleted, setIsCompleted] = reactExports.useState(false);
   const totalSteps = 4;
@@ -80,8 +76,8 @@ function OnboardingProvider({
       ...onboardingData,
       [section]: {
         ...onboardingData[section],
-        ...data
-      }
+        ...data,
+      },
     });
   };
   const completeOnboarding = async () => {
@@ -89,9 +85,9 @@ function OnboardingProvider({
       const response = await fetch("/api/onboarding/complete", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(onboardingData)
+        body: JSON.stringify(onboardingData),
       });
       if (response.ok) {
         setIsCompleted(true);
@@ -103,23 +99,20 @@ function OnboardingProvider({
       throw error;
     }
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    OnboardingContext.Provider,
-    {
-      value: {
-        currentStep,
-        totalSteps,
-        onboardingData,
-        isCompleted,
-        goToStep,
-        goToNextStep,
-        goToPreviousStep,
-        updateOnboardingData,
-        completeOnboarding
-      },
-      children
-    }
-  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(OnboardingContext.Provider, {
+    value: {
+      currentStep,
+      totalSteps,
+      onboardingData,
+      isCompleted,
+      goToStep,
+      goToNextStep,
+      goToPreviousStep,
+      updateOnboardingData,
+      completeOnboarding,
+    },
+    children,
+  });
 }
 function useOnboarding() {
   const context = reactExports.useContext(OnboardingContext);

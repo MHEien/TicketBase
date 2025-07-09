@@ -1,4 +1,4 @@
-import { c as createLucideIcon } from './main-D54NVj6U.js';
+import { c as createLucideIcon } from "./main-D54NVj6U.js";
 
 /**
  * @license lucide-react v0.454.0 - ISC
@@ -7,11 +7,10 @@ import { c as createLucideIcon } from './main-D54NVj6U.js';
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const Ellipsis = createLucideIcon("Ellipsis", [
   ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
   ["circle", { cx: "19", cy: "12", r: "1", key: "1wjl8i" }],
-  ["circle", { cx: "5", cy: "12", r: "1", key: "1pcz8c" }]
+  ["circle", { cx: "5", cy: "12", r: "1", key: "1pcz8c" }],
 ]);
 
 export { Ellipsis as E };

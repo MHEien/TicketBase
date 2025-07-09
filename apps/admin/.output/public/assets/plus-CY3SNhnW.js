@@ -1,4 +1,4 @@
-import { c as createLucideIcon } from './main-D54NVj6U.js';
+import { c as createLucideIcon } from "./main-D54NVj6U.js";
 
 /**
  * @license lucide-react v0.454.0 - ISC
@@ -7,10 +7,9 @@ import { c as createLucideIcon } from './main-D54NVj6U.js';
  * See the LICENSE file in the root directory of this source tree.
  */
 
-
 const Plus = createLucideIcon("Plus", [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
+  ["path", { d: "M12 5v14", key: "s699le" }],
 ]);
 
 export { Plus as P };

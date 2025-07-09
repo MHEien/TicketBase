@@ -99,7 +99,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
             // Load the ZIP buffer into JSZip
             const zip = new JSZip();
             await zip.loadAsync(zipBuffer);
-            
+
             // Check for plugin.json
             const pluginJsonFile = zip.file("plugin.json");
             if (pluginJsonFile) {

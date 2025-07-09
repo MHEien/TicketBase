@@ -3,13 +3,19 @@
  * Demonstrates how to integrate plugins into your application
  */
 
-import React, { useEffect, useState } from 'react';
-import PluginExtensionPoint, { usePlugins } from './plugin-extension-point';
-import { pluginLoader } from '@/lib/plugin-loader';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import React, { useEffect, useState } from "react";
+import PluginExtensionPoint, { usePlugins } from "./plugin-extension-point";
+import { pluginLoader } from "@/lib/plugin-loader";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 // Example: Payment Methods Page
 export const PaymentMethodsPage: React.FC = () => {
@@ -22,7 +28,7 @@ export const PaymentMethodsPage: React.FC = () => {
       try {
         await pluginLoader.loadInstalledPlugins();
       } catch (error) {
-        console.error('Failed to load payment plugins:', error);
+        console.error("Failed to load payment plugins:", error);
       } finally {
         setLoading(false);
       }
@@ -33,21 +39,21 @@ export const PaymentMethodsPage: React.FC = () => {
 
   // Context that will be passed to all payment plugins
   const paymentContext = {
-    user: { id: 'user123', email: 'user@example.com' },
-    organization: { id: 'org123', name: 'Example Org' },
-    permissions: ['read:orders', 'write:transactions'],
+    user: { id: "user123", email: "user@example.com" },
+    organization: { id: "org123", name: "Example Org" },
+    permissions: ["read:orders", "write:transactions"],
     cart: {
       total: 99.99,
-      currency: 'USD',
+      currency: "USD",
       items: [
-        { id: 'ticket1', name: 'Concert Ticket', price: 99.99, quantity: 1 }
+        { id: "ticket1", name: "Concert Ticket", price: 99.99, quantity: 1 },
       ],
       customer: {
-        email: 'customer@example.com',
-        name: 'John Doe'
-      }
+        email: "customer@example.com",
+        name: "John Doe",
+      },
     },
-    sdk: typeof window !== 'undefined' ? (window as any).PluginSDK : null,
+    sdk: typeof window !== "undefined" ? (window as any).PluginSDK : null,
   };
 
   return (
@@ -69,12 +75,13 @@ export const PaymentMethodsPage: React.FC = () => {
           <PluginExtensionPoint
             extensionPoint="payment-methods"
             context={paymentContext}
-            filter={(plugin) => plugin.metadata.category === 'payment'}
+            filter={(plugin) => plugin.metadata.category === "payment"}
             fallback={() => (
               <Card>
                 <CardContent className="py-8 text-center">
                   <p className="text-muted-foreground">
-                    No payment methods available. Please install payment plugins.
+                    No payment methods available. Please install payment
+                    plugins.
                   </p>
                 </CardContent>
               </Card>
@@ -83,11 +90,11 @@ export const PaymentMethodsPage: React.FC = () => {
               <Card key={plugin.metadata.id}>
                 <CardHeader>
                   <CardTitle>{plugin.metadata.name}</CardTitle>
-                  <CardDescription>{plugin.metadata.description}</CardDescription>
+                  <CardDescription>
+                    {plugin.metadata.description}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  {children}
-                </CardContent>
+                <CardContent>{children}</CardContent>
               </Card>
             )}
           />
@@ -100,13 +107,13 @@ export const PaymentMethodsPage: React.FC = () => {
 // Example: Admin Settings Page
 export const AdminSettingsPage: React.FC = () => {
   const [selectedPlugin, setSelectedPlugin] = useState<string | null>(null);
-  const plugins = usePlugins('admin-settings');
+  const plugins = usePlugins("admin-settings");
 
   const adminContext = {
-    user: { id: 'admin123', email: 'admin@example.com', role: 'admin' },
-    organization: { id: 'org123', name: 'Example Org' },
-    permissions: ['admin:read', 'admin:write', 'plugins:configure'],
-    sdk: typeof window !== 'undefined' ? (window as any).PluginSDK : null,
+    user: { id: "admin123", email: "admin@example.com", role: "admin" },
+    organization: { id: "org123", name: "Example Org" },
+    permissions: ["admin:read", "admin:write", "plugins:configure"],
+    sdk: typeof window !== "undefined" ? (window as any).PluginSDK : null,
   };
 
   useEffect(() => {
@@ -136,7 +143,9 @@ export const AdminSettingsPage: React.FC = () => {
               {plugins.map((plugin) => (
                 <Button
                   key={plugin.metadata.id}
-                  variant={selectedPlugin === plugin.metadata.id ? "default" : "ghost"}
+                  variant={
+                    selectedPlugin === plugin.metadata.id ? "default" : "ghost"
+                  }
                   className="w-full justify-start"
                   onClick={() => setSelectedPlugin(plugin.metadata.id)}
                 >
@@ -148,7 +157,7 @@ export const AdminSettingsPage: React.FC = () => {
                   </div>
                 </Button>
               ))}
-              
+
               {plugins.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   No configurable plugins installed
@@ -170,13 +179,12 @@ export const AdminSettingsPage: React.FC = () => {
                   <CardHeader>
                     <CardTitle>{plugin.metadata.name} Settings</CardTitle>
                     <CardDescription>
-                      Version {plugin.metadata.version} • {plugin.metadata.description}
+                      Version {plugin.metadata.version} •{" "}
+                      {plugin.metadata.description}
                     </CardDescription>
                   </CardHeader>
                   <Separator />
-                  <CardContent className="pt-6">
-                    {children}
-                  </CardContent>
+                  <CardContent className="pt-6">{children}</CardContent>
                 </Card>
               )}
             />
@@ -198,35 +206,37 @@ export const AdminSettingsPage: React.FC = () => {
 // Example: Checkout Confirmation Page
 export const CheckoutConfirmationPage: React.FC = () => {
   const confirmationContext = {
-    user: { id: 'user123', email: 'user@example.com' },
-    organization: { id: 'org123', name: 'Example Org' },
-    permissions: ['read:orders'],
+    user: { id: "user123", email: "user@example.com" },
+    organization: { id: "org123", name: "Example Org" },
+    permissions: ["read:orders"],
     paymentDetails: {
-      provider: 'stripe',
-      transactionId: 'txn_1234567890',
+      provider: "stripe",
+      transactionId: "txn_1234567890",
       amount: 99.99,
-      currency: 'USD',
+      currency: "USD",
       testMode: false,
-      status: 'completed'
+      status: "completed",
     },
     orderDetails: {
-      id: 'order_1234',
+      id: "order_1234",
       items: [
-        { id: 'ticket1', name: 'Concert Ticket', price: 99.99, quantity: 1 }
+        { id: "ticket1", name: "Concert Ticket", price: 99.99, quantity: 1 },
       ],
       total: 99.99,
       customer: {
-        email: 'customer@example.com',
-        name: 'John Doe'
-      }
+        email: "customer@example.com",
+        name: "John Doe",
+      },
     },
-    sdk: typeof window !== 'undefined' ? (window as any).PluginSDK : null,
+    sdk: typeof window !== "undefined" ? (window as any).PluginSDK : null,
   };
 
   return (
     <div className="container mx-auto py-6">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-green-600">Payment Successful!</h1>
+        <h1 className="text-3xl font-bold text-green-600">
+          Payment Successful!
+        </h1>
         <p className="text-muted-foreground">
           Thank you for your purchase. Your order has been confirmed.
         </p>
@@ -277,12 +287,14 @@ export const PluginDashboard: React.FC = () => {
     const loadPlugins = async () => {
       try {
         await pluginLoader.loadInstalledPlugins();
-        setPlugins(pluginLoader.loadedPlugins.map(id => ({
-          id,
-          ...((window as any).pluginManager?.getPlugin(id) || {})
-        })));
+        setPlugins(
+          pluginLoader.loadedPlugins.map((id) => ({
+            id,
+            ...((window as any).pluginManager?.getPlugin(id) || {}),
+          })),
+        );
       } catch (error) {
-        console.error('Failed to load plugins:', error);
+        console.error("Failed to load plugins:", error);
       } finally {
         setLoading(false);
       }
@@ -316,7 +328,8 @@ export const PluginDashboard: React.FC = () => {
                 <div>
                   <CardTitle>{plugin.metadata?.name || plugin.id}</CardTitle>
                   <CardDescription>
-                    Version {plugin.metadata?.version} • {plugin.metadata?.category}
+                    Version {plugin.metadata?.version} •{" "}
+                    {plugin.metadata?.category}
                   </CardDescription>
                 </div>
                 <Badge variant={plugin.isLoaded ? "default" : "destructive"}>
@@ -346,4 +359,4 @@ export const PluginDashboard: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

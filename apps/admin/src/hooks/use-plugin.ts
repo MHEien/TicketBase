@@ -19,7 +19,7 @@ export function usePlugin(pluginId: string) {
 
         // Try to get already loaded plugin first
         let loadedPlugin = pluginManager.getPlugin(pluginId);
-        
+
         if (!loadedPlugin) {
           // If not loaded, try to load it
           await pluginLoader.loadPlugin(pluginId);
@@ -31,7 +31,9 @@ export function usePlugin(pluginId: string) {
         }
 
         if (!loadedPlugin.isLoaded) {
-          throw new Error(`Plugin ${pluginId} failed to load: ${loadedPlugin.error}`);
+          throw new Error(
+            `Plugin ${pluginId} failed to load: ${loadedPlugin.error}`,
+          );
         }
 
         if (isMounted) {
@@ -66,7 +68,9 @@ export function usePluginComponent<T = any>(
   plugin: LoadedPlugin | null,
   extensionPoint: string,
 ) {
-  const [component, setComponent] = useState<React.ComponentType<T> | null>(null);
+  const [component, setComponent] = useState<React.ComponentType<T> | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -86,7 +90,7 @@ export function usePluginComponent<T = any>(
         }
 
         const component = plugin.extensionPoints[extensionPoint];
-        
+
         if (!component) {
           throw new Error(
             `Extension point ${extensionPoint} not found in plugin ${plugin.metadata.id}`,
@@ -195,7 +199,7 @@ export function usePluginsByCategory(category: string) {
         if (isMounted) {
           const allPlugins = pluginManager.getAllPlugins();
           const filteredPlugins = allPlugins.filter(
-            plugin => plugin.metadata.category === category
+            (plugin) => plugin.metadata.category === category,
           );
           setPlugins(filteredPlugins);
           setError(null);
