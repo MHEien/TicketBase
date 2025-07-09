@@ -19,9 +19,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"]
     },
-    "typeRoots": ["./node_modules/@types", "./examples/stripe-plugin/types"]
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": [
     "next-env.d.ts",

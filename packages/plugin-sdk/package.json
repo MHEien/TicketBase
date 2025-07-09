@@ -23,16 +23,16 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "react": "^18.2.0"
+    "react": "^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
+    "@types/react": "^19.0.8",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
     "eslint": "^8.0.0"
   },
   "peerDependencies": {
-    "react": ">=18.0.0"
+    "react": ">=19.0.0"
   },
   "keywords": [
     "tickets",
