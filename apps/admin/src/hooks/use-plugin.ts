@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
-import { pluginManager, type LoadedPlugin } from "@/lib/plugin-manager";
-import { pluginLoader } from "@/lib/plugin-loader";
+import { pluginLoader, type LoadedPlugin } from "@/lib/simple-plugin-system";
+
+// Helper function to fetch plugin metadata
+async function fetchPluginMetadata(pluginId: string) {
+  try {
+    const { fetchPluginMetadata } = await import('@/lib/plugin-integration');
+    return await fetchPluginMetadata(pluginId);
+  } catch (error) {
+    console.error(`Failed to fetch metadata for plugin ${pluginId}:`, error);
+    return null;
+  }
+}
 
 /**
  * Hook to load a plugin by ID
@@ -18,12 +28,14 @@ export function usePlugin(pluginId: string) {
         setLoading(true);
 
         // Try to get already loaded plugin first
-        let loadedPlugin = pluginManager.getPlugin(pluginId);
+        let loadedPlugin = pluginLoader.getPlugin(pluginId);
 
         if (!loadedPlugin) {
           // If not loaded, try to load it
-          await pluginLoader.loadPlugin(pluginId);
-          loadedPlugin = pluginManager.getPlugin(pluginId);
+          const metadata = await fetchPluginMetadata(pluginId);
+          if (metadata) {
+            loadedPlugin = await pluginLoader.loadPlugin(metadata);
+          }
         }
 
         if (!loadedPlugin) {
@@ -89,7 +101,7 @@ export function usePluginComponent<T = any>(
           throw new Error(`Plugin ${plugin.metadata.id} is not loaded`);
         }
 
-        const component = plugin.extensionPoints[extensionPoint];
+        const component = plugin.components[extensionPoint];
 
         if (!component) {
           throw new Error(
@@ -137,11 +149,20 @@ export function usePlugins() {
       try {
         setLoading(true);
 
-        // Load installed plugins
-        await pluginLoader.loadInstalledPlugins();
+        // Load installed plugins using proper API client
+        const { fetchInstalledPlugins, filterEnabledPlugins } = await import('@/lib/plugin-integration');
+        const installedPlugins = await fetchInstalledPlugins();
+        
+        const loadedPlugins = [];
+        for (const metadata of installedPlugins) {
+          if (metadata.enabled) {
+            const plugin = await pluginLoader.loadPlugin(metadata);
+            loadedPlugins.push(plugin);
+          }
+        }
 
         if (isMounted) {
-          setPlugins(pluginManager.getAllPlugins());
+          setPlugins(loadedPlugins);
           setError(null);
         }
       } catch (err) {
@@ -165,9 +186,20 @@ export function usePlugins() {
   const refreshPlugins = async () => {
     try {
       setLoading(true);
-      pluginManager.clear();
-      await pluginLoader.loadInstalledPlugins();
-      setPlugins(pluginManager.getAllPlugins());
+      pluginLoader.clear();
+      
+      const { fetchInstalledPlugins } = await import('@/lib/plugin-integration');
+      const installedPlugins = await fetchInstalledPlugins();
+      
+      const loadedPlugins = [];
+      for (const metadata of installedPlugins) {
+        if (metadata.enabled) {
+          const plugin = await pluginLoader.loadPlugin(metadata);
+          loadedPlugins.push(plugin);
+        }
+      }
+      
+      setPlugins(loadedPlugins);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
@@ -194,14 +226,18 @@ export function usePluginsByCategory(category: string) {
       try {
         setLoading(true);
 
-        await pluginLoader.loadInstalledPlugins();
+        const { fetchInstalledPlugins, filterByExtensionPoint, filterEnabledPlugins } = await import('@/lib/plugin-integration');
+        const allPlugins = await fetchInstalledPlugins();
+        const installedPlugins = filterEnabledPlugins(allPlugins);
+        
+        const loadedPlugins = [];
+        for (const metadata of installedPlugins.filter((p: any) => p.enabled && p.category === category)) {
+          const plugin = await pluginLoader.loadPlugin(metadata);
+          loadedPlugins.push(plugin);
+        }
 
         if (isMounted) {
-          const allPlugins = pluginManager.getAllPlugins();
-          const filteredPlugins = allPlugins.filter(
-            (plugin) => plugin.metadata.category === category,
-          );
-          setPlugins(filteredPlugins);
+          setPlugins(loadedPlugins);
           setError(null);
         }
       } catch (err) {

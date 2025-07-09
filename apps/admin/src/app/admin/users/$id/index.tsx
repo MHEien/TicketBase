@@ -219,7 +219,7 @@ function UserDetailPage() {
           <Button
             variant="outline"
             className="gap-2"
-            onClick={() => router.push(`/users/${user.id}/edit`)}
+            onClick={() => router.navigate({ to: `/admin/users/$id`, params: { id: user.id } })}
           >
             <Edit className="h-4 w-4" />
             <span>Edit</span>

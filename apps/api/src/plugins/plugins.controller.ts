@@ -994,6 +994,11 @@ export class PluginsController {
           items: { type: 'string' },
           description: 'Required permissions',
         },
+        extensionPoints: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Extension points implemented by the plugin',
+        },
       },
       required: [
         'id',
@@ -1017,6 +1022,7 @@ export class PluginsController {
       sourceCode: string;
       bundleUrl: string;
       requiredPermissions?: string[];
+      extensionPoints?: string[];
     },
   ): Promise<Plugin> {
     const operation = 'createMetadata';

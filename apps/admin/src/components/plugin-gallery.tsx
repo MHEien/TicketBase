@@ -125,27 +125,39 @@ export function PluginGallery() {
     { id: "seating", name: "Seating", icon: Calendar },
   ];
 
+  // Debug logging
+  console.log('🔍 Available plugins raw:', availablePlugins);
+  console.log('🔍 Installed plugins raw:', installedPlugins);
+
   // Map available plugins to UI format
-  const mappedPlugins = availablePlugins.map((plugin) => {
+  const mappedPlugins = (availablePlugins || []).map((plugin) => {
+    // Ensure plugin exists
+    if (!plugin) {
+      console.warn('Plugin is null/undefined:', plugin);
+      return null;
+    }
+
+    console.log('🔍 Processing plugin:', plugin);
+
     // Check if this plugin is installed
-    const installed = installedPlugins.find(
-      (p) => p.metadata.id === plugin.metadata.id,
+    const installed = (installedPlugins || []).find(
+      (p) => p.metadata?.id === plugin.id,
     );
 
     // Get the appropriate icon
-    const IconComponent = categoryIcons[plugin.metadata.category] || Layers;
+    const IconComponent = categoryIcons[plugin.category] || Layers;
 
     return {
-      id: plugin.metadata.id,
-      name: plugin.metadata.name,
-      description: plugin.metadata.description,
-      category: plugin.metadata.category,
-      version: plugin.metadata.version,
-      metadata: plugin.metadata,
+      id: plugin.id || 'unknown',
+      name: plugin.name || 'Unknown Plugin',
+      description: plugin.description || 'No description available',
+      category: plugin.category || 'other',
+      version: plugin.version || '1.0.0',
+      metadata: plugin.metadata || {},
       installed: !!installed,
       enabled: installed?.isLoaded || false,
       icon: IconComponent,
-      // Use real data from plugin metadata
+      // Use real data from plugin
       installs: plugin.metadata?.installCount || 0,
       rating: plugin.metadata?.rating || null, // No default rating
       developer: plugin.metadata?.author || "Unknown Developer",
@@ -153,12 +165,14 @@ export function PluginGallery() {
     };
   });
 
-  // Apply filters
-  const filteredPlugins = mappedPlugins.filter(
-    (plugin) =>
-      plugin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      plugin.description.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  // Apply filters with null checks
+  const filteredPlugins = mappedPlugins
+    .filter((plugin): plugin is NonNullable<typeof plugin> => plugin !== null) // Remove any null entries
+    .filter(
+      (plugin) =>
+        (plugin.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+        (plugin.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false),
+    );
 
   // Handle plugin installation
   const handleInstall = async (pluginId: string) => {

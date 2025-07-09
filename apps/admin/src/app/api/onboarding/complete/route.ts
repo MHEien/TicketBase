@@ -16,13 +16,13 @@ export const ServerRoute = createServerFileRoute(
       console.log("Session data:", {
         hasSession: !!session,
         hasUser: !!session?.user,
-        hasAccessToken: !!session?.session.token,
+        hasAccessToken: !!session?.accessToken,
         userId: session?.user?.id,
         fullSession: session,
       });
 
       // Ensure the user is authenticated
-      if (!session?.user || !session.session.token) {
+      if (!session?.user || !session.accessToken) {
         console.error("Authentication failed - missing session or token");
         return Response.json(
           { message: "Authentication required" },
@@ -43,7 +43,7 @@ export const ServerRoute = createServerFileRoute(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.session.token}`,
+            Authorization: `Bearer ${session.accessToken}`,
           },
           body: JSON.stringify({
             onboardingCompleted: true,

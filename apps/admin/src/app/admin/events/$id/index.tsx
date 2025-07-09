@@ -55,7 +55,7 @@ function EventDetailsPage() {
   const { event, loading, error, refetch } = useEvent(id);
 
   const handleEditEvent = () => {
-    router.push(`/events/${id}/edit`);
+    router.navigate({ to: `/admin/events/$id/edit`, params: { id } });
   };
 
   const handleDeleteEvent = async () => {
@@ -85,7 +85,7 @@ function EventDetailsPage() {
 
   const handleDuplicateEvent = () => {
     // Navigate to create new event with duplicate parameter
-    router.push(`/events/new?duplicate=${id}`);
+    router.navigate({ to: `/admin/events/new`, search: { duplicate: id } });
   };
 
   const handlePublishEvent = async () => {

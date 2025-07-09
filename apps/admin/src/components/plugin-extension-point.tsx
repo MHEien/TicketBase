@@ -5,12 +5,17 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import {
-  pluginManager,
+  pluginLoader,
   type LoadedPlugin,
-  type PluginContext,
-} from "@/lib/plugin-manager";
+} from "@/lib/simple-plugin-system";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+
+interface PluginContext {
+  tenantId?: string;
+  eventData?: any;
+  configuration: Record<string, any>;
+}
 
 interface PluginExtensionPointProps {
   /** The extension point to render plugins for */
@@ -53,8 +58,7 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
 
   // Get plugins for this extension point
   const availablePlugins = useMemo(() => {
-    let extensionPlugins =
-      pluginManager.getPluginsForExtensionPoint(extensionPoint);
+    let extensionPlugins = pluginLoader.getPluginsForExtensionPoint(extensionPoint);
 
     if (filter) {
       extensionPlugins = extensionPlugins.filter(filter);
@@ -72,41 +76,8 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
     // Initial load
     updatePlugins();
 
-    // Listen for plugin events
-    const handlePluginLoaded = ({ plugin }: { plugin: LoadedPlugin }) => {
-      if (plugin.metadata.extensionPoints?.includes(extensionPoint)) {
-        updatePlugins();
-      }
-    };
-
-    const handlePluginUnloaded = ({ pluginId }: { pluginId: string }) => {
-      setPlugins((prev) => prev.filter((p) => p.metadata.id !== pluginId));
-    };
-
-    const handlePluginError = ({
-      plugin,
-      error,
-    }: {
-      plugin: LoadedPlugin;
-      error: any;
-    }) => {
-      if (plugin.metadata.extensionPoints?.includes(extensionPoint)) {
-        setErrors((prev) => [
-          ...prev,
-          { plugin, error: error.message || "Unknown error" },
-        ]);
-      }
-    };
-
-    pluginManager.on("plugin:loaded", handlePluginLoaded);
-    pluginManager.on("plugin:unloaded", handlePluginUnloaded);
-    pluginManager.on("plugin:error", handlePluginError);
-
-    return () => {
-      pluginManager.off("plugin:loaded", handlePluginLoaded);
-      pluginManager.off("plugin:unloaded", handlePluginUnloaded);
-      pluginManager.off("plugin:error", handlePluginError);
-    };
+    // Note: Simple plugin loader doesn't have event system
+    // Plugins are loaded once and don't need real-time updates
   }, [extensionPoint, availablePlugins]);
 
   // Render loading state
@@ -148,11 +119,11 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
 
       {/* Render plugin components */}
       {plugins.map((plugin) => {
-        if (!plugin.isLoaded || !plugin.extensionPoints[extensionPoint]) {
+        if (!plugin.isLoaded || !plugin.components[extensionPoint]) {
           return null;
         }
 
-        const Component = plugin.extensionPoints[extensionPoint];
+        const Component = plugin.components[extensionPoint];
 
         try {
           const pluginElement = (
@@ -213,8 +184,7 @@ export const usePlugins = (
 
   useEffect(() => {
     const updatePlugins = () => {
-      let extensionPlugins =
-        pluginManager.getPluginsForExtensionPoint(extensionPoint);
+      let extensionPlugins = pluginLoader.getPluginsForExtensionPoint(extensionPoint);
 
       if (filter) {
         extensionPlugins = extensionPlugins.filter(filter);
@@ -225,15 +195,8 @@ export const usePlugins = (
 
     updatePlugins();
 
-    const handlePluginChange = () => updatePlugins();
-
-    pluginManager.on("plugin:loaded", handlePluginChange);
-    pluginManager.on("plugin:unloaded", handlePluginChange);
-
-    return () => {
-      pluginManager.off("plugin:loaded", handlePluginChange);
-      pluginManager.off("plugin:unloaded", handlePluginChange);
-    };
+    // For now, just update once. We can add events later if needed
+    // TODO: Add plugin loader events support
   }, [extensionPoint, filter]);
 
   return plugins;
@@ -246,31 +209,8 @@ export const usePluginLoaded = (pluginId: string) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    setIsLoaded(pluginManager.isPluginLoaded(pluginId));
-
-    const handlePluginLoaded = ({ plugin }: { plugin: LoadedPlugin }) => {
-      if (plugin.metadata.id === pluginId) {
-        setIsLoaded(true);
-      }
-    };
-
-    const handlePluginUnloaded = ({
-      pluginId: unloadedId,
-    }: {
-      pluginId: string;
-    }) => {
-      if (unloadedId === pluginId) {
-        setIsLoaded(false);
-      }
-    };
-
-    pluginManager.on("plugin:loaded", handlePluginLoaded);
-    pluginManager.on("plugin:unloaded", handlePluginUnloaded);
-
-    return () => {
-      pluginManager.off("plugin:loaded", handlePluginLoaded);
-      pluginManager.off("plugin:unloaded", handlePluginUnloaded);
-    };
+    const plugin = pluginLoader.getPlugin(pluginId);
+    setIsLoaded(plugin?.isLoaded || false);
   }, [pluginId]);
 
   return isLoaded;

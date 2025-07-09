@@ -262,6 +262,7 @@ export class PluginsController {
       createDto.sourceCode,
       createDto.requiredPermissions,
       createDto.bundleUrl,
+      createDto.extensionPoints,
     );
   }
 

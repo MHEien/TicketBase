@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { pluginRegistry } from "@/lib/plugin-registry";
-import { loadPluginComponent } from "@/lib/plugin-loader";
+import { pluginLoader } from "@/lib/simple-plugin-system";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -26,7 +25,7 @@ export function PluginExtensions({
     {
       id: string;
       name: string;
-      component: React.ComponentType<any>;
+      component: any; // Simplified to avoid React type conflicts
       config: Record<string, any>;
     }[]
   >([]);
@@ -40,44 +39,25 @@ export function PluginExtensions({
       try {
         setLoading(true);
 
-        // Initialize the plugin registry
-        await pluginRegistry.initialize();
+        // Fetch and load plugins for event creation using proper API client
+        const { fetchInstalledPlugins, filterByExtensionPoint, filterEnabledPlugins } = await import('@/lib/plugin-integration');
+        const allPlugins = await fetchInstalledPlugins();
+        const installedPlugins = filterEnabledPlugins(allPlugins);
+        
+        const relevantPlugins = installedPlugins.filter((metadata: any) => 
+          metadata.enabled && metadata.extensionPoints.includes("event-creation")
+        );
 
-        // Get all plugins that have event creation components
-        const eventPlugins =
-          pluginRegistry.getPluginsWithComponent("eventCreation");
-
-        if (eventPlugins.length === 0) {
-          setPlugins([]);
-          return;
-        }
-
-        // Load all plugin components
         const loadedPlugins = [];
-
-        for (const plugin of eventPlugins) {
-          if (!plugin.enabled || !plugin.adminComponents.eventCreation)
-            continue;
-
-          try {
-            const Component = await loadPluginComponent(
-              plugin,
-              plugin.adminComponents.eventCreation,
-            );
-
-            if (Component) {
-              loadedPlugins.push({
-                id: plugin.id,
-                name: plugin.name,
-                component: Component,
-                config: plugin.configuration || {},
-              });
-            }
-          } catch (e) {
-            console.error(
-              `Failed to load event creation component for plugin ${plugin.id}:`,
-              e,
-            );
+        for (const metadata of relevantPlugins) {
+          const plugin = await pluginLoader.loadPlugin(metadata);
+          if (plugin.isLoaded && plugin.components["event-creation"]) {
+            loadedPlugins.push({
+              id: plugin.metadata.id,
+              name: plugin.metadata.name,
+              component: plugin.components["event-creation"],
+                             config: {},
+            });
           }
         }
 

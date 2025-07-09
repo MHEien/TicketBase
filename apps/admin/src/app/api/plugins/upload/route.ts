@@ -1,12 +1,10 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { PluginBuildService, PluginUploadAPI } from "@/lib/plugin-build-system";
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as os from "os";
 import JSZip from "jszip";
 
-const buildService = new PluginBuildService();
-const uploadAPI = new PluginUploadAPI(buildService);
+// TODO: Implement plugin upload with new simplified plugin system
 
 // Allowed extensions
 const allowedExtensions = [".js", ".mjs", ".zip"];
@@ -66,35 +64,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
             .toLowerCase()
             .replace(/[^a-z0-9-]/g, "-");
 
-          // Build the TypeScript plugin using our build system
-          const buildResult = await uploadAPI.uploadSource(pluginId, zipBuffer);
-
-          if (!buildResult.success) {
-            return Response.json(
-              {
-                success: false,
-                error: "Build failed",
-                details: buildResult.errors,
-                buildTime: buildResult.buildTime,
-              },
-              { status: 400 },
-            );
-          }
-
-          // Read the built bundle file
-          if (!buildResult.bundlePath) {
-            return Response.json(
-              {
-                success: false,
-                error: "Build succeeded but no bundle was generated",
-              },
-              { status: 500 },
-            );
-          }
-
-          bundleBuffer = await fs.readFile(buildResult.bundlePath);
-
-          // Extract plugin metadata from the ZIP (plugin.json)
+          // Extract plugin metadata from the ZIP (plugin.json) first
           try {
             // Load the ZIP buffer into JSZip
             const zip = new JSZip();
@@ -114,9 +84,48 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
             console.warn("Could not extract plugin.json metadata:", error);
           }
 
-          console.log(
-            `✅ TypeScript build succeeded: ${bundleBuffer.length} bytes`,
-          );
+          // For now, we'll look for a pre-built bundle in the ZIP
+          // Check for built JS files in the ZIP
+          const zip = new JSZip();
+          await zip.loadAsync(zipBuffer);
+          
+          // Look for common bundle paths
+          const possibleBundlePaths = [
+            'dist/plugin.js',
+            'dist/index.js', 
+            'dist/bundle.js',
+            'build/plugin.js',
+            'build/index.js',
+            'plugin.js',
+            'index.js',
+            'bundle.js'
+          ];
+          
+          let bundleFile = null;
+          for (const path of possibleBundlePaths) {
+            bundleFile = zip.file(path);
+            if (bundleFile) {
+              console.log(`Found bundle at: ${path}`);
+              break;
+            }
+          }
+          
+          if (!bundleFile) {
+            return Response.json(
+              {
+                success: false,
+                error: "No pre-built bundle found in ZIP. Please include a dist/plugin.js or similar compiled file.",
+                pluginId,
+                version,
+                metadata: pluginMetadata,
+              },
+              { status: 400 },
+            );
+          }
+          
+          // Extract the bundle content
+          const bundleContent = await bundleFile.async("text");
+          bundleBuffer = Buffer.from(bundleContent, 'utf8');
         } else if (file.name.endsWith(".js") || file.name.endsWith(".mjs")) {
           // Pre-built JavaScript Upload
           console.log("Processing pre-built JavaScript upload...");
@@ -184,9 +193,11 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
               version: pluginMetadata.version,
               description: pluginMetadata.description,
               category: pluginMetadata.category,
-              sourceCode: bundleBuffer.toString("utf8"),
+              // Use placeholder sourceCode since we have bundleUrl and extension points
+              sourceCode: `// Pre-built plugin bundle uploaded at ${new Date().toISOString()}\n// Bundle URL: ${bundleUrl}\n// Extension points: ${(pluginMetadata.extensionPoints || []).join(', ')}\nexport default {};`,
               bundleUrl: bundleUrl,
               requiredPermissions: pluginMetadata.requiredPermissions || [],
+              extensionPoints: pluginMetadata.extensionPoints || [],
             };
 
             const metadataResponse = await fetch(

@@ -116,7 +116,7 @@ function EventsPage() {
   };
 
   const handleEditEvent = (eventId: string) => {
-    router.push(`/events/${eventId}/edit`);
+    router.navigate({ to: `/admin/events/$id/edit`, params: { id: eventId } });
   };
 
   const handleDeleteEvent = async (eventId: string) => {
@@ -131,11 +131,11 @@ function EventsPage() {
 
   const handleDuplicateEvent = (eventId: string) => {
     // TODO: Implement duplication logic
-    router.push(`/events/new?duplicate=${eventId}`);
+    router.navigate({ to: `/admin/events/new`, search: { duplicate: eventId } });
   };
 
   const handleViewEvent = (eventId: string) => {
-    router.push(`/events/${eventId}`);
+    router.navigate({ to: `/admin/events/$id`, params: { id: eventId } });
   };
 
   const handlePublishEvent = async (eventId: string) => {

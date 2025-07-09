@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   // Configure logger to show debug messages
@@ -17,6 +18,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   logger.log('Application bootstrapping with debug logging enabled');
+
+  // Configure body parser with increased limits for plugin uploads
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
   // Enable CORS for the NextJS frontends
   const allowedOrigins = [

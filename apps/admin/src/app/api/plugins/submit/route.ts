@@ -58,7 +58,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/submit").methods(
       try {
         // Check authentication first
         const session = await getSession();
-        if (!session?.session.token) {
+        if (!session?.accessToken) {
           return Response.json(
             { error: "Authentication required" },
             { status: 401 },
@@ -271,7 +271,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/submit").methods(
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${session.session.token}`,
+              Authorization: `Bearer ${session.accessToken}`,
             },
             body: JSON.stringify(pluginDto),
           });
@@ -305,7 +305,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/submit").methods(
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: `Bearer ${session.session.token}`,
+                  Authorization: `Bearer ${session.accessToken}`,
                 },
                 body: JSON.stringify({
                   extensionPoints: pluginMetadata.extensionPoints,

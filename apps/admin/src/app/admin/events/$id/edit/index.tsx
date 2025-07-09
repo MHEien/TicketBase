@@ -141,7 +141,7 @@ function EditEventPage() {
       });
 
       // Navigate back to the event detail page
-      router.push(`/events/${id}`);
+      router.navigate({ to: `/admin/events/$id`, params: { id } });
     } catch (error) {
       console.error("Error updating event:", error);
       toast({
@@ -158,7 +158,7 @@ function EditEventPage() {
     if (
       confirm("Are you sure you want to cancel? All your changes will be lost.")
     ) {
-      router.push(`/events/${id}`);
+      router.navigate({ to: `/admin/events/$id`, params: { id } });
     }
   };
 
@@ -199,7 +199,7 @@ function EditEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/events/${id}`)}
+              onClick={() => router.navigate({ to: `/admin/events/$id`, params: { id } })}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

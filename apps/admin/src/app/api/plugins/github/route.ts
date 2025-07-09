@@ -1,5 +1,4 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { PluginBuildService, PluginUploadAPI } from "@/lib/plugin-build-system";
 import { z } from "zod";
 
 const GitHubSetupSchema = z.object({
@@ -9,8 +8,7 @@ const GitHubSetupSchema = z.object({
   webhook: z.string().url().optional(),
 });
 
-const buildService = new PluginBuildService();
-const uploadAPI = new PluginUploadAPI(buildService);
+// TODO: Implement GitHub integration with new simplified plugin system
 
 export const ServerRoute = createServerFileRoute("/api/plugins/github").methods(
   {
@@ -43,24 +41,14 @@ export const ServerRoute = createServerFileRoute("/api/plugins/github").methods(
 
         const pluginId = repoMatch[1].toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
-        // Setup GitHub integration
-        const result = await uploadAPI.setupGitHubIntegration(
+        // TODO: Implement GitHub integration
+        return Response.json({
+          success: false,
+          error: "GitHub integration not yet implemented with new plugin system",
           pluginId,
           repository,
-          {
-            branch: branch || "main",
-            path,
-            webhook,
-          },
-        );
-
-        // If successful, we could also setup webhook here
-        if (result.success && webhook) {
-          // TODO: Setup GitHub webhook to trigger builds on push
-          // This would involve GitHub API calls to register webhook
-        }
-
-        return Response.json(result);
+          branch,
+        });
       } catch (error) {
         if (error instanceof z.ZodError) {
           return Response.json(

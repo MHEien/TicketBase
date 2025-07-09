@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,17 @@ import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
 import { createEvent, fetchEvent } from "@/lib/api/events-api";
 import { createFileRoute } from "@tanstack/react-router";
+import z from "zod";
 
 export const Route = createFileRoute("/admin/events/new/")({
   component: CreateEventPage,
+  validateSearch: z.object({
+    duplicate: z.string().optional(),
+  }),
 });
 
 function CreateEventPage() {
   const router = useRouter();
-  const searchParams = useSearch({ from: "__root__" });
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +34,7 @@ function CreateEventPage() {
   const { eventData, isValid, resetEventData, updateEventData } =
     useEventCreation();
 
-  const duplicateId = searchParams.duplicate;
+  const duplicateId = Route.useSearch().duplicate;
 
   // Load event data for duplication
   useEffect(() => {
@@ -165,7 +168,7 @@ function CreateEventPage() {
 
       // Reset form and navigate to the new event
       resetEventData();
-      router.push(`/events/${newEvent.id}`);
+      router.navigate({ to: `/admin/events/$id`, params: { id: newEvent.id } });
     } catch (error: any) {
       console.error("Error creating event:", error);
 
@@ -259,7 +262,7 @@ function CreateEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.navigate({ to: "/admin/" })}
+              onClick={() => router.navigate({ to: "/admin/events" })}
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

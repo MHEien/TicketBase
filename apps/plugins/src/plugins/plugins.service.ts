@@ -240,19 +240,38 @@ export class PluginsService {
     sourceCode: string,
     requiredPermissions: string[] = [],
     bundleUrl?: string,
+    providedExtensionPoints?: string[],
   ): Promise<PluginDocument> {
     this.logger.log(`Creating plugin ${id} v${version}`);
 
-    // Validate plugin structure
-    const isValid =
-      await this.bundleService.validatePluginStructure(sourceCode);
-    if (!isValid) {
-      throw new BadRequestException('Invalid plugin structure');
-    }
+    // Use provided extension points if available, otherwise analyze bundle
+    let extensionPoints: string[];
+    let metadata: any;
 
-    // Analyze plugin bundle to extract metadata and extension points
-    const { extensionPoints, metadata } =
-      await this.bundleService.analyzeBundle(sourceCode);
+    if (providedExtensionPoints && providedExtensionPoints.length > 0) {
+      // Use the provided extension points (from plugin.json)
+      extensionPoints = providedExtensionPoints;
+      this.logger.log(`Using provided extension points: ${extensionPoints.join(', ')}`);
+      
+      // Create basic metadata
+      metadata = {
+        installCount: 0,
+        lastUpdated: new Date().toISOString(),
+      };
+    } else {
+      // Validate plugin structure only when analyzing source code
+      const isValid =
+        await this.bundleService.validatePluginStructure(sourceCode);
+      if (!isValid) {
+        throw new BadRequestException('Invalid plugin structure');
+      }
+
+      // Analyze plugin bundle to extract metadata and extension points
+      const analyzed = await this.bundleService.analyzeBundle(sourceCode);
+      extensionPoints = analyzed.extensionPoints;
+      metadata = analyzed.metadata;
+      this.logger.log(`Analyzed extension points from source: ${extensionPoints.join(', ')}`);
+    }
 
     let finalBundleUrl = bundleUrl;
 

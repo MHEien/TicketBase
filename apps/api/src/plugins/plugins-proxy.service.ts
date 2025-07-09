@@ -653,6 +653,7 @@ export class PluginsProxyService {
       sourceCode: string;
       bundleUrl: string;
       requiredPermissions?: string[];
+      extensionPoints?: string[];
     },
     authToken?: string,
   ): Promise<Plugin> {
