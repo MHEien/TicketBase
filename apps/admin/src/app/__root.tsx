@@ -1,4 +1,3 @@
-import "./globals.css";
 import {
   Outlet,
   createRootRoute,
@@ -8,6 +7,7 @@ import {
 import { SessionProvider } from "@/components/session-provider";
 import { AuthErrorHandler } from "@/components/ui/auth-error-handler";
 import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
+import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -19,6 +19,7 @@ export const Route = createRootRoute({
       },
       { title: "TanStack Start Starter" },
     ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   component: RootLayout,
 });

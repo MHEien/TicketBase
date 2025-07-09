@@ -48,8 +48,7 @@ apiClient.interceptors.request.use(
     debugLog("Session Check", {
       sessionExists: !!session,
       sessionKeys: session ? Object.keys(session) : [],
-      hasSession: !!session?.session,
-      sessionLength: session?.session?.token?.length,
+      hasAccessToken: !!session?.accessToken,
       user: session?.user
         ? {
             id: session.user.id,
@@ -59,14 +58,14 @@ apiClient.interceptors.request.use(
         : null,
     });
 
-    // If we have a session with a token, add it to the headers
-    if (session?.session?.token) {
-      config.headers.Authorization = `Bearer ${session.session.token}`;
+    // If we have a session with an access token, add it to the headers
+    if (session?.accessToken) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`;
 
       debugLog("Auth Token Added", {
         hasToken: true,
-        tokenLength: session.session.token.length,
-        tokenPreview: session.session.token.substring(0, 20) + "...",
+        tokenLength: session.accessToken.length,
+        tokenPreview: session.accessToken.substring(0, 20) + "...",
       });
     } else {
       debugLog("Auth Token Missing", {
@@ -76,7 +75,7 @@ apiClient.interceptors.request.use(
           ? {
               keys: Object.keys(session),
               hasUser: !!session.user,
-              hasSession: !!session.session,
+              hasAccessToken: !!session.accessToken,
             }
           : null,
       });

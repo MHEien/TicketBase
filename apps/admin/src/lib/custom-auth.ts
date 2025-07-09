@@ -1,5 +1,6 @@
 // Custom authentication implementation for NestJS backend integration
 // Maintains API compatibility with Better Auth while working directly with backend
+import Cookies from 'js-cookie';
 
 interface User {
   id: string;
@@ -64,31 +65,48 @@ class TokenStorage {
 
     const expiresAt = Math.floor(Date.now() / 1000) + tokens.expiresIn;
 
-    localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-    localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-    localStorage.setItem(EXPIRES_AT_KEY, expiresAt.toString());
+    // Set cookies with secure attributes
+    Cookies.set(ACCESS_TOKEN_KEY, tokens.accessToken, {
+      secure: true,
+      sameSite: 'strict',
+      expires: 7 // days
+    });
+    Cookies.set(REFRESH_TOKEN_KEY, tokens.refreshToken, {
+      secure: true,
+      sameSite: 'strict',
+      expires: 30 // days
+    });
+    Cookies.set(USER_DATA_KEY, JSON.stringify(user), {
+      secure: true,
+      sameSite: 'strict',
+      expires: 7 // days
+    });
+    Cookies.set(EXPIRES_AT_KEY, expiresAt.toString(), {
+      secure: true,
+      sameSite: 'strict',
+      expires: 7 // days
+    });
   }
 
   static getAccessToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
+    return Cookies.get(ACCESS_TOKEN_KEY) || null;
   }
 
   static getRefreshToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
+    return Cookies.get(REFRESH_TOKEN_KEY) || null;
   }
 
   static getUser(): User | null {
     if (typeof window === "undefined") return null;
-    const userData = localStorage.getItem(USER_DATA_KEY);
+    const userData = Cookies.get(USER_DATA_KEY);
     return userData ? JSON.parse(userData) : null;
   }
 
   static getExpiresAt(): number | null {
     if (typeof window === "undefined") return null;
-    const expiresAt = localStorage.getItem(EXPIRES_AT_KEY);
+    const expiresAt = Cookies.get(EXPIRES_AT_KEY);
     return expiresAt ? parseInt(expiresAt, 10) : null;
   }
 
@@ -103,10 +121,10 @@ class TokenStorage {
   static clearTokens(): void {
     if (typeof window === "undefined") return;
 
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(USER_DATA_KEY);
-    localStorage.removeItem(EXPIRES_AT_KEY);
+    Cookies.remove(ACCESS_TOKEN_KEY);
+    Cookies.remove(REFRESH_TOKEN_KEY);
+    Cookies.remove(USER_DATA_KEY);
+    Cookies.remove(EXPIRES_AT_KEY);
   }
 
   static hasValidSession(): boolean {
@@ -209,7 +227,7 @@ class CustomAuth {
     try {
       console.log("Signing out with custom auth...");
 
-      // Clear local storage
+      // Clear cookies
       TokenStorage.clearTokens();
 
       // Optionally call backend logout endpoint
