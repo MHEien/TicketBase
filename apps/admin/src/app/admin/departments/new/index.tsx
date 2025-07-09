@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useRouter } from "@tanstack/react-router";
+import { useSession } from "@/components/session-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -137,7 +137,7 @@ export default function NewDepartmentPage() {
         title: "Success",
         description: "Department created successfully",
       });
-      router.push("/departments");
+      router.navigate({ to: "/admin/departments" });
     } catch (error) {
       toast({
         title: "Error",
@@ -342,7 +342,7 @@ export default function NewDepartmentPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/departments")}
+                  onClick={() => router.navigate({ to: "/admin/departments" })}
                 >
                   Cancel
                 </Button>
