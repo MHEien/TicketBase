@@ -7,6 +7,7 @@ import {
 import { SessionProvider } from "@/components/session-provider";
 import { AuthErrorHandler } from "@/components/ui/auth-error-handler";
 import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
+import { DateRangeProvider } from "@/hooks/use-date-range";
 import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
@@ -73,8 +74,10 @@ function RootLayout() {
       <body>
         <SessionProvider>
           <PluginSDKProvider>
-            <AuthErrorHandler />
-            <Outlet />
+            <DateRangeProvider>
+              <AuthErrorHandler />
+              <Outlet />
+            </DateRangeProvider>
           </PluginSDKProvider>
         </SessionProvider>
         <Scripts />

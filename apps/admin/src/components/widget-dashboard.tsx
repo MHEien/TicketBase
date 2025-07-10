@@ -34,6 +34,8 @@ import { DashboardLoading } from "@/components/dashboard-loading";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useEvents } from "@/hooks/use-events";
 import { useRecentActivity } from "@/hooks/use-activity";
+import { useDateRange } from "@/hooks/use-date-range";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { useRouter } from "@tanstack/react-router";
 
 export function WidgetDashboard() {
@@ -42,6 +44,7 @@ export function WidgetDashboard() {
   const { events, loading: eventsLoading } = useEvents();
   const { activities: recentActivities, loading: activitiesLoading } =
     useRecentActivity(5);
+  const { dateRange, setDateRange } = useDateRange();
   const router = useRouter();
 
   const handleWidgetClick = (widgetId: string) => {
@@ -201,10 +204,11 @@ export function WidgetDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Last 30 days</span>
-          </Button>
+          <DateRangePicker
+            value={dateRange}
+            onValueChange={(range) => range && setDateRange(range)}
+            className="w-auto"
+          />
           <Button variant="outline" size="icon" onClick={refresh}>
             <RefreshCw className="h-4 w-4" />
           </Button>

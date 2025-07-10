@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "./use-toast";
+import { useDateRange } from "./use-date-range";
 import {
   analyticsApi,
   DashboardMetrics,
@@ -42,6 +43,7 @@ export function useDashboard(
 ): UseDashboardReturn {
   const { refreshInterval = 300000, autoRefresh = true } = options; // Default 5 minutes
   const { toast } = useToast();
+  const { dateRange } = useDateRange();
 
   const [data, setData] = useState<DashboardData>({
     metrics: null,
@@ -55,13 +57,12 @@ export function useDashboard(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Calculate date range (last 30 days by default)
+  // Get date range from context
   const getDateRange = useCallback(() => {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
+    const startDate = dateRange.from || new Date();
+    const endDate = dateRange.to || new Date();
     return { startDate, endDate };
-  }, []);
+  }, [dateRange]);
 
   // Refresh dashboard metrics
   const refreshMetrics = useCallback(async () => {
@@ -217,10 +218,10 @@ export function useDashboard(
     refreshPlugins,
   ]);
 
-  // Initial data load
+  // Initial data load and refresh when date range changes
   useEffect(() => {
     refresh();
-  }, [refresh]);
+  }, [refresh, dateRange]);
 
   // Auto-refresh setup
   useEffect(() => {
