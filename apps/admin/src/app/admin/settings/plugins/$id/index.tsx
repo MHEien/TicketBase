@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "@tanstack/react-router";
 import { ExtensionPoint } from "@/components/extension-point";
 import { usePluginSDK } from "@/lib/plugin-sdk-context";
 import { getPlugin } from "@/lib/plugin-api";

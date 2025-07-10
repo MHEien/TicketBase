@@ -23,6 +23,7 @@ import { PluginBundleController } from './bundle.controller';
 import { MinioModule } from '../minio/minio.module';
 import { DebugController } from './debug.controller';
 import { PluginConfig, PluginConfigSchema } from './schemas/plugin-config.schema';
+import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
 import { SecureConfigService } from './services/secure-config.service';
 
 @Module({
@@ -32,6 +33,7 @@ import { SecureConfigService } from './services/secure-config.service';
       { name: InstalledPlugin.name, schema: InstalledPluginSchema },
       { name: PluginRating.name, schema: PluginRatingSchema },
       { name: PluginConfig.name, schema: PluginConfigSchema },
+      { name: ConfigAudit.name, schema: ConfigAuditSchema },
     ]),
     AssetsModule,
     MinioModule,

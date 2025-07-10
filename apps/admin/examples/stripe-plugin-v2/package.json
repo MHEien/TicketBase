@@ -5,25 +5,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && bun build src/index.tsx --outdir dist --format esm",
+    "build": "tsc && bun build src/index.tsx --outdir dist --format esm --external react --external react-dom",
     "dev": "tsc --watch",
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
     "package": "bun run build && zip -r plugin.zip dist/ package.json plugin.json README.md"
   },
   "dependencies": {
-    "react": "^18.2.0",
     "stripe": "^14.21.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
     "typescript": "^5.0.0",
     "eslint": "^8.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0"
   },
   "peerDependencies": {
-    "react": ">=18.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@types/react": "^19.0.8"
   },
   "author": "Plugin Developer",
   "license": "MIT",

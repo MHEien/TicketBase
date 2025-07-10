@@ -33,6 +33,7 @@ interface PluginSettingsProps {
 export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
   const { toast } = useToast();
   const [plugin, setPlugin] = useState<InstalledPlugin | null>(null);
+  const [configuration, setConfiguration] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,19 +42,33 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
   // Use Plugin SDK for authentication and API access
   const { api, auth, utils } = usePluginSDK();
 
-  // Load plugin data
+  // Load plugin data and configuration
   useEffect(() => {
     async function loadPlugin() {
       try {
         setLoading(true);
         console.log(`Loading plugin settings for: ${pluginId}`);
 
+        // Load plugin metadata
         const response = await getPlugin(pluginId);
         if (response.success && response.data) {
           setPlugin(response.data);
           setEnabled(response.data.enabled);
-          setError(null);
           console.log("Plugin settings loaded:", response.data);
+
+          // Load plugin configuration using Plugin SDK
+          try {
+            console.log(`Loading configuration for plugin: ${pluginId}`);
+            const config = await api.loadConfig(pluginId);
+            setConfiguration(config || {});
+            console.log("Plugin configuration loaded:", config);
+          } catch (configError) {
+            console.warn("Failed to load plugin configuration:", configError);
+            // Don't fail the entire load if config loading fails
+            setConfiguration({});
+          }
+
+          setError(null);
         } else {
           setError(
             response.error ||
@@ -73,7 +88,7 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
     if (pluginId) {
       loadPlugin();
     }
-  }, [pluginId]);
+  }, [pluginId, api]);
 
   // Handle enabling/disabling the plugin
   const handleToggleEnabled = async () => {
@@ -127,8 +142,9 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
       // Use Plugin SDK API to save configuration
       await api.saveConfig(pluginId, config);
 
-      // Update plugin configuration in state
+      // Update both plugin and configuration state
       setPlugin((prev) => (prev ? { ...prev, configuration: config } : null));
+      setConfiguration(config);
 
       toast({
         title: "Settings Saved Successfully! 🎉",
@@ -285,6 +301,7 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
                 saving,
                 user: auth.user,
                 isAuthenticated: auth.isAuthenticated,
+                configuration: configuration || {},
               }}
               fallback={
                 <div className="text-center p-6 border rounded-md border-dashed">

@@ -71,4 +71,18 @@ export class CreatePluginDto {
   @IsArray()
   @IsOptional()
   extensionPoints?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Plugin configuration schema with sensitive fields definition',
+    example: {
+      type: 'object',
+      properties: {
+        apiKey: { type: 'string' },
+        testMode: { type: 'boolean' }
+      },
+      sensitiveFields: ['apiKey']
+    },
+  })
+  @IsOptional()
+  configSchema?: any;
 }

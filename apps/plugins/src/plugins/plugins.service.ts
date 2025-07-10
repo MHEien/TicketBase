@@ -17,6 +17,7 @@ import {
 } from './schemas/plugin-rating.schema';
 import { BundleService } from './services/bundle.service';
 import { PluginStorageService } from './services/plugin-storage.service';
+import { SecureConfigService } from './services/secure-config.service';
 
 @Injectable()
 export class PluginsService {
@@ -30,6 +31,7 @@ export class PluginsService {
     private pluginRatingModel: Model<PluginRatingDocument>,
     private bundleService: BundleService,
     private pluginStorageService: PluginStorageService,
+    private secureConfigService: SecureConfigService,
   ) {}
 
   async findAll(): Promise<PluginDocument[]> {
@@ -167,6 +169,7 @@ export class PluginsService {
     tenantId: string,
     pluginId: string,
     config: Record<string, any>,
+    auditContext?: { userId?: string; ipAddress?: string; userAgent?: string },
   ): Promise<any> {
     const plugin = await this.findById(pluginId);
 
@@ -183,18 +186,63 @@ export class PluginsService {
       );
     }
 
-    installed.configuration = config;
+    // Get plugin schema for sensitive field detection
+    const configSchema = plugin.metadata?.configSchema;
+
+    // Save configuration using secure config service
+    await this.secureConfigService.savePluginConfig(
+      tenantId,
+      pluginId,
+      plugin.version,
+      config,
+      configSchema,
+      auditContext,
+    );
+
+    // Update the installed plugin's updatedAt timestamp
     installed.updatedAt = new Date();
     await installed.save();
 
+    // Return updated plugin data with the configuration
     return {
       ...plugin.toObject(),
       enabled: installed.enabled,
       tenantId,
-      configuration: installed.configuration,
+      configuration: config, // Return the config as-is (SecureConfigService handles security)
       installedAt: installed.installedAt,
       updatedAt: installed.updatedAt,
     };
+  }
+
+  async getPluginConfig(
+    tenantId: string,
+    pluginId: string,
+    auditContext?: { userId?: string; ipAddress?: string; userAgent?: string },
+  ): Promise<Record<string, any> | null> {
+    // Verify plugin exists and is installed
+    const plugin = await this.findById(pluginId);
+
+    const installed = await this.installedPluginModel
+      .findOne({
+        tenantId,
+        pluginId: plugin._id,
+      })
+      .exec();
+
+    if (!installed) {
+      throw new NotFoundException(
+        `Plugin ${pluginId} is not installed for tenant ${tenantId}`,
+      );
+    }
+
+    // Get configuration using secure config service
+    const config = await this.secureConfigService.getPluginConfig(
+      tenantId,
+      pluginId,
+      auditContext,
+    );
+
+    return config || {};
   }
 
   async setPluginEnabled(
@@ -241,6 +289,7 @@ export class PluginsService {
     requiredPermissions: string[] = [],
     bundleUrl?: string,
     providedExtensionPoints?: string[],
+    configSchema?: any,
   ): Promise<PluginDocument> {
     this.logger.log(`Creating plugin ${id} v${version}`);
 
@@ -253,10 +302,11 @@ export class PluginsService {
       extensionPoints = providedExtensionPoints;
       this.logger.log(`Using provided extension points: ${extensionPoints.join(', ')}`);
       
-      // Create basic metadata
+      // Create basic metadata including configSchema
       metadata = {
         installCount: 0,
         lastUpdated: new Date().toISOString(),
+        ...(configSchema && { configSchema }),
       };
     } else {
       // Validate plugin structure only when analyzing source code

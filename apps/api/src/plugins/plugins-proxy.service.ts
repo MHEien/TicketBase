@@ -396,6 +396,57 @@ export class PluginsProxyService {
     }
   }
 
+  async getPluginConfiguration(
+    id: string,
+    authToken?: string,
+  ): Promise<Record<string, any>> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/config`;
+      const headers = this.createAuthHeaders(authToken);
+      const response = await firstValueFrom(
+        this.httpService.get<Record<string, any>>(url, { headers }).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Get plugin configuration ${id}`);
+            throw error;
+          }),
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Get plugin configuration ${id}`);
+      }
+      throw error;
+    }
+  }
+
+  async savePluginConfiguration(
+    id: string,
+    configuration: Record<string, any>,
+    authToken?: string,
+  ): Promise<Record<string, any>> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/config`;
+      const headers = this.createAuthHeaders(authToken);
+      const response = await firstValueFrom(
+        this.httpService
+          .put<Record<string, any>>(url, configuration, { headers })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(error, `Save plugin configuration ${id}`);
+              throw error;
+            }),
+          ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Save plugin configuration ${id}`);
+      }
+      throw error;
+    }
+  }
+
   async getInstalledPlugins(
     organizationId: string,
     authToken?: string,
@@ -654,6 +705,7 @@ export class PluginsProxyService {
       bundleUrl: string;
       requiredPermissions?: string[];
       extensionPoints?: string[];
+      configSchema?: any;
     },
     authToken?: string,
   ): Promise<Plugin> {

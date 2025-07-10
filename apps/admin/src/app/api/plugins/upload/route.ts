@@ -1,7 +1,4 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { promises as fs } from "fs";
-import * as path from "path";
-import * as os from "os";
 import JSZip from "jszip";
 
 // TODO: Implement plugin upload with new simplified plugin system
@@ -198,6 +195,8 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
               bundleUrl: bundleUrl,
               requiredPermissions: pluginMetadata.requiredPermissions || [],
               extensionPoints: pluginMetadata.extensionPoints || [],
+              // Include configSchema for secure configuration handling
+              configSchema: pluginMetadata.configSchema,
             };
 
             const metadataResponse = await fetch(

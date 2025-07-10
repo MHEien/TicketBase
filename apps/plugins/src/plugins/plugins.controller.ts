@@ -206,7 +206,41 @@ export class PluginsController {
     @Body() config: Record<string, any>,
   ) {
     const tenantId = req.user.tenantId;
-    return this.pluginsService.updatePluginConfig(tenantId, pluginId, config);
+    const userId = req.user.userId;
+    return this.pluginsService.updatePluginConfig(tenantId, pluginId, config, { userId });
+  }
+
+  @ApiOperation({ summary: 'Get plugin configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Plugin configuration successfully retrieved',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Authentication required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin configuration not found',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Plugin ID',
+    required: true,
+  })
+  @Roles('admin') // Only admins can view plugin configuration
+  @Get(':id/config')
+  async getPluginConfig(
+    @Request() req,
+    @Param('id') pluginId: string,
+  ) {
+    const tenantId = req.user.tenantId;
+    const userId = req.user.userId;
+    return this.pluginsService.getPluginConfig(tenantId, pluginId, { userId });
   }
 
   @ApiOperation({ summary: 'Enable or disable a plugin' })
@@ -263,6 +297,7 @@ export class PluginsController {
       createDto.requiredPermissions,
       createDto.bundleUrl,
       createDto.extensionPoints,
+      createDto.configSchema,
     );
   }
 

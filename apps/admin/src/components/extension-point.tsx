@@ -15,10 +15,21 @@ export function ExtensionPoint({
   context = {},
   fallback = null,
 }: ExtensionPointProps) {
+  // Ensure we preserve all context properties
+  const extensionContext = {
+    configuration: {},
+    ...context,
+  };
+
+  // Debug log in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🔧 ExtensionPoint "${name}" context:`, extensionContext);
+  }
+
   return (
     <SimpleExtensionPoint
       name={name}
-      context={{ configuration: {}, ...context }}
+      context={extensionContext}
       fallback={fallback}
     />
   );

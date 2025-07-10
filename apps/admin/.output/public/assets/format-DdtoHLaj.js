@@ -15,6 +15,7 @@
  * ```
  */
 
+
 /**
  * @constant
  * @name millisecondsInWeek
@@ -2792,22 +2793,4 @@ function cleanEscapedString(input) {
   return matched[1].replace(doubleQuoteRegExp, "'");
 }
 
-export {
-  getDefaultOptions as a,
-  minutesInMonth as b,
-  constructFrom as c,
-  differenceInCalendarDays as d,
-  enUS as e,
-  format as f,
-  getTimezoneOffsetInMilliseconds as g,
-  getISOWeek as h,
-  getWeek as i,
-  isDate as j,
-  startOfISOWeek as k,
-  startOfWeek as l,
-  minutesInDay as m,
-  normalizeDates as n,
-  startOfYear as o,
-  startOfDay as s,
-  toDate as t,
-};
+export { getDefaultOptions as a, minutesInMonth as b, constructFrom as c, differenceInCalendarDays as d, enUS as e, format as f, getTimezoneOffsetInMilliseconds as g, getISOWeek as h, getWeek as i, isDate as j, startOfISOWeek as k, startOfWeek as l, minutesInDay as m, normalizeDates as n, startOfYear as o, startOfDay as s, toDate as t };

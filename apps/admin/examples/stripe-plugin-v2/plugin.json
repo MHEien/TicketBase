@@ -44,7 +44,8 @@
         "default": true
       }
     },
-    "required": ["apiKey", "publishableKey"]
+    "required": ["apiKey", "publishableKey"],
+    "sensitiveFields": ["apiKey"]
   },
   "supportedCurrencies": ["USD", "EUR", "GBP", "CAD", "AUD"],
   "supportedCountries": [

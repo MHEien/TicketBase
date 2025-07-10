@@ -1,4 +1,27 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
+// ===================================================================
+// PLUGIN RUNTIME SETUP
+// ===================================================================
+
+// Make React available globally for externalized plugins
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  window.React = React;
+  // @ts-ignore
+  window.ReactDOM = ReactDOM;
+  
+  // Also set up a simple module resolution for external imports
+  // @ts-ignore
+  if (!window.__pluginModules) {
+    // @ts-ignore
+    window.__pluginModules = {
+      'react': React,
+      'react-dom': ReactDOM,
+    };
+  }
+}
 
 // ===================================================================
 // TYPES
@@ -23,7 +46,9 @@ interface LoadedPlugin {
 interface PluginContext {
   tenantId?: string;
   eventData?: any;
-  configuration: Record<string, any>;
+  configuration?: Record<string, any>;
+  // Allow any additional context properties for flexibility
+  [key: string]: any;
 }
 
 // ===================================================================
@@ -148,7 +173,7 @@ interface ExtensionPointProps {
 
 export const ExtensionPoint: React.FC<ExtensionPointProps> = ({
   name,
-  context = { configuration: {} },
+  context = {},
   fallback = null,
 }) => {
   const [components, setComponents] = React.useState<Array<{
@@ -226,11 +251,18 @@ export const ExtensionPoint: React.FC<ExtensionPointProps> = ({
 
   return (
     <>
-      {components.map(({ pluginId, component: Component }) => (
-        <div key={pluginId}>
-          <Component {...context} pluginId={pluginId} />
-        </div>
-      ))}
+      {components.map(({ pluginId, component: Component }) => {
+        // Debug log the context being passed to plugin components
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔧 Passing context to plugin "${pluginId}" for extension point "${name}":`, context);
+        }
+        
+        return (
+          <div key={pluginId}>
+            <Component {...context} pluginId={pluginId} />
+          </div>
+        );
+      })}
     </>
   );
 };
