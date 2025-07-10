@@ -23,24 +23,24 @@ export interface Activity {
 }
 
 export enum ActivityType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LOGIN = 'login',
-  LOGOUT = 'logout',
-  VIEW = 'view',
-  EXPORT = 'export',
-  IMPORT = 'import',
-  PUBLISH = 'publish',
-  ARCHIVE = 'archive',
-  RESTORE = 'restore',
-  PERMISSION_CHANGE = 'permission_change',
+  CREATE = "create",
+  UPDATE = "update",
+  DELETE = "delete",
+  LOGIN = "login",
+  LOGOUT = "logout",
+  VIEW = "view",
+  EXPORT = "export",
+  IMPORT = "import",
+  PUBLISH = "publish",
+  ARCHIVE = "archive",
+  RESTORE = "restore",
+  PERMISSION_CHANGE = "permission_change",
 }
 
 export enum ActivityStatus {
-  SUCCESS = 'success',
-  FAILED = 'failed',
-  PENDING = 'pending',
+  SUCCESS = "success",
+  FAILED = "failed",
+  PENDING = "pending",
 }
 
 export interface ActivityQueryParams {
@@ -65,7 +65,9 @@ export interface PaginatedActivitiesResponse {
 /**
  * Fetch organization activities with filtering
  */
-export async function fetchActivities(params?: ActivityQueryParams): Promise<PaginatedActivitiesResponse> {
+export async function fetchActivities(
+  params?: ActivityQueryParams,
+): Promise<PaginatedActivitiesResponse> {
   try {
     const queryParams = new URLSearchParams();
 
@@ -117,10 +119,12 @@ export async function fetchActivities(params?: ActivityQueryParams): Promise<Pag
 export async function fetchUserActivities(
   userId: string,
   page: number = 1,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<PaginatedActivitiesResponse> {
   try {
-    const response = await apiClient.get(`/activities/user/${userId}?page=${page}&limit=${limit}`);
+    const response = await apiClient.get(
+      `/activities/user/${userId}?page=${page}&limit=${limit}`,
+    );
 
     // Transform date strings back to Date objects
     return {
@@ -143,10 +147,12 @@ export async function fetchEntityActivities(
   entityType: string,
   entityId: string,
   page: number = 1,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<PaginatedActivitiesResponse> {
   try {
-    const response = await apiClient.get(`/activities/entity/${entityType}/${entityId}?page=${page}&limit=${limit}`);
+    const response = await apiClient.get(
+      `/activities/entity/${entityType}/${entityId}?page=${page}&limit=${limit}`,
+    );
 
     // Transform date strings back to Date objects
     return {
@@ -168,29 +174,29 @@ export async function fetchEntityActivities(
 export function getActivityTypeLabel(type: ActivityType): string {
   switch (type) {
     case ActivityType.CREATE:
-      return 'Created';
+      return "Created";
     case ActivityType.UPDATE:
-      return 'Updated';
+      return "Updated";
     case ActivityType.DELETE:
-      return 'Deleted';
+      return "Deleted";
     case ActivityType.LOGIN:
-      return 'Logged In';
+      return "Logged In";
     case ActivityType.LOGOUT:
-      return 'Logged Out';
+      return "Logged Out";
     case ActivityType.VIEW:
-      return 'Viewed';
+      return "Viewed";
     case ActivityType.EXPORT:
-      return 'Exported';
+      return "Exported";
     case ActivityType.IMPORT:
-      return 'Imported';
+      return "Imported";
     case ActivityType.PUBLISH:
-      return 'Published';
+      return "Published";
     case ActivityType.ARCHIVE:
-      return 'Archived';
+      return "Archived";
     case ActivityType.RESTORE:
-      return 'Restored';
+      return "Restored";
     case ActivityType.PERMISSION_CHANGE:
-      return 'Changed Permissions';
+      return "Changed Permissions";
     default:
       return type;
   }
@@ -199,15 +205,17 @@ export function getActivityTypeLabel(type: ActivityType): string {
 /**
  * Get activity status badge variant
  */
-export function getActivityStatusVariant(status: ActivityStatus): "default" | "success" | "destructive" | "warning" {
+export function getActivityStatusVariant(
+  status: ActivityStatus,
+): "default" | "success" | "destructive" | "warning" {
   switch (status) {
     case ActivityStatus.SUCCESS:
-      return 'success';
+      return "success";
     case ActivityStatus.FAILED:
-      return 'destructive';
+      return "destructive";
     case ActivityStatus.PENDING:
-      return 'warning';
+      return "warning";
     default:
-      return 'default';
+      return "default";
   }
-} 
+}

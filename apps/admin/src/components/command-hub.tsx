@@ -234,7 +234,10 @@ export function CommandHub() {
               <div className="space-y-2">
                 {dashboardLoading ? (
                   [...Array(3)].map((_, i) => (
-                    <div key={i} className="w-full rounded-md bg-background p-2">
+                    <div
+                      key={i}
+                      className="w-full rounded-md bg-background p-2"
+                    >
                       <div className="h-4 w-32 animate-pulse rounded bg-muted"></div>
                     </div>
                   ))
@@ -244,7 +247,8 @@ export function CommandHub() {
                       Failed to load recent events
                     </p>
                   </div>
-                ) : dashboardData.upcomingEvents && dashboardData.upcomingEvents.length > 0 ? (
+                ) : dashboardData.upcomingEvents &&
+                  dashboardData.upcomingEvents.length > 0 ? (
                   dashboardData.upcomingEvents.slice(0, 3).map((event) => (
                     <Button
                       key={event.id}

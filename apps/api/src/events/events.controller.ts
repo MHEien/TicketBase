@@ -89,7 +89,8 @@ export class EventsController {
   @Delete(':id')
   remove(@Request() req, @Param('id') id: string) {
     const organizationId = req.user.organizationId;
-    return this.eventsService.remove(id, organizationId);
+    const userId = req.user.id;
+    return this.eventsService.remove(id, organizationId, userId);
   }
 
   @Post(':id/publish')

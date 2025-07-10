@@ -79,11 +79,11 @@ import {
 } from "@/lib/api/users-api";
 import { useToast } from "@/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
-import { 
-  useCanCreateUsers, 
-  useCanUpdateUsers, 
-  useCanDeleteUsers, 
-  useCanViewActivities 
+import {
+  useCanCreateUsers,
+  useCanUpdateUsers,
+  useCanDeleteUsers,
+  useCanViewActivities,
 } from "@/hooks/use-permissions";
 import { ActivityLog } from "@/components/activity-log";
 
@@ -584,7 +584,9 @@ function UsersPage() {
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem>Reset Password</DropdownMenuItem>
-                            {(canUpdateUsers || canDeleteUsers) && <DropdownMenuSeparator />}
+                            {(canUpdateUsers || canDeleteUsers) && (
+                              <DropdownMenuSeparator />
+                            )}
                             {canDeleteUsers && (
                               <DropdownMenuItem
                                 onClick={() => {

@@ -10,11 +10,21 @@ import { TicketTypesController } from './ticket-types.controller';
 import { TicketsService } from './tickets.service';
 import { TicketsController } from './tickets.controller';
 import { UsersModule } from '../users/users.module';
+import { ActivitiesService } from '../activities/activities.service';
+import { Activity } from '../activities/entities/activity.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event, TicketType, Ticket]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Event, TicketType, Ticket, Activity]),
+    UsersModule,
+  ],
   controllers: [EventsController, TicketTypesController, TicketsController],
-  providers: [EventsService, TicketTypesService, TicketsService],
+  providers: [
+    EventsService,
+    TicketTypesService,
+    TicketsService,
+    ActivitiesService,
+  ],
   exports: [EventsService, TicketTypesService, TicketsService],
 })
 export class EventsModule {}

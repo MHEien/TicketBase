@@ -20,6 +20,11 @@ import {
   Download,
   Eye,
   MoreHorizontal,
+  Edit,
+  Trash2,
+  LogIn,
+  LogOut,
+  Plus,
 } from "lucide-react";
 import {
   Card,
@@ -48,188 +53,213 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  useActivity,
-  Activity,
-  ActivityType,
-  ActivitySeverity,
-} from "@/hooks/use-activity";
+import { useRecentActivity } from "@/hooks/use-activity";
+import { analyticsApi, RecentActivity } from "@/lib/api/analytics-api";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/activity/")({
   component: ActivityPage,
 });
 
-// Activity type configurations
-const ACTIVITY_TYPES: Record<
-  ActivityType,
-  {
-    label: string;
-    icon: any;
-    color: string;
-    bgColor: string;
-    borderColor: string;
-  }
-> = {
-  [ActivityType.FINANCIAL]: {
-    label: "Financial",
-    icon: DollarSign,
+// Real activity type configurations that match our backend
+const ACTIVITY_TYPE_CONFIGS: Record<string, {
+  label: string;
+  icon: any;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+}> = {
+  CREATE: {
+    label: "Create",
+    icon: Plus,
     color: "text-green-600",
     bgColor: "bg-green-50",
     borderColor: "border-green-200",
   },
-  [ActivityType.EVENT_MANAGEMENT]: {
-    label: "Event Management",
-    icon: Calendar,
+  UPDATE: {
+    label: "Update", 
+    icon: Edit,
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
   },
-  [ActivityType.USER_MANAGEMENT]: {
-    label: "User Management",
-    icon: Users,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
-    borderColor: "border-purple-200",
+  DELETE: {
+    label: "Delete",
+    icon: Trash2,
+    color: "text-red-600",
+    bgColor: "bg-red-50", 
+    borderColor: "border-red-200",
   },
-  [ActivityType.ADMINISTRATIVE]: {
-    label: "Administrative",
-    icon: Settings,
+  LOGIN: {
+    label: "Login",
+    icon: LogIn,
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50",
+    borderColor: "border-emerald-200", 
+  },
+  LOGOUT: {
+    label: "Logout",
+    icon: LogOut,
     color: "text-gray-600",
     bgColor: "bg-gray-50",
     borderColor: "border-gray-200",
   },
-  [ActivityType.SECURITY]: {
-    label: "Security",
-    icon: Shield,
-    color: "text-red-600",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-200",
-  },
-  [ActivityType.MARKETING]: {
-    label: "Marketing",
+  PUBLISH: {
+    label: "Publish",
     icon: TrendingUp,
+    color: "text-purple-600", 
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200",
+  },
+  VIEW: {
+    label: "View",
+    icon: Eye,
+    color: "text-indigo-600",
+    bgColor: "bg-indigo-50", 
+    borderColor: "border-indigo-200",
+  },
+  PERMISSION_CHANGE: {
+    label: "Permission Change",
+    icon: Shield,
     color: "text-orange-600",
     bgColor: "bg-orange-50",
     borderColor: "border-orange-200",
   },
 };
 
-const ACTIVITY_SEVERITY: Record<
-  ActivitySeverity,
-  {
-    label: string;
-    icon: any;
-    color: string;
-  }
-> = {
-  [ActivitySeverity.LOW]: {
-    label: "Low",
+// Status configurations
+const STATUS_CONFIGS: Record<string, {
+  label: string;
+  icon: any;
+  color: string;
+  variant: "default" | "secondary" | "destructive" | "outline";
+}> = {
+  success: {
+    label: "Success",
     icon: CheckCircle,
     color: "text-green-600",
+    variant: "default",
   },
-  [ActivitySeverity.MEDIUM]: {
-    label: "Medium",
-    icon: AlertTriangle,
-    color: "text-yellow-600",
-  },
-  [ActivitySeverity.HIGH]: {
-    label: "High",
+  failed: {
+    label: "Failed", 
     icon: XCircle,
     color: "text-red-600",
+    variant: "destructive",
+  },
+  pending: {
+    label: "Pending",
+    icon: Clock,
+    color: "text-yellow-600", 
+    variant: "secondary",
   },
 };
 
 function ActivityPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
-  const [selectedSeverity, setSelectedSeverity] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [dateRange, setDateRange] = useState<string>("7d");
   const [activeTab, setActiveTab] = useState("all");
+  const [activities, setActivities] = useState<RecentActivity[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Map tab values to activity types
-  const tabToActivityType: Record<string, ActivityType> = {
-    financial: ActivityType.FINANCIAL,
-    event_management: ActivityType.EVENT_MANAGEMENT,
-    user_management: ActivityType.USER_MANAGEMENT,
-    security: ActivityType.SECURITY,
+  // Use analytics API for comprehensive activity data
+  const {
+    activities: recentActivities,
+    loading: recentLoading,
+    error: recentError,
+    refresh,
+  } = useRecentActivity(100); // Get more activities for the admin page
+
+  // Simulate activity counts based on real data
+  const activityCounts = {
+    total: recentActivities.length,
+    events: recentActivities.filter(a => a.entityType === 'event').length,
+    users: recentActivities.filter(a => a.type === 'LOGIN' || a.type === 'LOGOUT' || a.entityType === 'user').length,
+    security: recentActivities.filter(a => a.type === 'PERMISSION_CHANGE').length,
+    administrative: recentActivities.filter(a => !['event', 'user'].includes(a.entityType || '')).length,
   };
 
-  const {
-    activities,
-    activityCounts,
-    total,
-    loading,
-    error,
-    refresh,
-    exportActivities,
-  } = useActivity({
-    search: searchQuery,
-    type: activeTab === "all" ? undefined : tabToActivityType[activeTab],
-    severity:
-      selectedSeverity === "all"
-        ? undefined
-        : (selectedSeverity as ActivitySeverity),
-    dateRange,
-    limit: 50,
-    offset: 0,
-    autoRefresh: true,
-    refreshInterval: 30000,
+  // Filter activities based on current filters
+  const filteredActivities = recentActivities.filter((activity) => {
+    // Search filter
+    if (searchQuery && !activity.action.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !activity.user.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    // Type filter
+    if (selectedType !== "all" && activity.type !== selectedType) {
+      return false;
+    }
+
+    // Status filter
+    if (selectedStatus !== "all" && activity.status !== selectedStatus) {
+      return false;
+    }
+
+    // Tab filter
+    if (activeTab === "events" && activity.entityType !== "event") {
+      return false;
+    }
+    if (activeTab === "users" && activity.type !== "LOGIN" && activity.type !== "LOGOUT" && activity.entityType !== "user") {
+      return false;
+    }
+    if (activeTab === "security" && activity.type !== "PERMISSION_CHANGE") {
+      return false;
+    }
+
+    return true;
   });
 
-  const formatTimeAgo = (date: string) => {
-    const now = new Date();
-    const activityDate = new Date(date);
-    const diffInSeconds = Math.floor(
-      (now.getTime() - activityDate.getTime()) / 1000,
-    );
+  const exportActivities = async () => {
+    try {
+      // Simple CSV export of filtered activities
+      const headers = ["Time", "User", "Action", "Type", "Status", "Entity"];
+      const csvContent = [
+        headers.join(","),
+        ...filteredActivities.map(activity => [
+          activity.time,
+          `"${activity.user}"`,
+          `"${activity.action}"`,
+          activity.type,
+          activity.status,
+          activity.entityType || "N/A"
+        ].join(","))
+      ].join("\n");
 
-    if (diffInSeconds < 60) return "Just now";
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400)
-      return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800)
-      return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return activityDate.toLocaleDateString();
-  };
-
-  const getActivityIcon = (type: ActivityType, severity: ActivitySeverity) => {
-    const typeConfig = ACTIVITY_TYPES[type];
-    const severityConfig = ACTIVITY_SEVERITY[severity];
-
-    if (severity === ActivitySeverity.HIGH) {
-      return severityConfig.icon;
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `activities-${new Date().toISOString().split("T")[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Export failed:", error);
     }
-    return typeConfig?.icon || Settings;
   };
 
-  const getActivityColor = (type: ActivityType, severity: ActivitySeverity) => {
-    if (severity === ActivitySeverity.HIGH) {
-      return ACTIVITY_SEVERITY.HIGH.color;
-    }
-    const typeConfig = ACTIVITY_TYPES[type];
-    return typeConfig?.color || "text-gray-600";
+  const getActivityIcon = (type: string) => {
+    const config = ACTIVITY_TYPE_CONFIGS[type];
+    return config?.icon || Settings;
   };
 
-  // Use the activities directly from the hook (already filtered by the API)
-  const filteredActivities = activities;
+  const getActivityColor = (type: string) => {
+    const config = ACTIVITY_TYPE_CONFIGS[type];
+    return config?.color || "text-gray-600";
+  };
 
-  // Use activity counts from the API
-  const displayedActivityCounts = activityCounts
-    ? {
-        all: activityCounts.total,
-        financial: activityCounts.financial,
-        eventManagement: activityCounts.eventManagement,
-        userManagement: activityCounts.userManagement,
-        security: activityCounts.security,
-      }
-    : {
-        all: 0,
-        financial: 0,
-        eventManagement: 0,
-        userManagement: 0,
-        security: 0,
-      };
+  const getActivityBgConfig = (type: string) => {
+    const config = ACTIVITY_TYPE_CONFIGS[type];
+    return {
+      bgColor: config?.bgColor || "bg-gray-50",
+      borderColor: config?.borderColor || "border-gray-200",
+    };
+  };
 
   return (
     <div className="h-full space-y-6 overflow-y-auto">
@@ -284,7 +314,7 @@ function ActivityPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
-                  {Object.entries(ACTIVITY_TYPES).map(([key, config]) => (
+                  {Object.entries(ACTIVITY_TYPE_CONFIGS).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       {config.label}
                     </SelectItem>
@@ -294,17 +324,17 @@ function ActivityPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Severity</label>
+              <label className="text-sm font-medium">Status</label>
               <Select
-                value={selectedSeverity}
-                onValueChange={setSelectedSeverity}
+                value={selectedStatus}
+                onValueChange={setSelectedStatus}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="All severities" />
+                  <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Severities</SelectItem>
-                  {Object.entries(ACTIVITY_SEVERITY).map(([key, config]) => (
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  {Object.entries(STATUS_CONFIGS).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       {config.label}
                     </SelectItem>
@@ -338,37 +368,27 @@ function ActivityPage() {
             <TabsTrigger value="all" className="flex items-center gap-2 px-4">
               <span>All</span>
               <Badge variant="secondary" className="text-xs">
-                {displayedActivityCounts.all}
+                {activityCounts.total}
               </Badge>
             </TabsTrigger>
             <TabsTrigger
-              value="financial"
-              className="flex items-center gap-2 px-4"
-            >
-              <DollarSign className="h-4 w-4" />
-              <span>Financial</span>
-              <Badge variant="secondary" className="text-xs">
-                {displayedActivityCounts.financial}
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger
-              value="event_management"
+              value="events"
               className="flex items-center gap-2 px-4"
             >
               <Calendar className="h-4 w-4" />
               <span>Events</span>
               <Badge variant="secondary" className="text-xs">
-                {displayedActivityCounts.eventManagement}
+                {activityCounts.events}
               </Badge>
             </TabsTrigger>
             <TabsTrigger
-              value="user_management"
+              value="users"
               className="flex items-center gap-2 px-4"
             >
               <Users className="h-4 w-4" />
               <span>Users</span>
               <Badge variant="secondary" className="text-xs">
-                {displayedActivityCounts.userManagement}
+                {activityCounts.users}
               </Badge>
             </TabsTrigger>
             <TabsTrigger
@@ -378,7 +398,17 @@ function ActivityPage() {
               <Shield className="h-4 w-4" />
               <span>Security</span>
               <Badge variant="secondary" className="text-xs">
-                {displayedActivityCounts.security}
+                {activityCounts.security}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger
+              value="administrative"
+              className="flex items-center gap-2 px-4"
+            >
+              <Settings className="h-4 w-4" />
+              <span>Admin</span>
+              <Badge variant="secondary" className="text-xs">
+                {activityCounts.administrative}
               </Badge>
             </TabsTrigger>
           </TabsList>
@@ -397,7 +427,7 @@ function ActivityPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {recentLoading ? (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div key={i} className="flex items-start gap-4 p-4">
@@ -409,9 +439,9 @@ function ActivityPage() {
                     </div>
                   ))}
                 </div>
-              ) : error ? (
+              ) : recentError ? (
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground">{error}</p>
+                  <p className="text-muted-foreground">{recentError}</p>
                   <Button variant="outline" onClick={refresh} className="mt-4">
                     Try Again
                   </Button>
@@ -426,16 +456,11 @@ function ActivityPage() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {filteredActivities.map((activity: Activity) => {
-                    const ActivityIcon = getActivityIcon(
-                      activity.type,
-                      activity.severity,
-                    );
-                    const iconColor = getActivityColor(
-                      activity.type,
-                      activity.severity,
-                    );
-                    const typeConfig = ACTIVITY_TYPES[activity.type];
+                  {filteredActivities.map((activity: RecentActivity) => {
+                    const ActivityIcon = getActivityIcon(activity.type);
+                    const iconColor = getActivityColor(activity.type);
+                    const { bgColor, borderColor } = getActivityBgConfig(activity.type);
+                    const statusConfig = STATUS_CONFIGS[activity.status];
 
                     return (
                       <motion.div
@@ -445,7 +470,7 @@ function ActivityPage() {
                         className="flex items-start gap-4 p-4 rounded-lg border border-transparent hover:border-border hover:bg-muted/50 transition-all duration-200"
                       >
                         <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-full ${typeConfig?.bgColor} ${typeConfig?.borderColor} border`}
+                          className={`flex h-10 w-10 items-center justify-center rounded-full ${bgColor} ${borderColor} border`}
                         >
                           <ActivityIcon className={`h-5 w-5 ${iconColor}`} />
                         </div>
@@ -456,33 +481,37 @@ function ActivityPage() {
                               <div className="flex items-center gap-2">
                                 <Avatar className="h-6 w-6">
                                   <AvatarImage
-                                    src={activity.user.avatar}
-                                    alt={activity.user.name}
+                                    src={activity.userAvatar}
+                                    alt={activity.user}
                                   />
                                   <AvatarFallback className="text-xs">
-                                    {activity.user.name.charAt(0)}
+                                    {activity.user.charAt(0)}
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="font-medium text-sm">
-                                  {activity.user.name}
+                                  {activity.user}
                                 </span>
                                 <Badge variant="outline" className="text-xs">
-                                  {typeConfig?.label}
+                                  {ACTIVITY_TYPE_CONFIGS[activity.type]?.label || activity.type}
                                 </Badge>
-                                {activity.severity ===
-                                  ActivitySeverity.HIGH && (
+                                {activity.status && activity.status !== 'success' && (
                                   <Badge
-                                    variant="destructive"
+                                    variant={statusConfig?.variant || 'secondary'}
                                     className="text-xs"
                                   >
-                                    High Priority
+                                    {statusConfig?.label || activity.status}
                                   </Badge>
                                 )}
                               </div>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {activity.description}
+                                {activity.action}
                               </p>
-                              {activity.metadata && (
+                              {activity.entityType && activity.entityName && (
+                                <div className="mt-1 text-xs text-muted-foreground">
+                                  <span className="font-medium">Entity:</span> {activity.entityType} - {activity.entityName}
+                                </div>
+                              )}
+                              {activity.metadata && Object.keys(activity.metadata).length > 0 && (
                                 <div className="mt-2 text-xs text-muted-foreground">
                                   {Object.entries(activity.metadata).map(
                                     ([key, value]) => (
@@ -498,35 +527,10 @@ function ActivityPage() {
                               )}
                             </div>
 
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                <span>{formatTimeAgo(activity.createdAt)}</span>
-                              </div>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem>
-                                    View Details
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>Copy ID</DropdownMenuItem>
-                                  {activity.relatedEntityName && (
-                                    <DropdownMenuItem>
-                                      Go to {activity.relatedEntityType}
-                                    </DropdownMenuItem>
-                                  )}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                            <div className="flex items-center gap-2 ml-4">
+                              <span className="text-xs text-muted-foreground">
+                                {activity.time}
+                              </span>
                             </div>
                           </div>
                         </div>

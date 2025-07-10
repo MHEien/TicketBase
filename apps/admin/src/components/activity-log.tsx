@@ -65,11 +65,14 @@ export function ActivityLog({
   title = "Activity Log",
 }: ActivityLogProps) {
   const { toast } = useToast();
-  const [activities, setActivities] = useState<PaginatedActivitiesResponse | null>(null);
+  const [activities, setActivities] =
+    useState<PaginatedActivitiesResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<ActivityType | "all">("all");
-  const [statusFilter, setStatusFilter] = useState<ActivityStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<ActivityStatus | "all">(
+    "all",
+  );
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const pageSize = 20;
@@ -84,9 +87,16 @@ export function ActivityLog({
       if (userId) {
         response = await fetchUserActivities(userId, currentPage, pageSize);
       } else if (entityType && entityId) {
-        response = await fetchEntityActivities(entityType, entityId, currentPage, pageSize);
+        response = await fetchEntityActivities(
+          entityType,
+          entityId,
+          currentPage,
+          pageSize,
+        );
       } else {
-        throw new Error("Either userId or entityType/entityId must be provided");
+        throw new Error(
+          "Either userId or entityType/entityId must be provided",
+        );
       }
 
       // Apply filters (client-side for now, could be server-side)
@@ -94,20 +104,20 @@ export function ActivityLog({
 
       if (typeFilter !== "all") {
         filteredActivities = filteredActivities.filter(
-          (activity) => activity.type === typeFilter
+          (activity) => activity.type === typeFilter,
         );
       }
 
       if (statusFilter !== "all") {
         filteredActivities = filteredActivities.filter(
-          (activity) => activity.status === statusFilter
+          (activity) => activity.status === statusFilter,
         );
       }
 
       if (startDate) {
         const start = new Date(startDate);
         filteredActivities = filteredActivities.filter(
-          (activity) => activity.createdAt >= start
+          (activity) => activity.createdAt >= start,
         );
       }
 
@@ -115,7 +125,7 @@ export function ActivityLog({
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999); // Include the entire end date
         filteredActivities = filteredActivities.filter(
-          (activity) => activity.createdAt <= end
+          (activity) => activity.createdAt <= end,
         );
       }
 
@@ -206,7 +216,9 @@ export function ActivityLog({
                 <Label htmlFor="type-filter">Activity Type</Label>
                 <Select
                   value={typeFilter}
-                  onValueChange={(value) => setTypeFilter(value as ActivityType | "all")}
+                  onValueChange={(value) =>
+                    setTypeFilter(value as ActivityType | "all")
+                  }
                 >
                   <SelectTrigger id="type-filter">
                     <SelectValue />
@@ -226,16 +238,24 @@ export function ActivityLog({
                 <Label htmlFor="status-filter">Status</Label>
                 <Select
                   value={statusFilter}
-                  onValueChange={(value) => setStatusFilter(value as ActivityStatus | "all")}
+                  onValueChange={(value) =>
+                    setStatusFilter(value as ActivityStatus | "all")
+                  }
                 >
                   <SelectTrigger id="status-filter">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value={ActivityStatus.SUCCESS}>Success</SelectItem>
-                    <SelectItem value={ActivityStatus.FAILED}>Failed</SelectItem>
-                    <SelectItem value={ActivityStatus.PENDING}>Pending</SelectItem>
+                    <SelectItem value={ActivityStatus.SUCCESS}>
+                      Success
+                    </SelectItem>
+                    <SelectItem value={ActivityStatus.FAILED}>
+                      Failed
+                    </SelectItem>
+                    <SelectItem value={ActivityStatus.PENDING}>
+                      Pending
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -285,10 +305,19 @@ export function ActivityLog({
           <TabsContent value="activities" className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                {activities ? `${activities.total} activities found` : "Loading..."}
+                {activities
+                  ? `${activities.total} activities found`
+                  : "Loading..."}
               </div>
-              <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading}>
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                size="sm"
+                disabled={loading}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                />
                 Refresh
               </Button>
             </div>
@@ -313,27 +342,31 @@ export function ActivityLog({
                         <div className="flex-shrink-0 mt-1">
                           {getActivityIcon(activity.type)}
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-foreground">
                                 {activity.description}
                               </p>
-                              
+
                               <div className="flex items-center gap-2 mt-1">
                                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <User className="h-3 w-3" />
                                   <span>{activity.user.name}</span>
                                 </div>
-                                
+
                                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <Clock className="h-3 w-3" />
-                                  <span title={format(activity.createdAt, "PPpp")}>
-                                    {formatDistanceToNow(activity.createdAt, { addSuffix: true })}
+                                  <span
+                                    title={format(activity.createdAt, "PPpp")}
+                                  >
+                                    {formatDistanceToNow(activity.createdAt, {
+                                      addSuffix: true,
+                                    })}
                                   </span>
                                 </div>
-                                
+
                                 {activity.ipAddress && (
                                   <div className="text-xs text-muted-foreground">
                                     IP: {activity.ipAddress}
@@ -343,18 +376,24 @@ export function ActivityLog({
 
                               {activity.entityType && activity.entityName && (
                                 <div className="mt-1 text-xs text-muted-foreground">
-                                  Target: {activity.entityType} - {activity.entityName}
+                                  Target: {activity.entityType} -{" "}
+                                  {activity.entityName}
                                 </div>
                               )}
 
                               {formatMetadata(activity.metadata)}
                             </div>
-                            
+
                             <div className="flex items-center gap-2 ml-2">
-                              <Badge variant={getActivityStatusVariant(activity.status)} className="text-xs">
+                              <Badge
+                                variant={getActivityStatusVariant(
+                                  activity.status,
+                                )}
+                                className="text-xs"
+                              >
                                 {activity.status}
                               </Badge>
-                              
+
                               <Badge variant="outline" className="text-xs">
                                 {getActivityTypeLabel(activity.type)}
                               </Badge>
@@ -362,7 +401,7 @@ export function ActivityLog({
                           </div>
                         </div>
                       </div>
-                      
+
                       {index < (activities?.activities.length || 0) - 1 && (
                         <Separator className="my-3" />
                       )}
@@ -390,7 +429,11 @@ export function ActivityLog({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(Math.min(activities.totalPages, currentPage + 1))}
+                    onClick={() =>
+                      setCurrentPage(
+                        Math.min(activities.totalPages, currentPage + 1),
+                      )
+                    }
                     disabled={currentPage === activities.totalPages}
                   >
                     Next
@@ -404,4 +447,4 @@ export function ActivityLog({
       </DialogContent>
     </Dialog>
   );
-} 
+}

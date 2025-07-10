@@ -2,13 +2,43 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, MoreThan } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
 import { EventAnalytics } from './entities/event-analytics.entity';
 import {
   SalesAnalytics,
   DateRangeType,
 } from './entities/sales-analytics.entity';
 import { Event, EventStatus } from '../events/entities/event.entity';
+import { Plugin, PluginStatus } from '../plugins/entities/plugin.entity';
+import { InstalledPlugin } from '../plugins/entities/installed-plugin.entity';
+import { Activity, ActivityType } from '../activities/entities/activity.entity';
+import { ActivitiesService } from '../activities/activities.service';
+
+export interface PopularPlugin {
+  id: string;
+  name: string;
+  description: string;
+  installs: number;
+  rating: number;
+  category: string;
+  icon: string;
+  version: string;
+  author: string;
+  rank: number;
+}
+
+export interface EnhancedRecentActivity {
+  id: string;
+  user: string;
+  userAvatar: string;
+  action: string;
+  description: string;
+  time: string;
+  type: ActivityType;
+  entityType?: string;
+  entityName?: string;
+  status: 'success' | 'failed' | 'pending';
+  metadata?: Record<string, any>;
+}
 
 @Injectable()
 export class AnalyticsService {
@@ -19,6 +49,13 @@ export class AnalyticsService {
     private salesAnalyticsRepository: Repository<SalesAnalytics>,
     @InjectRepository(Event)
     private eventsRepository: Repository<Event>,
+    @InjectRepository(Plugin)
+    private pluginRepository: Repository<Plugin>,
+    @InjectRepository(InstalledPlugin)
+    private installedPluginRepository: Repository<InstalledPlugin>,
+    @InjectRepository(Activity)
+    private activityRepository: Repository<Activity>,
+    private activitiesService: ActivitiesService,
     private httpService: HttpService,
   ) {}
 
@@ -240,25 +277,98 @@ export class AnalyticsService {
     }));
   }
 
-  async getRecentActivity(organizationId: string, limit: number = 10) {
-    // Get recent sales analytics as activity indicators
-    const recentSales = await this.salesAnalyticsRepository.find({
-      where: {
-        organizationId,
-        date: MoreThan(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)), // Last 7 days
-      },
-      order: { date: 'DESC' },
-      take: limit,
-    });
+  async getRecentActivity(
+    organizationId: string,
+    limit: number = 10,
+  ): Promise<EnhancedRecentActivity[]> {
+    try {
+      // Get recent activities with user information
+      const activities = await this.activityRepository
+        .createQueryBuilder('activity')
+        .leftJoinAndSelect('activity.user', 'user')
+        .where('activity.organizationId = :organizationId', { organizationId })
+        .andWhere('activity.createdAt >= :recentDate', {
+          recentDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+        })
+        .orderBy('activity.createdAt', 'DESC')
+        .limit(limit)
+        .getMany();
 
-    // Transform sales data into activity format
-    return recentSales.map((sale, index) => ({
-      id: sale.id,
-      user: `User ${index + 1}`, // TODO: Get actual user names from user table
-      action: `generated $${Number(sale.totalRevenue).toFixed(2)} in revenue`,
-      time: this.formatTimeAgo(sale.date),
-      avatar: '/placeholder.svg',
-    }));
+      return activities.map((activity) => ({
+        id: activity.id,
+        user: activity.user?.name || 'Unknown User',
+        userAvatar: activity.user?.avatar || '/placeholder.svg',
+        action: this.formatActivityAction(activity),
+        description: activity.description,
+        time: this.formatTimeAgo(activity.createdAt),
+        type: activity.type,
+        entityType: activity.entityType,
+        entityName: activity.entityName,
+        status: activity.status as 'success' | 'failed' | 'pending',
+        metadata: activity.metadata,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch recent activities:', error.message);
+      // Fallback to empty array if activities system fails
+      return [];
+    }
+  }
+
+  /**
+   * Format activity action into user-friendly text
+   */
+  private formatActivityAction(activity: Activity): string {
+    const { type, entityType, entityName } = activity;
+
+    switch (type) {
+      case ActivityType.CREATE:
+        if (entityType === 'event') return `Created event "${entityName}"`;
+        if (entityType === 'user') return `Added new user "${entityName}"`;
+        if (entityType === 'plugin') return `Installed plugin "${entityName}"`;
+        return `Created ${entityType || 'item'}`;
+
+      case ActivityType.UPDATE:
+        if (entityType === 'event') return `Updated event "${entityName}"`;
+        if (entityType === 'user') return `Updated user "${entityName}"`;
+        return `Updated ${entityType || 'item'}`;
+
+      case ActivityType.DELETE:
+        if (entityType === 'event') return `Deleted event "${entityName}"`;
+        if (entityType === 'user') return `Removed user "${entityName}"`;
+        return `Deleted ${entityType || 'item'}`;
+
+      case ActivityType.PUBLISH:
+        if (entityType === 'event') return `Published event "${entityName}"`;
+        return `Published ${entityType || 'item'}`;
+
+      case ActivityType.LOGIN:
+        return 'Signed in';
+
+      case ActivityType.LOGOUT:
+        return 'Signed out';
+
+      case ActivityType.VIEW:
+        if (entityType === 'event') return `Viewed event "${entityName}"`;
+        return `Viewed ${entityType || 'item'}`;
+
+      case ActivityType.EXPORT:
+        return `Exported ${entityType || 'data'}`;
+
+      case ActivityType.IMPORT:
+        return `Imported ${entityType || 'data'}`;
+
+      case ActivityType.ARCHIVE:
+        return `Archived ${entityType || 'item'}`;
+
+      case ActivityType.RESTORE:
+        return `Restored ${entityType || 'item'}`;
+
+      case ActivityType.PERMISSION_CHANGE:
+        return `Changed permissions for "${entityName}"`;
+
+      default:
+        return activity.description || 'Performed action';
+    }
   }
 
   async getPerformanceMetrics(organizationId: string) {
@@ -537,75 +647,169 @@ export class AnalyticsService {
     return `${sign}${change.toFixed(1)}%`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getPopularPlugins(_organizationId: string) {
+  async getPopularPlugins(): Promise<PopularPlugin[]> {
     try {
-      // Get all plugins from the plugins microservice
-      const pluginsResponse = await firstValueFrom(
-        this.httpService.get(
-          `${process.env.PLUGINS_SERVICE_URL || 'http://localhost:3002'}/api/plugins`,
-        ),
-      );
-      const allPlugins = pluginsResponse.data;
+      // Get all active plugins with their installation data
+      const pluginsWithInstallations = await this.pluginRepository
+        .createQueryBuilder('plugin')
+        .leftJoinAndSelect('plugin.installations', 'installation')
+        .where('plugin.status = :status', { status: PluginStatus.ACTIVE })
+        .getMany();
 
-      // Get installation counts for each plugin
-      const pluginPopularity = await Promise.all(
-        allPlugins.map(async (plugin: any) => {
-          try {
-            // Get installation count for this plugin across all tenants
-            const installationsResponse = await firstValueFrom(
-              this.httpService.get(
-                `${process.env.PLUGINS_SERVICE_URL || 'http://localhost:3002'}/api/plugins/${plugin.id}/installations/count`,
-              ),
-            );
-            const installationCount = installationsResponse.data.count || 0;
+      if (pluginsWithInstallations.length === 0) {
+        return [];
+      }
 
-            return {
-              id: plugin.id,
-              name: plugin.name,
-              description: plugin.description,
-              category: plugin.category,
-              installationCount,
-              iconUrl: plugin.metadata?.iconUrl || '/placeholder.svg',
-              version: plugin.version,
-              author: plugin.metadata?.author || 'Unknown',
-            };
-          } catch {
-            // If we can't get installation count, default to 0
-            return {
-              id: plugin.id,
-              name: plugin.name,
-              description: plugin.description,
-              category: plugin.category,
-              installationCount: 0,
-              iconUrl: plugin.metadata?.iconUrl || '/placeholder.svg',
-              version: plugin.version,
-              author: plugin.metadata?.author || 'Unknown',
-            };
-          }
+      // Calculate popularity scores for each plugin
+      const pluginScores = await Promise.all(
+        pluginsWithInstallations.map(async (plugin) => {
+          const score = await this.calculatePluginPopularityScore(plugin);
+          return {
+            plugin,
+            score,
+          };
         }),
       );
 
-      // Sort by installation count (most popular first) and return top 6
-      return pluginPopularity
-        .sort((a, b) => b.installationCount - a.installationCount)
-        .slice(0, 6)
-        .map((plugin, index) => ({
-          id: plugin.id,
-          name: plugin.name,
-          description: plugin.description,
-          installs: plugin.installationCount,
-          rating: plugin.metadata?.rating || null, // Use real rating or null
-          category: plugin.category,
-          icon: plugin.iconUrl,
-          version: plugin.version,
-          author: plugin.author,
+      // Sort by score (highest first) and format the response
+      const popularPlugins = pluginScores
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 6) // Top 6 plugins
+        .map((item, index) => ({
+          id: item.plugin.id,
+          name: item.plugin.name,
+          description: item.plugin.description,
+          installs: item.plugin.installations?.length || 0,
+          rating: this.calculatePluginRating(item.plugin),
+          category: item.plugin.category,
+          icon: item.plugin.metadata?.iconUrl || '/placeholder.svg',
+          version: item.plugin.version,
+          author: item.plugin.metadata?.author || 'Unknown',
           rank: index + 1,
         }));
+
+      return popularPlugins;
     } catch (error) {
-      // If plugins service is unavailable, return empty array
-      console.error('Failed to fetch popular plugins:', error.message);
+      console.error('Failed to calculate popular plugins:', error.message);
       return [];
     }
+  }
+
+  /**
+   * Sophisticated algorithm to calculate plugin popularity score
+   * Takes into account multiple factors to determine what makes plugins "shine"
+   */
+  private async calculatePluginPopularityScore(
+    plugin: Plugin,
+  ): Promise<number> {
+    const installations = plugin.installations || [];
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Factor 1: Installation Count (40% weight)
+    // More installations = more popular
+    const installationCount = installations.length;
+    const installationScore = Math.min(installationCount * 10, 100); // Cap at 100
+
+    // Factor 2: Recent Installation Activity (25% weight)
+    // Plugins with recent installations get a boost
+    const recentInstallations = installations.filter(
+      (install) => install.installedAt >= thirtyDaysAgo,
+    ).length;
+    const recentActivityScore = Math.min(recentInstallations * 20, 100);
+
+    // Factor 3: Retention Rate (20% weight)
+    // Plugins that stay enabled and configured are more valuable
+    const enabledInstallations = installations.filter(
+      (install) => install.enabled,
+    ).length;
+    const retentionRate =
+      installationCount > 0
+        ? (enabledInstallations / installationCount) * 100
+        : 0;
+
+    // Factor 4: Configuration Activity (10% weight)
+    // Plugins with non-empty configurations are actively used
+    const configuredInstallations = installations.filter(
+      (install) =>
+        install.configuration && Object.keys(install.configuration).length > 0,
+    ).length;
+    const configurationScore =
+      installationCount > 0
+        ? (configuredInstallations / installationCount) * 100
+        : 0;
+
+    // Factor 5: Category Diversity Bonus (5% weight)
+    // Bonus for plugins in underrepresented categories
+    const categoryBonus = await this.getCategoryDiversityBonus(plugin.category);
+
+    // Calculate weighted total score
+    const totalScore =
+      installationScore * 0.4 +
+      recentActivityScore * 0.25 +
+      retentionRate * 0.2 +
+      configurationScore * 0.1 +
+      categoryBonus * 0.05;
+
+    return Math.round(totalScore);
+  }
+
+  /**
+   * Calculate a rating for the plugin based on usage patterns
+   */
+  private calculatePluginRating(plugin: Plugin): number {
+    const installations = plugin.installations || [];
+    if (installations.length === 0) return 0;
+
+    // Calculate rating based on retention and configuration
+    const enabledRate =
+      installations.filter((i) => i.enabled).length / installations.length;
+    const configuredRate =
+      installations.filter(
+        (i) => i.configuration && Object.keys(i.configuration).length > 0,
+      ).length / installations.length;
+
+    // Simple rating algorithm: 1-5 stars based on usage quality
+    const qualityScore = (enabledRate * 0.7 + configuredRate * 0.3) * 5;
+    return Math.max(1, Math.round(qualityScore * 10) / 10); // Round to 1 decimal, min 1 star
+  }
+
+  /**
+   * Provide bonus points for plugins in underrepresented categories
+   * to ensure diversity in popular plugins
+   */
+  private async getCategoryDiversityBonus(category: string): Promise<number> {
+    // Get total installations per category
+    const categoryStats = await this.installedPluginRepository
+      .createQueryBuilder('installation')
+      .leftJoin('installation.plugin', 'plugin')
+      .select('plugin.category', 'category')
+      .addSelect('COUNT(*)', 'count')
+      .where('plugin.status = :status', { status: PluginStatus.ACTIVE })
+      .groupBy('plugin.category')
+      .getRawMany();
+
+    const totalInstallations = categoryStats.reduce(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      (sum, stat) => sum + parseInt(stat.count),
+      0,
+    );
+
+    if (totalInstallations === 0) return 0;
+
+    // Find current category's installation count
+    const currentCategoryStat = categoryStats.find(
+      (stat) => stat.category === category,
+    );
+    const categoryInstallations = currentCategoryStat
+      ? parseInt(currentCategoryStat.count)
+      : 0;
+
+    // Calculate diversity bonus (inverse popularity)
+    // Less popular categories get higher bonus (up to 20 points)
+    const categoryPopularity = categoryInstallations / totalInstallations;
+    const diversityBonus = (1 - categoryPopularity) * 20;
+
+    return Math.round(diversityBonus);
   }
 }

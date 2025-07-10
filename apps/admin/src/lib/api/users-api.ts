@@ -195,10 +195,10 @@ export const rolePermissions: Record<UserRole, string[]> = {
     "analytics:view",
   ],
   analyst: [
-    "tickets:view-sales", 
-    "users:view", 
-    "activities:view", 
-    "analytics:view"
+    "tickets:view-sales",
+    "users:view",
+    "activities:view",
+    "analytics:view",
   ],
 };
 

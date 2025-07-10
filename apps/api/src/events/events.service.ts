@@ -10,6 +10,8 @@ import { TicketType } from './entities/ticket-type.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { OrganizationsService } from '../users/organizations.service';
+import { ActivitiesService } from '../activities/activities.service';
+import { ActivityType } from '../activities/entities/activity.entity';
 
 @Injectable()
 export class EventsService {
@@ -19,6 +21,7 @@ export class EventsService {
     @InjectRepository(TicketType)
     private ticketTypesRepository: Repository<TicketType>,
     private organizationsService: OrganizationsService,
+    private activitiesService: ActivitiesService,
   ) {}
 
   async create(
@@ -59,6 +62,22 @@ export class EventsService {
       const savedTicketTypes =
         await this.ticketTypesRepository.save(ticketTypes);
       savedEvent.ticketTypes = savedTicketTypes;
+    }
+
+    // Log activity
+    try {
+      await this.activitiesService.logActivity({
+        userId,
+        organizationId,
+        type: ActivityType.CREATE,
+        description: `Created event "${savedEvent.title}"`,
+        entityType: 'event',
+        entityId: savedEvent.id,
+        entityName: savedEvent.title,
+      });
+    } catch (error) {
+      // Don't fail the main operation if activity logging fails
+      console.error('Failed to log activity:', error);
     }
 
     return savedEvent;
@@ -169,12 +188,31 @@ export class EventsService {
     return this.eventsRepository.save(updatedEvent);
   }
 
-  async remove(id: string, organizationId: string): Promise<void> {
+  async remove(
+    id: string,
+    organizationId: string,
+    userId: string,
+  ): Promise<void> {
     const event = await this.findOne(id, organizationId);
 
     // Check if event has sold tickets
     if (event.totalTicketsSold > 0) {
       throw new BadRequestException('Cannot delete event with sold tickets');
+    }
+
+    // Log activity before deletion
+    try {
+      await this.activitiesService.logActivity({
+        userId,
+        organizationId,
+        type: ActivityType.DELETE,
+        description: `Deleted event "${event.title}"`,
+        entityType: 'event',
+        entityId: event.id,
+        entityName: event.title,
+      });
+    } catch (error) {
+      console.error('Failed to log activity:', error);
     }
 
     await this.eventsRepository.remove(event);
@@ -198,7 +236,24 @@ export class EventsService {
     event.status = EventStatus.PUBLISHED;
     event.updatedBy = userId;
 
-    return this.eventsRepository.save(event);
+    const publishedEvent = await this.eventsRepository.save(event);
+
+    // Log activity
+    try {
+      await this.activitiesService.logActivity({
+        userId,
+        organizationId,
+        type: ActivityType.PUBLISH,
+        description: `Published event "${publishedEvent.title}"`,
+        entityType: 'event',
+        entityId: publishedEvent.id,
+        entityName: publishedEvent.title,
+      });
+    } catch (error) {
+      console.error('Failed to log activity:', error);
+    }
+
+    return publishedEvent;
   }
 
   async cancel(
@@ -212,7 +267,25 @@ export class EventsService {
     event.status = EventStatus.CANCELLED;
     event.updatedBy = userId;
 
-    return this.eventsRepository.save(event);
+    const cancelledEvent = await this.eventsRepository.save(event);
+
+    // Log activity
+    try {
+      await this.activitiesService.logActivity({
+        userId,
+        organizationId,
+        type: ActivityType.UPDATE,
+        description: `Cancelled event "${cancelledEvent.title}"`,
+        entityType: 'event',
+        entityId: cancelledEvent.id,
+        entityName: cancelledEvent.title,
+        metadata: { action: 'cancel' },
+      });
+    } catch (error) {
+      console.error('Failed to log activity:', error);
+    }
+
+    return cancelledEvent;
   }
 
   /**

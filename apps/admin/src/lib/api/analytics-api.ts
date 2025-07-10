@@ -68,9 +68,15 @@ export interface SalesAnalytics {
 export interface RecentActivity {
   id: string;
   user: string;
+  userAvatar: string;
   action: string;
+  description: string;
   time: string;
-  avatar?: string;
+  type: string;
+  entityType?: string;
+  entityName?: string;
+  status: "success" | "failed" | "pending";
+  metadata?: Record<string, any>;
 }
 
 export interface UpcomingEvent {

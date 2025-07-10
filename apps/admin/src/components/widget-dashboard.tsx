@@ -416,25 +416,31 @@ export function WidgetDashboard() {
                   <div key={activity.id} className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={activity.user.avatar || "/placeholder.svg"}
-                        alt={activity.user.name}
+                        src={activity.userAvatar}
+                        alt={activity.user}
                       />
-                      <AvatarFallback>
-                        {activity.user.name.charAt(0)}
-                      </AvatarFallback>
+                      <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
                       <p className="text-sm">
-                        <span className="font-medium">
-                          {activity.user.name}
-                        </span>{" "}
-                        {activity.description}
+                        <span className="font-medium">{activity.user}</span>{" "}
+                        {activity.action}
                       </p>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        <span>
-                          {new Date(activity.createdAt).toLocaleString()}
-                        </span>
+                        <span>{activity.time}</span>
+                        {activity.status && activity.status !== "success" && (
+                          <Badge
+                            variant={
+                              activity.status === "failed"
+                                ? "destructive"
+                                : "secondary"
+                            }
+                            className="ml-2 h-4 text-xs"
+                          >
+                            {activity.status}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>

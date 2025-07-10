@@ -8,6 +8,7 @@ import {
   GetActivitiesParams,
   ActivityCounts,
 } from "@/lib/api/activity-api";
+import { analyticsApi, RecentActivity } from "@/lib/api/analytics-api";
 
 // Re-export types for backward compatibility
 export { ActivityType, ActivitySeverity };
@@ -51,6 +52,13 @@ interface UseActivityOptions {
   offset?: number;
   autoRefresh?: boolean;
   refreshInterval?: number;
+}
+
+interface UseRecentActivityReturn {
+  activities: RecentActivity[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
 }
 
 export function useActivity(
@@ -218,9 +226,10 @@ export function useActivity(
   };
 }
 
-// Helper hook for recent activities (used in dashboard)
-export function useRecentActivity(limit: number = 10) {
-  const [activities, setActivities] = useState<Activity[]>([]);
+// Enhanced helper hook for recent activities (used in dashboard)
+// Now uses the analytics API for comprehensive activity data
+export function useRecentActivity(limit: number = 10): UseRecentActivityReturn {
+  const [activities, setActivities] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -228,7 +237,7 @@ export function useRecentActivity(limit: number = 10) {
     try {
       setLoading(true);
       setError(null);
-      const recentActivities = await activityApi.getRecentActivities(limit);
+      const recentActivities = await analyticsApi.getRecentActivity(limit);
       setActivities(recentActivities);
     } catch (err) {
       const errorMessage =
