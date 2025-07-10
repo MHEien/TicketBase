@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM oven/bun:1.2.4-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -6,14 +6,13 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
-COPY package.json bun.lock* ./
+COPY package.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/ ./packages/
 COPY turbo.json ./
 
 # Install dependencies
-RUN corepack enable && corepack prepare bun@latest --activate
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -23,7 +22,6 @@ COPY --from=deps /app/packages ./packages
 COPY . .
 
 # Build the API application
-RUN corepack enable && corepack prepare bun@latest --activate
 RUN cd apps/api && bun run build
 
 # Production image, copy all the files and run the application
