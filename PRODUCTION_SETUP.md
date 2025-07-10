@@ -1,230 +1,331 @@
 # Production Setup Guide
 
-This guide will help you set up the events page with real API integration for production use.
+This guide walks you through deploying your ticket system in production using Docker Compose with Traefik reverse proxy.
 
-## Prerequisites
+## 🏗️ Architecture Overview
 
-1. **API Backend**: Ensure the NestJS API backend is running (apps/api)
-2. **Database**: PostgreSQL database with proper migrations
-3. **Authentication**: NextAuth.js configured for user authentication
+The production setup uses:
+- **Traefik** as a reverse proxy with automatic SSL certificates
+- **Internal Docker networking** for secure service communication
+- **Domain-based routing** using your `heien.dev` domain
+- **Let's Encrypt** for automatic SSL certificates
 
-## Environment Configuration
+## 🌐 Service URLs
 
-### Admin App (.env.local)
+After deployment, your services will be available at:
 
-Create a `.env.local` file in `apps/admin/` with the following variables:
+- **Main Application**: `https://heien.dev`
+- **API Server**: `https://api.heien.dev`
+- **Plugin Server**: `https://plugins.heien.dev`
+- **Traefik Dashboard**: `https://traefik.heien.dev`
+- **Database Admin**: `https://adminer.heien.dev`
+- **MinIO Console**: `https://minio.heien.dev`
+- **S3 API**: `https://s3.heien.dev`
 
-```env
-# Next.js Configuration
-NEXTAUTH_SECRET=your-nextauth-secret-key-here
-NEXTAUTH_URL=http://localhost:3000
+## 🔧 Environment Variables
 
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:4000
-API_URL=http://localhost:4000
-
-# Development Configuration
-NODE_ENV=development
-```
-
-### API Backend (.env)
-
-Create a `.env` file in `apps/api/` with the following variables:
+Create a `.env.production` file with the following variables:
 
 ```env
-# Server Configuration
-PORT=4000
+# =============================================================================
+# TRAEFIK CONFIGURATION
+# =============================================================================
+# Email for Let's Encrypt SSL certificates
+ACME_EMAIL=admin@heien.dev
 
-# Database Configuration
-DB_TYPE=postgres
-DB_HOST=localhost
-DB_PORT=5432
+# Traefik Dashboard Basic Auth (username:password)
+# Generate with: htpasswd -nb admin yourpassword
+TRAEFIK_DASHBOARD_USERS=admin:$$2y$$10$$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+
+# =============================================================================
+# DATABASE CONFIGURATION
+# =============================================================================
 DB_USERNAME=postgres
-DB_PASSWORD=postgres
-DB_NAME=ticketing
+DB_PASSWORD=your_secure_postgres_password
+DB_NAME=ticketbase_prod
 
+# MongoDB Configuration
+MONGO_ROOT_USERNAME=root
+MONGO_ROOT_PASSWORD=your_secure_mongo_password
+MONGO_PLUGINS_DB=plugin-server
+
+# =============================================================================
+# STORAGE CONFIGURATION
+# =============================================================================
+MINIO_ACCESS_KEY=your_minio_access_key
+MINIO_SECRET_KEY=your_secure_minio_secret_key
+MINIO_BUCKET=plugin-bundles
+PLUGIN_ASSETS_BUCKET=plugin-bundles
+
+# =============================================================================
+# APPLICATION CONFIGURATION
+# =============================================================================
+NODE_ENV=production
+API_PORT=4000
+ADMIN_PORT=3000
+PLUGINS_PORT=5000
+
+# =============================================================================
+# AUTHENTICATION & SECURITY
+# =============================================================================
 # JWT Configuration
-JWT_SECRET=your-jwt-secret-key
-JWT_EXPIRES_IN=900
-JWT_REFRESH_SECRET=your-refresh-secret-key
-JWT_REFRESH_EXPIRES_IN=604800
+JWT_SECRET=your_very_secure_jwt_secret_256_bits_minimum
+JWT_EXPIRES_IN=24000
+JWT_REFRESH_SECRET=your_very_secure_refresh_secret_256_bits_minimum
+JWT_REFRESH_EXPIRES_IN=7d
 
-# NextAuth Configuration
-NEXTAUTH_SECRET=your-nextauth-secret-key
+# NextAuth Secret
+NEXTAUTH_SECRET=your_very_secure_nextauth_secret_256_bits_minimum
 
-# CORS Configuration
-FRONTEND_URL=http://localhost:3000
+# Better Auth Configuration
+BETTER_AUTH_SECRET=your_very_secure_better_auth_secret_256_bits_minimum
+BETTER_AUTH_URL=https://heien.dev
+
+# Plugin Security
+PLUGIN_ENCRYPTION_KEY=your_very_secure_plugin_encryption_key_256_bits_minimum
+PLUGIN_CONFIG_SECRET=your_very_secure_plugin_config_secret_256_bits_minimum
+PLUGINS_JWT_EXPIRES_IN=900
+
+# =============================================================================
+# EXTERNAL URLS & ORIGINS
+# =============================================================================
+FRONTEND_URL=https://heien.dev
+NEXT_PUBLIC_API_URL=https://api.heien.dev
+
+# Allowed Origins for CORS
+PLUGIN_ALLOWED_ORIGINS=https://heien.dev,https://api.heien.dev
+
+# =============================================================================
+# AWS/S3 CONFIGURATION (for MinIO)
+# =============================================================================
+AWS_REGION=us-east-1
 ```
 
-## Database Setup
+## 🔐 Security Configuration
 
-1. **Install PostgreSQL** if not already installed
-2. **Create Database**:
-   ```sql
-   CREATE DATABASE ticketing;
-   ```
-3. **Run Migrations**: The API will automatically run migrations on startup
+### Generate Secure Passwords
 
-## API Features Implemented
+Use these commands to generate secure passwords:
 
-The events page now includes the following production-ready features:
+```bash
+# Generate JWT secrets (256-bit)
+openssl rand -base64 32
 
-### ✅ Real API Integration
-
-- Fetches events from the NestJS API backend
-- Proper error handling and loading states
-- Real-time data updates
-
-### ✅ CRUD Operations
-
-- **Create**: Navigate to event creation (route ready)
-- **Read**: Display all events with filtering and sorting
-- **Update**: Edit events (route ready)
-- **Delete**: Delete events with confirmation
-- **Publish**: Publish draft events
-- **Cancel**: Cancel published events
-
-### ✅ Advanced Features
-
-- **Search**: Real-time search through event titles and descriptions
-- **Filtering**: Filter by event category
-- **Sorting**: Sort by date, title, or sales revenue
-- **View Modes**: Grid and list view options
-- **Status Management**: Separate tabs for active, draft, and past events
-
-### ✅ User Experience
-
-- Loading skeletons for better perceived performance
-- Error states with retry functionality
-- Confirmation dialogs for destructive actions
-- Toast notifications for user feedback
-- Responsive design for all screen sizes
-
-## API Endpoints Used
-
-The events page integrates with the following API endpoints:
-
-- `GET /api/events` - Fetch all events with optional query parameters
-- `GET /api/events/:id` - Fetch single event
-- `POST /api/events` - Create new event
-- `PATCH /api/events/:id` - Update event
-- `DELETE /api/events/:id` - Delete event
-- `POST /api/events/:id/publish` - Publish event
-- `POST /api/events/:id/cancel` - Cancel event
-
-## Query Parameters Supported
-
-- `status`: Filter by event status (draft, published, cancelled, completed)
-- `category`: Filter by event category
-- `search`: Search in title and description
-- `startDate`: Filter events starting after this date
-- `endDate`: Filter events ending before this date
-
-## Data Types
-
-The events page uses TypeScript interfaces that match the backend entities:
-
-```typescript
-interface Event {
-  id: string;
-  organizationId: string;
-  title: string;
-  description: string;
-  category: string;
-  startDate: Date;
-  endDate: Date;
-  startTime: string;
-  endTime: string;
-  timeZone: string;
-  locationType: "physical" | "virtual" | "hybrid";
-  venueName?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  country?: string;
-  virtualEventUrl?: string;
-  featuredImage?: string;
-  galleryImages?: string[];
-  status: "draft" | "published" | "cancelled" | "completed";
-  visibility: "public" | "private" | "unlisted";
-  createdAt: Date;
-  updatedAt: Date;
-  createdBy: string;
-  updatedBy: string;
-  ticketTypes: TicketType[];
-  salesStartDate?: Date;
-  salesEndDate?: Date;
-  seoTitle?: string;
-  seoDescription?: string;
-  tags?: string[];
-  totalTicketsSold: number;
-  totalRevenue: number;
-  capacity: number;
-}
+# Generate Traefik dashboard password
+htpasswd -nb admin yourpassword
 ```
 
-## Security Features
+### Required Secrets
 
-- **Authentication Required**: All API calls require valid JWT tokens
-- **Organization Isolation**: Users can only see events from their organization
-- **Role-based Access**: Proper permission checks on the backend
-- **CSRF Protection**: Built-in with NextAuth.js
-- **Input Validation**: Server-side validation with class-validator
+Make sure to replace these placeholder values:
+- `your_secure_postgres_password`
+- `your_secure_mongo_password`
+- `your_minio_access_key`
+- `your_secure_minio_secret_key`
+- All JWT and auth secrets
 
-## Performance Optimizations
+## 🚀 Deployment Steps
 
-- **Memoized Filtering**: Uses React.useMemo for expensive operations
-- **Optimistic Updates**: UI updates immediately for better UX
-- **Loading States**: Skeleton components prevent layout shifts
-- **Error Boundaries**: Graceful error handling
-- **Debounced Search**: Prevents excessive API calls
+### 1. DNS Configuration
 
-## Next Steps
+Configure your DNS records to point to your server:
 
-To complete the production setup:
+```
+A     heien.dev           → YOUR_SERVER_IP
+A     www.heien.dev       → YOUR_SERVER_IP
+A     api.heien.dev       → YOUR_SERVER_IP
+A     plugins.heien.dev   → YOUR_SERVER_IP
+A     traefik.heien.dev   → YOUR_SERVER_IP
+A     adminer.heien.dev   → YOUR_SERVER_IP
+A     minio.heien.dev     → YOUR_SERVER_IP
+A     s3.heien.dev        → YOUR_SERVER_IP
+```
 
-1. **Event Creation/Editing**: Implement the event form pages
-2. **Image Upload**: Add image upload functionality for event images
-3. **Bulk Operations**: Add bulk delete/publish functionality
-4. **Export Features**: Add CSV/PDF export for events
-5. **Analytics**: Integrate with the analytics module
-6. **Notifications**: Add real-time notifications for event updates
+### 2. Server Preparation
 
-## Troubleshooting
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Create project directory
+mkdir -p /opt/ticketsystem
+cd /opt/ticketsystem
+```
+
+### 3. Deploy the Application
+
+```bash
+# Clone your repository
+git clone <your-repo-url> .
+
+# Create production environment file
+cp .env.production.example .env.production
+nano .env.production  # Edit with your values
+
+# Build and start services
+docker-compose up -d
+
+# Check logs
+docker-compose logs -f
+```
+
+## 📊 Monitoring
+
+### View Logs
+
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f admin
+docker-compose logs -f api
+docker-compose logs -f traefik
+```
+
+### Check Service Status
+
+```bash
+# Service status
+docker-compose ps
+
+# Resource usage
+docker stats
+```
+
+## 🔧 Maintenance
+
+### Update Services
+
+```bash
+# Pull latest images
+docker-compose pull
+
+# Restart services
+docker-compose up -d
+
+# Clean up old images
+docker image prune -a
+```
+
+### Backup Data
+
+```bash
+# Backup PostgreSQL
+docker-compose exec postgres pg_dump -U postgres ticketbase_prod > backup.sql
+
+# Backup MongoDB
+docker-compose exec mongo mongodump --authenticationDatabase admin -u root -p
+
+# Backup MinIO data
+docker-compose exec minio mc mirror /data /backup
+```
+
+## 🌐 Network Architecture
+
+### Internal Network (`ticketbase`)
+- **Type**: Bridge network (internal)
+- **Services**: postgres, mongo, minio, api, plugins, admin
+- **Purpose**: Secure internal communication
+
+### External Network (`traefik`)
+- **Type**: Bridge network (public)
+- **Services**: traefik, minio, adminer, api, plugins, admin
+- **Purpose**: Services that need external access
+
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **CORS Errors**: Ensure `FRONTEND_URL` is set correctly in API .env
-2. **Authentication Errors**: Verify JWT secrets match between apps
-3. **Database Connection**: Check PostgreSQL is running and credentials are correct
-4. **API Not Found**: Ensure `NEXT_PUBLIC_API_URL` points to the correct API server
+1. **SSL Certificate Issues**
+   ```bash
+   # Check certificate status
+   docker-compose logs traefik | grep acme
+   
+   # Restart Traefik
+   docker-compose restart traefik
+   ```
 
-### Development Commands
+2. **Database Connection Issues**
+   ```bash
+   # Check database health
+   docker-compose exec postgres pg_isready -U postgres
+   
+   # Check database logs
+   docker-compose logs postgres
+   ```
+
+3. **Service Discovery Issues**
+   ```bash
+   # Check network connectivity
+   docker-compose exec api ping postgres
+   docker-compose exec admin ping api
+   ```
+
+### Health Checks
+
+All services include health checks. Monitor them with:
 
 ```bash
-# Start the API backend
-cd apps/api
-npm run dev
+# Service health status
+docker-compose ps
 
-# Start the admin app
-cd apps/admin
-npm run dev
-
-# Run database migrations
-cd apps/api
-npm run migration:run
+# Detailed health check logs
+docker inspect <container_name> | grep -A 10 Health
 ```
 
-## Production Deployment
+## 📋 Pre-deployment Checklist
 
-For production deployment:
+- [ ] DNS records configured
+- [ ] Environment variables set
+- [ ] Secrets generated and configured
+- [ ] Firewall configured (ports 80, 443 open)
+- [ ] Docker and Docker Compose installed
+- [ ] Application code deployed
+- [ ] Database initialized
+- [ ] SSL certificates working
+- [ ] All services responding
+- [ ] Monitoring configured
+- [ ] Backup strategy implemented
 
-1. **Environment Variables**: Update all URLs to production domains
-2. **Database**: Use a production PostgreSQL instance
-3. **SSL**: Enable HTTPS for all services
-4. **Monitoring**: Add logging and monitoring
-5. **Backup**: Set up automated database backups
-6. **CDN**: Use a CDN for static assets and images
+## 🔒 Security Best Practices
 
-The events page is now production-ready with real API integration, proper error handling, and a great user experience!
+1. **Network Security**
+   - Internal network for database access
+   - Only necessary services exposed
+   - HTTPS enforced for all public services
+
+2. **Authentication**
+   - Strong passwords for all services
+   - JWT secrets with sufficient entropy
+   - Traefik dashboard protected
+
+3. **Data Protection**
+   - Regular backups
+   - Encrypted storage volumes
+   - Secure environment variable handling
+
+4. **Monitoring**
+   - Log aggregation
+   - Health checks
+   - Resource monitoring
+
+## 🆘 Support
+
+If you encounter issues:
+
+1. Check the logs: `docker-compose logs -f`
+2. Verify DNS configuration
+3. Ensure all environment variables are set
+4. Check firewall settings
+5. Verify SSL certificate generation
+
+For additional support, check the application logs and Traefik dashboard for detailed error information.
