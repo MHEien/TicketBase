@@ -8,6 +8,7 @@ import {
   SalesAnalytics,
   DateRangeType,
 } from './entities/sales-analytics.entity';
+import { Event, EventStatus } from '../events/entities/event.entity';
 
 @Injectable()
 export class AnalyticsService {
@@ -16,6 +17,8 @@ export class AnalyticsService {
     private eventAnalyticsRepository: Repository<EventAnalytics>,
     @InjectRepository(SalesAnalytics)
     private salesAnalyticsRepository: Repository<SalesAnalytics>,
+    @InjectRepository(Event)
+    private eventsRepository: Repository<Event>,
     private httpService: HttpService,
   ) {}
 
@@ -118,25 +121,25 @@ export class AnalyticsService {
         ? (previousTotalSales / previousTotalViews) * 100
         : 0;
 
-    // Calculate active events (events with recent activity)
-    const activeEventsCount = await this.eventAnalyticsRepository
-      .createQueryBuilder('ea')
-      .select('COUNT(DISTINCT ea.eventId)', 'count')
-      .where('ea.organizationId = :organizationId', { organizationId })
-      .andWhere('ea.date >= :recentDate', {
-        recentDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-      })
+    // Calculate active events (published events that are ongoing)
+    const now = new Date();
+    const activeEventsCount = await this.eventsRepository
+      .createQueryBuilder('event')
+      .select('COUNT(*)', 'count')
+      .where('event.organizationId = :organizationId', { organizationId })
+      .andWhere('event.status = :status', { status: EventStatus.PUBLISHED })
+      .andWhere('event.endDate >= :now', { now })
       .getRawOne();
 
-    // Calculate previous period active events
-    const previousActiveEventsCount = await this.eventAnalyticsRepository
-      .createQueryBuilder('ea')
-      .select('COUNT(DISTINCT ea.eventId)', 'count')
-      .where('ea.organizationId = :organizationId', { organizationId })
-      .andWhere('ea.date >= :previousStart', {
-        previousStart: previousPeriodStart,
-      })
-      .andWhere('ea.date < :previousEnd', { previousEnd: previousPeriodEnd })
+    // Calculate previous period active events (for comparison)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const previousActiveEventsCount = await this.eventsRepository
+      .createQueryBuilder('event')
+      .select('COUNT(*)', 'count')
+      .where('event.organizationId = :organizationId', { organizationId })
+      .andWhere('event.status = :status', { status: EventStatus.PUBLISHED })
+      .andWhere('event.endDate >= :sevenDaysAgo', { sevenDaysAgo })
+      .andWhere('event.endDate < :now', { now })
       .getRawOne();
 
     const activeEvents = parseInt(activeEventsCount?.count || '0');
@@ -466,6 +469,47 @@ export class AnalyticsService {
         date: Between(periodStart, periodEnd),
       },
     });
+  }
+
+  // Get upcoming events with sales data
+  async getUpcomingEvents(
+    organizationId: string,
+    limit: number = 5,
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      date: string;
+      tickets: number;
+      sold: number;
+      revenue: number;
+    }>
+  > {
+    // Get upcoming events from the events repository
+    const events = await this.eventsRepository.find({
+      where: {
+        organizationId,
+        status: EventStatus.PUBLISHED,
+        endDate: MoreThan(new Date()),
+      },
+      order: { startDate: 'ASC' },
+      take: limit,
+      relations: ['ticketTypes'],
+    });
+
+    // Transform events to UpcomingEvent format
+    return events.map((event) => ({
+      id: event.id,
+      name: event.title,
+      date: event.startDate.toISOString(),
+      tickets:
+        event.ticketTypes?.reduce(
+          (total, ticketType) => total + ticketType.quantity,
+          0,
+        ) || 0,
+      sold: event.totalTicketsSold,
+      revenue: Number(event.totalRevenue),
+    }));
   }
 
   private formatTimeAgo(date: Date): string {

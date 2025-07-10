@@ -72,6 +72,8 @@ export class EventsService {
       search?: string;
       startDate?: Date;
       endDate?: Date;
+      upcoming?: boolean;
+      limit?: number;
     },
   ): Promise<Event[]> {
     const queryBuilder = this.eventsRepository
@@ -110,8 +112,22 @@ export class EventsService {
       });
     }
 
+    // Filter for upcoming events (published and not ended)
+    if (options?.upcoming) {
+      const now = new Date();
+      queryBuilder.andWhere('event.status = :publishedStatus', {
+        publishedStatus: EventStatus.PUBLISHED,
+      });
+      queryBuilder.andWhere('event.endDate >= :now', { now });
+    }
+
     // Order by start date
     queryBuilder.orderBy('event.startDate', 'ASC');
+
+    // Apply limit if specified
+    if (options?.limit) {
+      queryBuilder.limit(options.limit);
+    }
 
     return queryBuilder.getMany();
   }

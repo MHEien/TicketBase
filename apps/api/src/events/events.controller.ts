@@ -53,6 +53,14 @@ export class EventsController {
       options['endDate'] = new Date(query.endDate);
     }
 
+    if (query.upcoming === 'true') {
+      options['upcoming'] = true;
+    }
+
+    if (query.limit && !isNaN(parseInt(query.limit))) {
+      options['limit'] = parseInt(query.limit);
+    }
+
     return this.eventsService.findAll(organizationId, options);
   }
 

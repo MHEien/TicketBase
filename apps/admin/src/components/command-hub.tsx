@@ -232,23 +232,44 @@ export function CommandHub() {
             <div className="space-y-2 rounded-lg border bg-background/50 p-3">
               <h3 className="text-sm font-medium">Recent Events</h3>
               <div className="space-y-2">
-                {[
-                  "Summer Music Festival",
-                  "Tech Conference 2023",
-                  "Art Exhibition",
-                ].map((event, i) => (
-                  <Button
-                    key={i}
-                    variant="ghost"
-                    className="w-full justify-start text-sm"
-                    onClick={() => {
-                      router.navigate({ to: "/admin/events" });
-                      setExpanded(false);
-                    }}
-                  >
-                    {event}
-                  </Button>
-                ))}
+                {dashboardLoading ? (
+                  [...Array(3)].map((_, i) => (
+                    <div key={i} className="w-full rounded-md bg-background p-2">
+                      <div className="h-4 w-32 animate-pulse rounded bg-muted"></div>
+                    </div>
+                  ))
+                ) : dashboardError ? (
+                  <div className="w-full rounded-md bg-background p-2">
+                    <p className="text-xs text-destructive">
+                      Failed to load recent events
+                    </p>
+                  </div>
+                ) : dashboardData.upcomingEvents && dashboardData.upcomingEvents.length > 0 ? (
+                  dashboardData.upcomingEvents.slice(0, 3).map((event) => (
+                    <Button
+                      key={event.id}
+                      variant="ghost"
+                      className="w-full justify-start text-sm"
+                      onClick={() => {
+                        router.navigate({ to: `/admin/events/${event.id}` });
+                        setExpanded(false);
+                      }}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <span className="truncate">{event.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {event.sold}/{event.tickets}
+                        </span>
+                      </div>
+                    </Button>
+                  ))
+                ) : (
+                  <div className="w-full rounded-md bg-background p-2">
+                    <p className="text-xs text-muted-foreground">
+                      No upcoming events
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
