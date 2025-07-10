@@ -38,6 +38,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 import { apiClient } from "@/lib/api/api-client";
+import { DNSSetupGuide } from "@/components/dns-setup-guide";
 
 export const Route = createFileRoute("/admin/settings/")({
   component: SettingsPage,
@@ -989,6 +990,27 @@ function SettingsPage() {
               </Form>
             </CardContent>
           </Card>
+
+          {/* DNS Setup Guide */}
+          {domainForm.watch('customDomain') && (
+            <div className="mt-6">
+              <DNSSetupGuide
+                organization={{
+                  name: organizationForm.watch('name') || 'Your Organization',
+                  customDomain: domainForm.watch('customDomain'),
+                  domainVerified: domainVerified,
+                  domainVerificationToken: domainVerificationData?.token,
+                }}
+                onCopyToClipboard={(text) => {
+                  navigator.clipboard.writeText(text);
+                  toast({
+                    title: "Copied to clipboard",
+                    description: "The text has been copied to your clipboard.",
+                  });
+                }}
+                             />
+             </div>
+           )}
         </TabsContent>
       </Tabs>
     </div>

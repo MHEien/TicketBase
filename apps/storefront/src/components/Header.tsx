@@ -93,7 +93,7 @@ export const Header: React.FC = () => {
               Plugins
             </a>
             <Link 
-              to="/" 
+              to="/about" 
               className="text-gray-700 hover:text-gray-900 transition-colors"
             >
               About
@@ -183,7 +183,7 @@ export const Header: React.FC = () => {
                 Plugins
               </a>
               <Link 
-                to="/" 
+                to="/about" 
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >

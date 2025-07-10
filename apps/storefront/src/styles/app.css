@@ -17,12 +17,29 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
   }
-}
-
-/* Custom font family support */
-@layer base {
-  body {
-    font-family: var(--font-family, 'Inter', system-ui, sans-serif);
+  
+  .text-branded-primary {
+    color: var(--primary-color);
+  }
+  
+  .text-branded-secondary {
+    color: var(--secondary-color);
+  }
+  
+  .bg-branded-primary {
+    background-color: var(--primary-color);
+  }
+  
+  .bg-branded-secondary {
+    background-color: var(--secondary-color);
+  }
+  
+  .border-branded-primary {
+    border-color: var(--primary-color);
+  }
+  
+  .border-branded-secondary {
+    border-color: var(--secondary-color);
   }
 }
 
@@ -30,7 +47,56 @@
 :root {
   --primary-color: #3b82f6;
   --secondary-color: #64748b;
+  --primary-color-dark: #1e40af;
+  --primary-color-light: #93c5fd;
+  --secondary-color-dark: #475569;
+  --secondary-color-light: #94a3b8;
   --font-family: 'Inter', system-ui, sans-serif;
+  --heading-font-family: 'Inter', system-ui, sans-serif;
+  --border-radius: 0.375rem;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Theme variants */
+[data-theme="modern"] {
+  --primary-color: #3b82f6;
+  --secondary-color: #64748b;
+  --border-radius: 0.75rem;
+}
+
+[data-theme="corporate"] {
+  --primary-color: #1f2937;
+  --secondary-color: #6b7280;
+  --border-radius: 0.25rem;
+}
+
+[data-theme="creative"] {
+  --primary-color: #8b5cf6;
+  --secondary-color: #f59e0b;
+  --border-radius: 1rem;
+}
+
+[data-theme="minimal"] {
+  --primary-color: #000000;
+  --secondary-color: #888888;
+  --border-radius: 0rem;
+}
+
+[data-theme="vibrant"] {
+  --primary-color: #ec4899;
+  --secondary-color: #06b6d4;
+  --border-radius: 0.5rem;
+}
+
+/* Custom font family support */
+@layer base {
+  body {
+    font-family: var(--font-family);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font-family, var(--font-family));
+  }
 }
 
 @layer base {
@@ -50,4 +116,72 @@
   .using-mouse * {
     outline: none !important;
   }
+}
+
+/* Custom button styles based on organization settings */
+.btn-branded {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.btn-branded:hover {
+  background-color: var(--primary-color-dark, color-mix(in srgb, var(--primary-color) 80%, black));
+}
+
+.btn-branded-outline {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.btn-branded-outline:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Custom input styles */
+.input-branded {
+  border-radius: var(--border-radius);
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+.input-branded:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 10%, transparent);
+}
+
+/* Custom card styles */
+.card-branded {
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px -1px var(--shadow-color);
+}
+
+/* Loading spinner with branded colors */
+.spinner-branded {
+  border-color: var(--primary-color-light, color-mix(in srgb, var(--primary-color) 30%, white));
+  border-top-color: var(--primary-color);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }

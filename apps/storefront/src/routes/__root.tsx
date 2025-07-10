@@ -17,6 +17,7 @@ import { PluginProvider } from '~/contexts/PluginContext'
 import { CartProvider } from '~/contexts/CartContext'
 import { Header } from '~/components/Header'
 import { Footer } from '~/components/Footer'
+import { OrganizationBranding, DomainDebugInfo } from '~/components/domain/DomainProvider'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
 
@@ -83,11 +84,13 @@ function RootComponent() {
       <OrganizationProvider>
         <PluginProvider>
           <CartProvider>
+            <OrganizationBranding />
             <Header />
             <main className="flex-1">
               <Outlet />
             </main>
             <Footer />
+            <DomainDebugInfo />
           </CartProvider>
         </PluginProvider>
       </OrganizationProvider>

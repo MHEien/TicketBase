@@ -352,4 +352,43 @@ export class PublicOrganizationsController {
       updatedAt: organization.updatedAt,
     } as Organization;
   }
+
+  @Get('by-slug')
+  @ApiOperation({ summary: 'Get organization by slug (public endpoint)' })
+  @ApiQuery({
+    name: 'slug',
+    description: 'Organization slug to lookup',
+    example: 'thunderstorm-events',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Organization found',
+    type: Organization,
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  async findBySlug(@Query('slug') slug: string): Promise<Organization> {
+    if (!slug) {
+      throw new BadRequestException('Slug parameter is required');
+    }
+
+    const organization = await this.organizationsService.findBySlug(slug);
+    if (!organization) {
+      throw new NotFoundException('No organization found for this slug');
+    }
+
+    // Return only public information for security
+    return {
+      id: organization.id,
+      name: organization.name,
+      slug: organization.slug,
+      logo: organization.logo,
+      favicon: organization.favicon,
+      website: organization.website,
+      settings: organization.settings,
+      customDomain: organization.customDomain,
+      domainVerified: organization.domainVerified,
+      createdAt: organization.createdAt,
+      updatedAt: organization.updatedAt,
+    } as Organization;
+  }
 }
