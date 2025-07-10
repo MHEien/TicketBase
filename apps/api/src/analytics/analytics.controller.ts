@@ -19,7 +19,7 @@ interface RequestWithUser extends Request {
 }
 
 @ApiTags('analytics')
-@Controller('api/analytics')
+@Controller('analytics')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AnalyticsController {
@@ -155,8 +155,8 @@ export class AnalyticsController {
     status: 200,
     description: 'Popular plugins retrieved successfully',
   })
-  getPopularPlugins(@Req() req: RequestWithUser) {
-    return this.analyticsService.getPopularPlugins(req.user.organizationId);
+  getPopularPlugins() {
+    return this.analyticsService.getPopularPlugins();
   }
 
   @Get('event/:eventId')

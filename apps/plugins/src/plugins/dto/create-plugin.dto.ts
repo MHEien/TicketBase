@@ -62,4 +62,27 @@ export class CreatePluginDto {
   @IsArray()
   @IsOptional()
   requiredPermissions?: string[];
+
+  @ApiPropertyOptional({
+    description: 'List of extension points implemented by the plugin',
+    example: ['admin-settings', 'payment-methods', 'checkout-confirmation'],
+    type: [String],
+  })
+  @IsArray()
+  @IsOptional()
+  extensionPoints?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Plugin configuration schema with sensitive fields definition',
+    example: {
+      type: 'object',
+      properties: {
+        apiKey: { type: 'string' },
+        testMode: { type: 'boolean' },
+      },
+      sensitiveFields: ['apiKey'],
+    },
+  })
+  @IsOptional()
+  configSchema?: any;
 }

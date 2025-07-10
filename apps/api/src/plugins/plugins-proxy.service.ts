@@ -9,7 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
-import FormData from 'form-data';
+import { Blob } from 'buffer';
+import { FormData } from 'undici';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
 import { InstallPluginDto } from './dto/install-plugin.dto';
@@ -395,6 +396,57 @@ export class PluginsProxyService {
     }
   }
 
+  async getPluginConfiguration(
+    id: string,
+    authToken?: string,
+  ): Promise<Record<string, any>> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/config`;
+      const headers = this.createAuthHeaders(authToken);
+      const response = await firstValueFrom(
+        this.httpService.get<Record<string, any>>(url, { headers }).pipe(
+          catchError((error: AxiosError) => {
+            this.handleHttpError(error, `Get plugin configuration ${id}`);
+            throw error;
+          }),
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Get plugin configuration ${id}`);
+      }
+      throw error;
+    }
+  }
+
+  async savePluginConfiguration(
+    id: string,
+    configuration: Record<string, any>,
+    authToken?: string,
+  ): Promise<Record<string, any>> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/${id}/config`;
+      const headers = this.createAuthHeaders(authToken);
+      const response = await firstValueFrom(
+        this.httpService
+          .put<Record<string, any>>(url, configuration, { headers })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(error, `Save plugin configuration ${id}`);
+              throw error;
+            }),
+          ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Save plugin configuration ${id}`);
+      }
+      throw error;
+    }
+  }
+
   async getInstalledPlugins(
     organizationId: string,
     authToken?: string,
@@ -578,18 +630,16 @@ export class PluginsProxyService {
       // Create FormData for multipart upload
       const formData = new FormData();
 
-      // Add the file as a stream
-      formData.append('file', file, {
-        filename,
-        contentType: 'application/javascript',
-      });
+      // Create a Blob from the buffer
+      const blob = new Blob([file], { type: 'application/javascript' });
+
+      // Add the file as a blob
+      formData.append('file', blob, filename);
       formData.append('pluginId', pluginId);
       formData.append('version', version);
 
-      // Create headers including the FormData boundary
-      const headers = {
-        ...formData.getHeaders(),
-      };
+      // Create headers
+      const headers: Record<string, string> = {};
 
       if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`;
@@ -654,6 +704,8 @@ export class PluginsProxyService {
       sourceCode: string;
       bundleUrl: string;
       requiredPermissions?: string[];
+      extensionPoints?: string[];
+      configSchema?: any;
     },
     authToken?: string,
   ): Promise<Plugin> {

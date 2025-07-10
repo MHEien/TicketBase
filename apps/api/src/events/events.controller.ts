@@ -9,7 +9,6 @@ import {
   UseGuards,
   Request,
   Query,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EventsService } from './events.service';
@@ -17,7 +16,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventStatus } from './entities/event.entity';
 
-@Controller('api/events')
+@Controller('events')
 @UseGuards(JwtAuthGuard)
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
@@ -54,6 +53,14 @@ export class EventsController {
       options['endDate'] = new Date(query.endDate);
     }
 
+    if (query.upcoming === 'true') {
+      options['upcoming'] = true;
+    }
+
+    if (query.limit && !isNaN(parseInt(query.limit))) {
+      options['limit'] = parseInt(query.limit);
+    }
+
     return this.eventsService.findAll(organizationId, options);
   }
 
@@ -82,7 +89,8 @@ export class EventsController {
   @Delete(':id')
   remove(@Request() req, @Param('id') id: string) {
     const organizationId = req.user.organizationId;
-    return this.eventsService.remove(id, organizationId);
+    const userId = req.user.id;
+    return this.eventsService.remove(id, organizationId, userId);
   }
 
   @Post(':id/publish')

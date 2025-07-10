@@ -28,7 +28,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OrganizationGuard } from '../auth/guards/organization.guard';
 
 @ApiTags('carts')
-@Controller('api/carts')
+@Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 

@@ -4,10 +4,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
+  // Configure body parser with increased limits for plugin uploads
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
   // Setup validation pipe globally
   app.useGlobalPipes(
@@ -40,7 +48,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   // Get port from config (defined as 4000 in app.config.ts)
   const port = configService.get<number>('port');
@@ -50,4 +58,7 @@ async function bootstrap() {
     `API documentation available at: http://localhost:${port}/api/docs`,
   );
 }
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Failed to start the application:', error);
+  process.exit(1);
+});

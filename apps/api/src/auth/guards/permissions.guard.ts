@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '../../users/entities/user.entity';
 
@@ -7,68 +13,72 @@ export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    // Check if user is authenticated
+    if (!user) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    // Get required permissions from metadata
+    const requiredPermissions = this.reflector.get<string[]>(
       'permissions',
-      [context.getHandler(), context.getClass()],
+      context.getHandler(),
     );
 
-    if (!requiredPermissions) {
+    // Get required roles from metadata
+    const requiredRoles = this.reflector.get<UserRole[]>(
+      'roles',
+      context.getHandler(),
+    );
+
+    // If no permissions or roles are required, allow access
+    if (!requiredPermissions && !requiredRoles) {
       return true;
     }
 
-    const { user, params, query, body } = context.switchToHttp().getRequest();
+    // Check roles first (roles can override permission requirements)
+    if (requiredRoles && requiredRoles.length > 0) {
+      const hasRole = requiredRoles.includes(user.role);
 
-    // Organization owners always have all permissions
-    if (user.role === UserRole.OWNER) {
-      return true;
-    }
-
-    // Department-scoped permission check
-    const departmentId =
-      params.departmentId || query.departmentId || body.departmentId;
-
-    // Check if the permission is required at the department level
-    const isDepartmentPermission = requiredPermissions.some((p) =>
-      p.startsWith('department.'),
-    );
-
-    if (isDepartmentPermission) {
-      // If it's a department permission and no department is specified, deny access
-      if (!departmentId) {
-        return false;
+      // Owners always have access unless explicitly restricted
+      if (user.role === UserRole.OWNER) {
+        return true;
       }
 
-      // If the user doesn't belong to the specified department and is not an admin, deny access
-      if (user.departmentId !== departmentId && user.role !== UserRole.ADMIN) {
-        return false;
+      if (!hasRole) {
+        throw new ForbiddenException(
+          `Access denied. Required roles: ${requiredRoles.join(', ')}`,
+        );
       }
     }
 
-    // Check that the user has all required permissions
-    const hasAllPermissions = requiredPermissions.every((permission) => {
-      // Check for the exact permission
-      if (user.permissions.includes(permission)) {
+    // Check individual permissions
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      const userPermissions = user.permissions || [];
+
+      // Check if user has wildcard permission (full access)
+      if (userPermissions.includes('*')) {
         return true;
       }
 
-      // Check for wildcard permissions
-      const wildcardPermission =
-        permission.split('.').slice(0, -1).join('.') + '.*';
-      if (user.permissions.includes(wildcardPermission)) {
-        return true;
+      // Check if user has all required permissions
+      const hasAllPermissions = requiredPermissions.every((permission) =>
+        userPermissions.includes(permission),
+      );
+
+      if (!hasAllPermissions) {
+        const missingPermissions = requiredPermissions.filter(
+          (permission) => !userPermissions.includes(permission),
+        );
+
+        throw new ForbiddenException(
+          `Access denied. Missing permissions: ${missingPermissions.join(', ')}`,
+        );
       }
+    }
 
-      // Check for global admin permission
-      if (
-        user.permissions.includes('*') ||
-        (user.role === UserRole.ADMIN && user.permissions.includes('admin.*'))
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-
-    return hasAllPermissions;
+    return true;
   }
 }

@@ -22,6 +22,12 @@ import { PluginStorageService } from './services/plugin-storage.service';
 import { PluginBundleController } from './bundle.controller';
 import { MinioModule } from '../minio/minio.module';
 import { DebugController } from './debug.controller';
+import {
+  PluginConfig,
+  PluginConfigSchema,
+} from './schemas/plugin-config.schema';
+import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
+import { SecureConfigService } from './services/secure-config.service';
 
 @Module({
   imports: [
@@ -29,6 +35,8 @@ import { DebugController } from './debug.controller';
       { name: Plugin.name, schema: PluginSchema },
       { name: InstalledPlugin.name, schema: InstalledPluginSchema },
       { name: PluginRating.name, schema: PluginRatingSchema },
+      { name: PluginConfig.name, schema: PluginConfigSchema },
+      { name: ConfigAudit.name, schema: ConfigAuditSchema },
     ]),
     AssetsModule,
     MinioModule,
@@ -51,12 +59,14 @@ import { DebugController } from './debug.controller';
     PluginEventBus,
     BundleService,
     PluginStorageService,
+    SecureConfigService,
   ],
   exports: [
     PluginsService,
     CompatibilityService,
     PluginEventBus,
     PluginStorageService,
+    SecureConfigService,
   ],
 })
 export class PluginsModule {}

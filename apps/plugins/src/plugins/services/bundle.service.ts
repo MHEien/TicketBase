@@ -135,7 +135,8 @@ export class BundleService {
     await Promise.resolve();
 
     // Relaxed validation: accept any non-empty JS bundle
-    const isNonEmpty = typeof sourceCode === 'string' && sourceCode.trim().length > 0;
+    const isNonEmpty =
+      typeof sourceCode === 'string' && sourceCode.trim().length > 0;
     this.logger.debug('Relaxed plugin validation:', {
       isNonEmpty,
       sourceLength: sourceCode.length,

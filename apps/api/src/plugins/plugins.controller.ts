@@ -57,7 +57,7 @@ export class SimpleInstallPluginDto {
 }
 
 @ApiTags('plugins')
-@Controller('api/plugins')
+@Controller('plugins')
 export class PluginsController {
   private readonly logger = new Logger(PluginsController.name);
 
@@ -662,6 +662,122 @@ export class PluginsController {
     }
   }
 
+  @Get(':id/config')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get plugin configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'The plugin configuration has been retrieved.',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+    },
+  })
+  @ApiParam({ name: 'id', required: true, type: String })
+  @Get(':id/config')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get plugin configuration' })
+  async getConfig(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<Record<string, any>> {
+    const operation = 'getConfig';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        description: 'Retrieving plugin configuration',
+      });
+
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.getPluginConfiguration(
+        id,
+        authToken,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        hasConfig: !!result,
+      });
+
+      return result || {};
+    } catch (error) {
+      this.errorLog(operation, error, {
+        pluginId: id,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+      });
+      throw error;
+    }
+  }
+
+  @Post(':id/config')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Save plugin configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'The plugin configuration has been saved.',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+    },
+  })
+  @ApiParam({ name: 'id', required: true, type: String })
+  async saveConfig(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() configuration: Record<string, any>,
+  ): Promise<Record<string, any>> {
+    const operation = 'saveConfig';
+
+    try {
+      this.debugLog(operation, {
+        pluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        configuration,
+        description: 'Saving plugin configuration',
+      });
+
+      // Extract JWT token from request headers
+      const authHeader = req.headers.authorization;
+      const authToken = authHeader?.replace('Bearer ', '');
+
+      const result = await this.pluginsService.savePluginConfiguration(
+        id,
+        configuration,
+        authToken,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        pluginId: id,
+        userId: req.user.id,
+        organizationId: req.user.organizationId,
+        result,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        pluginId: id,
+        userId: req.user?.id,
+        organizationId: req.user?.organizationId,
+        configuration,
+      });
+      throw error;
+    }
+  }
+
   @Get('organization/:organizationId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -924,7 +1040,7 @@ export class PluginsController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadStorage(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body() storageDto: { pluginId: string; version: string },
   ): Promise<{ bundleUrl: string; pluginId: string; version: string }> {
     const operation = 'uploadStorage';
@@ -994,6 +1110,17 @@ export class PluginsController {
           items: { type: 'string' },
           description: 'Required permissions',
         },
+        extensionPoints: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Extension points implemented by the plugin',
+        },
+        configSchema: {
+          type: 'object',
+          description:
+            'Plugin configuration schema with sensitive fields definition',
+          additionalProperties: true,
+        },
       },
       required: [
         'id',
@@ -1017,6 +1144,8 @@ export class PluginsController {
       sourceCode: string;
       bundleUrl: string;
       requiredPermissions?: string[];
+      extensionPoints?: string[];
+      configSchema?: any;
     },
   ): Promise<Plugin> {
     const operation = 'createMetadata';

@@ -1,273 +1,278 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan, FindOptionsWhere } from 'typeorm';
+import { Repository } from 'typeorm';
 import {
   Activity,
   ActivityType,
-  ActivitySeverity,
+  ActivityStatus,
 } from './entities/activity.entity';
 
 export interface CreateActivityDto {
-  type: ActivityType;
-  severity?: ActivitySeverity;
-  description: string;
-  organizationId: string;
   userId: string;
+  organizationId: string;
+  type: ActivityType;
+  description: string;
+  entityType?: string;
+  entityId?: string;
+  entityName?: string;
+  status?: ActivityStatus;
   metadata?: Record<string, any>;
-  relatedEntityId?: string;
-  relatedEntityType?: string;
-  relatedEntityName?: string;
   ipAddress?: string;
   userAgent?: string;
 }
 
-export interface GetActivitiesDto {
+export interface ActivityQueryParams {
+  userId?: string;
   organizationId: string;
-  search?: string;
+  entityType?: string;
+  entityId?: string;
   type?: ActivityType;
-  severity?: ActivitySeverity;
-  dateRange?: string;
+  status?: ActivityStatus;
+  startDate?: Date;
+  endDate?: Date;
+  page?: number;
   limit?: number;
-  offset?: number;
+}
+
+export interface PaginatedActivitiesResponse {
+  activities: Activity[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 @Injectable()
 export class ActivitiesService {
   constructor(
     @InjectRepository(Activity)
-    private readonly activityRepository: Repository<Activity>,
+    private activitiesRepository: Repository<Activity>,
   ) {}
 
-  async createActivity(
-    createActivityDto: CreateActivityDto,
-  ): Promise<Activity> {
-    const activity = this.activityRepository.create({
-      ...createActivityDto,
-      severity: createActivityDto.severity || ActivitySeverity.LOW,
+  async logActivity(activityData: CreateActivityDto): Promise<Activity> {
+    const activity = this.activitiesRepository.create({
+      ...activityData,
+      status: activityData.status || ActivityStatus.SUCCESS,
     });
 
-    return await this.activityRepository.save(activity);
+    return this.activitiesRepository.save(activity);
   }
 
-  async getActivities(getActivitiesDto: GetActivitiesDto): Promise<{
-    activities: Activity[];
-    total: number;
-  }> {
+  async findActivities(
+    queryParams: ActivityQueryParams,
+  ): Promise<PaginatedActivitiesResponse> {
     const {
+      userId,
       organizationId,
-      search,
+      entityType,
+      entityId,
       type,
-      severity,
-      dateRange = '7d',
+      status,
+      startDate,
+      endDate,
+      page = 1,
       limit = 50,
-      offset = 0,
-    } = getActivitiesDto;
+    } = queryParams;
 
-    const where: FindOptionsWhere<Activity> = {
+    const queryBuilder = this.activitiesRepository
+      .createQueryBuilder('activity')
+      .leftJoinAndSelect('activity.user', 'user');
+
+    // Organization filter (required)
+    queryBuilder.andWhere('activity.organizationId = :organizationId', {
       organizationId,
-    };
+    });
 
-    // Apply type filter
+    // Optional filters
+    if (userId) {
+      queryBuilder.andWhere('activity.userId = :userId', { userId });
+    }
+
+    if (entityType) {
+      queryBuilder.andWhere('activity.entityType = :entityType', {
+        entityType,
+      });
+    }
+
+    if (entityId) {
+      queryBuilder.andWhere('activity.entityId = :entityId', { entityId });
+    }
+
     if (type) {
-      where.type = type;
+      queryBuilder.andWhere('activity.type = :type', { type });
     }
 
-    // Apply severity filter
-    if (severity) {
-      where.severity = severity;
+    if (status) {
+      queryBuilder.andWhere('activity.status = :status', { status });
     }
 
-    // Apply date range filter
-    const now = new Date();
-    let startDate: Date;
-    switch (dateRange) {
-      case '1d':
-        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case '7d':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case '30d':
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        break;
-      case '90d':
-        startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-        break;
-      default:
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    if (startDate) {
+      queryBuilder.andWhere('activity.createdAt >= :startDate', { startDate });
     }
 
-    where.createdAt = MoreThan(startDate);
-
-    const queryBuilder = this.activityRepository
-      .createQueryBuilder('activity')
-      .leftJoinAndSelect('activity.user', 'user')
-      .where(where);
-
-    // Apply search filter
-    if (search) {
-      queryBuilder.andWhere(
-        '(activity.description ILIKE :search OR user.name ILIKE :search OR user.email ILIKE :search)',
-        { search: `%${search}%` },
-      );
+    if (endDate) {
+      queryBuilder.andWhere('activity.createdAt <= :endDate', { endDate });
     }
 
-    // Get total count
-    const total = await queryBuilder.getCount();
+    // Order by most recent first
+    queryBuilder.orderBy('activity.createdAt', 'DESC');
 
-    // Apply pagination and ordering
-    const activities = await queryBuilder
-      .orderBy('activity.createdAt', 'DESC')
-      .skip(offset)
-      .take(limit)
-      .getMany();
+    // Pagination
+    const offset = (page - 1) * limit;
+    queryBuilder.skip(offset).take(limit);
 
-    return { activities, total };
-  }
-
-  async getActivityCounts(
-    organizationId: string,
-    dateRange: string = '7d',
-  ): Promise<{
-    total: number;
-    financial: number;
-    eventManagement: number;
-    userManagement: number;
-    administrative: number;
-    security: number;
-    marketing: number;
-  }> {
-    const now = new Date();
-    let startDate: Date;
-    switch (dateRange) {
-      case '1d':
-        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case '7d':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case '30d':
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        break;
-      case '90d':
-        startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-        break;
-      default:
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    }
-
-    const baseQuery = this.activityRepository
-      .createQueryBuilder('activity')
-      .where('activity.organizationId = :organizationId', { organizationId })
-      .andWhere('activity.createdAt > :startDate', { startDate });
-
-    const [
-      total,
-      financial,
-      eventManagement,
-      userManagement,
-      administrative,
-      security,
-      marketing,
-    ] = await Promise.all([
-      baseQuery.getCount(),
-      baseQuery
-        .clone()
-        .andWhere('activity.type = :type', { type: ActivityType.FINANCIAL })
-        .getCount(),
-      baseQuery
-        .clone()
-        .andWhere('activity.type = :type', {
-          type: ActivityType.EVENT_MANAGEMENT,
-        })
-        .getCount(),
-      baseQuery
-        .clone()
-        .andWhere('activity.type = :type', {
-          type: ActivityType.USER_MANAGEMENT,
-        })
-        .getCount(),
-      baseQuery
-        .clone()
-        .andWhere('activity.type = :type', {
-          type: ActivityType.ADMINISTRATIVE,
-        })
-        .getCount(),
-      baseQuery
-        .clone()
-        .andWhere('activity.type = :type', { type: ActivityType.SECURITY })
-        .getCount(),
-      baseQuery
-        .clone()
-        .andWhere('activity.type = :type', { type: ActivityType.MARKETING })
-        .getCount(),
-    ]);
+    const [activities, total] = await queryBuilder.getManyAndCount();
 
     return {
+      activities,
       total,
-      financial,
-      eventManagement,
-      userManagement,
-      administrative,
-      security,
-      marketing,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     };
   }
 
-  async getRecentActivities(
-    organizationId: string,
-    limit: number = 10,
-  ): Promise<Activity[]> {
-    return await this.activityRepository.find({
-      where: { organizationId },
-      order: { createdAt: 'DESC' },
-      take: limit,
-      relations: ['user'],
-    });
-  }
-
-  async deleteActivity(id: string, organizationId: string): Promise<void> {
-    await this.activityRepository.delete({ id, organizationId });
-  }
-
-  async getActivityById(
-    id: string,
-    organizationId: string,
-  ): Promise<Activity | null> {
-    return await this.activityRepository.findOne({
-      where: { id, organizationId },
-      relations: ['user'],
-    });
-  }
-
-  // Helper method to log activities from other services
-  async logActivity(
-    type: ActivityType,
-    description: string,
-    organizationId: string,
+  async getUserActivities(
     userId: string,
-    options?: {
-      severity?: ActivitySeverity;
-      metadata?: Record<string, any>;
-      relatedEntityId?: string;
-      relatedEntityType?: string;
-      relatedEntityName?: string;
-      ipAddress?: string;
-      userAgent?: string;
-    },
-  ): Promise<Activity> {
-    return await this.createActivity({
-      type,
-      description,
-      organizationId,
+    organizationId: string,
+    page: number = 1,
+    limit: number = 50,
+  ): Promise<PaginatedActivitiesResponse> {
+    return this.findActivities({
       userId,
-      severity: options?.severity || ActivitySeverity.LOW,
-      metadata: options?.metadata,
-      relatedEntityId: options?.relatedEntityId,
-      relatedEntityType: options?.relatedEntityType,
-      relatedEntityName: options?.relatedEntityName,
-      ipAddress: options?.ipAddress,
-      userAgent: options?.userAgent,
+      organizationId,
+      page,
+      limit,
+    });
+  }
+
+  async getEntityActivities(
+    entityType: string,
+    entityId: string,
+    organizationId: string,
+    page: number = 1,
+    limit: number = 50,
+  ): Promise<PaginatedActivitiesResponse> {
+    return this.findActivities({
+      entityType,
+      entityId,
+      organizationId,
+      page,
+      limit,
+    });
+  }
+
+  async deleteOldActivities(daysToKeep: number = 90): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
+
+    const result = await this.activitiesRepository
+      .createQueryBuilder()
+      .delete()
+      .where('createdAt < :cutoffDate', { cutoffDate })
+      .execute();
+
+    return result.affected || 0;
+  }
+
+  // Helper methods for common activities
+  async logUserLogin(
+    userId: string,
+    organizationId: string,
+    ipAddress?: string,
+    userAgent?: string,
+  ): Promise<Activity> {
+    return this.logActivity({
+      userId,
+      organizationId,
+      type: ActivityType.LOGIN,
+      description: 'User logged in',
+      ipAddress,
+      userAgent,
+    });
+  }
+
+  async logUserLogout(
+    userId: string,
+    organizationId: string,
+  ): Promise<Activity> {
+    return this.logActivity({
+      userId,
+      organizationId,
+      type: ActivityType.LOGOUT,
+      description: 'User logged out',
+    });
+  }
+
+  async logUserCreated(
+    createdById: string,
+    newUserId: string,
+    newUserName: string,
+    organizationId: string,
+  ): Promise<Activity> {
+    return this.logActivity({
+      userId: createdById,
+      organizationId,
+      type: ActivityType.CREATE,
+      description: `Created user: ${newUserName}`,
+      entityType: 'user',
+      entityId: newUserId,
+      entityName: newUserName,
+    });
+  }
+
+  async logUserUpdated(
+    updatedById: string,
+    targetUserId: string,
+    targetUserName: string,
+    organizationId: string,
+    changes?: Record<string, any>,
+  ): Promise<Activity> {
+    return this.logActivity({
+      userId: updatedById,
+      organizationId,
+      type: ActivityType.UPDATE,
+      description: `Updated user: ${targetUserName}`,
+      entityType: 'user',
+      entityId: targetUserId,
+      entityName: targetUserName,
+      metadata: { changes },
+    });
+  }
+
+  async logUserDeleted(
+    deletedById: string,
+    targetUserId: string,
+    targetUserName: string,
+    organizationId: string,
+  ): Promise<Activity> {
+    return this.logActivity({
+      userId: deletedById,
+      organizationId,
+      type: ActivityType.DELETE,
+      description: `Deleted user: ${targetUserName}`,
+      entityType: 'user',
+      entityId: targetUserId,
+      entityName: targetUserName,
+    });
+  }
+
+  async logPermissionChange(
+    changedById: string,
+    targetUserId: string,
+    targetUserName: string,
+    organizationId: string,
+    changes: Record<string, any>,
+  ): Promise<Activity> {
+    return this.logActivity({
+      userId: changedById,
+      organizationId,
+      type: ActivityType.PERMISSION_CHANGE,
+      description: `Changed permissions for user: ${targetUserName}`,
+      entityType: 'user',
+      entityId: targetUserId,
+      entityName: targetUserName,
+      metadata: { changes },
     });
   }
 }

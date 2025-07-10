@@ -206,7 +206,40 @@ export class PluginsController {
     @Body() config: Record<string, any>,
   ) {
     const tenantId = req.user.tenantId;
-    return this.pluginsService.updatePluginConfig(tenantId, pluginId, config);
+    const userId = req.user.userId;
+    return this.pluginsService.updatePluginConfig(tenantId, pluginId, config, {
+      userId,
+    });
+  }
+
+  @ApiOperation({ summary: 'Get plugin configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Plugin configuration successfully retrieved',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Authentication required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin configuration not found',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Plugin ID',
+    required: true,
+  })
+  @Roles('admin') // Only admins can view plugin configuration
+  @Get(':id/config')
+  async getPluginConfig(@Request() req, @Param('id') pluginId: string) {
+    const tenantId = req.user.tenantId;
+    const userId = req.user.userId;
+    return this.pluginsService.getPluginConfig(tenantId, pluginId, { userId });
   }
 
   @ApiOperation({ summary: 'Enable or disable a plugin' })
@@ -248,7 +281,10 @@ export class PluginsController {
   @Post()
   async createPlugin(@Body() createDto: CreatePluginDto) {
     const logger = new Logger('PluginsController.createPlugin');
-    logger.debug('Received CreatePluginDto:', JSON.stringify(createDto, null, 2));
+    logger.debug(
+      'Received CreatePluginDto:',
+      JSON.stringify(createDto, null, 2),
+    );
     logger.debug('bundleUrl:', createDto.bundleUrl);
     return this.pluginsService.createPlugin(
       createDto.id,
@@ -259,6 +295,8 @@ export class PluginsController {
       createDto.sourceCode,
       createDto.requiredPermissions,
       createDto.bundleUrl,
+      createDto.extensionPoints,
+      createDto.configSchema,
     );
   }
 
@@ -338,7 +376,7 @@ export class PluginsController {
   @Public() // Temporarily make this endpoint public for testing
   @Post('upload')
   async uploadPlugin(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body()
     createDto: {
       id: string;
@@ -445,7 +483,7 @@ export class PluginsController {
   @Public() // Make this endpoint public for admin uploads
   @Post('storage/upload')
   async storePluginBundle(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: any,
     @Body()
     storageDto: {
       pluginId: string;
