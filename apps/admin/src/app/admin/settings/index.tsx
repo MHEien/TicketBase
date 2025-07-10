@@ -91,6 +91,8 @@ function SettingsPage() {
   const [isOrganizationLoading, setIsOrganizationLoading] = useState(false);
   const [isBrandingLoading, setIsBrandingLoading] = useState(false);
   const [isDomainLoading, setIsDomainLoading] = useState(false);
+  const [domainVerificationData, setDomainVerificationData] = useState<any>(null);
+  const [domainVerified, setDomainVerified] = useState(false);
 
   // Organization form
   const organizationForm = useForm<OrganizationFormValues>({
@@ -179,6 +181,9 @@ function SettingsPage() {
       domainForm.reset({
         customDomain: data.customDomain || "",
       });
+
+      // Set domain verification status
+      setDomainVerified(data.domainVerified || false);
     } catch (error) {
       console.error("Error fetching organization settings:", error);
     }
@@ -286,7 +291,7 @@ function SettingsPage() {
     setIsDomainLoading(true);
 
     try {
-      const response = await apiClient.patch("/api/organizations/settings", {
+      const response = await apiClient.patch("/api/organizations/domain", {
         customDomain: data.customDomain,
       });
 
@@ -295,6 +300,15 @@ function SettingsPage() {
           title: "Domain settings saved",
           description: "Your domain settings have been updated successfully.",
         });
+        
+        // Reset verification status
+        setDomainVerified(false);
+        setDomainVerificationData(null);
+        
+        // If domain was set, automatically generate verification token
+        if (data.customDomain) {
+          await generateVerificationToken();
+        }
       } else {
         toast({
           title: "Error saving domain settings",
@@ -309,6 +323,60 @@ function SettingsPage() {
         title: "Error saving domain settings",
         description:
           "There was a problem saving your domain settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDomainLoading(false);
+    }
+  };
+
+  // Generate domain verification token
+  const generateVerificationToken = async () => {
+    try {
+      const response = await apiClient.post("/api/organizations/generate-verification-token");
+      
+      if (response.status === 200) {
+        setDomainVerificationData(response.data);
+        toast({
+          title: "Verification token generated",
+          description: "Use the instructions below to verify your domain.",
+        });
+      }
+    } catch (error) {
+      console.error("Error generating verification token:", error);
+      toast({
+        title: "Error generating verification token",
+        description: "Failed to generate verification instructions.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Verify domain ownership
+  const verifyDomain = async () => {
+    setIsDomainLoading(true);
+
+    try {
+      const response = await apiClient.post("/api/organizations/verify-domain");
+      
+      if (response.status === 200 && response.data.verified) {
+        setDomainVerified(true);
+        toast({
+          title: "Domain verified successfully!",
+          description: "Your custom domain is now active.",
+        });
+      } else {
+        toast({
+          title: "Domain verification failed",
+          description: response.data.message || "Please check your DNS settings and try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error verifying domain:", error);
+      toast({
+        title: "Domain verification failed",
+        description: "Please check your DNS settings and try again.",
         variant: "destructive",
       });
     } finally {
@@ -775,10 +843,20 @@ function SettingsPage() {
                       <FormItem>
                         <FormLabel>Custom Domain</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="events.yourdomain.com"
-                            {...field}
-                          />
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              placeholder="events.yourdomain.com"
+                              {...field}
+                            />
+                            {domainVerified && (
+                              <div className="flex items-center space-x-1 text-green-600">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span className="text-sm font-medium">Verified</span>
+                              </div>
+                            )}
+                          </div>
                         </FormControl>
                         <FormDescription>
                           Enter a domain or subdomain to use for your event
@@ -790,45 +868,119 @@ function SettingsPage() {
                     )}
                   />
 
-                  <div className="mt-6 space-y-4">
-                    <h3 className="text-lg font-medium">DNS Configuration</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      To use your custom domain, add the following DNS records:
-                    </p>
+                  {/* Domain Verification Instructions */}
+                  {domainVerificationData && (
+                    <div className="mt-6 space-y-4">
+                      <h3 className="text-lg font-medium">Domain Verification</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Complete one of the verification methods below to activate your custom domain:
+                      </p>
 
-                    <div className="rounded-md bg-gray-50 dark:bg-gray-800 p-4">
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="font-medium">Record Type</span>
-                        <span className="font-medium">Value</span>
+                      {/* Method 1: DNS TXT Record */}
+                      <div className="border rounded-lg p-4 space-y-3">
+                        <h4 className="font-medium text-blue-600">
+                          Method 1: {domainVerificationData.instructions.method1.title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {domainVerificationData.instructions.method1.description}
+                        </p>
+                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded">
+                          <div className="grid grid-cols-3 gap-4 text-sm font-medium mb-2">
+                            <span>Type</span>
+                            <span>Name</span>
+                            <span>Value</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4 text-sm">
+                            <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded">
+                              {domainVerificationData.instructions.method1.record.type}
+                            </code>
+                            <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded">
+                              {domainVerificationData.instructions.method1.record.name}
+                            </code>
+                            <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded break-all">
+                              {domainVerificationData.instructions.method1.record.value}
+                            </code>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm py-2 border-t">
-                        <span>CNAME</span>
-                        <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
-                          events.ticketsplatform.com
-                        </code>
+
+                      {/* Method 2: File Upload */}
+                      <div className="border rounded-lg p-4 space-y-3">
+                        <h4 className="font-medium text-blue-600">
+                          Method 2: {domainVerificationData.instructions.method2.title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {domainVerificationData.instructions.method2.description}
+                        </p>
+                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded">
+                          <div className="space-y-2 text-sm">
+                            <div>
+                              <span className="font-medium">File Path:</span>
+                              <code className="ml-2 bg-white dark:bg-gray-700 px-2 py-1 rounded">
+                                {domainVerificationData.instructions.method2.file.path}
+                              </code>
+                            </div>
+                            <div>
+                              <span className="font-medium">File Content:</span>
+                              <code className="ml-2 bg-white dark:bg-gray-700 px-2 py-1 rounded">
+                                {domainVerificationData.instructions.method2.file.content}
+                              </code>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm py-2 border-t">
-                        <span>TXT</span>
-                        <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
-                          ticketsplatform-verification={"{verification-token}"}
-                        </code>
+
+                      {/* Method 3: Meta Tag */}
+                      <div className="border rounded-lg p-4 space-y-3">
+                        <h4 className="font-medium text-blue-600">
+                          Method 3: {domainVerificationData.instructions.method3.title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {domainVerificationData.instructions.method3.description}
+                        </p>
+                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded">
+                          <code className="text-sm break-all">
+                            {domainVerificationData.instructions.method3.tag}
+                          </code>
+                        </div>
+                      </div>
+
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                          <strong>Important:</strong> After setting up verification, you'll also need to add a CNAME record pointing your domain to our servers:
+                        </p>
+                        <div className="mt-2 bg-white dark:bg-gray-800 p-2 rounded">
+                          <code className="text-sm">
+                            CNAME: {domainForm.watch('customDomain')} → your-platform.vercel.app
+                          </code>
+                        </div>
                       </div>
                     </div>
+                  )}
 
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                      After adding these records, click the verify button below.
-                      It may take up to 24 hours for DNS changes to propagate.
-                    </p>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <Button
-                      variant="outline"
-                      type="button"
-                      disabled={isDomainLoading}
-                    >
-                      Verify Domain
-                    </Button>
+                  <div className="flex justify-between items-center">
+                    <div className="flex space-x-2">
+                      {domainVerificationData && !domainVerified && (
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={verifyDomain}
+                          disabled={isDomainLoading}
+                        >
+                          {isDomainLoading ? "Verifying..." : "Verify Domain"}
+                        </Button>
+                      )}
+                      {domainForm.watch('customDomain') && !domainVerificationData && (
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={generateVerificationToken}
+                          disabled={isDomainLoading}
+                        >
+                          Generate Verification Instructions
+                        </Button>
+                      )}
+                    </div>
                     <Button type="submit" disabled={isDomainLoading}>
                       {isDomainLoading ? "Saving..." : "Save Domain Settings"}
                     </Button>

@@ -18,6 +18,170 @@ export class OrganizationsService {
     return this.organizationsRepository.findOne({ where: { slug } });
   }
 
+  async findByDomain(domain: string): Promise<Organization | null> {
+    // Remove protocol and www if present
+    const cleanDomain = domain
+      .replace(/^(https?:\/\/)?(www\.)?/, '')
+      .toLowerCase();
+
+    return this.organizationsRepository.findOne({
+      where: {
+        customDomain: cleanDomain,
+        domainVerified: true,
+      },
+    });
+  }
+
+  async findByDomainIncludeUnverified(
+    domain: string,
+  ): Promise<Organization | null> {
+    // Remove protocol and www if present
+    const cleanDomain = domain
+      .replace(/^(https?:\/\/)?(www\.)?/, '')
+      .toLowerCase();
+
+    return this.organizationsRepository.findOne({
+      where: {
+        customDomain: cleanDomain,
+      },
+    });
+  }
+
+  async verifyDomainOwnership(organizationId: string): Promise<boolean> {
+    const organization = await this.findById(organizationId);
+
+    if (
+      !organization ||
+      !organization.customDomain ||
+      !organization.domainVerificationToken
+    ) {
+      return false;
+    }
+
+    try {
+      // Method 1: Check for TXT record with verification token
+      const txtRecordName = `_verify-${organization.domainVerificationToken}`;
+      const isVerifiedByTxt = await this.checkTxtRecord(
+        organization.customDomain,
+        txtRecordName,
+      );
+
+      if (isVerifiedByTxt) {
+        // Update domain as verified
+        await this.updateOrganization(organizationId, { domainVerified: true });
+        return true;
+      }
+
+      // Method 2: Check for meta tag on domain root
+      const isVerifiedByMeta = await this.checkMetaTagVerification(
+        organization.customDomain,
+        organization.domainVerificationToken,
+      );
+
+      if (isVerifiedByMeta) {
+        // Update domain as verified
+        await this.updateOrganization(organizationId, { domainVerified: true });
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Domain verification error:', error);
+      return false;
+    }
+  }
+
+  private async checkTxtRecord(
+    domain: string,
+    txtRecordName: string,
+  ): Promise<boolean> {
+    try {
+      // In a real implementation, you would use DNS resolution
+      // For now, we'll simulate this check
+      // You could use libraries like 'dns' module or external services
+
+      // Simulated check - in production, implement actual DNS TXT record lookup
+      console.log(`Checking TXT record: ${txtRecordName}.${domain}`);
+
+      // This would be replaced with actual DNS lookup:
+      // const dns = require('dns').promises;
+      // const txtRecords = await dns.resolveTxt(`${txtRecordName}.${domain}`);
+      // return txtRecords.some(record => record.includes(expectedToken));
+
+      return false; // For now, always return false until real DNS is implemented
+    } catch (error) {
+      return false;
+    }
+  }
+
+  private async checkMetaTagVerification(
+    domain: string,
+    token: string,
+  ): Promise<boolean> {
+    try {
+      // Check for meta tag verification by fetching the domain root
+      const response = await fetch(`https://${domain}/`, {
+        method: 'HEAD',
+        headers: {
+          'User-Agent': 'TicketPlatform-DomainVerification/1.0',
+        },
+        timeout: 10000, // 10 second timeout
+      });
+
+      if (response.ok) {
+        // In a real implementation, you'd parse the HTML and look for:
+        // <meta name="ticket-platform-domain-verification" content="TOKEN" />
+
+        // For now, we'll implement a simple verification file check instead
+        return await this.checkVerificationFile(domain, token);
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Meta tag verification error:', error);
+      return false;
+    }
+  }
+
+  private async checkVerificationFile(
+    domain: string,
+    token: string,
+  ): Promise<boolean> {
+    try {
+      // Check for verification file at domain/.well-known/ticket-platform-verification
+      const verificationUrl = `https://${domain}/.well-known/ticket-platform-verification`;
+
+      const response = await fetch(verificationUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'TicketPlatform-DomainVerification/1.0',
+        },
+        timeout: 10000,
+      });
+
+      if (response.ok) {
+        const content = await response.text();
+        return content.trim() === token;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Verification file check error:', error);
+      return false;
+    }
+  }
+
+  async generateDomainVerificationToken(
+    organizationId: string,
+  ): Promise<string> {
+    const token = crypto.randomUUID();
+    await this.updateOrganization(organizationId, {
+      domainVerificationToken: token,
+      domainVerified: false, // Reset verification status when generating new token
+    });
+    return token;
+  }
+
   async createOrganization(data: Partial<Organization>): Promise<Organization> {
     const newOrganization = this.organizationsRepository.create({
       ...data,

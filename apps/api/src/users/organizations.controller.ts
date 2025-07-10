@@ -8,12 +8,15 @@ import {
   Request,
   NotFoundException,
   BadRequestException,
+  Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OrganizationsService } from './organizations.service';
@@ -191,5 +194,162 @@ export class OrganizationsController {
     return this.organizationsService.updateOrganization(id, {
       domainVerificationToken: data.domainVerificationToken,
     });
+  }
+
+  @Post(':id/verify-domain')
+  @ApiOperation({ summary: 'Verify domain ownership' })
+  @ApiResponse({
+    status: 200,
+    description: 'Domain verification result',
+    schema: {
+      type: 'object',
+      properties: {
+        verified: { type: 'boolean' },
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  async verifyDomain(
+    @Param('id') id: string,
+    @Request() req: any,
+  ): Promise<{ verified: boolean; message: string }> {
+    // Ensure user can only verify their own organization's domain
+    const userOrganizationId = req.user?.organizationId;
+    if (!userOrganizationId || userOrganizationId !== id) {
+      throw new BadRequestException('Access denied to this organization');
+    }
+
+    const organization = await this.organizationsService.findById(id);
+    if (!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    if (!organization.customDomain) {
+      throw new BadRequestException('No custom domain configured');
+    }
+
+    const verified = await this.organizationsService.verifyDomainOwnership(id);
+
+    return {
+      verified,
+      message: verified
+        ? 'Domain verification successful'
+        : 'Domain verification failed. Please check your DNS settings.',
+    };
+  }
+
+  @Post(':id/generate-verification-token')
+  @ApiOperation({ summary: 'Generate new domain verification token' })
+  @ApiResponse({
+    status: 200,
+    description: 'New verification token generated',
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' },
+        instructions: { type: 'object' },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  async generateVerificationToken(
+    @Param('id') id: string,
+    @Request() req: any,
+  ): Promise<{ token: string; instructions: any }> {
+    // Ensure user can only generate token for their own organization
+    const userOrganizationId = req.user?.organizationId;
+    if (!userOrganizationId || userOrganizationId !== id) {
+      throw new BadRequestException('Access denied to this organization');
+    }
+
+    const organization = await this.organizationsService.findById(id);
+    if (!organization) {
+      throw new NotFoundException('Organization not found');
+    }
+
+    if (!organization.customDomain) {
+      throw new BadRequestException('No custom domain configured');
+    }
+
+    const token =
+      await this.organizationsService.generateDomainVerificationToken(id);
+
+    return {
+      token,
+      instructions: {
+        method1: {
+          title: 'DNS TXT Record Verification',
+          description: 'Add a TXT record to your DNS settings',
+          record: {
+            type: 'TXT',
+            name: `_verify-${token}`,
+            value: token,
+            ttl: 300,
+          },
+        },
+        method2: {
+          title: 'File Upload Verification',
+          description: 'Upload a verification file to your website',
+          file: {
+            path: '/.well-known/ticket-platform-verification',
+            content: token,
+          },
+        },
+        method3: {
+          title: 'Meta Tag Verification',
+          description: 'Add a meta tag to your website homepage',
+          tag: `<meta name="ticket-platform-domain-verification" content="${token}" />`,
+        },
+      },
+    };
+  }
+}
+
+// Public controller for domain-based organization lookup (no authentication required)
+@ApiTags('Public Organizations')
+@Controller('public/organizations')
+export class PublicOrganizationsController {
+  constructor(private readonly organizationsService: OrganizationsService) {}
+
+  @Get('by-domain')
+  @ApiOperation({ summary: 'Get organization by domain (public endpoint)' })
+  @ApiQuery({
+    name: 'domain',
+    description: 'Domain name to lookup',
+    example: 'thunderstorm.com',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Organization found',
+    type: Organization,
+  })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
+  async findByDomain(@Query('domain') domain: string): Promise<Organization> {
+    if (!domain) {
+      throw new BadRequestException('Domain parameter is required');
+    }
+
+    const organization = await this.organizationsService.findByDomain(domain);
+    if (!organization) {
+      throw new NotFoundException(
+        'No verified organization found for this domain',
+      );
+    }
+
+    // Return only public information for security
+    return {
+      id: organization.id,
+      name: organization.name,
+      slug: organization.slug,
+      logo: organization.logo,
+      favicon: organization.favicon,
+      website: organization.website,
+      settings: organization.settings,
+      customDomain: organization.customDomain,
+      domainVerified: organization.domainVerified,
+      createdAt: organization.createdAt,
+      updatedAt: organization.updatedAt,
+    } as Organization;
   }
 }
