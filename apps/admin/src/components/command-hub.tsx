@@ -55,15 +55,26 @@ export function CommandHub() {
   };
 
   const handleNavItemClick = (id: string) => {
-    if (id === "events") {
+    if (id === "analytics") {
+      router.navigate({ to: "/admin/analytics" });
+      setActiveSection("analytics");
+    } else if (id === "overview") {
+      router.navigate({ to: "/admin" });
+      setActiveSection("overview");
+    } else if (id === "events") {
       router.navigate({ to: "/admin/events" });
+      setActiveSection("events");
     } else if (id === "users") {
       router.navigate({ to: "/admin/users" });
+      setActiveSection("users");
     } else if (id === "settings") {
       router.navigate({ to: "/admin/settings" });
+      setActiveSection("settings");
     } else if (id === "plugins") {
       router.navigate({ to: "/admin/settings/plugins" });
+      setActiveSection("plugins");
     } else {
+      router.navigate({ to: `/admin/${id}` });
       setActiveSection(id);
     }
     setExpanded(false);

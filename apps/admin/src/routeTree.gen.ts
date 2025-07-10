@@ -23,6 +23,7 @@ import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
 import { Route as AdminDepartmentsIndexRouteImport } from './app/admin/departments/index'
 import { Route as AdminCreateEventIndexRouteImport } from './app/admin/create-event/index'
 import { Route as AdminAuthDiagnosticsIndexRouteImport } from './app/admin/auth-diagnostics/index'
+import { Route as AdminAnalyticsIndexRouteImport } from './app/admin/analytics/index'
 import { Route as AdminActivityIndexRouteImport } from './app/admin/activity/index'
 import { Route as AdminUsersIdIndexRouteImport } from './app/admin/users/$id/index'
 import { Route as AdminSettingsPluginsIndexRouteImport } from './app/admin/settings/plugins/index'
@@ -105,6 +106,11 @@ const AdminAuthDiagnosticsIndexRoute =
     path: '/auth-diagnostics/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
+const AdminAnalyticsIndexRoute = AdminAnalyticsIndexRouteImport.update({
+  id: '/analytics/',
+  path: '/analytics/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminActivityIndexRoute = AdminActivityIndexRouteImport.update({
   id: '/activity/',
   path: '/activity/',
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/register': typeof RegisterIndexRoute
   '/admin/activity': typeof AdminActivityIndexRoute
+  '/admin/analytics': typeof AdminAnalyticsIndexRoute
   '/admin/auth-diagnostics': typeof AdminAuthDiagnosticsIndexRoute
   '/admin/create-event': typeof AdminCreateEventIndexRoute
   '/admin/departments': typeof AdminDepartmentsIndexRoute
@@ -237,6 +244,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/register': typeof RegisterIndexRoute
   '/admin/activity': typeof AdminActivityIndexRoute
+  '/admin/analytics': typeof AdminAnalyticsIndexRoute
   '/admin/auth-diagnostics': typeof AdminAuthDiagnosticsIndexRoute
   '/admin/create-event': typeof AdminCreateEventIndexRoute
   '/admin/departments': typeof AdminDepartmentsIndexRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/register/': typeof RegisterIndexRoute
   '/admin/activity/': typeof AdminActivityIndexRoute
+  '/admin/analytics/': typeof AdminAnalyticsIndexRoute
   '/admin/auth-diagnostics/': typeof AdminAuthDiagnosticsIndexRoute
   '/admin/create-event/': typeof AdminCreateEventIndexRoute
   '/admin/departments/': typeof AdminDepartmentsIndexRoute
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/register'
     | '/admin/activity'
+    | '/admin/analytics'
     | '/admin/auth-diagnostics'
     | '/admin/create-event'
     | '/admin/departments'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/register'
     | '/admin/activity'
+    | '/admin/analytics'
     | '/admin/auth-diagnostics'
     | '/admin/create-event'
     | '/admin/departments'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/register/'
     | '/admin/activity/'
+    | '/admin/analytics/'
     | '/admin/auth-diagnostics/'
     | '/admin/create-event/'
     | '/admin/departments/'
@@ -518,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthDiagnosticsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/analytics/': {
+      id: '/admin/analytics/'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/activity/': {
       id: '/admin/activity/'
       path: '/activity'
@@ -654,6 +673,7 @@ declare module '@tanstack/react-start/server' {
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivityIndexRoute: typeof AdminActivityIndexRoute
+  AdminAnalyticsIndexRoute: typeof AdminAnalyticsIndexRoute
   AdminAuthDiagnosticsIndexRoute: typeof AdminAuthDiagnosticsIndexRoute
   AdminCreateEventIndexRoute: typeof AdminCreateEventIndexRoute
   AdminDepartmentsIndexRoute: typeof AdminDepartmentsIndexRoute
@@ -674,6 +694,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminActivityIndexRoute: AdminActivityIndexRoute,
+  AdminAnalyticsIndexRoute: AdminAnalyticsIndexRoute,
   AdminAuthDiagnosticsIndexRoute: AdminAuthDiagnosticsIndexRoute,
   AdminCreateEventIndexRoute: AdminCreateEventIndexRoute,
   AdminDepartmentsIndexRoute: AdminDepartmentsIndexRoute,
