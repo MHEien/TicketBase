@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
+import { apiClient } from "@/lib/api/api-client";
 
 export const Route = createFileRoute("/admin/settings/")({
   component: SettingsPage,
@@ -139,45 +140,39 @@ function SettingsPage() {
   // Function to fetch organization settings
   const fetchOrganizationSettings = async () => {
     try {
-      const response = await fetch("/api/organizations/settings", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiClient.get("/api/organizations/settings");
+      const data = response.data;
 
-      if (response.ok) {
-        const data = await response.json();
-
-        // Update organization form
+        // Update organization form - use data from settings.details if available, fallback to direct properties
+        const orgDetails = data.settings?.details || {};
         organizationForm.reset({
-          name: data.name || "",
-          website: data.website || "",
-          phone: data.phone || "",
-          email: data.email || "",
+          name: data.name || orgDetails.name || "",
+          website: data.website || orgDetails.website || "",
+          phone: data.phone || orgDetails.phone || "",
+          email: data.email || orgDetails.email || "",
           logo: data.logo || "",
           favicon: data.favicon || "",
           checkoutMessage: data.checkoutMessage || "",
         });
 
-        // Update branding form
+        // Update branding form - use data from settings.brandSettings if available, fallback to flat settings
+        const brandSettings = data.settings?.brandSettings || data.settings || {};
         brandingForm.reset({
-          primaryColor: data.settings?.primaryColor || "#3b82f6",
-          secondaryColor: data.settings?.secondaryColor || "",
-          buttonStyle: data.settings?.buttonStyle || "rounded",
-          fontFamily: data.settings?.fontFamily || "",
-          headerStyle: data.settings?.headerStyle || "centered",
-          allowGuestCheckout: data.settings?.allowGuestCheckout || true,
-          defaultCurrency: data.settings?.defaultCurrency || "USD",
-          customStylesheet: data.settings?.customStylesheet || "",
-          customHeadHtml: data.settings?.customHeadHtml || "",
+          primaryColor: brandSettings.primaryColor || "#3b82f6",
+          secondaryColor: brandSettings.secondaryColor || "",
+          buttonStyle: brandSettings.buttonStyle || "rounded",
+          fontFamily: brandSettings.fontFamily || "",
+          headerStyle: brandSettings.headerStyle || "centered",
+          allowGuestCheckout: brandSettings.allowGuestCheckout !== undefined ? brandSettings.allowGuestCheckout : true,
+          defaultCurrency: brandSettings.defaultCurrency || data.settings?.defaultCurrency || "USD",
+          customStylesheet: brandSettings.customStylesheet || "",
+          customHeadHtml: brandSettings.customHeadHtml || "",
         });
 
         // Update domain form
         domainForm.reset({
           customDomain: data.customDomain || "",
         });
-      }
     } catch (error) {
       console.error("Error fetching organization settings:", error);
     }
@@ -188,23 +183,25 @@ function SettingsPage() {
     setIsOrganizationLoading(true);
 
     try {
-      const response = await fetch("/api/organizations/settings", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await apiClient.patch("/api/organizations/settings", {
+        name: data.name,
+        website: data.website,
+        phone: data.phone,
+        email: data.email,
+        logo: data.logo,
+        favicon: data.favicon,
+        checkoutMessage: data.checkoutMessage,
+        settings: {
+          details: {
+            name: data.name,
+            website: data.website,
+            phone: data.phone,
+            email: data.email,
+          },
         },
-        body: JSON.stringify({
-          name: data.name,
-          website: data.website,
-          phone: data.phone,
-          email: data.email,
-          logo: data.logo,
-          favicon: data.favicon,
-          checkoutMessage: data.checkoutMessage,
-        }),
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         toast({
           title: "Organization settings saved",
           description:
@@ -236,13 +233,9 @@ function SettingsPage() {
     setIsBrandingLoading(true);
 
     try {
-      const response = await fetch("/api/organizations/branding", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          settings: {
+      const response = await apiClient.patch("/api/organizations/settings", {
+        settings: {
+          brandSettings: {
             primaryColor: data.primaryColor,
             secondaryColor: data.secondaryColor,
             buttonStyle: data.buttonStyle,
@@ -253,10 +246,10 @@ function SettingsPage() {
             customStylesheet: data.customStylesheet,
             customHeadHtml: data.customHeadHtml,
           },
-        }),
+        },
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         toast({
           title: "Branding settings saved",
           description: "Your branding settings have been updated successfully.",
@@ -287,17 +280,11 @@ function SettingsPage() {
     setIsDomainLoading(true);
 
     try {
-      const response = await fetch("/api/organizations/domain", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customDomain: data.customDomain,
-        }),
+      const response = await apiClient.patch("/api/organizations/settings", {
+        customDomain: data.customDomain,
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         toast({
           title: "Domain settings saved",
           description: "Your domain settings have been updated successfully.",

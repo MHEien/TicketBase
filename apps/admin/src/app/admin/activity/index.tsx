@@ -62,13 +62,16 @@ export const Route = createFileRoute("/admin/activity/")({
 });
 
 // Real activity type configurations that match our backend
-const ACTIVITY_TYPE_CONFIGS: Record<string, {
-  label: string;
-  icon: any;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-}> = {
+const ACTIVITY_TYPE_CONFIGS: Record<
+  string,
+  {
+    label: string;
+    icon: any;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+  }
+> = {
   CREATE: {
     label: "Create",
     icon: Plus,
@@ -77,7 +80,7 @@ const ACTIVITY_TYPE_CONFIGS: Record<string, {
     borderColor: "border-green-200",
   },
   UPDATE: {
-    label: "Update", 
+    label: "Update",
     icon: Edit,
     color: "text-blue-600",
     bgColor: "bg-blue-50",
@@ -87,7 +90,7 @@ const ACTIVITY_TYPE_CONFIGS: Record<string, {
     label: "Delete",
     icon: Trash2,
     color: "text-red-600",
-    bgColor: "bg-red-50", 
+    bgColor: "bg-red-50",
     borderColor: "border-red-200",
   },
   LOGIN: {
@@ -95,7 +98,7 @@ const ACTIVITY_TYPE_CONFIGS: Record<string, {
     icon: LogIn,
     color: "text-emerald-600",
     bgColor: "bg-emerald-50",
-    borderColor: "border-emerald-200", 
+    borderColor: "border-emerald-200",
   },
   LOGOUT: {
     label: "Logout",
@@ -107,7 +110,7 @@ const ACTIVITY_TYPE_CONFIGS: Record<string, {
   PUBLISH: {
     label: "Publish",
     icon: TrendingUp,
-    color: "text-purple-600", 
+    color: "text-purple-600",
     bgColor: "bg-purple-50",
     borderColor: "border-purple-200",
   },
@@ -115,7 +118,7 @@ const ACTIVITY_TYPE_CONFIGS: Record<string, {
     label: "View",
     icon: Eye,
     color: "text-indigo-600",
-    bgColor: "bg-indigo-50", 
+    bgColor: "bg-indigo-50",
     borderColor: "border-indigo-200",
   },
   PERMISSION_CHANGE: {
@@ -128,12 +131,15 @@ const ACTIVITY_TYPE_CONFIGS: Record<string, {
 };
 
 // Status configurations
-const STATUS_CONFIGS: Record<string, {
-  label: string;
-  icon: any;
-  color: string;
-  variant: "default" | "secondary" | "destructive" | "outline";
-}> = {
+const STATUS_CONFIGS: Record<
+  string,
+  {
+    label: string;
+    icon: any;
+    color: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+  }
+> = {
   success: {
     label: "Success",
     icon: CheckCircle,
@@ -141,7 +147,7 @@ const STATUS_CONFIGS: Record<string, {
     variant: "default",
   },
   failed: {
-    label: "Failed", 
+    label: "Failed",
     icon: XCircle,
     color: "text-red-600",
     variant: "destructive",
@@ -149,7 +155,7 @@ const STATUS_CONFIGS: Record<string, {
   pending: {
     label: "Pending",
     icon: Clock,
-    color: "text-yellow-600", 
+    color: "text-yellow-600",
     variant: "secondary",
   },
 };
@@ -175,17 +181,26 @@ function ActivityPage() {
   // Simulate activity counts based on real data
   const activityCounts = {
     total: recentActivities.length,
-    events: recentActivities.filter(a => a.entityType === 'event').length,
-    users: recentActivities.filter(a => a.type === 'LOGIN' || a.type === 'LOGOUT' || a.entityType === 'user').length,
-    security: recentActivities.filter(a => a.type === 'PERMISSION_CHANGE').length,
-    administrative: recentActivities.filter(a => !['event', 'user'].includes(a.entityType || '')).length,
+    events: recentActivities.filter((a) => a.entityType === "event").length,
+    users: recentActivities.filter(
+      (a) =>
+        a.type === "LOGIN" || a.type === "LOGOUT" || a.entityType === "user",
+    ).length,
+    security: recentActivities.filter((a) => a.type === "PERMISSION_CHANGE")
+      .length,
+    administrative: recentActivities.filter(
+      (a) => !["event", "user"].includes(a.entityType || ""),
+    ).length,
   };
 
   // Filter activities based on current filters
   const filteredActivities = recentActivities.filter((activity) => {
     // Search filter
-    if (searchQuery && !activity.action.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !activity.user.toLowerCase().includes(searchQuery.toLowerCase())) {
+    if (
+      searchQuery &&
+      !activity.action.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !activity.user.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
       return false;
     }
 
@@ -203,7 +218,12 @@ function ActivityPage() {
     if (activeTab === "events" && activity.entityType !== "event") {
       return false;
     }
-    if (activeTab === "users" && activity.type !== "LOGIN" && activity.type !== "LOGOUT" && activity.entityType !== "user") {
+    if (
+      activeTab === "users" &&
+      activity.type !== "LOGIN" &&
+      activity.type !== "LOGOUT" &&
+      activity.entityType !== "user"
+    ) {
       return false;
     }
     if (activeTab === "security" && activity.type !== "PERMISSION_CHANGE") {
@@ -219,21 +239,26 @@ function ActivityPage() {
       const headers = ["Time", "User", "Action", "Type", "Status", "Entity"];
       const csvContent = [
         headers.join(","),
-        ...filteredActivities.map(activity => [
-          activity.time,
-          `"${activity.user}"`,
-          `"${activity.action}"`,
-          activity.type,
-          activity.status,
-          activity.entityType || "N/A"
-        ].join(","))
+        ...filteredActivities.map((activity) =>
+          [
+            activity.time,
+            `"${activity.user}"`,
+            `"${activity.action}"`,
+            activity.type,
+            activity.status,
+            activity.entityType || "N/A",
+          ].join(","),
+        ),
       ].join("\n");
 
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `activities-${new Date().toISOString().split("T")[0]}.csv`);
+      link.setAttribute(
+        "download",
+        `activities-${new Date().toISOString().split("T")[0]}.csv`,
+      );
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
@@ -314,21 +339,20 @@ function ActivityPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
-                  {Object.entries(ACTIVITY_TYPE_CONFIGS).map(([key, config]) => (
-                    <SelectItem key={key} value={key}>
-                      {config.label}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(ACTIVITY_TYPE_CONFIGS).map(
+                    ([key, config]) => (
+                      <SelectItem key={key} value={key}>
+                        {config.label}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
-              <Select
-                value={selectedStatus}
-                onValueChange={setSelectedStatus}
-              >
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                 <SelectTrigger>
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
@@ -381,10 +405,7 @@ function ActivityPage() {
                 {activityCounts.events}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger
-              value="users"
-              className="flex items-center gap-2 px-4"
-            >
+            <TabsTrigger value="users" className="flex items-center gap-2 px-4">
               <Users className="h-4 w-4" />
               <span>Users</span>
               <Badge variant="secondary" className="text-xs">
@@ -459,7 +480,9 @@ function ActivityPage() {
                   {filteredActivities.map((activity: RecentActivity) => {
                     const ActivityIcon = getActivityIcon(activity.type);
                     const iconColor = getActivityColor(activity.type);
-                    const { bgColor, borderColor } = getActivityBgConfig(activity.type);
+                    const { bgColor, borderColor } = getActivityBgConfig(
+                      activity.type,
+                    );
                     const statusConfig = STATUS_CONFIGS[activity.status];
 
                     return (
@@ -492,39 +515,45 @@ function ActivityPage() {
                                   {activity.user}
                                 </span>
                                 <Badge variant="outline" className="text-xs">
-                                  {ACTIVITY_TYPE_CONFIGS[activity.type]?.label || activity.type}
+                                  {ACTIVITY_TYPE_CONFIGS[activity.type]
+                                    ?.label || activity.type}
                                 </Badge>
-                                {activity.status && activity.status !== 'success' && (
-                                  <Badge
-                                    variant={statusConfig?.variant || 'secondary'}
-                                    className="text-xs"
-                                  >
-                                    {statusConfig?.label || activity.status}
-                                  </Badge>
-                                )}
+                                {activity.status &&
+                                  activity.status !== "success" && (
+                                    <Badge
+                                      variant={
+                                        statusConfig?.variant || "secondary"
+                                      }
+                                      className="text-xs"
+                                    >
+                                      {statusConfig?.label || activity.status}
+                                    </Badge>
+                                  )}
                               </div>
                               <p className="text-sm text-muted-foreground mt-1">
                                 {activity.action}
                               </p>
                               {activity.entityType && activity.entityName && (
                                 <div className="mt-1 text-xs text-muted-foreground">
-                                  <span className="font-medium">Entity:</span> {activity.entityType} - {activity.entityName}
+                                  <span className="font-medium">Entity:</span>{" "}
+                                  {activity.entityType} - {activity.entityName}
                                 </div>
                               )}
-                              {activity.metadata && Object.keys(activity.metadata).length > 0 && (
-                                <div className="mt-2 text-xs text-muted-foreground">
-                                  {Object.entries(activity.metadata).map(
-                                    ([key, value]) => (
-                                      <span key={key} className="mr-4">
-                                        <span className="font-medium">
-                                          {key}:
-                                        </span>{" "}
-                                        {String(value)}
-                                      </span>
-                                    ),
-                                  )}
-                                </div>
-                              )}
+                              {activity.metadata &&
+                                Object.keys(activity.metadata).length > 0 && (
+                                  <div className="mt-2 text-xs text-muted-foreground">
+                                    {Object.entries(activity.metadata).map(
+                                      ([key, value]) => (
+                                        <span key={key} className="mr-4">
+                                          <span className="font-medium">
+                                            {key}:
+                                          </span>{" "}
+                                          {String(value)}
+                                        </span>
+                                      ),
+                                    )}
+                                  </div>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-2 ml-4">

@@ -9,6 +9,7 @@ import { UsersController } from './users.controller';
 import { DepartmentsController } from './departments.controller';
 import { DepartmentsService } from './departments.service';
 import { OrganizationsService } from './organizations.service';
+import { OrganizationsController } from './organizations.controller';
 import { ActivitiesModule } from '../activities/activities.module';
 
 @Module({
@@ -16,7 +17,11 @@ import { ActivitiesModule } from '../activities/activities.module';
     TypeOrmModule.forFeature([User, UserSession, Department, Organization]),
     ActivitiesModule,
   ],
-  controllers: [UsersController, DepartmentsController],
+  controllers: [
+    UsersController,
+    DepartmentsController,
+    OrganizationsController,
+  ],
   providers: [UsersService, DepartmentsService, OrganizationsService],
   exports: [UsersService, DepartmentsService, OrganizationsService],
 })

@@ -39,8 +39,22 @@ export class OrganizationsService {
     id: string,
     data: Partial<Organization>,
   ): Promise<Organization> {
-    await this.organizationsRepository.update(id, data);
-    return this.findById(id);
+    // If settings are being updated, handle them separately to enable deep merge
+    if (data.settings) {
+      const settingsData = data.settings;
+      delete data.settings;
+
+      // Update other fields first
+      if (Object.keys(data).length > 0) {
+        await this.organizationsRepository.update(id, data);
+      }
+
+      // Then update settings with deep merge
+      return this.updateOrganizationSettings(id, settingsData);
+    } else {
+      await this.organizationsRepository.update(id, data);
+      return this.findById(id);
+    }
   }
 
   async getOrganizationSettings(id: string): Promise<any> {
@@ -58,12 +72,31 @@ export class OrganizationsService {
       return null;
     }
 
-    organization.settings = {
-      ...organization.settings,
-      ...settings,
-    };
+    // Deep merge settings to handle nested objects like brandSettings, details, etc.
+    organization.settings = this.deepMerge(
+      organization.settings || {},
+      settings,
+    );
 
     return this.organizationsRepository.save(organization);
+  }
+
+  private deepMerge(target: any, source: any): any {
+    const result = { ...target };
+
+    for (const key in source) {
+      if (
+        source[key] &&
+        typeof source[key] === 'object' &&
+        !Array.isArray(source[key])
+      ) {
+        result[key] = this.deepMerge(result[key] || {}, source[key]);
+      } else {
+        result[key] = source[key];
+      }
+    }
+
+    return result;
   }
 
   async upgradeOrganizationPlan(

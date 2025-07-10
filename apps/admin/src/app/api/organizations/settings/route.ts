@@ -13,7 +13,7 @@ export const ServerRoute = createServerFileRoute(
       const session = await getSession();
 
       // Ensure the user is authenticated
-      if (!session?.user || !session.session.token) {
+      if (!session?.user || !session.accessToken) {
         return Response.json(
           { message: "Authentication required" },
           { status: 401 },
@@ -27,7 +27,7 @@ export const ServerRoute = createServerFileRoute(
       const userResponse = await fetch(`${apiBaseUrl}/auth/session`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${session.session.token}`,
+          Authorization: `Bearer ${session.accessToken}`,
         },
       });
 
@@ -39,11 +39,15 @@ export const ServerRoute = createServerFileRoute(
       }
 
       const userData = await userResponse.json();
+      console.log("🔍 Debug - User data from /auth/session:", JSON.stringify(userData, null, 2));
+      
       const organizationId = userData.organizationId;
+      console.log("🔍 Debug - Organization ID extracted:", organizationId);
 
       if (!organizationId) {
+        console.error("❌ Organization ID not found in user data:", userData);
         return Response.json(
-          { message: "Organization ID not found" },
+          { message: "Organization ID not found", userData }, // Include userData for debugging
           { status: 400 },
         );
       }
@@ -55,7 +59,7 @@ export const ServerRoute = createServerFileRoute(
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.session.token}`,
+            Authorization: `Bearer ${session.accessToken}`,
           },
         },
       );
@@ -82,7 +86,7 @@ export const ServerRoute = createServerFileRoute(
       const session = await getSession();
 
       // Ensure the user is authenticated
-      if (!session?.user || !session.session.token) {
+      if (!session?.user || !session.accessToken) {
         return Response.json(
           { message: "Authentication required" },
           { status: 401 },
@@ -96,7 +100,7 @@ export const ServerRoute = createServerFileRoute(
       const userResponse = await fetch(`${apiBaseUrl}/auth/session`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${session.session.token}`,
+          Authorization: `Bearer ${session.accessToken}`,
         },
       });
 
@@ -108,11 +112,15 @@ export const ServerRoute = createServerFileRoute(
       }
 
       const userData = await userResponse.json();
+      console.log("🔍 Debug PATCH - User data from /auth/session:", JSON.stringify(userData, null, 2));
+      
       const organizationId = userData.organizationId;
+      console.log("🔍 Debug PATCH - Organization ID extracted:", organizationId);
 
       if (!organizationId) {
+        console.error("❌ PATCH - Organization ID not found in user data:", userData);
         return Response.json(
-          { message: "Organization ID not found" },
+          { message: "Organization ID not found", userData }, // Include userData for debugging
           { status: 400 },
         );
       }
@@ -124,7 +132,7 @@ export const ServerRoute = createServerFileRoute(
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.session.token}`,
+            Authorization: `Bearer ${session.accessToken}`,
           },
           body: JSON.stringify({
             name: body.name,
