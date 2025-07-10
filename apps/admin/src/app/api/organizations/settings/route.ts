@@ -39,8 +39,11 @@ export const ServerRoute = createServerFileRoute(
       }
 
       const userData = await userResponse.json();
-      console.log("🔍 Debug - User data from /auth/session:", JSON.stringify(userData, null, 2));
-      
+      console.log(
+        "🔍 Debug - User data from /auth/session:",
+        JSON.stringify(userData, null, 2),
+      );
+
       const organizationId = userData.organizationId;
       console.log("🔍 Debug - Organization ID extracted:", organizationId);
 
@@ -112,13 +115,22 @@ export const ServerRoute = createServerFileRoute(
       }
 
       const userData = await userResponse.json();
-      console.log("🔍 Debug PATCH - User data from /auth/session:", JSON.stringify(userData, null, 2));
-      
+      console.log(
+        "🔍 Debug PATCH - User data from /auth/session:",
+        JSON.stringify(userData, null, 2),
+      );
+
       const organizationId = userData.organizationId;
-      console.log("🔍 Debug PATCH - Organization ID extracted:", organizationId);
+      console.log(
+        "🔍 Debug PATCH - Organization ID extracted:",
+        organizationId,
+      );
 
       if (!organizationId) {
-        console.error("❌ PATCH - Organization ID not found in user data:", userData);
+        console.error(
+          "❌ PATCH - Organization ID not found in user data:",
+          userData,
+        );
         return Response.json(
           { message: "Organization ID not found", userData }, // Include userData for debugging
           { status: 400 },

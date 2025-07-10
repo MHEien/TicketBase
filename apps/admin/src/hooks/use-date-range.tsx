@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+} from "react";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 
@@ -15,7 +21,9 @@ interface DateRangeContextType {
   getCurrentRangeLabel: () => string;
 }
 
-const DateRangeContext = createContext<DateRangeContextType | undefined>(undefined);
+const DateRangeContext = createContext<DateRangeContextType | undefined>(
+  undefined,
+);
 
 // Default to last 30 days
 const defaultDateRange: DateRange = {
@@ -33,7 +41,7 @@ const presets = [
     },
   },
   {
-    label: "Last 30 days", 
+    label: "Last 30 days",
     value: {
       from: addDays(new Date(), -29),
       to: new Date(),
@@ -77,14 +85,32 @@ export function DateRangeProvider({ children }: DateRangeProviderProps) {
     if (!dateRange.from || !dateRange.to) return "No range selected";
 
     // Check if current range matches a preset
-    const matchingPreset = presets.find(preset => {
-      const presetFrom = new Date(preset.value.from!.getFullYear(), preset.value.from!.getMonth(), preset.value.from!.getDate());
-      const presetTo = new Date(preset.value.to!.getFullYear(), preset.value.to!.getMonth(), preset.value.to!.getDate());
-      const rangeFrom = new Date(dateRange.from!.getFullYear(), dateRange.from!.getMonth(), dateRange.from!.getDate());
-      const rangeTo = new Date(dateRange.to!.getFullYear(), dateRange.to!.getMonth(), dateRange.to!.getDate());
-      
-      return presetFrom.getTime() === rangeFrom.getTime() && 
-             presetTo.getTime() === rangeTo.getTime();
+    const matchingPreset = presets.find((preset) => {
+      const presetFrom = new Date(
+        preset.value.from!.getFullYear(),
+        preset.value.from!.getMonth(),
+        preset.value.from!.getDate(),
+      );
+      const presetTo = new Date(
+        preset.value.to!.getFullYear(),
+        preset.value.to!.getMonth(),
+        preset.value.to!.getDate(),
+      );
+      const rangeFrom = new Date(
+        dateRange.from!.getFullYear(),
+        dateRange.from!.getMonth(),
+        dateRange.from!.getDate(),
+      );
+      const rangeTo = new Date(
+        dateRange.to!.getFullYear(),
+        dateRange.to!.getMonth(),
+        dateRange.to!.getDate(),
+      );
+
+      return (
+        presetFrom.getTime() === rangeFrom.getTime() &&
+        presetTo.getTime() === rangeTo.getTime()
+      );
     });
 
     return matchingPreset?.label || "Custom range";
@@ -112,4 +138,4 @@ export function useDateRange(): DateRangeContextType {
     throw new Error("useDateRange must be used within a DateRangeProvider");
   }
   return context;
-} 
+}

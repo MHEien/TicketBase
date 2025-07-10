@@ -143,36 +143,42 @@ function SettingsPage() {
       const response = await apiClient.get("/api/organizations/settings");
       const data = response.data;
 
-        // Update organization form - use data from settings.details if available, fallback to direct properties
-        const orgDetails = data.settings?.details || {};
-        organizationForm.reset({
-          name: data.name || orgDetails.name || "",
-          website: data.website || orgDetails.website || "",
-          phone: data.phone || orgDetails.phone || "",
-          email: data.email || orgDetails.email || "",
-          logo: data.logo || "",
-          favicon: data.favicon || "",
-          checkoutMessage: data.checkoutMessage || "",
-        });
+      // Update organization form - use data from settings.details if available, fallback to direct properties
+      const orgDetails = data.settings?.details || {};
+      organizationForm.reset({
+        name: data.name || orgDetails.name || "",
+        website: data.website || orgDetails.website || "",
+        phone: data.phone || orgDetails.phone || "",
+        email: data.email || orgDetails.email || "",
+        logo: data.logo || "",
+        favicon: data.favicon || "",
+        checkoutMessage: data.checkoutMessage || "",
+      });
 
-        // Update branding form - use data from settings.brandSettings if available, fallback to flat settings
-        const brandSettings = data.settings?.brandSettings || data.settings || {};
-        brandingForm.reset({
-          primaryColor: brandSettings.primaryColor || "#3b82f6",
-          secondaryColor: brandSettings.secondaryColor || "",
-          buttonStyle: brandSettings.buttonStyle || "rounded",
-          fontFamily: brandSettings.fontFamily || "",
-          headerStyle: brandSettings.headerStyle || "centered",
-          allowGuestCheckout: brandSettings.allowGuestCheckout !== undefined ? brandSettings.allowGuestCheckout : true,
-          defaultCurrency: brandSettings.defaultCurrency || data.settings?.defaultCurrency || "USD",
-          customStylesheet: brandSettings.customStylesheet || "",
-          customHeadHtml: brandSettings.customHeadHtml || "",
-        });
+      // Update branding form - use data from settings.brandSettings if available, fallback to flat settings
+      const brandSettings = data.settings?.brandSettings || data.settings || {};
+      brandingForm.reset({
+        primaryColor: brandSettings.primaryColor || "#3b82f6",
+        secondaryColor: brandSettings.secondaryColor || "",
+        buttonStyle: brandSettings.buttonStyle || "rounded",
+        fontFamily: brandSettings.fontFamily || "",
+        headerStyle: brandSettings.headerStyle || "centered",
+        allowGuestCheckout:
+          brandSettings.allowGuestCheckout !== undefined
+            ? brandSettings.allowGuestCheckout
+            : true,
+        defaultCurrency:
+          brandSettings.defaultCurrency ||
+          data.settings?.defaultCurrency ||
+          "USD",
+        customStylesheet: brandSettings.customStylesheet || "",
+        customHeadHtml: brandSettings.customHeadHtml || "",
+      });
 
-        // Update domain form
-        domainForm.reset({
-          customDomain: data.customDomain || "",
-        });
+      // Update domain form
+      domainForm.reset({
+        customDomain: data.customDomain || "",
+      });
     } catch (error) {
       console.error("Error fetching organization settings:", error);
     }

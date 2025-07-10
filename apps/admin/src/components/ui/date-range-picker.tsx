@@ -51,7 +51,7 @@ const defaultPresets = [
     },
   },
   {
-    label: "Last 30 days", 
+    label: "Last 30 days",
     value: {
       from: addDays(new Date(), -29),
       to: new Date(),
@@ -95,22 +95,24 @@ export function DateRangePicker({
   // Check if current value matches a preset
   const getCurrentPreset = useCallback(() => {
     if (!value?.from || !value?.to) return "";
-    
-    const matchingPreset = presets.find(preset => {
+
+    const matchingPreset = presets.find((preset) => {
       const presetFrom = startOfDay(preset.value.from!);
       const presetTo = startOfDay(preset.value.to!);
       const valueFrom = startOfDay(value.from!);
       const valueTo = startOfDay(value.to!);
-      
-      return presetFrom.getTime() === valueFrom.getTime() && 
-             presetTo.getTime() === valueTo.getTime();
+
+      return (
+        presetFrom.getTime() === valueFrom.getTime() &&
+        presetTo.getTime() === valueTo.getTime()
+      );
     });
-    
+
     return matchingPreset?.label || "Custom range";
   }, [value, presets]);
 
   const handlePresetSelect = (presetLabel: string) => {
-    const preset = presets.find(p => p.label === presetLabel);
+    const preset = presets.find((p) => p.label === presetLabel);
     if (preset) {
       setSelectedPreset(presetLabel);
       onValueChange?.(preset.value);
@@ -157,7 +159,9 @@ export function DateRangePicker({
             disabled={disabled}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {currentPreset !== "Custom range" ? currentPreset : formatDateRange()}
+            {currentPreset !== "Custom range"
+              ? currentPreset
+              : formatDateRange()}
             <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -192,7 +196,8 @@ export function DateRangePicker({
                 onSelect={handleCalendarSelect}
                 numberOfMonths={2}
                 disabled={(date) =>
-                  isAfter(date, new Date()) || isBefore(date, new Date("1900-01-01"))
+                  isAfter(date, new Date()) ||
+                  isBefore(date, new Date("1900-01-01"))
                 }
               />
             </div>
@@ -201,4 +206,4 @@ export function DateRangePicker({
       </Popover>
     </div>
   );
-} 
+}

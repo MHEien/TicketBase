@@ -48,10 +48,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  getUserById,
+  fetchUser,
   availablePermissions,
   hasPermission,
-} from "@/lib/user-data";
+} from "@/lib/api/users-api";
 import { useToast } from "@/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -62,17 +62,27 @@ export const Route = createFileRoute("/admin/users/$id/")({
 function UserDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [user, setUser] = useState<ReturnType<typeof getUserById>>(undefined);
+  const [user, setUser] = useState<Awaited<ReturnType<typeof fetchUser>> | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] =
     useState(false);
   const { id } = Route.useParams();
   useEffect(() => {
-    // In a real app, this would be an API call
-    const fetchedUser = getUserById(id);
-    setUser(fetchedUser);
-    setLoading(false);
+    // Fetch user data from API
+    const loadUser = async () => {
+      try {
+        const fetchedUser = await fetchUser(id);
+        setUser(fetchedUser);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setUser(undefined);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadUser();
   }, [id]);
 
   const handleDeleteUser = () => {
