@@ -25,32 +25,40 @@ export const Route = createRootRoute({
         type: "importmap",
         children: JSON.stringify({
           imports: {
-            "react": "data:text/javascript;base64," + btoa(`
+            react:
+              "data:text/javascript;base64," +
+              btoa(`
               export default window.React;
               export const useState = window.React.useState;
               export const useEffect = window.React.useEffect;
               export const useCallback = window.React.useCallback;
               export const createElement = window.React.createElement;
             `),
-            "react-dom": "data:text/javascript;base64," + btoa(`
+            "react-dom":
+              "data:text/javascript;base64," +
+              btoa(`
               export default window.ReactDOM;
               export const render = window.ReactDOM.render;
               export const createRoot = window.ReactDOM.createRoot;
             `),
-            "react/jsx-runtime": "data:text/javascript;base64," + btoa(`
+            "react/jsx-runtime":
+              "data:text/javascript;base64," +
+              btoa(`
               export const jsx = window.React.createElement;
               export const jsxs = window.React.createElement;
               export const Fragment = window.React.Fragment;
             `),
-            "react/jsx-dev-runtime": "data:text/javascript;base64," + btoa(`
+            "react/jsx-dev-runtime":
+              "data:text/javascript;base64," +
+              btoa(`
               export const jsxDEV = (type, props, key, isStaticChildren, source, self) => {
                 return window.React.createElement(type, { key, ...props });
               };
               export const Fragment = window.React.Fragment;
-            `)
-          }
-        })
-      }
+            `),
+          },
+        }),
+      },
     ],
   }),
   component: RootLayout,

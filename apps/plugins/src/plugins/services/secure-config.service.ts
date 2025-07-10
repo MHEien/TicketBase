@@ -3,8 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { PluginConfig, PluginConfigDocument } from '../schemas/plugin-config.schema';
-import { ConfigAudit, ConfigAuditDocument } from '../schemas/config-audit.schema';
+import {
+  PluginConfig,
+  PluginConfigDocument,
+} from '../schemas/plugin-config.schema';
+import {
+  ConfigAudit,
+  ConfigAuditDocument,
+} from '../schemas/config-audit.schema';
 
 @Injectable()
 export class SecureConfigService {
@@ -19,14 +25,18 @@ export class SecureConfigService {
     private auditModel: Model<ConfigAuditDocument>,
     private configService: ConfigService,
   ) {
-    const rawKey = this.configService.get<string>('PLUGIN_CONFIG_SECRET') || 'your-default-secret-key-change-this';
-    
+    const rawKey =
+      this.configService.get<string>('PLUGIN_CONFIG_SECRET') ||
+      'your-default-secret-key-change-this';
+
     // Ensure key is exactly 32 bytes for AES-256-CBC
     const crypto = require('crypto');
     this.secretKey = crypto.createHash('sha256').update(rawKey).digest();
-    
+
     if (rawKey === 'your-default-secret-key-change-this') {
-      this.logger.warn('⚠️  Using default secret key for plugin config encryption. Set PLUGIN_CONFIG_SECRET in production!');
+      this.logger.warn(
+        '⚠️  Using default secret key for plugin config encryption. Set PLUGIN_CONFIG_SECRET in production!',
+      );
     }
   }
 
@@ -38,7 +48,7 @@ export class SecureConfigService {
     const cipher = createCipheriv(this.algorithm, this.secretKey, iv);
     let encrypted = cipher.update(value, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     return {
       value: encrypted,
       iv: iv.toString('hex'),
@@ -92,7 +102,10 @@ export class SecureConfigService {
     newConfig: Record<string, any>,
   ): string[] {
     const changedFields: string[] = [];
-    const allKeys = new Set([...Object.keys(oldConfig), ...Object.keys(newConfig)]);
+    const allKeys = new Set([
+      ...Object.keys(oldConfig),
+      ...Object.keys(newConfig),
+    ]);
 
     for (const key of allKeys) {
       if (oldConfig[key] !== newConfig[key]) {
@@ -120,16 +133,23 @@ export class SecureConfigService {
 
     try {
       // Get existing configuration for audit trail
-      const existingConfig = await this.configModel.findOne({ tenantId, pluginId });
+      const existingConfig = await this.configModel.findOne({
+        tenantId,
+        pluginId,
+      });
       if (existingConfig) {
         isUpdate = true;
         // Reconstruct the previous config with decrypted values
         previousConfig = { ...existingConfig.publicConfig };
-        for (const [key, encryptedData] of Object.entries(existingConfig.encryptedSecrets)) {
+        for (const [key, encryptedData] of Object.entries(
+          existingConfig.encryptedSecrets,
+        )) {
           try {
             previousConfig[key] = this.decryptValue(encryptedData);
           } catch (error) {
-            this.logger.warn(`Failed to decrypt previous value for field ${key}`);
+            this.logger.warn(
+              `Failed to decrypt previous value for field ${key}`,
+            );
           }
         }
       }
@@ -173,8 +193,12 @@ export class SecureConfigService {
       );
 
       // Calculate changed fields for audit
-      const changedFields = isUpdate ? this.findChangedFields(previousConfig, config) : Object.keys(config);
-      const sensitiveFieldsAccessed = sensitiveFields.filter((field: string) => config.hasOwnProperty(field));
+      const changedFields = isUpdate
+        ? this.findChangedFields(previousConfig, config)
+        : Object.keys(config);
+      const sensitiveFieldsAccessed = sensitiveFields.filter((field: string) =>
+        config.hasOwnProperty(field),
+      );
 
       // Log successful audit entry
       await this.logAudit({
@@ -191,7 +215,9 @@ export class SecureConfigService {
         success: true,
       });
 
-      this.logger.log(`Saved secure config for plugin ${pluginId} (tenant: ${tenantId})`);
+      this.logger.log(
+        `Saved secure config for plugin ${pluginId} (tenant: ${tenantId})`,
+      );
       return result;
     } catch (error) {
       // Log failed audit entry
@@ -208,7 +234,10 @@ export class SecureConfigService {
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      this.logger.error(`Failed to save secure config for plugin ${pluginId}:`, error);
+      this.logger.error(
+        `Failed to save secure config for plugin ${pluginId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -243,12 +272,17 @@ export class SecureConfigService {
       const sensitiveFieldsAccessed: string[] = [];
 
       // Decrypt sensitive values
-      for (const [key, encryptedData] of Object.entries(config.encryptedSecrets)) {
+      for (const [key, encryptedData] of Object.entries(
+        config.encryptedSecrets,
+      )) {
         try {
           result[key] = this.decryptValue(encryptedData);
           sensitiveFieldsAccessed.push(key);
         } catch (error) {
-          this.logger.error(`Failed to decrypt secret ${key} for plugin ${pluginId}:`, error);
+          this.logger.error(
+            `Failed to decrypt secret ${key} for plugin ${pluginId}:`,
+            error,
+          );
           // Don't include the failed decryption in the result
         }
       }
@@ -279,7 +313,10 @@ export class SecureConfigService {
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      this.logger.error(`Failed to get secure config for plugin ${pluginId}:`, error);
+      this.logger.error(
+        `Failed to get secure config for plugin ${pluginId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -302,7 +339,10 @@ export class SecureConfigService {
     tenantId: string,
     pluginId: string,
     config: Record<string, any>,
-  ): Promise<{ valid: boolean; errors: Array<{ field: string; message: string }> }> {
+  ): Promise<{
+    valid: boolean;
+    errors: Array<{ field: string; message: string }>;
+  }> {
     const configDoc = await this.configModel.findOne({ tenantId, pluginId });
     if (!configDoc?.configSchema) {
       return { valid: true, errors: [] };
@@ -314,7 +354,11 @@ export class SecureConfigService {
     // Check required fields
     if (schema.required) {
       for (const field of schema.required) {
-        if (!(field in config) || config[field] === null || config[field] === undefined) {
+        if (
+          !(field in config) ||
+          config[field] === null ||
+          config[field] === undefined
+        ) {
           errors.push({
             field,
             message: `Required field '${field}' is missing`,
@@ -325,7 +369,9 @@ export class SecureConfigService {
 
     // Validate field types and constraints
     if (schema.properties) {
-      for (const [field, fieldSchema] of Object.entries(schema.properties as Record<string, any>)) {
+      for (const [field, fieldSchema] of Object.entries(
+        schema.properties as Record<string, any>,
+      )) {
         const value = config[field];
         if (value !== undefined) {
           // Type validation
@@ -387,7 +433,10 @@ export class SecureConfigService {
     auditContext?: { userId?: string; ipAddress?: string; userAgent?: string },
   ): Promise<boolean> {
     try {
-      const existingConfig = await this.configModel.findOne({ tenantId, pluginId });
+      const existingConfig = await this.configModel.findOne({
+        tenantId,
+        pluginId,
+      });
       if (!existingConfig) {
         await this.logAudit({
           tenantId,
@@ -416,7 +465,9 @@ export class SecureConfigService {
         success: true,
       });
 
-      this.logger.log(`Deleted secure config for plugin ${pluginId} (tenant: ${tenantId})`);
+      this.logger.log(
+        `Deleted secure config for plugin ${pluginId} (tenant: ${tenantId})`,
+      );
       return true;
     } catch (error) {
       // Log failed audit entry
@@ -431,7 +482,10 @@ export class SecureConfigService {
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      this.logger.error(`Failed to delete secure config for plugin ${pluginId}:`, error);
+      this.logger.error(
+        `Failed to delete secure config for plugin ${pluginId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -464,7 +518,10 @@ export class SecureConfigService {
   async validateConfiguration(
     config: Record<string, any>,
     configSchema: any,
-  ): Promise<{ isValid: boolean; errors: Array<{ field: string; message: string }> }> {
+  ): Promise<{
+    isValid: boolean;
+    errors: Array<{ field: string; message: string }>;
+  }> {
     const errors: Array<{ field: string; message: string }> = [];
 
     if (!configSchema) {
@@ -475,7 +532,11 @@ export class SecureConfigService {
 
     // Check required fields
     for (const requiredField of required) {
-      if (!config.hasOwnProperty(requiredField) || config[requiredField] === undefined || config[requiredField] === '') {
+      if (
+        !config.hasOwnProperty(requiredField) ||
+        config[requiredField] === undefined ||
+        config[requiredField] === ''
+      ) {
         errors.push({
           field: requiredField,
           message: `${requiredField} is required`,
@@ -517,7 +578,11 @@ export class SecureConfigService {
       }
 
       // Min length validation
-      if (fieldSchema.minLength && typeof value === 'string' && value.length < fieldSchema.minLength) {
+      if (
+        fieldSchema.minLength &&
+        typeof value === 'string' &&
+        value.length < fieldSchema.minLength
+      ) {
         errors.push({
           field,
           message: `${field} must be at least ${fieldSchema.minLength} characters long`,
@@ -565,7 +630,8 @@ export class SecureConfigService {
       this.logger.error('Encryption health check failed:', error);
     }
 
-    const status = details.database && details.encryption ? 'healthy' : 'unhealthy';
+    const status =
+      details.database && details.encryption ? 'healthy' : 'unhealthy';
 
     return {
       status,
@@ -577,15 +643,17 @@ export class SecureConfigService {
   /**
    * List all configurations for a tenant (public data only)
    */
-  async listTenantConfigs(tenantId: string): Promise<Array<{
-    pluginId: string;
-    version: string;
-    enabled: boolean;
-    publicConfig: Record<string, any>;
-    hasSecrets: boolean;
-  }>> {
+  async listTenantConfigs(tenantId: string): Promise<
+    Array<{
+      pluginId: string;
+      version: string;
+      enabled: boolean;
+      publicConfig: Record<string, any>;
+      hasSecrets: boolean;
+    }>
+  > {
     const configs = await this.configModel.find({ tenantId });
-    return configs.map(config => ({
+    return configs.map((config) => ({
       pluginId: config.pluginId,
       version: config.version,
       enabled: config.enabled,
@@ -593,4 +661,4 @@ export class SecureConfigService {
       hasSecrets: Object.keys(config.encryptedSecrets).length > 0,
     }));
   }
-} 
+}

@@ -11,8 +11,20 @@ import {
 } from "recharts";
 import { useState } from "react";
 
-// Sample data for the chart
-const data = [
+interface AudienceDataItem {
+  name: string;
+  value: number;
+  color?: string;
+}
+
+interface AudienceChartProps {
+  ageGroups?: AudienceDataItem[];
+  interests?: AudienceDataItem[];
+  loading?: boolean;
+}
+
+// Sample data for the chart (fallback)
+const defaultAgeData = [
   { name: "18-24", value: 25, color: "hsl(var(--chart-1))" },
   { name: "25-34", value: 35, color: "hsl(var(--chart-2))" },
   { name: "35-44", value: 20, color: "hsl(var(--chart-3))" },
@@ -20,13 +32,29 @@ const data = [
   { name: "55+", value: 8, color: "hsl(var(--chart-5))" },
 ];
 
-const interestData = [
+const defaultInterestData = [
   { name: "Music", value: 40, color: "hsl(var(--chart-1))" },
   { name: "Technology", value: 25, color: "hsl(var(--chart-2))" },
   { name: "Arts", value: 15, color: "hsl(var(--chart-3))" },
   { name: "Sports", value: 12, color: "hsl(var(--chart-4))" },
   { name: "Other", value: 8, color: "hsl(var(--chart-5))" },
 ];
+
+// Add colors to data items
+const addColorsToData = (data: AudienceDataItem[]): AudienceDataItem[] => {
+  const colors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+  ];
+
+  return data.map((item, index) => ({
+    ...item,
+    color: item.color || colors[index % colors.length],
+  }));
+};
 
 const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
@@ -47,13 +75,33 @@ const renderActiveShape = (props: any) => {
   );
 };
 
-export function AudienceChart() {
+export function AudienceChart({
+  ageGroups,
+  interests,
+  loading,
+}: AudienceChartProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeChart, setActiveChart] = useState<"age" | "interests">("age");
 
   const onPieEnter = (_: any, index: number) => {
     setActiveIndex(index);
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-sm text-muted-foreground">
+          Loading audience data...
+        </div>
+      </div>
+    );
+  }
+
+  const data =
+    activeChart === "age"
+      ? ageGroups || defaultAgeData
+      : interests || defaultInterestData;
+  const processedData = addColorsToData(data);
 
   return (
     <div className="h-full">
@@ -62,22 +110,21 @@ export function AudienceChart() {
           className={`rounded-full px-4 py-1 text-sm font-medium ${activeChart === "age" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
           onClick={() => setActiveChart("age")}
         >
-          Age Groups
+          Age Groups {ageGroups ? "(Limited Data)" : "(Mock Data)"}
         </button>
         <button
           className={`rounded-full px-4 py-1 text-sm font-medium ${activeChart === "interests" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
           onClick={() => setActiveChart("interests")}
         >
-          Interests
+          Traffic Sources {interests ? "(Real Data)" : "(Mock Data)"}
         </button>
       </div>
 
       <ResponsiveContainer width="100%" height="80%">
         <PieChart>
           <Pie
-            activeIndex={activeIndex}
             activeShape={renderActiveShape}
-            data={activeChart === "age" ? data : interestData}
+            data={processedData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -86,11 +133,9 @@ export function AudienceChart() {
             dataKey="value"
             onMouseEnter={onPieEnter}
           >
-            {(activeChart === "age" ? data : interestData).map(
-              (entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ),
-            )}
+            {processedData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
           </Pie>
           <Tooltip
             content={({ active, payload }) => {

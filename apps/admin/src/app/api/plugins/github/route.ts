@@ -44,7 +44,8 @@ export const ServerRoute = createServerFileRoute("/api/plugins/github").methods(
         // TODO: Implement GitHub integration
         return Response.json({
           success: false,
-          error: "GitHub integration not yet implemented with new plugin system",
+          error:
+            "GitHub integration not yet implemented with new plugin system",
           pluginId,
           repository,
           branch,

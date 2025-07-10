@@ -6,23 +6,36 @@ import React from "react";
 
 // Simple UI components (replace with your actual components)
 const Card = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <div className="border rounded-lg shadow-sm" {...props}>{children}</div>
+  <div className="border rounded-lg shadow-sm" {...props}>
+    {children}
+  </div>
 );
 
 const CardHeader = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <div className="p-6 pb-4" {...props}>{children}</div>
+  <div className="p-6 pb-4" {...props}>
+    {children}
+  </div>
 );
 
 const CardTitle = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <h3 className="text-lg font-semibold" {...props}>{children}</h3>
+  <h3 className="text-lg font-semibold" {...props}>
+    {children}
+  </h3>
 );
 
-const CardDescription = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <p className="text-sm text-gray-600" {...props}>{children}</p>
+const CardDescription = ({
+  children,
+  ...props
+}: React.PropsWithChildren<any>) => (
+  <p className="text-sm text-gray-600" {...props}>
+    {children}
+  </p>
 );
 
 const CardContent = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <div className="p-6 pt-0" {...props}>{children}</div>
+  <div className="p-6 pt-0" {...props}>
+    {children}
+  </div>
 );
 
 const Input = ({ ...props }) => (
@@ -30,12 +43,18 @@ const Input = ({ ...props }) => (
 );
 
 const Label = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <label className="text-sm font-medium" {...props}>{children}</label>
+  <label className="text-sm font-medium" {...props}>
+    {children}
+  </label>
 );
 
-const Button = ({ children, disabled, ...props }: React.PropsWithChildren<any>) => (
-  <button 
-    className={`px-4 py-2 rounded-md ${disabled ? 'bg-gray-300' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+const Button = ({
+  children,
+  disabled,
+  ...props
+}: React.PropsWithChildren<any>) => (
+  <button
+    className={`px-4 py-2 rounded-md ${disabled ? "bg-gray-300" : "bg-blue-600 text-white hover:bg-blue-700"}`}
     disabled={disabled}
     {...props}
   >
@@ -44,22 +63,34 @@ const Button = ({ children, disabled, ...props }: React.PropsWithChildren<any>) 
 );
 
 const Switch = ({ checked, onCheckedChange, ...props }: any) => (
-  <input 
-    type="checkbox" 
+  <input
+    type="checkbox"
     checked={checked}
     onChange={(e) => onCheckedChange?.(e.target.checked)}
-    {...props} 
+    {...props}
   />
 );
 
-const Alert = ({ variant, children, ...props }: React.PropsWithChildren<any>) => (
-  <div className={`p-4 rounded-md ${variant === 'destructive' ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'}`} {...props}>
+const Alert = ({
+  variant,
+  children,
+  ...props
+}: React.PropsWithChildren<any>) => (
+  <div
+    className={`p-4 rounded-md ${variant === "destructive" ? "bg-red-50 border border-red-200" : "bg-blue-50 border border-blue-200"}`}
+    {...props}
+  >
     {children}
   </div>
 );
 
-const AlertDescription = ({ children, ...props }: React.PropsWithChildren<any>) => (
-  <div className="text-sm" {...props}>{children}</div>
+const AlertDescription = ({
+  children,
+  ...props
+}: React.PropsWithChildren<any>) => (
+  <div className="text-sm" {...props}>
+    {children}
+  </div>
 );
 
 // =============================================================================
@@ -67,10 +98,10 @@ const AlertDescription = ({ children, ...props }: React.PropsWithChildren<any>) 
 // =============================================================================
 
 interface StripeConfig {
-  apiKey: string;        // This will be encrypted automatically (defined in plugin.json sensitiveFields)
+  apiKey: string; // This will be encrypted automatically (defined in plugin.json sensitiveFields)
   publishableKey: string; // This will be stored as plain text (not in sensitiveFields)
-  webhookUrl?: string;   // This will be stored as plain text
-  testMode: boolean;     // This will be stored as plain text
+  webhookUrl?: string; // This will be stored as plain text
+  testMode: boolean; // This will be stored as plain text
 }
 
 // =============================================================================
@@ -79,11 +110,11 @@ interface StripeConfig {
 
 const AdminSettingsComponent: React.FC<any> = (props) => {
   // Context is spread as direct props, not nested under 'context'
-  const { 
-    plugin, 
-    pluginId = "stripe-payment-plugin", 
-    onSave, 
-    saving = false, 
+  const {
+    plugin,
+    pluginId = "stripe-payment-plugin",
+    onSave,
+    saving = false,
     user = { email: "admin@example.com" },
     isAuthenticated = true,
     configuration = {},
@@ -134,13 +165,13 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!formData.apiKey.trim()) {
       setFormError("Stripe Secret API Key is required");
       return;
     }
-    
+
     if (!formData.publishableKey.trim()) {
       setFormError("Stripe Publishable Key is required");
       return;
@@ -148,33 +179,41 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
 
     // Validate API key format
     if (!formData.apiKey.match(/^sk_(test_|live_)/)) {
-      setFormError("Stripe Secret API Key must start with 'sk_test_' or 'sk_live_'");
+      setFormError(
+        "Stripe Secret API Key must start with 'sk_test_' or 'sk_live_'",
+      );
       return;
     }
 
     // Validate publishable key format
     if (!formData.publishableKey.match(/^pk_(test_|live_)/)) {
-      setFormError("Stripe Publishable Key must start with 'pk_test_' or 'pk_live_'");
+      setFormError(
+        "Stripe Publishable Key must start with 'pk_test_' or 'pk_live_'",
+      );
       return;
     }
 
     try {
       setFormError(null);
-      
+
       // Use the onSave function passed from the admin settings UI
       // This will automatically:
       // 1. Encrypt sensitive fields (apiKey) based on plugin.json configSchema
-      // 2. Store non-sensitive fields (publishableKey, webhookUrl, testMode) as plain text  
+      // 2. Store non-sensitive fields (publishableKey, webhookUrl, testMode) as plain text
       // 3. Validate against the configSchema
       // 4. Create audit trail of changes
       // 5. Handle tenant isolation
       if (onSave) {
         await onSave(formData);
       } else {
-        throw new Error("No save function available. Plugin may not be properly integrated.");
+        throw new Error(
+          "No save function available. Plugin may not be properly integrated.",
+        );
       }
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : 'Failed to save configuration');
+      setFormError(
+        err instanceof Error ? err.message : "Failed to save configuration",
+      );
     }
   };
 
@@ -195,11 +234,10 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          🔒 Stripe Payment Configuration
-        </CardTitle>
+        <CardTitle>🔒 Stripe Payment Configuration</CardTitle>
         <CardDescription>
-          Configure your Stripe payment gateway. Sensitive data is encrypted automatically.
+          Configure your Stripe payment gateway. Sensitive data is encrypted
+          automatically.
           <br />
           <strong>Authenticated as:</strong> {user.email}
         </CardDescription>
@@ -223,7 +261,8 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
               required
             />
             <p className="text-sm text-gray-500">
-              ✅ <strong>This field is automatically encrypted</strong> and stored securely based on the plugin.json configuration.
+              ✅ <strong>This field is automatically encrypted</strong> and
+              stored securely based on the plugin.json configuration.
             </p>
           </div>
 
@@ -249,9 +288,7 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
 
           {/* Webhook URL - This will NOT be encrypted */}
           <div className="space-y-2">
-            <Label htmlFor="webhookUrl">
-              🔗 Webhook URL (Optional)
-            </Label>
+            <Label htmlFor="webhookUrl">🔗 Webhook URL (Optional)</Label>
             <Input
               id="webhookUrl"
               name="webhookUrl"
@@ -276,16 +313,12 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
               }
               disabled={saving}
             />
-            <Label htmlFor="testMode">
-              🧪 Test Mode
-            </Label>
+            <Label htmlFor="testMode">🧪 Test Mode</Label>
           </div>
 
           {formError && (
             <Alert variant="destructive">
-              <AlertDescription>
-                {formError}
-              </AlertDescription>
+              <AlertDescription>{formError}</AlertDescription>
             </Alert>
           )}
 
@@ -297,9 +330,13 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
 
           {/* Security Information */}
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-            <h4 className="font-medium text-blue-900 mb-2">🔒 Security Features</h4>
+            <h4 className="font-medium text-blue-900 mb-2">
+              🔒 Security Features
+            </h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>✅ Sensitive fields (API keys) are AES-256 encrypted at rest</li>
+              <li>
+                ✅ Sensitive fields (API keys) are AES-256 encrypted at rest
+              </li>
               <li>✅ Each value uses unique initialization vectors</li>
               <li>✅ Configuration changes are fully audited</li>
               <li>✅ Tenant isolation ensures data separation</li>
@@ -311,12 +348,32 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
           {/* Debug Info in Development */}
           {process.env.NODE_ENV === "development" && (
             <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
-              <h4 className="font-medium text-gray-900 mb-2">🔧 Debug Information</h4>
+              <h4 className="font-medium text-gray-900 mb-2">
+                🔧 Debug Information
+              </h4>
               <div className="text-xs text-gray-600 space-y-1">
-                <p><strong>Plugin ID:</strong> {pluginId}</p>
-                <p><strong>Save Function:</strong> {onSave ? "✅ Available" : "❌ Missing"}</p>
-                <p><strong>Current Config:</strong> {JSON.stringify(configuration || {}, null, 2)}</p>
-                <p><strong>Form Data:</strong> {JSON.stringify({ ...formData, apiKey: formData.apiKey ? "***HIDDEN***" : "" }, null, 2)}</p>
+                <p>
+                  <strong>Plugin ID:</strong> {pluginId}
+                </p>
+                <p>
+                  <strong>Save Function:</strong>{" "}
+                  {onSave ? "✅ Available" : "❌ Missing"}
+                </p>
+                <p>
+                  <strong>Current Config:</strong>{" "}
+                  {JSON.stringify(configuration || {}, null, 2)}
+                </p>
+                <p>
+                  <strong>Form Data:</strong>{" "}
+                  {JSON.stringify(
+                    {
+                      ...formData,
+                      apiKey: formData.apiKey ? "***HIDDEN***" : "",
+                    },
+                    null,
+                    2,
+                  )}
+                </p>
               </div>
             </div>
           )}
@@ -331,15 +388,13 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
 // =============================================================================
 
 const PaymentMethodComponent: React.FC<any> = ({ context = {} }) => {
-  const { cart = { total: 2000, currency: 'USD' } } = context;
-  
+  const { cart = { total: 2000, currency: "USD" } } = context;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Credit Card Payment</CardTitle>
-        <CardDescription>
-          Secure payment processing via Stripe
-        </CardDescription>
+        <CardDescription>Secure payment processing via Stripe</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -351,30 +406,24 @@ const PaymentMethodComponent: React.FC<any> = ({ context = {} }) => {
               type="text"
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="expiry">Expiry Date</Label>
-              <Input
-                id="expiry"
-                placeholder="MM/YY"
-                type="text"
-              />
+              <Input id="expiry" placeholder="MM/YY" type="text" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cvc">CVC</Label>
-              <Input
-                id="cvc"
-                placeholder="123"
-                type="text"
-              />
+              <Input id="cvc" placeholder="123" type="text" />
             </div>
           </div>
 
           <div className="p-3 bg-gray-50 rounded-md">
             <div className="flex justify-between font-medium">
               <span>Total:</span>
-              <span>${(cart.total / 100).toFixed(2)} {cart.currency}</span>
+              <span>
+                ${(cart.total / 100).toFixed(2)} {cart.currency}
+              </span>
             </div>
           </div>
 

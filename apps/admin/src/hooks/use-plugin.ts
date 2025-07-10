@@ -4,7 +4,7 @@ import { pluginLoader, type LoadedPlugin } from "@/lib/simple-plugin-system";
 // Helper function to fetch plugin metadata
 async function fetchPluginMetadata(pluginId: string) {
   try {
-    const { fetchPluginMetadata } = await import('@/lib/plugin-integration');
+    const { fetchPluginMetadata } = await import("@/lib/plugin-integration");
     return await fetchPluginMetadata(pluginId);
   } catch (error) {
     console.error(`Failed to fetch metadata for plugin ${pluginId}:`, error);
@@ -150,9 +150,11 @@ export function usePlugins() {
         setLoading(true);
 
         // Load installed plugins using proper API client
-        const { fetchInstalledPlugins, filterEnabledPlugins } = await import('@/lib/plugin-integration');
+        const { fetchInstalledPlugins, filterEnabledPlugins } = await import(
+          "@/lib/plugin-integration"
+        );
         const installedPlugins = await fetchInstalledPlugins();
-        
+
         const loadedPlugins = [];
         for (const metadata of installedPlugins) {
           if (metadata.enabled) {
@@ -187,10 +189,12 @@ export function usePlugins() {
     try {
       setLoading(true);
       pluginLoader.clear();
-      
-      const { fetchInstalledPlugins } = await import('@/lib/plugin-integration');
+
+      const { fetchInstalledPlugins } = await import(
+        "@/lib/plugin-integration"
+      );
       const installedPlugins = await fetchInstalledPlugins();
-      
+
       const loadedPlugins = [];
       for (const metadata of installedPlugins) {
         if (metadata.enabled) {
@@ -198,7 +202,7 @@ export function usePlugins() {
           loadedPlugins.push(plugin);
         }
       }
-      
+
       setPlugins(loadedPlugins);
       setError(null);
     } catch (err) {
@@ -226,12 +230,18 @@ export function usePluginsByCategory(category: string) {
       try {
         setLoading(true);
 
-        const { fetchInstalledPlugins, filterByExtensionPoint, filterEnabledPlugins } = await import('@/lib/plugin-integration');
+        const {
+          fetchInstalledPlugins,
+          filterByExtensionPoint,
+          filterEnabledPlugins,
+        } = await import("@/lib/plugin-integration");
         const allPlugins = await fetchInstalledPlugins();
         const installedPlugins = filterEnabledPlugins(allPlugins);
-        
+
         const loadedPlugins = [];
-        for (const metadata of installedPlugins.filter((p: any) => p.enabled && p.category === category)) {
+        for (const metadata of installedPlugins.filter(
+          (p: any) => p.enabled && p.category === category,
+        )) {
           const plugin = await pluginLoader.loadPlugin(metadata);
           loadedPlugins.push(plugin);
         }

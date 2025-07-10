@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { format, formatDistanceToNow } from "date-fns";
 import {
@@ -18,6 +18,7 @@ import {
   Trash2,
   UserCog,
   UserPlus,
+  Loader2,
 } from "lucide-react";
 import {
   Card,
@@ -64,13 +65,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
-  getAllUsers,
+  fetchUsers,
+  createUser,
+  updateUser,
+  deleteUser,
   availablePermissions,
+  rolePermissions,
   type User,
   type UserRole,
-} from "@/lib/user-data";
+  type CreateUserDto,
+  type UpdateUserDto,
+  type PaginatedUsersResponse,
+} from "@/lib/api/users-api";
 import { useToast } from "@/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
+import { 
+  useCanCreateUsers, 
+  useCanUpdateUsers, 
+  useCanDeleteUsers, 
+  useCanViewActivities 
+} from "@/hooks/use-permissions";
+import { ActivityLog } from "@/components/activity-log";
 
 export const Route = createFileRoute("/admin/users/")({
   component: UsersPage,
@@ -79,6 +94,15 @@ export const Route = createFileRoute("/admin/users/")({
 function UsersPage() {
   const router = useRouter();
   const { toast } = useToast();
+
+  // State for users data
+  const [usersData, setUsersData] = useState<PaginatedUsersResponse | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // State for filters and search
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
@@ -86,42 +110,74 @@ function UsersPage() {
     "lastActive",
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 20;
+
+  // State for dialogs
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
   const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
+  const [isActivityLogOpen, setIsActivityLogOpen] = useState(false);
 
-  // Get all users
-  const allUsers = getAllUsers();
+  // Permission checks
+  const canCreateUsers = useCanCreateUsers();
+  const canUpdateUsers = useCanUpdateUsers();
+  const canDeleteUsers = useCanDeleteUsers();
+  const canViewActivities = useCanViewActivities();
 
-  // Filter users based on search query, role, and status
-  const filteredUsers = allUsers.filter((user) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesRole = !filterRole || user.role === filterRole;
-    const matchesStatus = !filterStatus || user.status === filterStatus;
-
-    return matchesSearch && matchesRole && matchesStatus;
+  // State for form data
+  const [newUserData, setNewUserData] = useState<Partial<CreateUserDto>>({
+    role: "support",
+    status: "pending",
+    twoFactorEnabled: false,
+    permissions: rolePermissions.support,
   });
+  const [editUserData, setEditUserData] = useState<Partial<UpdateUserDto>>({});
 
-  // Sort users
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    let comparison = 0;
+  // Fetch users data
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    if (sortBy === "name") {
-      comparison = a.name.localeCompare(b.name);
-    } else if (sortBy === "role") {
-      comparison = a.role.localeCompare(b.role);
-    } else if (sortBy === "lastActive") {
-      comparison =
-        new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime();
+      const params = {
+        search: searchQuery || undefined,
+        role: (filterRole as any) || undefined,
+        status: (filterStatus as any) || undefined,
+        page: currentPage,
+        limit: pageSize,
+        sortBy: sortBy,
+        sortOrder: sortOrder.toUpperCase() as "ASC" | "DESC",
+      };
+
+      const data = await fetchUsers(params);
+      setUsersData(data);
+    } catch (err) {
+      console.error("Error loading users:", err);
+      setError("Failed to load users. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to load users. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return sortOrder === "asc" ? comparison : -comparison;
-  });
+  // Load users on component mount and when filters change
+  useEffect(() => {
+    loadUsers();
+  }, [searchQuery, filterRole, filterStatus, sortBy, sortOrder, currentPage]);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page when searching
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const handleSort = (column: "name" | "role" | "lastActive") => {
     if (sortBy === column) {
@@ -130,35 +186,107 @@ function UsersPage() {
       setSortBy(column);
       setSortOrder("asc");
     }
+    setCurrentPage(1);
   };
 
-  const handleAddUser = () => {
-    toast({
-      title: "User Added",
-      description: "The new user has been added successfully.",
-    });
-    setIsAddUserOpen(false);
+  const handleAddUser = async () => {
+    try {
+      if (!newUserData.name || !newUserData.email || !newUserData.password) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      await createUser(newUserData as CreateUserDto);
+
+      toast({
+        title: "User Added",
+        description: "The new user has been added successfully.",
+      });
+
+      setIsAddUserOpen(false);
+      setNewUserData({
+        role: "support",
+        status: "pending",
+        twoFactorEnabled: false,
+        permissions: rolePermissions.support,
+      });
+      loadUsers(); // Refresh the list
+    } catch (err) {
+      console.error("Error creating user:", err);
+      toast({
+        title: "Error",
+        description: "Failed to create user. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditUser = () => {
+  const handleEditUser = async () => {
     if (!selectedUser) return;
 
-    toast({
-      title: "User Updated",
-      description: `${selectedUser.name}'s information has been updated.`,
-    });
-    setIsEditUserOpen(false);
+    try {
+      await updateUser(selectedUser.id, editUserData);
+
+      toast({
+        title: "User Updated",
+        description: `${selectedUser.name}'s information has been updated.`,
+      });
+
+      setIsEditUserOpen(false);
+      setEditUserData({});
+      loadUsers(); // Refresh the list
+    } catch (err) {
+      console.error("Error updating user:", err);
+      toast({
+        title: "Error",
+        description: "Failed to update user. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = async () => {
     if (!selectedUser) return;
 
-    toast({
-      title: "User Deleted",
-      description: `${selectedUser.name} has been removed from the platform.`,
-      variant: "destructive",
+    try {
+      await deleteUser(selectedUser.id);
+
+      toast({
+        title: "User Deleted",
+        description: `${selectedUser.name} has been removed from the platform.`,
+        variant: "destructive",
+      });
+
+      setIsDeleteUserOpen(false);
+      loadUsers(); // Refresh the list
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      toast({
+        title: "Error",
+        description: "Failed to delete user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRoleChange = (role: UserRole) => {
+    setNewUserData({
+      ...newUserData,
+      role,
+      permissions: rolePermissions[role],
     });
-    setIsDeleteUserOpen(false);
+  };
+
+  const handleEditRoleChange = (role: UserRole) => {
+    setEditUserData({
+      ...editUserData,
+      role,
+      permissions: rolePermissions[role],
+    });
   };
 
   const getRoleBadgeVariant = (role: UserRole) => {
@@ -208,6 +336,32 @@ function UsersPage() {
     }
   };
 
+  if (loading && !usersData) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading users...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !usersData) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="flex flex-col items-center justify-center h-96">
+          <p className="text-destructive mb-4">{error}</p>
+          <Button onClick={loadUsers}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const users = usersData?.users || [];
+  const totalUsers = usersData?.total || 0;
+  const totalPages = usersData?.totalPages || 1;
+
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -217,13 +371,15 @@ function UsersPage() {
             Manage user accounts and permissions
           </p>
         </div>
-        <Button
-          onClick={() => setIsAddUserOpen(true)}
-          className="gap-2 rounded-full"
-        >
-          <UserPlus className="h-4 w-4" />
-          <span>Add User</span>
-        </Button>
+        {canCreateUsers && (
+          <Button
+            onClick={() => setIsAddUserOpen(true)}
+            className="gap-2 rounded-full"
+          >
+            <UserPlus className="h-4 w-4" />
+            <span>Add User</span>
+          </Button>
+        )}
       </div>
 
       <div className="mb-6 flex flex-col gap-4 md:flex-row">
@@ -282,143 +438,231 @@ function UsersPage() {
         <CardHeader className="p-4">
           <div className="flex items-center justify-between">
             <CardTitle>Platform Users</CardTitle>
-            <CardDescription>{sortedUsers.length} users total</CardDescription>
+            <CardDescription>
+              {loading ? "Loading..." : `${totalUsers} users total`}
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[250px]">
-                  <Button
-                    variant="ghost"
-                    className="gap-1 p-0 hover:bg-transparent"
-                    onClick={() => handleSort("name")}
-                  >
-                    <span>Name</span>
-                    <ArrowUpDown className="h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    className="gap-1 p-0 hover:bg-transparent"
-                    onClick={() => handleSort("role")}
-                  >
-                    <span>Role</span>
-                    <ArrowUpDown className="h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>
-                  <Button
-                    variant="ghost"
-                    className="gap-1 p-0 hover:bg-transparent"
-                    onClick={() => handleSort("lastActive")}
-                  >
-                    <span>Last Active</span>
-                    <ArrowUpDown className="h-3 w-3" />
-                  </Button>
-                </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedUsers.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span className="ml-2">Loading users...</span>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    No users found.
-                  </TableCell>
+                  <TableHead className="w-[250px]">
+                    <Button
+                      variant="ghost"
+                      className="gap-1 p-0 hover:bg-transparent"
+                      onClick={() => handleSort("name")}
+                    >
+                      <span>Name</span>
+                      <ArrowUpDown className="h-3 w-3" />
+                    </Button>
+                  </TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      className="gap-1 p-0 hover:bg-transparent"
+                      onClick={() => handleSort("role")}
+                    >
+                      <span>Role</span>
+                      <ArrowUpDown className="h-3 w-3" />
+                    </Button>
+                  </TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      className="gap-1 p-0 hover:bg-transparent"
+                      onClick={() => handleSort("lastActive")}
+                    >
+                      <span>Last Active</span>
+                      <ArrowUpDown className="h-3 w-3" />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ) : (
-                sortedUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage
-                            src={user.avatar || "/abstract-profile.png"}
-                            alt={user.name}
-                          />
-                          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            Created{" "}
-                            {format(new Date(user.createdAt), "MMM d, yyyy")}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={getRoleBadgeVariant(user.role)}
-                        className="gap-1"
-                      >
-                        {getRoleIcon(user.role)}
-                        <span>
-                          {user.role.charAt(0).toUpperCase() +
-                            user.role.slice(1)}
-                        </span>
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusBadgeVariant(user.status)}>
-                        {user.status.charAt(0).toUpperCase() +
-                          user.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {formatDistanceToNow(new Date(user.lastActive), {
-                        addSuffix: true,
-                      })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-full"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setIsEditUserOpen(true);
-                            }}
-                          >
-                            Edit User
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>View Activity Log</DropdownMenuItem>
-                          <DropdownMenuItem>Reset Password</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setIsDeleteUserOpen(true);
-                            }}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+              </TableHeader>
+              <TableBody>
+                {users.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      No users found.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage
+                              src={user.avatar || "/abstract-profile.png"}
+                              alt={user.name}
+                            />
+                            <AvatarFallback>
+                              {user.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              Created{" "}
+                              {format(new Date(user.createdAt), "MMM d, yyyy")}
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={getRoleBadgeVariant(user.role)}
+                          className="gap-1"
+                        >
+                          {getRoleIcon(user.role)}
+                          <span>
+                            {user.role.charAt(0).toUpperCase() +
+                              user.role.slice(1)}
+                          </span>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusBadgeVariant(user.status)}>
+                          {user.status.charAt(0).toUpperCase() +
+                            user.status.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {formatDistanceToNow(new Date(user.lastActive), {
+                          addSuffix: true,
+                        })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-full"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {canUpdateUsers && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setEditUserData({
+                                    name: user.name,
+                                    email: user.email,
+                                    role: user.role,
+                                    status: user.status,
+                                    permissions: user.permissions,
+                                    twoFactorEnabled: user.twoFactorEnabled,
+                                    departmentId: user.departmentId,
+                                  });
+                                  setIsEditUserOpen(true);
+                                }}
+                              >
+                                Edit User
+                              </DropdownMenuItem>
+                            )}
+                            {canViewActivities && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsActivityLogOpen(true);
+                                }}
+                              >
+                                View Activity Log
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem>Reset Password</DropdownMenuItem>
+                            {(canUpdateUsers || canDeleteUsers) && <DropdownMenuSeparator />}
+                            {canDeleteUsers && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsDeleteUserOpen(true);
+                                }}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete User
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {(currentPage - 1) * pageSize + 1} to{" "}
+            {Math.min(currentPage * pageSize, totalUsers)} of {totalUsers} users
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1;
+                return (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages, currentPage + 1))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Activity Log Dialog */}
+      {selectedUser && (
+        <ActivityLog
+          isOpen={isActivityLogOpen}
+          onOpenChange={setIsActivityLogOpen}
+          userId={selectedUser.id}
+          title={`Activity Log - ${selectedUser.name}`}
+        />
+      )}
 
       {/* Add User Dialog */}
       <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
@@ -434,7 +678,14 @@ function UsersPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" placeholder="Enter full name" />
+                <Input
+                  id="name"
+                  placeholder="Enter full name"
+                  value={newUserData.name || ""}
+                  onChange={(e) =>
+                    setNewUserData({ ...newUserData, name: e.target.value })
+                  }
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -442,14 +693,34 @@ function UsersPage() {
                   id="email"
                   type="email"
                   placeholder="Enter email address"
+                  value={newUserData.email || ""}
+                  onChange={(e) =>
+                    setNewUserData({ ...newUserData, email: e.target.value })
+                  }
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter password"
+                value={newUserData.password || ""}
+                onChange={(e) =>
+                  setNewUserData({ ...newUserData, password: e.target.value })
+                }
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Select defaultValue="support">
+                <Select
+                  value={newUserData.role}
+                  onValueChange={(value) => handleRoleChange(value as UserRole)}
+                >
                   <SelectTrigger id="role">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
@@ -463,7 +734,12 @@ function UsersPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select defaultValue="pending">
+                <Select
+                  value={newUserData.status}
+                  onValueChange={(value) =>
+                    setNewUserData({ ...newUserData, status: value as any })
+                  }
+                >
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -488,7 +764,16 @@ function UsersPage() {
                       Require two-factor authentication for this user
                     </p>
                   </div>
-                  <Switch id="two-factor" />
+                  <Switch
+                    id="two-factor"
+                    checked={newUserData.twoFactorEnabled}
+                    onCheckedChange={(checked) =>
+                      setNewUserData({
+                        ...newUserData,
+                        twoFactorEnabled: checked,
+                      })
+                    }
+                  />
                 </div>
               </div>
             </div>
@@ -513,7 +798,25 @@ function UsersPage() {
                         key={permission.id}
                         className="flex items-center space-x-2"
                       >
-                        <Checkbox id={`permission-${permission.id}`} />
+                        <Checkbox
+                          id={`permission-${permission.id}`}
+                          checked={newUserData.permissions?.includes(
+                            permission.id,
+                          )}
+                          onCheckedChange={(checked) => {
+                            const currentPermissions =
+                              newUserData.permissions || [];
+                            const newPermissions = checked
+                              ? [...currentPermissions, permission.id]
+                              : currentPermissions.filter(
+                                  (p) => p !== permission.id,
+                                );
+                            setNewUserData({
+                              ...newUserData,
+                              permissions: newPermissions,
+                            });
+                          }}
+                        />
                         <div className="grid gap-1.5 leading-none">
                           <Label
                             htmlFor={`permission-${permission.id}`}
@@ -573,14 +876,26 @@ function UsersPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-name">Full Name</Label>
-                  <Input id="edit-name" defaultValue={selectedUser.name} />
+                  <Input
+                    id="edit-name"
+                    value={editUserData.name || ""}
+                    onChange={(e) =>
+                      setEditUserData({ ...editUserData, name: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-email">Email Address</Label>
                   <Input
                     id="edit-email"
                     type="email"
-                    defaultValue={selectedUser.email}
+                    value={editUserData.email || ""}
+                    onChange={(e) =>
+                      setEditUserData({
+                        ...editUserData,
+                        email: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -588,7 +903,12 @@ function UsersPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-role">Role</Label>
-                  <Select defaultValue={selectedUser.role}>
+                  <Select
+                    value={editUserData.role}
+                    onValueChange={(value) =>
+                      handleEditRoleChange(value as UserRole)
+                    }
+                  >
                     <SelectTrigger id="edit-role">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
@@ -603,7 +923,12 @@ function UsersPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-status">Status</Label>
-                  <Select defaultValue={selectedUser.status}>
+                  <Select
+                    value={editUserData.status}
+                    onValueChange={(value) =>
+                      setEditUserData({ ...editUserData, status: value as any })
+                    }
+                  >
                     <SelectTrigger id="edit-status">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
@@ -630,7 +955,13 @@ function UsersPage() {
                     </div>
                     <Switch
                       id="edit-two-factor"
-                      defaultChecked={selectedUser.twoFactorEnabled}
+                      checked={editUserData.twoFactorEnabled}
+                      onCheckedChange={(checked) =>
+                        setEditUserData({
+                          ...editUserData,
+                          twoFactorEnabled: checked,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -639,7 +970,19 @@ function UsersPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Permissions</Label>
-                  <Button variant="outline" size="sm" className="gap-1 text-xs">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 text-xs"
+                    onClick={() => {
+                      if (editUserData.role) {
+                        setEditUserData({
+                          ...editUserData,
+                          permissions: rolePermissions[editUserData.role],
+                        });
+                      }
+                    }}
+                  >
                     <Check className="h-3 w-3" />
                     <span>Reset to Role Default</span>
                   </Button>
@@ -653,9 +996,22 @@ function UsersPage() {
                       >
                         <Checkbox
                           id={`edit-permission-${permission.id}`}
-                          defaultChecked={selectedUser.permissions.includes(
+                          checked={editUserData.permissions?.includes(
                             permission.id,
                           )}
+                          onCheckedChange={(checked) => {
+                            const currentPermissions =
+                              editUserData.permissions || [];
+                            const newPermissions = checked
+                              ? [...currentPermissions, permission.id]
+                              : currentPermissions.filter(
+                                  (p) => p !== permission.id,
+                                );
+                            setEditUserData({
+                              ...editUserData,
+                              permissions: newPermissions,
+                            });
+                          }}
                         />
                         <div className="grid gap-1.5 leading-none">
                           <Label
@@ -744,13 +1100,20 @@ function UsersPage() {
   );
 }
 
-function Checkbox(props: React.InputHTMLAttributes<HTMLInputElement>) {
+function Checkbox(
+  props: React.InputHTMLAttributes<HTMLInputElement> & {
+    checked?: boolean;
+    onCheckedChange?: (checked: boolean) => void;
+  },
+) {
   return (
     <div className="flex items-center">
       <input
         type="checkbox"
         className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
         {...props}
+        checked={props.checked}
+        onChange={(e) => props.onCheckedChange?.(e.target.checked)}
       />
     </div>
   );

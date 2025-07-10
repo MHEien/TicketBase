@@ -78,9 +78,9 @@ export class CreatePluginDto {
       type: 'object',
       properties: {
         apiKey: { type: 'string' },
-        testMode: { type: 'boolean' }
+        testMode: { type: 'boolean' },
       },
-      sensitiveFields: ['apiKey']
+      sensitiveFields: ['apiKey'],
     },
   })
   @IsOptional()

@@ -21,6 +21,28 @@ import { Button } from "@/components/ui/button";
 import { useCommandMenu } from "@/hooks/use-command-menu";
 import { useRouter } from "@tanstack/react-router";
 import { useDashboardNav } from "@/hooks/useDashboardNav";
+import { useDashboard } from "@/hooks/use-dashboard";
+
+// Utility functions for formatting numbers and currency
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+const formatNumber = (num: number) => {
+  return new Intl.NumberFormat("en-US").format(num);
+};
+
+const formatChange = (change: string) => {
+  if (!change) return "";
+  return change.startsWith("+") || change.startsWith("-")
+    ? change
+    : `+${change}`;
+};
 
 export function CommandHub() {
   const [expanded, setExpanded] = useState(false);
@@ -28,6 +50,17 @@ export function CommandHub() {
   const { setIsOpen } = useCommandMenu();
   const router = useRouter();
   const { activeSection, setActiveSection } = useDashboardNav();
+
+  // Dashboard data hook
+  const {
+    data: dashboardData,
+    loading: dashboardLoading,
+    error: dashboardError,
+  } = useDashboard({
+    autoRefresh: true,
+    refreshInterval: 300000, // 5 minutes
+  });
+
   const navItems = [
     { id: "overview", label: "Overview", icon: Home },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
@@ -221,24 +254,55 @@ export function CommandHub() {
 
             <div className="space-y-2 rounded-lg border bg-background/50 p-3 md:col-span-2 lg:col-span-1">
               <h3 className="text-sm font-medium">Quick Stats</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-md bg-background p-2">
-                  <p className="text-xs text-muted-foreground">Total Sales</p>
-                  <p className="text-lg font-bold">$24,521</p>
+              {dashboardLoading ? (
+                <div className="grid grid-cols-2 gap-2">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="rounded-md bg-background p-2">
+                      <div className="h-3 w-16 animate-pulse rounded bg-muted"></div>
+                      <div className="mt-1 h-6 w-12 animate-pulse rounded bg-muted"></div>
+                    </div>
+                  ))}
                 </div>
+              ) : dashboardError ? (
                 <div className="rounded-md bg-background p-2">
-                  <p className="text-xs text-muted-foreground">Active Events</p>
-                  <p className="text-lg font-bold">12</p>
+                  <p className="text-xs text-destructive">
+                    Failed to load stats
+                  </p>
                 </div>
-                <div className="rounded-md bg-background p-2">
-                  <p className="text-xs text-muted-foreground">Tickets Sold</p>
-                  <p className="text-lg font-bold">1,245</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-md bg-background p-2">
+                    <p className="text-xs text-muted-foreground">Total Sales</p>
+                    <p className="text-lg font-bold">
+                      {formatCurrency(dashboardData.metrics?.totalRevenue || 0)}
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-background p-2">
+                    <p className="text-xs text-muted-foreground">
+                      Active Events
+                    </p>
+                    <p className="text-lg font-bold">
+                      {formatNumber(dashboardData.metrics?.activeEvents || 0)}
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-background p-2">
+                    <p className="text-xs text-muted-foreground">
+                      Tickets Sold
+                    </p>
+                    <p className="text-lg font-bold">
+                      {formatNumber(dashboardData.metrics?.ticketsSold || 0)}
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-background p-2">
+                    <p className="text-xs text-muted-foreground">New Users</p>
+                    <p className="text-lg font-bold">
+                      {formatChange(
+                        formatNumber(dashboardData.metrics?.newUsers || 0),
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div className="rounded-md bg-background p-2">
-                  <p className="text-xs text-muted-foreground">New Users</p>
-                  <p className="text-lg font-bold">+85</p>
-                </div>
-              </div>
+              )}
             </div>
           </motion.div>
         )}

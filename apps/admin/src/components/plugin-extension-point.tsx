@@ -4,10 +4,7 @@
  */
 
 import React, { useEffect, useState, useMemo } from "react";
-import {
-  pluginLoader,
-  type LoadedPlugin,
-} from "@/lib/simple-plugin-system";
+import { pluginLoader, type LoadedPlugin } from "@/lib/simple-plugin-system";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -58,7 +55,8 @@ export const PluginExtensionPoint: React.FC<PluginExtensionPointProps> = ({
 
   // Get plugins for this extension point
   const availablePlugins = useMemo(() => {
-    let extensionPlugins = pluginLoader.getPluginsForExtensionPoint(extensionPoint);
+    let extensionPlugins =
+      pluginLoader.getPluginsForExtensionPoint(extensionPoint);
 
     if (filter) {
       extensionPlugins = extensionPlugins.filter(filter);
@@ -184,7 +182,8 @@ export const usePlugins = (
 
   useEffect(() => {
     const updatePlugins = () => {
-      let extensionPlugins = pluginLoader.getPluginsForExtensionPoint(extensionPoint);
+      let extensionPlugins =
+        pluginLoader.getPluginsForExtensionPoint(extensionPoint);
 
       if (filter) {
         extensionPlugins = extensionPlugins.filter(filter);

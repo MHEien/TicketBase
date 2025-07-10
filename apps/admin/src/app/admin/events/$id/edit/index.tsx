@@ -199,7 +199,9 @@ function EditEventPage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.navigate({ to: `/admin/events/$id`, params: { id } })}
+              onClick={() =>
+                router.navigate({ to: `/admin/events/$id`, params: { id } })
+              }
               className="rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />

@@ -45,7 +45,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearch({ from: "__root__" });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -68,9 +67,8 @@ export default function LoginPage() {
         redirect: false,
       });
 
-      if (!result?.error) {
+      if (result.ok) {
         router.navigate({ to: "/admin" });
-        window.location.reload();
       } else {
         // Show more detailed error message based on the error
         if (result.error === "CredentialsSignin") {

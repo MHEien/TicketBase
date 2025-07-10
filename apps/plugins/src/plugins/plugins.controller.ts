@@ -207,7 +207,9 @@ export class PluginsController {
   ) {
     const tenantId = req.user.tenantId;
     const userId = req.user.userId;
-    return this.pluginsService.updatePluginConfig(tenantId, pluginId, config, { userId });
+    return this.pluginsService.updatePluginConfig(tenantId, pluginId, config, {
+      userId,
+    });
   }
 
   @ApiOperation({ summary: 'Get plugin configuration' })
@@ -234,10 +236,7 @@ export class PluginsController {
   })
   @Roles('admin') // Only admins can view plugin configuration
   @Get(':id/config')
-  async getPluginConfig(
-    @Request() req,
-    @Param('id') pluginId: string,
-  ) {
+  async getPluginConfig(@Request() req, @Param('id') pluginId: string) {
     const tenantId = req.user.tenantId;
     const userId = req.user.userId;
     return this.pluginsService.getPluginConfig(tenantId, pluginId, { userId });

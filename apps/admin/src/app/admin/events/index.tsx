@@ -131,7 +131,10 @@ function EventsPage() {
 
   const handleDuplicateEvent = (eventId: string) => {
     // TODO: Implement duplication logic
-    router.navigate({ to: `/admin/events/new`, search: { duplicate: eventId } });
+    router.navigate({
+      to: `/admin/events/new`,
+      search: { duplicate: eventId },
+    });
   };
 
   const handleViewEvent = (eventId: string) => {

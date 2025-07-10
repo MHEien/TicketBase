@@ -10,6 +10,12 @@ export class OrganizationGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
+
+    // Check if user is authenticated
+    if (!user) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
     const organizationId =
       request.query.organizationId || request.body.organizationId;
 

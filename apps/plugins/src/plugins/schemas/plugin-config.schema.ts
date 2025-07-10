@@ -53,4 +53,4 @@ export class PluginConfig {
 export const PluginConfigSchema = SchemaFactory.createForClass(PluginConfig);
 
 // Compound index for efficient tenant+plugin lookups
-PluginConfigSchema.index({ tenantId: 1, pluginId: 1 }, { unique: true }); 
+PluginConfigSchema.index({ tenantId: 1, pluginId: 1 }, { unique: true });

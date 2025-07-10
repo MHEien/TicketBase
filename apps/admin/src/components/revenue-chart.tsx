@@ -14,8 +14,19 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-// Sample data for the chart
-const data = [
+interface RevenueData {
+  name: string;
+  revenue: number;
+  projected?: number;
+}
+
+interface RevenueChartProps {
+  data?: RevenueData[];
+  loading?: boolean;
+}
+
+// Sample data for the chart (fallback)
+const defaultData = [
   { name: "Week 1", revenue: 4000, projected: 4200 },
   { name: "Week 2", revenue: 5000, projected: 5100 },
   { name: "Week 3", revenue: 6000, projected: 5800 },
@@ -26,7 +37,20 @@ const data = [
   { name: "Week 8", revenue: 12500, projected: 12000 },
 ];
 
-export function RevenueChart() {
+export function RevenueChart({
+  data = defaultData,
+  loading = false,
+}: RevenueChartProps) {
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-sm text-muted-foreground">
+          Loading chart data...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ChartContainer
       config={{

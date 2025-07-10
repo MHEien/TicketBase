@@ -142,6 +142,7 @@ export class AuthService {
       role: (registerDto.role as UserRole) || UserRole.OWNER,
       permissions: ['*'], // Full permissions for the owner
       status: UserStatus.ACTIVE, // Auto-activate the first user
+      twoFactorEnabled: false, // Default to disabled for new registrations
     });
 
     // Generate tokens

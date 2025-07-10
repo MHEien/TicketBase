@@ -22,7 +22,10 @@ import { PluginStorageService } from './services/plugin-storage.service';
 import { PluginBundleController } from './bundle.controller';
 import { MinioModule } from '../minio/minio.module';
 import { DebugController } from './debug.controller';
-import { PluginConfig, PluginConfigSchema } from './schemas/plugin-config.schema';
+import {
+  PluginConfig,
+  PluginConfigSchema,
+} from './schemas/plugin-config.schema';
 import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
 import { SecureConfigService } from './services/secure-config.service';
 

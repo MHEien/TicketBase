@@ -50,4 +50,4 @@ export const ConfigAuditSchema = SchemaFactory.createForClass(ConfigAudit);
 // Add indexes for efficient querying
 ConfigAuditSchema.index({ tenantId: 1, pluginId: 1, timestamp: -1 });
 ConfigAuditSchema.index({ userId: 1, timestamp: -1 });
-ConfigAuditSchema.index({ action: 1, timestamp: -1 }); 
+ConfigAuditSchema.index({ action: 1, timestamp: -1 });

@@ -7,6 +7,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { WidgetDashboard } from "@/components/widget-dashboard";
 import { useCommandMenu } from "@/hooks/use-command-menu";
 import { DashboardNavProvider, useDashboardNav } from "@/hooks/useDashboardNav";
+import { PermissionsProvider } from "@/hooks/use-permissions";
+import { useSession } from "@/components/session-provider";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -25,6 +27,7 @@ function AdminLayout() {
   const { activeSection, setActiveSection } = useDashboardNav();
   const [isLoading, setIsLoading] = useState(true);
   const { isOpen, setIsOpen } = useCommandMenu();
+  const { data: session } = useSession();
 
   useEffect(() => {
     // Simulate loading data
@@ -34,9 +37,20 @@ function AdminLayout() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Transform session user to match PermissionsProvider expectations
+  const user = session?.user ? {
+    id: session.user.id,
+    name: session.user.name || '',
+    email: session.user.email || '',
+    role: session.user.role || '',
+    permissions: session.user.permissions || [],
+    organizationId: session.user.organizationId || '',
+  } : null;
+
   return (
     <DashboardNavProvider>
-      <div className="relative min-h-screen w-full bg-gradient-to-br from-background to-background/80">
+      <PermissionsProvider user={user}>
+        <div className="relative min-h-screen w-full bg-gradient-to-br from-background to-background/80">
         {isLoading ? (
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
@@ -83,7 +97,8 @@ function AdminLayout() {
         )}
 
         <CommandMenu isOpen={isOpen} setIsOpen={setIsOpen} />
-      </div>
+        </div>
+      </PermissionsProvider>
     </DashboardNavProvider>
   );
 }

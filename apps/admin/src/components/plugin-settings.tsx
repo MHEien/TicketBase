@@ -33,7 +33,10 @@ interface PluginSettingsProps {
 export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
   const { toast } = useToast();
   const [plugin, setPlugin] = useState<InstalledPlugin | null>(null);
-  const [configuration, setConfiguration] = useState<Record<string, any> | null>(null);
+  const [configuration, setConfiguration] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

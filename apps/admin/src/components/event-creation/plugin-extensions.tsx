@@ -40,12 +40,18 @@ export function PluginExtensions({
         setLoading(true);
 
         // Fetch and load plugins for event creation using proper API client
-        const { fetchInstalledPlugins, filterByExtensionPoint, filterEnabledPlugins } = await import('@/lib/plugin-integration');
+        const {
+          fetchInstalledPlugins,
+          filterByExtensionPoint,
+          filterEnabledPlugins,
+        } = await import("@/lib/plugin-integration");
         const allPlugins = await fetchInstalledPlugins();
         const installedPlugins = filterEnabledPlugins(allPlugins);
-        
-        const relevantPlugins = installedPlugins.filter((metadata: any) => 
-          metadata.enabled && metadata.extensionPoints.includes("event-creation")
+
+        const relevantPlugins = installedPlugins.filter(
+          (metadata: any) =>
+            metadata.enabled &&
+            metadata.extensionPoints.includes("event-creation"),
         );
 
         const loadedPlugins = [];
@@ -56,7 +62,7 @@ export function PluginExtensions({
               id: plugin.metadata.id,
               name: plugin.metadata.name,
               component: plugin.components["event-creation"],
-                             config: {},
+              config: {},
             });
           }
         }

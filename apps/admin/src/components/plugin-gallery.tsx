@@ -126,18 +126,18 @@ export function PluginGallery() {
   ];
 
   // Debug logging
-  console.log('🔍 Available plugins raw:', availablePlugins);
-  console.log('🔍 Installed plugins raw:', installedPlugins);
+  console.log("🔍 Available plugins raw:", availablePlugins);
+  console.log("🔍 Installed plugins raw:", installedPlugins);
 
   // Map available plugins to UI format
   const mappedPlugins = (availablePlugins || []).map((plugin) => {
     // Ensure plugin exists
     if (!plugin) {
-      console.warn('Plugin is null/undefined:', plugin);
+      console.warn("Plugin is null/undefined:", plugin);
       return null;
     }
 
-    console.log('🔍 Processing plugin:', plugin);
+    console.log("🔍 Processing plugin:", plugin);
 
     // Check if this plugin is installed
     const installed = (installedPlugins || []).find(
@@ -148,11 +148,11 @@ export function PluginGallery() {
     const IconComponent = categoryIcons[plugin.category] || Layers;
 
     return {
-      id: plugin.id || 'unknown',
-      name: plugin.name || 'Unknown Plugin',
-      description: plugin.description || 'No description available',
-      category: plugin.category || 'other',
-      version: plugin.version || '1.0.0',
+      id: plugin.id || "unknown",
+      name: plugin.name || "Unknown Plugin",
+      description: plugin.description || "No description available",
+      category: plugin.category || "other",
+      version: plugin.version || "1.0.0",
       metadata: plugin.metadata || {},
       installed: !!installed,
       enabled: installed?.isLoaded || false,
@@ -170,8 +170,12 @@ export function PluginGallery() {
     .filter((plugin): plugin is NonNullable<typeof plugin> => plugin !== null) // Remove any null entries
     .filter(
       (plugin) =>
-        (plugin.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-        (plugin.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false),
+        (plugin.name?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+          false) ||
+        (plugin.description
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ??
+          false),
     );
 
   // Handle plugin installation

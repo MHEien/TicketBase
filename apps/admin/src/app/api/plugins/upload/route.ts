@@ -85,19 +85,19 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
           // Check for built JS files in the ZIP
           const zip = new JSZip();
           await zip.loadAsync(zipBuffer);
-          
+
           // Look for common bundle paths
           const possibleBundlePaths = [
-            'dist/plugin.js',
-            'dist/index.js', 
-            'dist/bundle.js',
-            'build/plugin.js',
-            'build/index.js',
-            'plugin.js',
-            'index.js',
-            'bundle.js'
+            "dist/plugin.js",
+            "dist/index.js",
+            "dist/bundle.js",
+            "build/plugin.js",
+            "build/index.js",
+            "plugin.js",
+            "index.js",
+            "bundle.js",
           ];
-          
+
           let bundleFile = null;
           for (const path of possibleBundlePaths) {
             bundleFile = zip.file(path);
@@ -106,12 +106,13 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
               break;
             }
           }
-          
+
           if (!bundleFile) {
             return Response.json(
               {
                 success: false,
-                error: "No pre-built bundle found in ZIP. Please include a dist/plugin.js or similar compiled file.",
+                error:
+                  "No pre-built bundle found in ZIP. Please include a dist/plugin.js or similar compiled file.",
                 pluginId,
                 version,
                 metadata: pluginMetadata,
@@ -119,10 +120,10 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
               { status: 400 },
             );
           }
-          
+
           // Extract the bundle content
           const bundleContent = await bundleFile.async("text");
-          bundleBuffer = Buffer.from(bundleContent, 'utf8');
+          bundleBuffer = Buffer.from(bundleContent, "utf8");
         } else if (file.name.endsWith(".js") || file.name.endsWith(".mjs")) {
           // Pre-built JavaScript Upload
           console.log("Processing pre-built JavaScript upload...");
@@ -191,7 +192,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
               description: pluginMetadata.description,
               category: pluginMetadata.category,
               // Use placeholder sourceCode since we have bundleUrl and extension points
-              sourceCode: `// Pre-built plugin bundle uploaded at ${new Date().toISOString()}\n// Bundle URL: ${bundleUrl}\n// Extension points: ${(pluginMetadata.extensionPoints || []).join(', ')}\nexport default {};`,
+              sourceCode: `// Pre-built plugin bundle uploaded at ${new Date().toISOString()}\n// Bundle URL: ${bundleUrl}\n// Extension points: ${(pluginMetadata.extensionPoints || []).join(", ")}\nexport default {};`,
               bundleUrl: bundleUrl,
               requiredPermissions: pluginMetadata.requiredPermissions || [],
               extensionPoints: pluginMetadata.extensionPoints || [],

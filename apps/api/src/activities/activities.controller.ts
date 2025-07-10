@@ -1,198 +1,114 @@
+import { Controller, Get, Query, Param, Request } from '@nestjs/common';
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Query,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
-import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
+  ApiTags,
   ApiQuery,
-  ApiParam,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Auth } from '../auth/decorators/auth.decorator';
 import {
   ActivitiesService,
-  CreateActivityDto,
-  GetActivitiesDto,
+  PaginatedActivitiesResponse,
 } from './activities.service';
-import { ActivityType, ActivitySeverity } from './entities/activity.entity';
+import { ActivityType, ActivityStatus } from './entities/activity.entity';
 
-interface RequestWithUser {
-  user: {
-    id: string;
-    organizationId: string;
-  };
-}
-
-@ApiTags('activities')
-@Controller('activities')
-@UseGuards(JwtAuthGuard)
+@ApiTags('Activities')
 @ApiBearerAuth()
+@Controller('activities')
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Create a new activity' })
+  @Get()
+  @Auth({ permissions: ['activities:view'] })
+  @ApiOperation({ summary: 'Get organization activities with filtering' })
+  @ApiQuery({ name: 'type', enum: ActivityType, required: false })
+  @ApiQuery({ name: 'status', enum: ActivityStatus, required: false })
+  @ApiQuery({ name: 'entityType', type: String, required: false })
+  @ApiQuery({ name: 'entityId', type: String, required: false })
+  @ApiQuery({ name: 'startDate', type: String, required: false })
+  @ApiQuery({ name: 'endDate', type: String, required: false })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
   @ApiResponse({
-    status: 201,
-    description: 'Activity created successfully',
+    status: 200,
+    description: 'List of activities',
   })
-  async createActivity(
-    @Body()
-    createActivityDto: Omit<CreateActivityDto, 'organizationId' | 'userId'>,
-    @Req() req: RequestWithUser,
-  ) {
-    return this.activitiesService.createActivity({
-      ...createActivityDto,
-      organizationId: req.user.organizationId,
-      userId: req.user.id,
+  async findAll(
+    @Request() req: any,
+    @Query('type') type?: ActivityType,
+    @Query('status') status?: ActivityStatus,
+    @Query('entityType') entityType?: string,
+    @Query('entityId') entityId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ): Promise<PaginatedActivitiesResponse> {
+    const organizationId = req.user?.organizationId;
+
+    return this.activitiesService.findActivities({
+      organizationId,
+      type,
+      status,
+      entityType,
+      entityId,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      page: page || 1,
+      limit: limit || 50,
     });
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get activities with filtering and pagination' })
+  @Get('user/:userId')
+  @Auth({ permissions: ['activities:view'] })
+  @ApiOperation({ summary: 'Get activities for a specific user' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
   @ApiResponse({
     status: 200,
-    description: 'Activities retrieved successfully',
+    description: 'User activities',
   })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    type: String,
-    description: 'Search in description, user name, or email',
-  })
-  @ApiQuery({
-    name: 'type',
-    required: false,
-    enum: ActivityType,
-    description: 'Filter by activity type',
-  })
-  @ApiQuery({
-    name: 'severity',
-    required: false,
-    enum: ActivitySeverity,
-    description: 'Filter by activity severity',
-  })
-  @ApiQuery({
-    name: 'dateRange',
-    required: false,
-    type: String,
-    description: 'Date range filter (1d, 7d, 30d, 90d)',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Number of activities to return',
-  })
-  @ApiQuery({
-    name: 'offset',
-    required: false,
-    type: Number,
-    description: 'Number of activities to skip',
-  })
-  async getActivities(
-    @Req() req: RequestWithUser,
-    @Query('search') search?: string,
-    @Query('type') type?: ActivityType,
-    @Query('severity') severity?: ActivitySeverity,
-    @Query('dateRange') dateRange?: string,
+  async getUserActivities(
+    @Request() req: any,
+    @Param('userId') userId: string,
+    @Query('page') page?: number,
     @Query('limit') limit?: number,
-    @Query('offset') offset?: number,
-  ) {
-    const getActivitiesDto: GetActivitiesDto = {
-      organizationId: req.user.organizationId,
-      search,
-      type,
-      severity,
-      dateRange,
-      limit,
-      offset,
-    };
+  ): Promise<PaginatedActivitiesResponse> {
+    const organizationId = req.user?.organizationId;
 
-    return this.activitiesService.getActivities(getActivitiesDto);
-  }
-
-  @Get('counts')
-  @ApiOperation({ summary: 'Get activity counts by type' })
-  @ApiResponse({
-    status: 200,
-    description: 'Activity counts retrieved successfully',
-  })
-  @ApiQuery({
-    name: 'dateRange',
-    required: false,
-    type: String,
-    description: 'Date range filter (1d, 7d, 30d, 90d)',
-  })
-  async getActivityCounts(
-    @Req() req: RequestWithUser,
-    @Query('dateRange') dateRange?: string,
-  ) {
-    return this.activitiesService.getActivityCounts(
-      req.user.organizationId,
-      dateRange,
+    return this.activitiesService.getUserActivities(
+      userId,
+      organizationId,
+      page || 1,
+      limit || 50,
     );
   }
 
-  @Get('recent')
-  @ApiOperation({ summary: 'Get recent activities' })
+  @Get('entity/:entityType/:entityId')
+  @Auth({ permissions: ['activities:view'] })
+  @ApiOperation({ summary: 'Get activities for a specific entity' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
   @ApiResponse({
     status: 200,
-    description: 'Recent activities retrieved successfully',
+    description: 'Entity activities',
   })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Number of activities to return',
-  })
-  async getRecentActivities(
-    @Req() req: RequestWithUser,
+  async getEntityActivities(
+    @Request() req: any,
+    @Param('entityType') entityType: string,
+    @Param('entityId') entityId: string,
+    @Query('page') page?: number,
     @Query('limit') limit?: number,
-  ) {
-    return this.activitiesService.getRecentActivities(
-      req.user.organizationId,
-      limit,
+  ): Promise<PaginatedActivitiesResponse> {
+    const organizationId = req.user?.organizationId;
+
+    return this.activitiesService.getEntityActivities(
+      entityType,
+      entityId,
+      organizationId,
+      page || 1,
+      limit || 50,
     );
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get activity by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Activity retrieved successfully',
-  })
-  @ApiParam({
-    name: 'id',
-    type: String,
-    description: 'Activity ID',
-  })
-  async getActivityById(@Param('id') id: string, @Req() req: RequestWithUser) {
-    return this.activitiesService.getActivityById(id, req.user.organizationId);
-  }
-
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete activity by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Activity deleted successfully',
-  })
-  @ApiParam({
-    name: 'id',
-    type: String,
-    description: 'Activity ID',
-  })
-  async deleteActivity(@Param('id') id: string, @Req() req: RequestWithUser) {
-    await this.activitiesService.deleteActivity(id, req.user.organizationId);
-    return { message: 'Activity deleted successfully' };
   }
 }
