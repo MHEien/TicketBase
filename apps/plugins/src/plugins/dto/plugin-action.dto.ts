@@ -41,4 +41,4 @@ export class PluginActionResponseDto {
 
   @ApiProperty({ description: 'Action type that was executed' })
   action: string;
-} 
+}

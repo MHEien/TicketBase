@@ -116,13 +116,13 @@ function ClientOnlyDevtools() {
   const TanStackRouterDevtools = React.lazy(() =>
     import("@tanstack/react-router-devtools").then((res) => ({
       default: res.TanStackRouterDevtools,
-    }))
+    })),
   );
 
   const ReactQueryDevtools = React.lazy(() =>
     import("@tanstack/react-query-devtools").then((res) => ({
       default: res.ReactQueryDevtools,
-    }))
+    })),
   );
 
   return (

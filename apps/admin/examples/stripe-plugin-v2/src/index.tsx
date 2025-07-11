@@ -113,29 +113,29 @@ const backendActions = {
    * Create a Stripe checkout session securely on the backend
    * This runs on the plugins server with access to encrypted config
    */
-  'create-checkout-session': async (params: any, config: StripeConfig) => {
+  "create-checkout-session": async (params: any, config: StripeConfig) => {
     // Import Stripe on the backend (plugins server has access to node_modules)
-    const Stripe = require('stripe');
+    const Stripe = require("stripe");
     const stripe = new Stripe(config.apiKey);
 
     const { amount, currency, successUrl, cancelUrl, metadata } = params;
 
     try {
       const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
+        payment_method_types: ["card"],
         line_items: [
           {
             price_data: {
-              currency: currency || 'usd',
+              currency: currency || "usd",
               product_data: {
-                name: 'Event Ticket',
+                name: "Event Ticket",
               },
               unit_amount: amount,
             },
             quantity: 1,
           },
         ],
-        mode: 'payment',
+        mode: "payment",
         success_url: successUrl,
         cancel_url: cancelUrl,
         metadata: metadata || {},
@@ -148,22 +148,24 @@ const backendActions = {
         paymentIntentId: session.payment_intent,
       };
     } catch (error: any) {
-      throw new Error(`Stripe checkout session creation failed: ${error.message}`);
+      throw new Error(
+        `Stripe checkout session creation failed: ${error.message}`,
+      );
     }
   },
 
   /**
    * Verify a payment on the backend
    */
-  'verify-payment': async (params: any, config: StripeConfig) => {
-    const Stripe = require('stripe');
+  "verify-payment": async (params: any, config: StripeConfig) => {
+    const Stripe = require("stripe");
     const stripe = new Stripe(config.apiKey);
 
     const { sessionId } = params;
 
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId);
-      
+
       return {
         success: true,
         paymentStatus: session.payment_status,
@@ -180,35 +182,39 @@ const backendActions = {
   /**
    * Handle Stripe webhooks
    */
-  'handle-webhook': async (params: any, config: StripeConfig) => {
-    const Stripe = require('stripe');
+  "handle-webhook": async (params: any, config: StripeConfig) => {
+    const Stripe = require("stripe");
     const stripe = new Stripe(config.apiKey);
 
     const { payload, signature, endpointSecret } = params;
 
     try {
-      const event = stripe.webhooks.constructEvent(payload, signature, endpointSecret);
-      
+      const event = stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        endpointSecret,
+      );
+
       // Handle different event types
       switch (event.type) {
-        case 'payment_intent.succeeded':
+        case "payment_intent.succeeded":
           return {
             success: true,
-            eventType: 'payment_succeeded',
+            eventType: "payment_succeeded",
             paymentIntentId: event.data.object.id,
             amount: event.data.object.amount,
           };
-        case 'payment_intent.payment_failed':
+        case "payment_intent.payment_failed":
           return {
             success: true,
-            eventType: 'payment_failed',
+            eventType: "payment_failed",
             paymentIntentId: event.data.object.id,
             error: event.data.object.last_payment_error,
           };
         default:
           return {
             success: true,
-            eventType: 'unhandled',
+            eventType: "unhandled",
             type: event.type,
           };
       }
@@ -501,9 +507,16 @@ const AdminSettingsComponent: React.FC<any> = (props) => {
 // PAYMENT METHOD COMPONENT (UPDATED!)
 // =============================================================================
 
-const PaymentMethodComponent: React.FC<any> = ({ context = {}, onExecuteAction }) => {
-  const { cart = { total: 2000, currency: "USD" }, organizationId, user } = context;
-  
+const PaymentMethodComponent: React.FC<any> = ({
+  context = {},
+  onExecuteAction,
+}) => {
+  const {
+    cart = { total: 2000, currency: "USD" },
+    organizationId,
+    user,
+  } = context;
+
   const [processing, setProcessing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -518,26 +531,26 @@ const PaymentMethodComponent: React.FC<any> = ({ context = {}, onExecuteAction }
 
     try {
       // Call the backend action to create a secure checkout session
-      const result = await onExecuteAction('create-checkout-session', {
+      const result = await onExecuteAction("create-checkout-session", {
         amount: cart.total,
-        currency: cart.currency || 'USD',
+        currency: cart.currency || "USD",
         successUrl: `${window.location.origin}/checkout/success`,
         cancelUrl: `${window.location.origin}/checkout/cancel`,
         metadata: {
           organizationId,
           userId: user?.id,
           cartId: cart.id,
-        }
+        },
       });
 
       if (result.success && result.checkoutUrl) {
         // Redirect to Stripe Checkout
         window.location.href = result.checkoutUrl;
       } else {
-        throw new Error('Failed to create checkout session');
+        throw new Error("Failed to create checkout session");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Payment failed');
+      setError(err instanceof Error ? err.message : "Payment failed");
     } finally {
       setProcessing(false);
     }
@@ -552,10 +565,12 @@ const PaymentMethodComponent: React.FC<any> = ({ context = {}, onExecuteAction }
       <CardContent>
         <div className="space-y-4">
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-            <h4 className="font-medium text-blue-900 mb-2">🔒 Secure Checkout</h4>
+            <h4 className="font-medium text-blue-900 mb-2">
+              🔒 Secure Checkout
+            </h4>
             <p className="text-sm text-blue-800">
-              You'll be redirected to Stripe's secure checkout page to complete your payment.
-              No card details are stored on our servers.
+              You'll be redirected to Stripe's secure checkout page to complete
+              your payment. No card details are stored on our servers.
             </p>
           </div>
 
@@ -563,7 +578,7 @@ const PaymentMethodComponent: React.FC<any> = ({ context = {}, onExecuteAction }
             <div className="flex justify-between font-medium">
               <span>Total:</span>
               <span>
-                ${(cart.total / 100).toFixed(2)} {cart.currency || 'USD'}
+                ${(cart.total / 100).toFixed(2)} {cart.currency || "USD"}
               </span>
             </div>
           </div>
@@ -574,8 +589,8 @@ const PaymentMethodComponent: React.FC<any> = ({ context = {}, onExecuteAction }
             </Alert>
           )}
 
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             onClick={handlePayment}
             disabled={processing || !onExecuteAction}
           >
@@ -650,9 +665,9 @@ const metadata = {
   priority: 100,
   // NEW: Define supported backend actions
   supportedActions: [
-    'create-checkout-session',
-    'verify-payment', 
-    'handle-webhook'
+    "create-checkout-session",
+    "verify-payment",
+    "handle-webhook",
   ],
 };
 
@@ -680,4 +695,6 @@ export {
   backendActions,
 };
 
-console.log("✅ Stripe Plugin: Loaded with secure backend integration and action handlers");
+console.log(
+  "✅ Stripe Plugin: Loaded with secure backend integration and action handlers",
+);

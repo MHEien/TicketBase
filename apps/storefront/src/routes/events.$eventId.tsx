@@ -158,7 +158,7 @@ function EventDetailPage() {
             Event Not Found
           </h1>
           <p className="text-gray-600 mb-8">
-            {!organization 
+            {!organization
               ? "Please select an organization to view event details."
               : "The event you're looking for doesn't exist or has been removed."}
           </p>

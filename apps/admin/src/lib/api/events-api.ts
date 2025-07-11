@@ -315,3 +315,43 @@ export async function cancelEvent(id: string): Promise<Event> {
     throw error;
   }
 }
+
+/**
+ * Upload an image for an event
+ */
+export async function uploadEventImage(
+  eventId: string,
+  file: File,
+): Promise<{ imageUrl: string }> {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    // Use apiClient for authenticated file uploads [[memory:2836404]]
+    const response = await apiClient.post(
+      `/api/events/${eventId}/upload-image`,
+      formData,
+      {
+        headers: {
+          // Remove Content-Type header to let browser set multipart/form-data boundary
+          'Content-Type': undefined,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error uploading event image:", error);
+    
+    // Extract error message from axios error
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    } else if (error.response?.status === 401) {
+      throw new Error("Authentication required");
+    } else if (error.message) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Failed to upload image");
+    }
+  }
+}

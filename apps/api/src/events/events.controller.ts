@@ -9,17 +9,25 @@ import {
   UseGuards,
   Request,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventStatus } from './entities/event.entity';
+import { ImageStorageService } from './services/image-storage.service';
 
 @Controller('events')
 @UseGuards(JwtAuthGuard)
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {}
+  constructor(
+    private readonly eventsService: EventsService,
+    private readonly imageStorageService: ImageStorageService,
+  ) {}
 
   @Post()
   create(@Request() req, @Body() createEventDto: CreateEventDto) {
@@ -105,5 +113,55 @@ export class EventsController {
     const organizationId = req.user.organizationId;
     const userId = req.user.id;
     return this.eventsService.cancel(id, organizationId, userId);
+  }
+
+  // Image upload endpoints
+  @Post(':id/upload-image')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+      },
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.startsWith('image/')) {
+          return callback(
+            new BadRequestException('Only image files are allowed'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async uploadImage(
+    @Request() req,
+    @Param('id') eventId: string,
+    @UploadedFile() file: any,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No image file provided');
+    }
+
+    const organizationId = req.user.organizationId;
+
+    // For draft events (temporary IDs), skip the existence check
+    // For real events, verify event exists and user has access
+    if (!eventId.startsWith('draft-')) {
+      await this.eventsService.findOne(eventId, organizationId);
+    }
+
+    const imageUrl = await this.imageStorageService.storeEventImage(
+      organizationId,
+      eventId,
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+    );
+
+    return {
+      success: true,
+      imageUrl,
+      message: 'Image uploaded successfully',
+    };
   }
 }

@@ -49,7 +49,9 @@ export const pluginsApi = {
 
   // Get plugins by category
   async getPluginsByCategory(category: string): Promise<Plugin[]> {
-    return apiClient.get<Plugin[]>(`/api/public/plugins/available?category=${category}`);
+    return apiClient.get<Plugin[]>(
+      `/api/public/plugins/available?category=${category}`,
+    );
   },
 
   // Get plugins by extension point
@@ -88,14 +90,15 @@ export const pluginsApi = {
     type: string,
   ): Promise<InstalledPlugin[]> {
     // For public access, we only support payment plugins for now
-    if (type === 'payment') {
+    if (type === "payment") {
       return this.getPaymentPlugins(organizationId);
     }
     // For other types, filter enabled plugins by extension points
     const enabledPlugins = await this.getEnabledPlugins(organizationId);
-    return enabledPlugins.filter(plugin => 
-      plugin.plugin.category === type ||
-      plugin.plugin.extensionPoints?.some(point => point.includes(type))
+    return enabledPlugins.filter(
+      (plugin) =>
+        plugin.plugin.category === type ||
+        plugin.plugin.extensionPoints?.some((point) => point.includes(type)),
     );
   },
 
@@ -105,7 +108,9 @@ export const pluginsApi = {
     version?: string,
   ): Promise<PluginBundle> {
     const params = version ? `?version=${version}` : "";
-    return apiClient.get<PluginBundle>(`/api/public/plugins/bundles/${pluginId}${params}`);
+    return apiClient.get<PluginBundle>(
+      `/api/public/plugins/bundles/${pluginId}${params}`,
+    );
   },
 
   // Get plugin configuration for organization (NOTE: This is not available for public access)
@@ -115,7 +120,9 @@ export const pluginsApi = {
   ): Promise<Record<string, any>> {
     // Plugin configurations are not available through public endpoints for security
     // This would require authentication and should only be used in admin contexts
-    throw new Error('Plugin configuration is not available for public access. Use admin API instead.');
+    throw new Error(
+      "Plugin configuration is not available for public access. Use admin API instead.",
+    );
   },
 
   // Execute a plugin backend action securely

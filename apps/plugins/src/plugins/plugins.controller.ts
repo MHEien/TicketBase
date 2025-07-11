@@ -38,7 +38,10 @@ import { Roles } from '../common/auth/decorators/roles.decorator';
 import { Response } from 'express';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { PluginActionService } from './services/plugin-action.service';
-import { ExecutePluginActionDto, PluginActionResponseDto } from './dto/plugin-action.dto';
+import {
+  ExecutePluginActionDto,
+  PluginActionResponseDto,
+} from './dto/plugin-action.dto';
 
 @ApiTags('plugins')
 @Controller('plugins')
@@ -393,9 +396,10 @@ export class PluginsController {
   }
 
   // Add new public endpoints for organization-specific data
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get enabled plugins for organization (public endpoint)',
-    description: 'Returns enabled plugins for a specific organization. Used by storefront for rendering extension points.'
+    description:
+      'Returns enabled plugins for a specific organization. Used by storefront for rendering extension points.',
   })
   @ApiResponse({
     status: 200,
@@ -421,24 +425,26 @@ export class PluginsController {
       throw new BadRequestException('Organization ID is required');
     }
 
-    const plugins = await this.pluginsService.getInstalledPlugins(organizationId);
-    
+    const plugins =
+      await this.pluginsService.getInstalledPlugins(organizationId);
+
     // Filter to only enabled plugins
-    let enabledPlugins = plugins.filter(plugin => plugin.enabled);
-    
+    let enabledPlugins = plugins.filter((plugin) => plugin.enabled);
+
     // Filter by extension point if specified
     if (extensionPoint) {
-      enabledPlugins = enabledPlugins.filter(plugin => 
-        plugin.plugin?.extensionPoints?.includes(extensionPoint)
+      enabledPlugins = enabledPlugins.filter((plugin) =>
+        plugin.plugin?.extensionPoints?.includes(extensionPoint),
       );
     }
-    
+
     return enabledPlugins;
   }
 
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get payment plugins for organization (public endpoint)',
-    description: 'Returns enabled payment plugins for an organization. Used by storefront for checkout.'
+    description:
+      'Returns enabled payment plugins for an organization. Used by storefront for checkout.',
   })
   @ApiResponse({
     status: 200,
@@ -458,12 +464,13 @@ export class PluginsController {
       throw new BadRequestException('Organization ID is required');
     }
 
-    const plugins = await this.pluginsService.getInstalledPlugins(organizationId);
-    
+    const plugins =
+      await this.pluginsService.getInstalledPlugins(organizationId);
+
     // Filter to enabled payment plugins
-    return plugins.filter(plugin => 
-      plugin.enabled && 
-      plugin.plugin?.category?.toLowerCase() === 'payment'
+    return plugins.filter(
+      (plugin) =>
+        plugin.enabled && plugin.plugin?.category?.toLowerCase() === 'payment',
     );
   }
 

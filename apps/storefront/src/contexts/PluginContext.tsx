@@ -182,7 +182,10 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
           { ...metadata, organizationId: organization?.id },
         );
       } catch (error) {
-        console.error(`Failed to execute plugin action ${pluginId}:${action}:`, error);
+        console.error(
+          `Failed to execute plugin action ${pluginId}:${action}:`,
+          error,
+        );
         throw error;
       }
     },
@@ -200,8 +203,17 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
           // Create wrapper component that passes context and configuration
           const WrappedComponent: React.FC<any> = (props) => {
             // Create onExecuteAction function that's bound to this specific plugin
-            const onExecuteAction = async (action: string, parameters: any, metadata?: any) => {
-              return executePluginAction(plugin.pluginId, action, parameters, metadata);
+            const onExecuteAction = async (
+              action: string,
+              parameters: any,
+              metadata?: any,
+            ) => {
+              return executePluginAction(
+                plugin.pluginId,
+                action,
+                parameters,
+                metadata,
+              );
             };
 
             return React.createElement(Component, {

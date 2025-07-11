@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PluginsService } from '../plugins.service';
 import { SecureConfigService } from './secure-config.service';
 import { PluginStorageService } from './plugin-storage.service';
@@ -27,11 +32,16 @@ export class PluginActionService {
   ): Promise<any> {
     try {
       // 1. Verify plugin is installed and enabled
-      const installedPlugins = await this.pluginsService.getInstalledPlugins(tenantId);
-      const installedPlugin = installedPlugins.find(p => p.plugin.id === pluginId);
-      
+      const installedPlugins =
+        await this.pluginsService.getInstalledPlugins(tenantId);
+      const installedPlugin = installedPlugins.find(
+        (p) => p.plugin.id === pluginId,
+      );
+
       if (!installedPlugin) {
-        throw new NotFoundException(`Plugin ${pluginId} is not installed for this organization`);
+        throw new NotFoundException(
+          `Plugin ${pluginId} is not installed for this organization`,
+        );
       }
 
       if (!installedPlugin.enabled) {
@@ -49,7 +59,9 @@ export class PluginActionService {
       );
 
       if (!config) {
-        throw new NotFoundException(`Configuration not found for plugin ${pluginId}`);
+        throw new NotFoundException(
+          `Configuration not found for plugin ${pluginId}`,
+        );
       }
 
       // 4. Load and execute plugin's backend handler
@@ -61,8 +73,10 @@ export class PluginActionService {
         metadata,
       );
 
-      this.logger.log(`Action ${pluginId}:${action} completed successfully for tenant ${tenantId}`);
-      
+      this.logger.log(
+        `Action ${pluginId}:${action} completed successfully for tenant ${tenantId}`,
+      );
+
       return {
         success: true,
         action,
@@ -90,10 +104,10 @@ export class PluginActionService {
   ): Promise<any> {
     // Get plugin bundle source code
     const pluginCode = await this.getPluginSourceCode(plugin);
-    
+
     // Create secure execution context
     const context = this.createSecureContext(config, parameters, metadata);
-    
+
     // Execute plugin in sandboxed environment
     return this.executeInSandbox(pluginCode, action, context);
   }
@@ -105,15 +119,21 @@ export class PluginActionService {
     try {
       if (plugin.bundleUrl) {
         // If it's a MinIO/local storage URL, get from storage service
-        if (plugin.bundleUrl.includes('localhost:5000') || plugin.bundleUrl.includes('minio')) {
+        if (
+          plugin.bundleUrl.includes('localhost:5000') ||
+          plugin.bundleUrl.includes('minio')
+        ) {
           const bundlePath = this.extractBundlePathFromUrl(plugin.bundleUrl);
-          const bundleStream = await this.pluginStorageService.getPluginBundleStream(bundlePath);
-          
+          const bundleStream =
+            await this.pluginStorageService.getPluginBundleStream(bundlePath);
+
           // Convert stream to string
           return new Promise((resolve, reject) => {
             const chunks: Buffer[] = [];
             bundleStream.on('data', (chunk) => chunks.push(chunk));
-            bundleStream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+            bundleStream.on('end', () =>
+              resolve(Buffer.concat(chunks).toString('utf-8')),
+            );
             bundleStream.on('error', reject);
           });
         } else {
@@ -122,10 +142,12 @@ export class PluginActionService {
           return await response.text();
         }
       }
-      
+
       throw new Error('No bundle URL found for plugin');
     } catch (error) {
-      throw new BadRequestException(`Failed to load plugin code: ${error.message}`);
+      throw new BadRequestException(
+        `Failed to load plugin code: ${error.message}`,
+      );
     }
   }
 
@@ -145,25 +167,25 @@ export class PluginActionService {
     return {
       // Plugin's secure configuration (with decrypted secrets)
       config,
-      
+
       // Action parameters
       parameters,
-      
+
       // Optional metadata
       metadata,
-      
+
       // Safe utilities plugins can use
       utils: {
         fetch: require('node-fetch'), // For HTTP requests
         crypto: require('crypto'), // For hashing, etc.
       },
-      
+
       // Console for debugging (could be disabled in production)
       console: {
         log: (...args: any[]) => this.logger.debug('[Plugin]', ...args),
         error: (...args: any[]) => this.logger.error('[Plugin]', ...args),
       },
-      
+
       // Required modules that plugins might need
       require: (moduleName: string) => {
         // Whitelist of allowed modules
@@ -243,15 +265,22 @@ export class PluginActionService {
       // Find and execute the requested action
       const actionHandler = backendActions[action];
       if (!actionHandler || typeof actionHandler !== 'function') {
-        throw new BadRequestException(`Action '${action}' not found in plugin backend actions`);
+        throw new BadRequestException(
+          `Action '${action}' not found in plugin backend actions`,
+        );
       }
 
       // Execute the action handler
-      return await actionHandler(context.parameters, context.config, context.metadata);
-      
+      return await actionHandler(
+        context.parameters,
+        context.config,
+        context.metadata,
+      );
     } catch (error) {
       this.logger.error(`Plugin execution error: ${error.message}`, error);
-      throw new BadRequestException(`Plugin execution failed: ${error.message}`);
+      throw new BadRequestException(
+        `Plugin execution failed: ${error.message}`,
+      );
     }
   }
-} 
+}
