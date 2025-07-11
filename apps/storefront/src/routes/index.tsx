@@ -24,11 +24,9 @@ function Index() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -37,7 +35,6 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
@@ -238,7 +235,6 @@ function Index() {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 }

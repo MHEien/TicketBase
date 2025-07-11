@@ -26,11 +26,9 @@ function About() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -39,7 +37,6 @@ function About() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
@@ -266,8 +263,6 @@ function About() {
           </Card>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 } 

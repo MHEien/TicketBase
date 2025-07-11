@@ -61,7 +61,7 @@ export class OrganizationsService {
     try {
       // Method 1: Check for TXT record with verification token
       const txtRecordName = `_verify-${organization.domainVerificationToken}`;
-      const isVerifiedByTxt = await this.checkTxtRecord(
+      const isVerifiedByTxt = this.checkTxtRecord(
         organization.customDomain,
         txtRecordName,
       );
@@ -91,10 +91,7 @@ export class OrganizationsService {
     }
   }
 
-  private async checkTxtRecord(
-    domain: string,
-    txtRecordName: string,
-  ): Promise<boolean> {
+  private checkTxtRecord(domain: string, txtRecordName: string): boolean {
     try {
       // In a real implementation, you would use DNS resolution
       // For now, we'll simulate this check
@@ -110,6 +107,7 @@ export class OrganizationsService {
 
       return false; // For now, always return false until real DNS is implemented
     } catch (error) {
+      console.error('TXT record check error:', error);
       return false;
     }
   }
@@ -120,13 +118,18 @@ export class OrganizationsService {
   ): Promise<boolean> {
     try {
       // Check for meta tag verification by fetching the domain root
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch(`https://${domain}/`, {
         method: 'HEAD',
         headers: {
           'User-Agent': 'TicketPlatform-DomainVerification/1.0',
         },
-        timeout: 10000, // 10 second timeout
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         // In a real implementation, you'd parse the HTML and look for:
@@ -151,13 +154,18 @@ export class OrganizationsService {
       // Check for verification file at domain/.well-known/ticket-platform-verification
       const verificationUrl = `https://${domain}/.well-known/ticket-platform-verification`;
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(verificationUrl, {
         method: 'GET',
         headers: {
           'User-Agent': 'TicketPlatform-DomainVerification/1.0',
         },
-        timeout: 10000,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const content = await response.text();
