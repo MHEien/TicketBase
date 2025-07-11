@@ -1,9 +1,15 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription } from './ui/alert';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Copy, ExternalLink, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import {
+  Copy,
+  ExternalLink,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+} from "lucide-react";
 
 interface DNSSetupGuideProps {
   organization: {
@@ -19,9 +25,10 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
   organization,
   onCopyToClipboard,
 }) => {
-  const domain = organization.customDomain || 'your-domain.com';
-  const token = organization.domainVerificationToken || 'your-verification-token';
-  const platformDomain = 'your-platform.com'; // This should come from environment
+  const domain = organization.customDomain || "your-domain.com";
+  const token =
+    organization.domainVerificationToken || "your-verification-token";
+  const platformDomain = "your-platform.com"; // This should come from environment
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -30,12 +37,16 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
 
   const getStatus = () => {
     if (!organization.customDomain) {
-      return { icon: Clock, color: 'text-gray-500', label: 'Not Configured' };
+      return { icon: Clock, color: "text-gray-500", label: "Not Configured" };
     }
     if (organization.domainVerified) {
-      return { icon: CheckCircle, color: 'text-green-500', label: 'Verified' };
+      return { icon: CheckCircle, color: "text-green-500", label: "Verified" };
     }
-    return { icon: AlertCircle, color: 'text-yellow-500', label: 'Pending Verification' };
+    return {
+      icon: AlertCircle,
+      color: "text-yellow-500",
+      label: "Pending Verification",
+    };
   };
 
   const status = getStatus();
@@ -48,7 +59,9 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>DNS Configuration Status</span>
-            <Badge variant={organization.domainVerified ? 'default' : 'secondary'}>
+            <Badge
+              variant={organization.domainVerified ? "default" : "secondary"}
+            >
               <StatusIcon className={`mr-1 h-4 w-4 ${status.color}`} />
               {status.label}
             </Badge>
@@ -74,19 +87,21 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
           <CardTitle>DNS Configuration Steps</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          
           {/* Step 1: Domain Verification */}
           <div>
-            <h3 className="text-lg font-medium mb-4">Step 1: Domain Verification</h3>
+            <h3 className="text-lg font-medium mb-4">
+              Step 1: Domain Verification
+            </h3>
             <p className="text-sm text-gray-600 mb-4">
               Choose one of the following methods to verify domain ownership:
             </p>
-            
+
             <div className="space-y-4">
-              
               {/* Method 1: DNS TXT Record */}
               <div className="border rounded-lg p-4">
-                <h4 className="font-medium mb-2">Option A: DNS TXT Record (Recommended)</h4>
+                <h4 className="font-medium mb-2">
+                  Option A: DNS TXT Record (Recommended)
+                </h4>
                 <p className="text-sm text-gray-600 mb-3">
                   Add a TXT record to your DNS settings to verify ownership.
                 </p>
@@ -94,11 +109,15 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
                   <table className="w-full text-sm">
                     <tbody>
                       <tr>
-                        <td className="font-medium text-gray-700 pr-4">Type:</td>
+                        <td className="font-medium text-gray-700 pr-4">
+                          Type:
+                        </td>
                         <td className="font-mono">TXT</td>
                       </tr>
                       <tr>
-                        <td className="font-medium text-gray-700 pr-4">Name:</td>
+                        <td className="font-medium text-gray-700 pr-4">
+                          Name:
+                        </td>
                         <td className="font-mono">_verify-{token}</td>
                         <td>
                           <Button
@@ -111,7 +130,9 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
                         </td>
                       </tr>
                       <tr>
-                        <td className="font-medium text-gray-700 pr-4">Value:</td>
+                        <td className="font-medium text-gray-700 pr-4">
+                          Value:
+                        </td>
                         <td className="font-mono">{token}</td>
                         <td>
                           <Button
@@ -141,20 +162,24 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
                 <div className="bg-gray-50 p-3 rounded-md">
                   <div className="space-y-2">
                     <div>
-                      <strong>File Path:</strong> 
+                      <strong>File Path:</strong>
                       <code className="ml-2 bg-gray-200 px-2 py-1 rounded text-sm">
                         /.well-known/ticket-platform-verification
                       </code>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => copyToClipboard('/.well-known/ticket-platform-verification')}
+                        onClick={() =>
+                          copyToClipboard(
+                            "/.well-known/ticket-platform-verification",
+                          )
+                        }
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
                     <div>
-                      <strong>File Content:</strong> 
+                      <strong>File Content:</strong>
                       <code className="ml-2 bg-gray-200 px-2 py-1 rounded text-sm">
                         {token}
                       </code>
@@ -174,16 +199,22 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
               <div className="border rounded-lg p-4">
                 <h4 className="font-medium mb-2">Option C: HTML Meta Tag</h4>
                 <p className="text-sm text-gray-600 mb-3">
-                  Add a meta tag to your website's homepage &lt;head&gt; section.
+                  Add a meta tag to your website's homepage &lt;head&gt;
+                  section.
                 </p>
                 <div className="bg-gray-50 p-3 rounded-md">
                   <code className="text-sm">
-                    &lt;meta name="ticket-platform-domain-verification" content="{token}" /&gt;
+                    &lt;meta name="ticket-platform-domain-verification"
+                    content="{token}" /&gt;
                   </code>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => copyToClipboard(`<meta name="ticket-platform-domain-verification" content="${token}" />`)}
+                    onClick={() =>
+                      copyToClipboard(
+                        `<meta name="ticket-platform-domain-verification" content="${token}" />`,
+                      )
+                    }
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -194,11 +225,14 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
 
           {/* Step 2: CNAME Record */}
           <div>
-            <h3 className="text-lg font-medium mb-4">Step 2: Traffic Routing</h3>
+            <h3 className="text-lg font-medium mb-4">
+              Step 2: Traffic Routing
+            </h3>
             <p className="text-sm text-gray-600 mb-4">
-              After domain verification, add a CNAME record to point your domain to our platform.
+              After domain verification, add a CNAME record to point your domain
+              to our platform.
             </p>
-            
+
             <div className="bg-gray-50 p-4 rounded-md">
               <table className="w-full text-sm">
                 <tbody>
@@ -209,7 +243,9 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
                   <tr>
                     <td className="font-medium text-gray-700 pr-4">Name:</td>
                     <td className="font-mono">@</td>
-                    <td className="text-gray-500">(or leave blank for root domain)</td>
+                    <td className="text-gray-500">
+                      (or leave blank for root domain)
+                    </td>
                   </tr>
                   <tr>
                     <td className="font-medium text-gray-700 pr-4">Value:</td>
@@ -235,12 +271,19 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
             <Alert className="mt-4">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Important:</strong> Some DNS providers don't support CNAME records for root domains. 
-                If you encounter issues, you may need to:
+                <strong>Important:</strong> Some DNS providers don't support
+                CNAME records for root domains. If you encounter issues, you may
+                need to:
                 <ul className="mt-2 ml-4 list-disc">
-                  <li>Use an A record instead (contact support for IP addresses)</li>
-                  <li>Use a subdomain like <code>events.{domain}</code></li>
-                  <li>Use ALIAS or ANAME records if your provider supports them</li>
+                  <li>
+                    Use an A record instead (contact support for IP addresses)
+                  </li>
+                  <li>
+                    Use a subdomain like <code>events.{domain}</code>
+                  </li>
+                  <li>
+                    Use ALIAS or ANAME records if your provider supports them
+                  </li>
                 </ul>
               </AlertDescription>
             </Alert>
@@ -248,13 +291,18 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
 
           {/* Step 3: SSL Certificate */}
           <div>
-            <h3 className="text-lg font-medium mb-4">Step 3: SSL Certificate</h3>
+            <h3 className="text-lg font-medium mb-4">
+              Step 3: SSL Certificate
+            </h3>
             <p className="text-sm text-gray-600 mb-4">
-              SSL certificates are automatically provisioned once your domain is verified and DNS is configured.
+              SSL certificates are automatically provisioned once your domain is
+              verified and DNS is configured.
             </p>
-            
+
             <div className="bg-blue-50 p-4 rounded-md">
-              <h4 className="font-medium text-blue-900 mb-2">What happens automatically:</h4>
+              <h4 className="font-medium text-blue-900 mb-2">
+                What happens automatically:
+              </h4>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• SSL certificate is requested from Let's Encrypt</li>
                 <li>• Certificate is installed on our servers</li>
@@ -314,13 +362,19 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
                 </a>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h3 className="font-medium">Troubleshooting</h3>
               <div className="text-sm text-gray-600 space-y-2">
                 <p>• DNS changes can take up to 48 hours to propagate</p>
-                <p>• Use tools like <code>dig</code> or <code>nslookup</code> to check DNS records</p>
-                <p>• Contact your DNS provider if you need help with configuration</p>
+                <p>
+                  • Use tools like <code>dig</code> or <code>nslookup</code> to
+                  check DNS records
+                </p>
+                <p>
+                  • Contact your DNS provider if you need help with
+                  configuration
+                </p>
                 <p>• Reach out to our support team if you encounter issues</p>
               </div>
             </div>
@@ -358,7 +412,7 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
                 </a>
               </div>
             </div>
-            
+
             <div>
               <h3 className="font-medium mb-2">SSL Testing</h3>
               <div className="space-y-2">
@@ -387,4 +441,4 @@ export const DNSSetupGuide: React.FC<DNSSetupGuideProps> = ({
       </Card>
     </div>
   );
-}; 
+};

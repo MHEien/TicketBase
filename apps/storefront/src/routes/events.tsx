@@ -1,15 +1,24 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { useState, useMemo } from 'react'
-import { Search, Filter, Grid, List, Calendar, MapPin, Clock, ArrowRight } from 'lucide-react'
-import { format } from 'date-fns'
-import { Card, CardContent } from '~/components/ui/Card'
-import { Button } from '~/components/ui/Button'
-import { Input } from '~/components/ui/Input'
-import { useOrganization } from '~/contexts/OrganizationContext'
-import { eventsApi, Event, EventFilters } from '~/lib/api/events'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
+import {
+  Search,
+  Filter,
+  Grid,
+  List,
+  Calendar,
+  MapPin,
+  Clock,
+  ArrowRight,
+} from "lucide-react";
+import { format } from "date-fns";
+import { Card, CardContent } from "~/components/ui/Card";
+import { Button } from "~/components/ui/Button";
+import { Input } from "~/components/ui/Input";
+import { useOrganization } from "~/contexts/OrganizationContext";
+import { eventsApi, Event, EventFilters } from "~/lib/api/events";
 
-export const Route = createFileRoute('/events')({
+export const Route = createFileRoute("/events")({
   component: EventsPage,
   validateSearch: (search: Record<string, unknown>) => {
     return {
@@ -17,85 +26,98 @@ export const Route = createFileRoute('/events')({
       search: (search.search as string) || undefined,
       location: (search.location as string) || undefined,
       page: Number(search.page) || 1,
-    }
+    };
   },
-})
+});
 
 interface SearchParams {
-  category?: string
-  search?: string
-  location?: string
-  page: number
+  category?: string;
+  search?: string;
+  location?: string;
+  page: number;
 }
 
 function EventsPage() {
-  const { organization } = useOrganization()
-  const { category, search: searchQuery, location, page } = Route.useSearch()
-  
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [localSearch, setLocalSearch] = useState(searchQuery || '')
-  const [selectedCategory, setSelectedCategory] = useState(category || '')
-  const [showFilters, setShowFilters] = useState(false)
-  
-  const filters: EventFilters = useMemo(() => ({
-    category: selectedCategory || undefined,
-    search: searchQuery || undefined,
-    location: location || undefined,
-    limit: 12,
-    offset: (page - 1) * 12,
-  }), [selectedCategory, searchQuery, location, page])
+  const { organization } = useOrganization();
+  const { category, search: searchQuery, location, page } = Route.useSearch();
+
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [localSearch, setLocalSearch] = useState(searchQuery || "");
+  const [selectedCategory, setSelectedCategory] = useState(category || "");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filters: EventFilters = useMemo(
+    () => ({
+      category: selectedCategory || undefined,
+      search: searchQuery || undefined,
+      location: location || undefined,
+      limit: 12,
+      offset: (page - 1) * 12,
+    }),
+    [selectedCategory, searchQuery, location, page],
+  );
 
   // Fetch events
-  const { data: events, isLoading, error } = useQuery({
-    queryKey: ['events', filters],
-    queryFn: () => organization?.id 
-      ? eventsApi.getEventsByOrganization(organization.id, filters)
-      : eventsApi.getPublicEvents(filters),
+  const {
+    data: events,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["events", organization?.id, filters],
+    queryFn: () => {
+      if (!organization?.id) {
+        // Don't make API call if we don't have an organization ID
+        // The backend requires organizationId for all public event endpoints
+        return Promise.resolve([]);
+      }
+      return eventsApi.getEventsByOrganization(organization.id, filters);
+    },
+    enabled: !!organization?.id, // Only run query when we have an organization ID
     staleTime: 1000 * 60 * 5, // 5 minutes
-  })
+  });
 
   // Fetch categories
   const { data: categories } = useQuery({
-    queryKey: ['event-categories'],
+    queryKey: ["event-categories"],
     queryFn: () => eventsApi.getEventCategories(),
     staleTime: 1000 * 60 * 10, // 10 minutes
-  })
+  });
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (localSearch !== searchQuery) {
       // Navigate with search parameter
-      window.location.href = `/events?search=${encodeURIComponent(localSearch)}`
+      window.location.href = `/events?search=${encodeURIComponent(localSearch)}`;
     }
-  }
+  };
 
   const handleCategoryFilter = (cat: string) => {
-    setSelectedCategory(cat === selectedCategory ? '' : cat)
-    const params = new URLSearchParams()
-    if (cat !== selectedCategory && cat) params.set('category', cat)
-    if (searchQuery) params.set('search', searchQuery)
-    window.location.href = `/events${params.toString() ? `?${params.toString()}` : ''}`
-  }
+    setSelectedCategory(cat === selectedCategory ? "" : cat);
+    const params = new URLSearchParams();
+    if (cat !== selectedCategory && cat) params.set("category", cat);
+    if (searchQuery) params.set("search", searchQuery);
+    window.location.href = `/events${params.toString() ? `?${params.toString()}` : ""}`;
+  };
 
   const clearFilters = () => {
-    setSelectedCategory('')
-    setLocalSearch('')
-    window.location.href = '/events'
-  }
+    setSelectedCategory("");
+    setLocalSearch("");
+    window.location.href = "/events";
+  };
 
   const renderEventCard = (event: Event) => {
-    if (viewMode === 'list') {
+    if (viewMode === "list") {
       return (
-        <Card 
-          key={event.id} 
-          hover 
+        <Card
+          key={event.id}
+          hover
           className="overflow-hidden cursor-pointer"
-          onClick={() => window.location.href = `/events/${event.id}`}
+          onClick={() => (window.location.href = `/events/${event.id}`)}
         >
           <div className="flex">
             <div className="w-48 h-32 bg-gray-200 flex-shrink-0">
               <img
-                src={event.featuredImage || '/api/placeholder/300/200'}
+                src={event.featuredImage || "/api/placeholder/300/200"}
                 alt={event.title}
                 className="w-full h-full object-cover"
               />
@@ -113,14 +135,20 @@ function EventsPage() {
                       </span>
                     )}
                   </div>
-                  
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{event.title}</h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{event.shortDescription}</p>
-                  
+
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {event.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 line-clamp-2">
+                    {event.shortDescription}
+                  </p>
+
                   <div className="flex items-center gap-6 text-sm text-gray-500">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1" />
-                      <span>{format(new Date(event.startDate), 'MMM d, yyyy')}</span>
+                      <span>
+                        {format(new Date(event.startDate), "MMM d, yyyy")}
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <Clock className="h-4 w-4 mr-1" />
@@ -129,48 +157,51 @@ function EventsPage() {
                     <div className="flex items-center">
                       <MapPin className="h-4 w-4 mr-1" />
                       <span>
-                        {event.locationType === 'virtual' ? 'Virtual Event' : `${event.city}, ${event.country}`}
+                        {event.locationType === "virtual"
+                          ? "Virtual Event"
+                          : `${event.city}, ${event.country}`}
                       </span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="text-right ml-6">
                   {event.ticketTypes && event.ticketTypes.length > 0 && (
                     <div className="mb-2">
                       <span className="text-lg font-semibold text-gray-900">
-                        From ${Math.min(...event.ticketTypes.map(t => t.price))}
+                        From $
+                        {Math.min(...event.ticketTypes.map((t) => t.price))}
                       </span>
                     </div>
                   )}
-                                      <Button 
-                      variant="outline"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.location.href = `/events/${event.id}`
-                      }}
-                    >
-                      View Details
-                      <ArrowRight className="ml-1 h-4 w-4" />
-                    </Button>
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = `/events/${event.id}`;
+                    }}
+                  >
+                    View Details
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </div>
         </Card>
-      )
+      );
     }
 
     return (
-      <Card 
-        key={event.id} 
-        hover 
+      <Card
+        key={event.id}
+        hover
         className="overflow-hidden cursor-pointer"
-        onClick={() => window.location.href = `/events/${event.id}`}
+        onClick={() => (window.location.href = `/events/${event.id}`)}
       >
         <div className="aspect-video bg-gray-200 relative">
           <img
-            src={event.featuredImage || '/api/placeholder/400/240'}
+            src={event.featuredImage || "/api/placeholder/400/240"}
             alt={event.title}
             className="w-full h-full object-cover"
           />
@@ -181,13 +212,17 @@ function EventsPage() {
           </div>
         </div>
         <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{event.title}</h3>
-          <p className="text-gray-600 mb-4 line-clamp-2">{event.shortDescription}</p>
-          
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {event.title}
+          </h3>
+          <p className="text-gray-600 mb-4 line-clamp-2">
+            {event.shortDescription}
+          </p>
+
           <div className="space-y-2 text-sm text-gray-500 mb-4">
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
-              <span>{format(new Date(event.startDate), 'MMM d, yyyy')}</span>
+              <span>{format(new Date(event.startDate), "MMM d, yyyy")}</span>
             </div>
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2" />
@@ -196,23 +231,25 @@ function EventsPage() {
             <div className="flex items-center">
               <MapPin className="h-4 w-4 mr-2" />
               <span>
-                {event.locationType === 'virtual' ? 'Virtual Event' : `${event.city}, ${event.country}`}
+                {event.locationType === "virtual"
+                  ? "Virtual Event"
+                  : `${event.city}, ${event.country}`}
               </span>
             </div>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-gray-500">
-              {event.ticketTypes && event.ticketTypes.length > 0 && (
-                `From $${Math.min(...event.ticketTypes.map(t => t.price))}`
-              )}
+              {event.ticketTypes &&
+                event.ticketTypes.length > 0 &&
+                `From $${Math.min(...event.ticketTypes.map((t) => t.price))}`}
             </span>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={(e) => {
-                e.stopPropagation()
-                window.location.href = `/events/${event.id}`
+                e.stopPropagation();
+                window.location.href = `/events/${event.id}`;
               }}
             >
               View Details
@@ -220,23 +257,25 @@ function EventsPage() {
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    );
+  };
 
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Events</h1>
-            <p className="text-gray-600 mb-8">There was a problem loading events. Please try again.</p>
-            <Button onClick={() => window.location.reload()}>
-              Retry
-            </Button>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Error Loading Events
+            </h1>
+            <p className="text-gray-600 mb-8">
+              There was a problem loading events. Please try again.
+            </p>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -246,7 +285,8 @@ function EventsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Events</h1>
           <p className="text-lg text-gray-600">
-            Discover amazing events {organization?.name ? `from ${organization.name}` : 'near you'}
+            Discover amazing events{" "}
+            {organization?.name ? `from ${organization.name}` : "near you"}
           </p>
         </div>
 
@@ -276,19 +316,19 @@ function EventsPage() {
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </Button>
-              
+
               {/* Quick category filters */}
               {categories?.slice(0, 5).map((cat) => (
                 <Button
                   key={cat}
-                  variant={selectedCategory === cat ? 'primary' : 'outline'}
+                  variant={selectedCategory === cat ? "primary" : "outline"}
                   size="sm"
                   onClick={() => handleCategoryFilter(cat)}
                 >
                   {cat}
                 </Button>
               ))}
-              
+
               {(selectedCategory || searchQuery) && (
                 <Button
                   variant="ghost"
@@ -304,16 +344,16 @@ function EventsPage() {
             {/* View Mode Toggle */}
             <div className="flex items-center gap-2">
               <Button
-                variant={viewMode === 'grid' ? 'primary' : 'ghost'}
+                variant={viewMode === "grid" ? "primary" : "ghost"}
                 size="sm"
-                onClick={() => setViewMode('grid')}
+                onClick={() => setViewMode("grid")}
               >
                 <Grid className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === 'list' ? 'primary' : 'ghost'}
+                variant={viewMode === "list" ? "primary" : "ghost"}
                 size="sm"
-                onClick={() => setViewMode('list')}
+                onClick={() => setViewMode("list")}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -328,18 +368,20 @@ function EventsPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category
                   </label>
-                  <select 
+                  <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="">All Categories</option>
                     {categories?.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Location
@@ -350,15 +392,12 @@ function EventsPage() {
                     defaultValue={location}
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Date Range
                   </label>
-                  <Input
-                    type="date"
-                    placeholder="Start date"
-                  />
+                  <Input type="date" placeholder="Start date" />
                 </div>
               </div>
             </div>
@@ -368,18 +407,34 @@ function EventsPage() {
         {/* Results */}
         <div className="mb-6 flex items-center justify-between">
           <p className="text-gray-600">
-            {isLoading ? 'Loading events...' : `${events?.length || 0} events found`}
+            {isLoading
+              ? "Loading events..."
+              : `${events?.length || 0} events found`}
           </p>
         </div>
 
         {/* Events Grid/List */}
         {isLoading ? (
-          <div className={viewMode === 'grid' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                : "space-y-4"
+            }
+          >
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
-                <div className={viewMode === 'grid' ? 'aspect-video bg-gray-200' : 'flex'}>
-                  {viewMode === 'list' && <div className="w-48 h-32 bg-gray-200"></div>}
-                  {viewMode === 'grid' && <div className="w-full h-full bg-gray-200"></div>}
+                <div
+                  className={
+                    viewMode === "grid" ? "aspect-video bg-gray-200" : "flex"
+                  }
+                >
+                  {viewMode === "list" && (
+                    <div className="w-48 h-32 bg-gray-200"></div>
+                  )}
+                  {viewMode === "grid" && (
+                    <div className="w-full h-full bg-gray-200"></div>
+                  )}
                 </div>
                 <CardContent className="p-6">
                   <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -393,18 +448,25 @@ function EventsPage() {
             ))}
           </div>
         ) : events && events.length > 0 ? (
-          <div className={viewMode === 'grid' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                : "space-y-4"
+            }
+          >
             {events.map(renderEventCard)}
           </div>
         ) : (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No events found
+              </h3>
               <p className="text-gray-500 mb-6">
-                {searchQuery || selectedCategory 
-                  ? 'Try adjusting your search or filters to find more events.'
-                  : 'There are no events available at the moment. Check back soon!'
-                }
+                {searchQuery || selectedCategory
+                  ? "Try adjusting your search or filters to find more events."
+                  : "There are no events available at the moment. Check back soon!"}
               </p>
               {(searchQuery || selectedCategory) && (
                 <Button onClick={clearFilters} variant="outline">
@@ -422,22 +484,14 @@ function EventsPage() {
               <Button variant="outline" disabled>
                 Previous
               </Button>
-              <Button variant="primary">
-                1
-              </Button>
-              <Button variant="outline">
-                2
-              </Button>
-              <Button variant="outline">
-                3
-              </Button>
-              <Button variant="outline">
-                Next
-              </Button>
+              <Button variant="primary">1</Button>
+              <Button variant="outline">2</Button>
+              <Button variant="outline">3</Button>
+              <Button variant="outline">Next</Button>
             </div>
           </div>
         )}
       </div>
     </div>
-  )
-} 
+  );
+}

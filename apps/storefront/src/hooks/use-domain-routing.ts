@@ -1,6 +1,6 @@
-import { useOrganization } from '../contexts/OrganizationContext';
-import { DomainMiddleware } from '../lib/middleware/domain-middleware';
-import { Organization } from '../lib/api/organizations';
+import { useOrganization } from "../contexts/OrganizationContext";
+import { DomainMiddleware } from "../lib/middleware/domain-middleware";
+import { Organization } from "../lib/api/organizations";
 
 export const useDomainRouting = () => {
   const { organization, domainInfo, currentDomain } = useOrganization();
@@ -8,7 +8,7 @@ export const useDomainRouting = () => {
   /**
    * Generate URL for a given path within the current organization's domain
    */
-  const generateUrl = (path: string = '') => {
+  const generateUrl = (path: string = "") => {
     if (!organization) {
       return path;
     }
@@ -27,7 +27,7 @@ export const useDomainRouting = () => {
    * Check if we're in development mode
    */
   const isDevelopmentMode = () => {
-    return domainInfo?.fallbackMode === 'development';
+    return domainInfo?.fallbackMode === "development";
   };
 
   /**
@@ -43,14 +43,17 @@ export const useDomainRouting = () => {
   const isOrganizationDomain = (org?: Organization) => {
     const targetOrg = org || organization;
     if (!targetOrg) return false;
-    
-    return DomainMiddleware.isOrganizationDomain(targetOrg, currentDomain || undefined);
+
+    return DomainMiddleware.isOrganizationDomain(
+      targetOrg,
+      currentDomain || undefined,
+    );
   };
 
   /**
    * Get the canonical URL for sharing
    */
-  const getCanonicalUrl = (path: string = '') => {
+  const getCanonicalUrl = (path: string = "") => {
     if (!organization) {
       return `${window.location.origin}${path}`;
     }
@@ -70,10 +73,10 @@ export const useDomainRouting = () => {
    */
   const navigateToOrganizationPath = (path: string) => {
     const url = generateUrl(path);
-    
+
     // If we're already on the right domain, use pushState
     if (url.includes(window.location.hostname)) {
-      window.history.pushState(null, '', path);
+      window.history.pushState(null, "", path);
     } else {
       // Cross-domain navigation
       window.location.href = url;
@@ -85,11 +88,11 @@ export const useDomainRouting = () => {
    */
   const getPrimaryDomain = () => {
     if (!organization) return currentDomain;
-    
+
     if (organization.customDomain && organization.domainVerified) {
       return organization.customDomain;
     }
-    
+
     return currentDomain;
   };
 
@@ -98,7 +101,7 @@ export const useDomainRouting = () => {
    */
   const getSeoUrls = () => {
     const baseUrl = getCanonicalUrl();
-    
+
     return {
       home: baseUrl,
       events: `${baseUrl}/events`,
@@ -122,9 +125,9 @@ export const useDomainRouting = () => {
   const getOrganizationMeta = () => {
     if (!organization) {
       return {
-        title: 'Events Platform',
-        description: 'Find and book amazing events',
-        siteName: 'Events Platform',
+        title: "Events Platform",
+        description: "Find and book amazing events",
+        siteName: "Events Platform",
       };
     }
 
@@ -142,24 +145,24 @@ export const useDomainRouting = () => {
     organization,
     currentDomain,
     domainInfo,
-    
+
     // URL generation
     generateUrl,
     getCanonicalUrl,
     getSeoUrls,
     getPrimaryDomain,
-    
+
     // Navigation
     navigateToOrganizationPath,
-    
+
     // Checks
     isCustomDomain,
     isDevelopmentMode,
     isOrganizationDomain,
     shouldShowMultiTenantFeatures,
-    
+
     // Utilities
     getDomainInfo,
     getOrganizationMeta,
   };
-}; 
+};

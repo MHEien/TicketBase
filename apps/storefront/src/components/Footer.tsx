@@ -1,7 +1,14 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
-import { useOrganization } from '../contexts/OrganizationContext';
-import { Facebook, Twitter, Instagram, Linkedin, Youtube, Github } from 'lucide-react';
+import React from "react";
+import { Link } from "@tanstack/react-router";
+import { useOrganization } from "../contexts/OrganizationContext";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Github,
+} from "lucide-react";
 
 // Social media icon mapping
 const socialIcons = {
@@ -16,9 +23,9 @@ const socialIcons = {
 export const Footer: React.FC = () => {
   const { organization, branding } = useOrganization();
 
-  const organizationName = organization?.name || 'Events Platform';
+  const organizationName = organization?.name || "Events Platform";
   const currentYear = new Date().getFullYear();
-  
+
   // Get custom footer links and social links from organization settings
   const footerLinks = organization?.settings?.footerLinks || [];
   const socialLinks = organization?.settings?.socialLinks || [];
@@ -31,15 +38,17 @@ export const Footer: React.FC = () => {
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               {branding?.logo ? (
-                <img 
-                  src={branding.logo} 
+                <img
+                  src={branding.logo}
                   alt={organizationName}
                   className="h-8 w-auto"
                 />
               ) : (
-                <div 
+                <div
                   className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold"
-                  style={{ backgroundColor: branding?.primaryColor || '#3b82f6' }}
+                  style={{
+                    backgroundColor: branding?.primaryColor || "#3b82f6",
+                  }}
                 >
                   {organizationName.charAt(0)}
                 </div>
@@ -47,10 +56,11 @@ export const Footer: React.FC = () => {
               <span className="text-xl font-bold">{organizationName}</span>
             </Link>
             <p className="text-gray-400 mb-4 max-w-md">
-              {organization?.checkoutMessage || 'Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience.'}
+              {organization?.checkoutMessage ||
+                "Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience."}
             </p>
             {organization?.website && (
-              <a 
+              <a
                 href={organization.website}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -59,14 +69,17 @@ export const Footer: React.FC = () => {
                 Visit our website
               </a>
             )}
-            
+
             {/* Social Links */}
             {socialLinks.length > 0 && (
               <div className="mt-6">
                 <h4 className="text-sm font-semibold mb-3">Follow Us</h4>
                 <div className="flex space-x-4">
                   {socialLinks.map((link, index) => {
-                    const IconComponent = socialIcons[link.platform.toLowerCase() as keyof typeof socialIcons];
+                    const IconComponent =
+                      socialIcons[
+                        link.platform.toLowerCase() as keyof typeof socialIcons
+                      ];
                     return (
                       <a
                         key={index}
@@ -94,22 +107,34 @@ export const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  to="/"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <a href="/events" className="text-gray-400 hover:text-white transition-colors">
+                <a
+                  href="/events"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Events
                 </a>
               </li>
               <li>
-                <a href="/categories" className="text-gray-400 hover:text-white transition-colors">
+                <a
+                  href="/categories"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Categories
                 </a>
               </li>
               <li>
-                <a href="/search" className="text-gray-400 hover:text-white transition-colors">
+                <a
+                  href="/search"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Search
                 </a>
               </li>
@@ -122,7 +147,7 @@ export const Footer: React.FC = () => {
             <div className="space-y-2 text-gray-400">
               {organization?.email && (
                 <p>
-                  <a 
+                  <a
                     href={`mailto:${organization.email}`}
                     className="hover:text-white transition-colors"
                   >
@@ -132,7 +157,7 @@ export const Footer: React.FC = () => {
               )}
               {organization?.phone && (
                 <p>
-                  <a 
+                  <a
                     href={`tel:${organization.phone}`}
                     className="hover:text-white transition-colors"
                   >
@@ -180,7 +205,7 @@ export const Footer: React.FC = () => {
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             {organization?.settings?.privacyPolicyUrl ? (
-              <a 
+              <a
                 href={organization.settings.privacyPolicyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -194,7 +219,7 @@ export const Footer: React.FC = () => {
               </Link>
             )}
             {organization?.settings?.termsOfServiceUrl ? (
-              <a 
+              <a
                 href={organization.settings.termsOfServiceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -215,4 +240,4 @@ export const Footer: React.FC = () => {
       </div>
     </footer>
   );
-}; 
+};

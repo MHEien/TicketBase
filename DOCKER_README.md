@@ -5,11 +5,13 @@ This guide explains how to run the entire TicketsMonorepo platform using Docker.
 ## Quick Start
 
 1. **Build and start all services:**
+
    ```bash
    docker-compose up --build
    ```
 
 2. **Start services in the background:**
+
    ```bash
    docker-compose up -d --build
    ```
@@ -21,16 +23,16 @@ This guide explains how to run the entire TicketsMonorepo platform using Docker.
 
 ## Services & Ports
 
-| Service  | Port | Description |
-|----------|------|-------------|
-| Admin UI | 3000 | Frontend React application |
-| API      | 4000 | Main NestJS API server |
-| Plugins  | 5000 | Plugins NestJS service |
-| PostgreSQL | 5432 | Main database |
-| MongoDB  | 27017 | Plugins database |
-| MinIO    | 9000 | Object storage API |
-| MinIO Console | 9001 | MinIO web interface |
-| Adminer  | 8080 | Database admin interface |
+| Service       | Port  | Description                |
+| ------------- | ----- | -------------------------- |
+| Admin UI      | 3000  | Frontend React application |
+| API           | 4000  | Main NestJS API server     |
+| Plugins       | 5000  | Plugins NestJS service     |
+| PostgreSQL    | 5432  | Main database              |
+| MongoDB       | 27017 | Plugins database           |
+| MinIO         | 9000  | Object storage API         |
+| MinIO Console | 9001  | MinIO web interface        |
+| Adminer       | 8080  | Database admin interface   |
 
 ## Environment Variables
 
@@ -61,11 +63,13 @@ MINIO_ROOT_PASSWORD=your_secure_password
 ## Development vs Production
 
 ### Development
+
 - Uses local builds with hot reloading
 - Includes development tools (Adminer)
 - Uses default credentials
 
 ### Production Checklist
+
 - [ ] Change all default passwords
 - [ ] Use proper JWT secrets
 - [ ] Set up SSL/TLS
@@ -99,6 +103,7 @@ docker-compose down -v
 ## Database Access
 
 ### PostgreSQL (via Adminer)
+
 - URL: http://localhost:8080
 - System: PostgreSQL
 - Server: postgres
@@ -106,9 +111,11 @@ docker-compose down -v
 - Password: postgres
 
 ### MongoDB
+
 - Connection String: `mongodb://root:example@localhost:27017/admin`
 
 ### MinIO Console
+
 - URL: http://localhost:9001
 - Username: minioadmin
 - Password: minioadmin
@@ -118,6 +125,7 @@ docker-compose down -v
 ### Common Issues
 
 1. **Port conflicts:**
+
    ```bash
    # Check what's using a port
    lsof -i :3000
@@ -126,6 +134,7 @@ docker-compose down -v
    ```
 
 2. **Database connection issues:**
+
    ```bash
    # Check if database is ready
    docker-compose exec postgres pg_isready -U postgres
@@ -173,4 +182,4 @@ Services should show "healthy" status when ready.
 1. Access the Admin UI at http://localhost:3000
 2. Check API documentation at http://localhost:4000/api (if Swagger is enabled)
 3. Configure your environment variables for production use
-4. Set up CI/CD pipeline for automated deployments 
+4. Set up CI/CD pipeline for automated deployments

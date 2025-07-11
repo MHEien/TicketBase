@@ -1,4 +1,4 @@
-import { apiClient } from '../api-client';
+import { apiClient } from "../api-client";
 
 export interface Organization {
   id: string;
@@ -16,9 +16,9 @@ export interface Organization {
     emailNotifications?: boolean;
     primaryColor?: string;
     secondaryColor?: string;
-    buttonStyle?: 'rounded' | 'square' | 'pill';
+    buttonStyle?: "rounded" | "square" | "pill";
     fontFamily?: string;
-    headerStyle?: 'centered' | 'left' | 'right' | 'full-width';
+    headerStyle?: "centered" | "left" | "right" | "full-width";
     footerLinks?: {
       text: string;
       url: string;
@@ -49,18 +49,21 @@ export const organizationsApi = {
   // Get organization by domain (for multi-tenant support)
   async getByDomain(domain: string): Promise<Organization> {
     // Use public endpoint that doesn't require authentication
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/public/organizations/by-domain?domain=${encodeURIComponent(domain)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api/public/organizations/by-domain?domain=${encodeURIComponent(domain)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('Organization not found for this domain');
+        throw new Error("Organization not found for this domain");
       }
-      throw new Error('Failed to fetch organization');
+      throw new Error("Failed to fetch organization");
     }
 
     return response.json();
@@ -69,18 +72,21 @@ export const organizationsApi = {
   // Get organization by slug (fallback method)
   async getBySlug(slug: string): Promise<Organization> {
     // Use public endpoint that doesn't require authentication
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/public/organizations/by-slug?slug=${encodeURIComponent(slug)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api/public/organizations/by-slug?slug=${encodeURIComponent(slug)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('Organization not found for this slug');
+        throw new Error("Organization not found for this slug");
       }
-      throw new Error('Failed to fetch organization');
+      throw new Error("Failed to fetch organization");
     }
 
     return response.json();
@@ -89,18 +95,21 @@ export const organizationsApi = {
   // Get all organizations (development only)
   async getAll(): Promise<Organization[]> {
     // Use public endpoint that doesn't require authentication
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/public/organizations/all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api/public/organizations/all`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       if (response.status === 403) {
-        throw new Error('Organization listing not available in production');
+        throw new Error("Organization listing not available in production");
       }
-      throw new Error('Failed to fetch organizations');
+      throw new Error("Failed to fetch organizations");
     }
 
     return response.json();
@@ -111,15 +120,15 @@ export const organizationsApi = {
     try {
       // Get current domain from window.location
       const currentDomain = window.location.hostname;
-      
+
       // Skip localhost and common development domains
       if (
-        currentDomain === 'localhost' || 
-        currentDomain === '127.0.0.1' ||
-        currentDomain.endsWith('.local') ||
-        currentDomain.endsWith('.localhost') ||
-        currentDomain.includes('localhost:') ||
-        currentDomain.includes('127.0.0.1:')
+        currentDomain === "localhost" ||
+        currentDomain === "127.0.0.1" ||
+        currentDomain.endsWith(".local") ||
+        currentDomain.endsWith(".localhost") ||
+        currentDomain.includes("localhost:") ||
+        currentDomain.includes("127.0.0.1:")
       ) {
         // For development, try to get organization from environment or use default
         const defaultOrgSlug = import.meta.env.VITE_DEFAULT_ORG_SLUG;
@@ -132,7 +141,7 @@ export const organizationsApi = {
       // Try to get organization by custom domain
       return await this.getByDomain(currentDomain);
     } catch (error) {
-      console.warn('Could not detect organization from domain:', error);
+      console.warn("Could not detect organization from domain:", error);
       return null;
     }
   },
@@ -144,7 +153,9 @@ export const organizationsApi = {
   },
 
   // Check if a domain is available for use
-  async checkDomainAvailability(domain: string): Promise<{ available: boolean; organization?: string }> {
+  async checkDomainAvailability(
+    domain: string,
+  ): Promise<{ available: boolean; organization?: string }> {
     try {
       const org = await this.getByDomain(domain);
       return {
@@ -157,4 +168,4 @@ export const organizationsApi = {
       };
     }
   },
-}; 
+};

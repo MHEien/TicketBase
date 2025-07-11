@@ -48,7 +48,10 @@ export async function cleanupSessions(): Promise<any> {
  * (This is only for diagnostic purposes and should not be used in production)
  */
 export function saveRefreshTokenBackup(refreshToken: string): void {
-  if (import.meta.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+  if (
+    import.meta.env.NODE_ENV !== "production" &&
+    typeof window !== "undefined"
+  ) {
     localStorage.setItem("debug_refresh_token", refreshToken);
     console.log("Debug: Saved refresh token backup");
   }
@@ -59,7 +62,10 @@ export function saveRefreshTokenBackup(refreshToken: string): void {
  * (This is only for diagnostic purposes and should not be used in production)
  */
 export function getRefreshTokenBackup(): string | null {
-  if (import.meta.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+  if (
+    import.meta.env.NODE_ENV !== "production" &&
+    typeof window !== "undefined"
+  ) {
     return localStorage.getItem("debug_refresh_token");
   }
   return null;

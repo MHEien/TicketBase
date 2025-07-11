@@ -1,47 +1,76 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Calendar, Clock, MapPin, Globe, Users, Share2, Heart, ArrowLeft, Plus, Minus } from 'lucide-react'
-import { format } from 'date-fns'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/Card'
-import { Button } from '~/components/ui/Button'
-import { useOrganization } from '~/contexts/OrganizationContext'
-import { eventsApi, Event, TicketType } from '~/lib/api/events'
-import { EventDetailExtensions } from '~/components/plugins/ExtensionPoint'
-import { useCart } from '~/contexts/CartContext'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Globe,
+  Users,
+  Share2,
+  Heart,
+  ArrowLeft,
+  Plus,
+  Minus,
+} from "lucide-react";
+import { format } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
+import { Button } from "~/components/ui/Button";
+import { useOrganization } from "~/contexts/OrganizationContext";
+import { eventsApi, Event, TicketType } from "~/lib/api/events";
+import { EventDetailExtensions } from "~/components/plugins/ExtensionPoint";
+import { useCart } from "~/contexts/CartContext";
 
-export const Route = createFileRoute('/events/$eventId')({
+export const Route = createFileRoute("/events/$eventId")({
   component: EventDetailPage,
-})
+});
 
 interface TicketSelection {
-  ticketTypeId: string
-  quantity: number
-  price: number
-  name: string
+  ticketTypeId: string;
+  quantity: number;
+  price: number;
+  name: string;
 }
 
 function EventDetailPage() {
-  const { eventId } = Route.useParams()
-  const { organization } = useOrganization()
-  const { addItem, updateQuantity, getItemQuantity, state: cartState } = useCart()
-  
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const { eventId } = Route.useParams();
+  const { organization } = useOrganization();
+  const {
+    addItem,
+    updateQuantity,
+    getItemQuantity,
+    state: cartState,
+  } = useCart();
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   // Fetch event details
-  const { data: event, isLoading, error } = useQuery({
-    queryKey: ['event', eventId],
-    queryFn: () => eventsApi.getPublicEvent(eventId),
+  const {
+    data: event,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["event", eventId, organization?.id],
+    queryFn: () => {
+      if (!organization?.id) {
+        throw new Error("Organization ID is required");
+      }
+      return eventsApi.getPublicEvent(eventId, organization.id);
+    },
+    enabled: !!organization?.id && !!eventId, // Only run query when we have both organization ID and event ID
     staleTime: 1000 * 60 * 5, // 5 minutes
-  })
+  });
 
-  const handleTicketQuantityChange = (ticketType: TicketType, quantity: number) => {
+  const handleTicketQuantityChange = (
+    ticketType: TicketType,
+    quantity: number,
+  ) => {
     if (quantity === 0) {
       // Remove item from cart
-      updateQuantity(eventId, ticketType.id, 0)
+      updateQuantity(eventId, ticketType.id, 0);
     } else if (event) {
       // Add to cart or update quantity
-      const existingQuantity = getItemQuantity(eventId, ticketType.id)
+      const existingQuantity = getItemQuantity(eventId, ticketType.id);
       if (existingQuantity === 0) {
         // Add new item to cart
         addItem({
@@ -51,24 +80,28 @@ function EventDetailPage() {
           quantity,
           price: ticketType.price,
           event,
-        })
+        });
       } else {
         // Update existing item quantity
-        updateQuantity(eventId, ticketType.id, quantity)
+        updateQuantity(eventId, ticketType.id, quantity);
       }
     }
-  }
+  };
 
   // Get cart items for this event
-  const eventCartItems = cartState.items.filter(item => item.eventId === eventId)
-  
-  const totalPrice = eventCartItems.reduce((sum, item) => 
-    sum + (item.price * item.quantity), 0
-  )
+  const eventCartItems = cartState.items.filter(
+    (item) => item.eventId === eventId,
+  );
 
-  const totalQuantity = eventCartItems.reduce((sum, item) => 
-    sum + item.quantity, 0
-  )
+  const totalPrice = eventCartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+
+  const totalQuantity = eventCartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
 
   const handleShare = async () => {
     if (navigator.share && event) {
@@ -77,31 +110,31 @@ function EventDetailPage() {
           title: event.title,
           text: event.shortDescription || event.description,
           url: window.location.href,
-        })
+        });
       } catch (err) {
         // Fallback to copy to clipboard
-        navigator.clipboard.writeText(window.location.href)
+        navigator.clipboard.writeText(window.location.href);
       }
     } else {
       // Fallback to copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
+      navigator.clipboard.writeText(window.location.href);
     }
-  }
+  };
 
   const proceedToCheckout = () => {
-    if (eventCartItems.length === 0) return
-    
-    // Navigate to checkout - cart data is already managed by CartProvider
-    window.location.href = '/checkout'
-  }
+    if (eventCartItems.length === 0) return;
 
-  if (isLoading) {
+    // Navigate to checkout - cart data is already managed by CartProvider
+    window.location.href = "/checkout";
+  };
+
+  if (isLoading || !organization) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="animate-pulse">
           {/* Header skeleton */}
           <div className="h-96 bg-gray-200"></div>
-          
+
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
@@ -114,27 +147,36 @@ function EventDetailPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !event) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-          <p className="text-gray-600 mb-8">The event you're looking for doesn't exist or has been removed.</p>
-          <Button onClick={() => window.location.href = '/events'}>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Event Not Found
+          </h1>
+          <p className="text-gray-600 mb-8">
+            {!organization 
+              ? "Please select an organization to view event details."
+              : "The event you're looking for doesn't exist or has been removed."}
+          </p>
+          <Button onClick={() => (window.location.href = "/events")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Events
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
-  const images = event.galleryImages && event.galleryImages.length > 0 
-    ? [event.featuredImage, ...event.galleryImages].filter(Boolean)
-    : event.featuredImage ? [event.featuredImage] : []
+  const images =
+    event.galleryImages && event.galleryImages.length > 0
+      ? [event.featuredImage, ...event.galleryImages].filter(Boolean)
+      : event.featuredImage
+        ? [event.featuredImage]
+        : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -143,7 +185,7 @@ function EventDetailPage() {
         {images.length > 0 ? (
           <>
             <img
-              src={images[activeImageIndex] || '/api/placeholder/1200/400'}
+              src={images[activeImageIndex] || "/api/placeholder/1200/400"}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -152,11 +194,11 @@ function EventDetailPage() {
         ) : (
           <div className="w-full h-full bg-gradient-to-r from-blue-600 to-purple-700"></div>
         )}
-        
+
         {/* Back button */}
         <div className="absolute top-6 left-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={() => window.history.back()}
             className="bg-black bg-opacity-50 text-white hover:bg-opacity-70"
           >
@@ -167,8 +209,8 @@ function EventDetailPage() {
 
         {/* Share button */}
         <div className="absolute top-6 right-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={handleShare}
             className="bg-black bg-opacity-50 text-white hover:bg-opacity-70"
           >
@@ -185,7 +227,9 @@ function EventDetailPage() {
                   key={index}
                   onClick={() => setActiveImageIndex(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    index === activeImageIndex ? 'bg-white' : 'bg-white bg-opacity-50'
+                    index === activeImageIndex
+                      ? "bg-white"
+                      : "bg-white bg-opacity-50"
                   }`}
                 />
               ))}
@@ -204,17 +248,21 @@ function EventDetailPage() {
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                   {event.category}
                 </span>
-                {event.status === 'published' && (
+                {event.status === "published" && (
                   <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                     Available
                   </span>
                 )}
               </div>
-              
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">{event.title}</h1>
-              
+
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                {event.title}
+              </h1>
+
               {event.shortDescription && (
-                <p className="text-xl text-gray-600 mb-6">{event.shortDescription}</p>
+                <p className="text-xl text-gray-600 mb-6">
+                  {event.shortDescription}
+                </p>
               )}
 
               {/* Event Meta */}
@@ -223,11 +271,12 @@ function EventDetailPage() {
                   <Calendar className="h-5 w-5 mr-3 text-blue-600" />
                   <div>
                     <div className="font-medium">
-                      {format(new Date(event.startDate), 'EEEE, MMMM d, yyyy')}
+                      {format(new Date(event.startDate), "EEEE, MMMM d, yyyy")}
                     </div>
                     {event.endDate && event.endDate !== event.startDate && (
                       <div className="text-sm text-gray-500">
-                        to {format(new Date(event.endDate), 'EEEE, MMMM d, yyyy')}
+                        to{" "}
+                        {format(new Date(event.endDate), "EEEE, MMMM d, yyyy")}
                       </div>
                     )}
                   </div>
@@ -238,20 +287,24 @@ function EventDetailPage() {
                   <div>
                     <div className="font-medium">{event.startTime}</div>
                     {event.endTime && (
-                      <div className="text-sm text-gray-500">to {event.endTime}</div>
+                      <div className="text-sm text-gray-500">
+                        to {event.endTime}
+                      </div>
                     )}
-                    <div className="text-sm text-gray-500">{event.timeZone}</div>
+                    <div className="text-sm text-gray-500">
+                      {event.timeZone}
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center text-gray-700">
-                  {event.locationType === 'virtual' ? (
+                  {event.locationType === "virtual" ? (
                     <Globe className="h-5 w-5 mr-3 text-blue-600" />
                   ) : (
                     <MapPin className="h-5 w-5 mr-3 text-blue-600" />
                   )}
                   <div>
-                    {event.locationType === 'virtual' ? (
+                    {event.locationType === "virtual" ? (
                       <div className="font-medium">Virtual Event</div>
                     ) : (
                       <div>
@@ -269,7 +322,9 @@ function EventDetailPage() {
                   <div className="flex items-center text-gray-700">
                     <Users className="h-5 w-5 mr-3 text-blue-600" />
                     <div>
-                      <div className="font-medium">Capacity: {event.capacity}</div>
+                      <div className="font-medium">
+                        Capacity: {event.capacity}
+                      </div>
                       <div className="text-sm text-gray-500">
                         {event.totalTicketsSold} tickets sold
                       </div>
@@ -286,7 +341,7 @@ function EventDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="prose prose-gray max-w-none">
-                  {event.description.split('\n').map((paragraph, index) => (
+                  {event.description.split("\n").map((paragraph, index) => (
                     <p key={index} className="mb-4 last:mb-0">
                       {paragraph}
                     </p>
@@ -296,10 +351,7 @@ function EventDetailPage() {
             </Card>
 
             {/* Event Detail Extensions */}
-            <EventDetailExtensions
-              event={event}
-              context={{ organization }}
-            />
+            <EventDetailExtensions event={event} context={{ organization }} />
 
             {/* Tags */}
             {event.tags && event.tags.length > 0 && (
@@ -334,18 +386,24 @@ function EventDetailPage() {
                   {event.ticketTypes && event.ticketTypes.length > 0 ? (
                     <>
                       {event.ticketTypes
-                        .filter(ticket => ticket.isActive)
+                        .filter((ticket) => ticket.isActive)
                         .sort((a, b) => a.sortOrder - b.sortOrder)
                         .map((ticketType) => {
-                          const quantity = getItemQuantity(eventId, ticketType.id)
-                          const available = ticketType.quantity - ticketType.sold
-                          const isAvailable = available > 0
-                          
+                          const quantity = getItemQuantity(
+                            eventId,
+                            ticketType.id,
+                          );
+                          const available =
+                            ticketType.quantity - ticketType.sold;
+                          const isAvailable = available > 0;
+
                           return (
                             <div
                               key={ticketType.id}
                               className={`border rounded-lg p-4 ${
-                                !isAvailable ? 'opacity-50 bg-gray-50' : 'border-gray-200'
+                                !isAvailable
+                                  ? "opacity-50 bg-gray-50"
+                                  : "border-gray-200"
                               }`}
                             >
                               <div className="flex justify-between items-start mb-2">
@@ -361,21 +419,24 @@ function EventDetailPage() {
                                   {available} left
                                 </div>
                               </div>
-                              
+
                               {ticketType.description && (
                                 <p className="text-sm text-gray-600 mb-3">
                                   {ticketType.description}
                                 </p>
                               )}
-                              
+
                               {isAvailable ? (
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center space-x-2">
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => 
-                                        handleTicketQuantityChange(ticketType, Math.max(0, quantity - 1))
+                                      onClick={() =>
+                                        handleTicketQuantityChange(
+                                          ticketType,
+                                          Math.max(0, quantity - 1),
+                                        )
                                       }
                                       disabled={quantity === 0}
                                     >
@@ -387,8 +448,11 @@ function EventDetailPage() {
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => 
-                                        handleTicketQuantityChange(ticketType, Math.min(available, quantity + 1))
+                                      onClick={() =>
+                                        handleTicketQuantityChange(
+                                          ticketType,
+                                          Math.min(available, quantity + 1),
+                                        )
                                       }
                                       disabled={quantity >= available}
                                     >
@@ -397,7 +461,8 @@ function EventDetailPage() {
                                   </div>
                                   {quantity > 0 && (
                                     <div className="text-sm font-medium text-gray-900">
-                                      ${(ticketType.price * quantity).toFixed(2)}
+                                      $
+                                      {(ticketType.price * quantity).toFixed(2)}
                                     </div>
                                   )}
                                 </div>
@@ -407,21 +472,24 @@ function EventDetailPage() {
                                 </div>
                               )}
                             </div>
-                          )
+                          );
                         })}
-                      
+
                       {/* Total and Checkout */}
                       {totalQuantity > 0 && (
                         <div className="border-t pt-4">
                           <div className="flex justify-between items-center mb-4">
                             <span className="text-lg font-semibold">Total</span>
-                            <span className="text-2xl font-bold">${totalPrice.toFixed(2)}</span>
+                            <span className="text-2xl font-bold">
+                              ${totalPrice.toFixed(2)}
+                            </span>
                           </div>
                           <div className="text-sm text-gray-600 mb-4">
-                            {totalQuantity} ticket{totalQuantity !== 1 ? 's' : ''}
+                            {totalQuantity} ticket
+                            {totalQuantity !== 1 ? "s" : ""}
                           </div>
-                          <Button 
-                            className="w-full" 
+                          <Button
+                            className="w-full"
                             size="lg"
                             onClick={proceedToCheckout}
                           >
@@ -486,5 +554,5 @@ function EventDetailPage() {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

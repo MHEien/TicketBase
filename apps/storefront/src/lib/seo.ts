@@ -1,4 +1,4 @@
-import { Organization } from './api/organizations';
+import { Organization } from "./api/organizations";
 
 export interface SEOConfig {
   title: string;
@@ -6,8 +6,8 @@ export interface SEOConfig {
   keywords?: string[];
   canonical?: string;
   ogImage?: string;
-  ogType?: 'website' | 'article' | 'event';
-  twitterCard?: 'summary' | 'summary_large_image';
+  ogType?: "website" | "article" | "event";
+  twitterCard?: "summary" | "summary_large_image";
   noIndex?: boolean;
   noFollow?: boolean;
   structuredData?: Record<string, any>;
@@ -39,10 +39,14 @@ export interface EventSEOData {
 
 export class SEOManager {
   private organization: Organization | null = null;
-  private baseUrl: string = '';
-  private currentDomain: string = '';
+  private baseUrl: string = "";
+  private currentDomain: string = "";
 
-  constructor(organization: Organization | null = null, baseUrl: string = '', currentDomain: string = '') {
+  constructor(
+    organization: Organization | null = null,
+    baseUrl: string = "",
+    currentDomain: string = "",
+  ) {
     this.organization = organization;
     this.baseUrl = baseUrl;
     this.currentDomain = currentDomain;
@@ -52,18 +56,25 @@ export class SEOManager {
    * Generate base SEO configuration for the organization
    */
   getBaseSEO(): SEOConfig {
-    const orgName = this.organization?.name || 'Events Platform';
-    const description = this.organization?.checkoutMessage || 
-      'Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience.';
+    const orgName = this.organization?.name || "Events Platform";
+    const description =
+      this.organization?.checkoutMessage ||
+      "Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience.";
 
     return {
       title: `${orgName} - Premium Events`,
       description,
-      keywords: ['events', 'tickets', 'booking', 'entertainment', orgName.toLowerCase()],
+      keywords: [
+        "events",
+        "tickets",
+        "booking",
+        "entertainment",
+        orgName.toLowerCase(),
+      ],
       canonical: this.baseUrl,
-      ogType: 'website',
+      ogType: "website",
       ogImage: this.organization?.logo || `${this.baseUrl}/og-image.jpg`,
-      twitterCard: 'summary_large_image',
+      twitterCard: "summary_large_image",
       structuredData: this.getOrganizationStructuredData(),
     };
   }
@@ -72,20 +83,29 @@ export class SEOManager {
    * Generate SEO for event pages
    */
   getEventSEO(event: EventSEOData): SEOConfig {
-    const orgName = this.organization?.name || 'Events Platform';
+    const orgName = this.organization?.name || "Events Platform";
     const title = `${event.name} - ${orgName}`;
-    const description = event.description.length > 160 
-      ? `${event.description.substring(0, 157)}...`
-      : event.description;
+    const description =
+      event.description.length > 160
+        ? `${event.description.substring(0, 157)}...`
+        : event.description;
 
     return {
       title,
       description,
-      keywords: ['event', 'tickets', event.name.toLowerCase(), orgName.toLowerCase()],
+      keywords: [
+        "event",
+        "tickets",
+        event.name.toLowerCase(),
+        orgName.toLowerCase(),
+      ],
       canonical: event.url,
-      ogType: 'event',
-      ogImage: event.image || this.organization?.logo || `${this.baseUrl}/og-image.jpg`,
-      twitterCard: 'summary_large_image',
+      ogType: "event",
+      ogImage:
+        event.image ||
+        this.organization?.logo ||
+        `${this.baseUrl}/og-image.jpg`,
+      twitterCard: "summary_large_image",
       structuredData: this.getEventStructuredData(event),
     };
   }
@@ -94,18 +114,23 @@ export class SEOManager {
    * Generate SEO for category pages
    */
   getCategorySEO(categoryName: string, eventCount: number): SEOConfig {
-    const orgName = this.organization?.name || 'Events Platform';
+    const orgName = this.organization?.name || "Events Platform";
     const title = `${categoryName} Events - ${orgName}`;
     const description = `Discover ${eventCount} amazing ${categoryName.toLowerCase()} events. Book tickets now for the best experiences.`;
 
     return {
       title,
       description,
-      keywords: [categoryName.toLowerCase(), 'events', 'tickets', orgName.toLowerCase()],
-      canonical: `${this.baseUrl}/categories/${categoryName.toLowerCase().replace(/\s+/g, '-')}`,
-      ogType: 'website',
+      keywords: [
+        categoryName.toLowerCase(),
+        "events",
+        "tickets",
+        orgName.toLowerCase(),
+      ],
+      canonical: `${this.baseUrl}/categories/${categoryName.toLowerCase().replace(/\s+/g, "-")}`,
+      ogType: "website",
       ogImage: this.organization?.logo || `${this.baseUrl}/og-image.jpg`,
-      twitterCard: 'summary',
+      twitterCard: "summary",
     };
   }
 
@@ -113,7 +138,7 @@ export class SEOManager {
    * Generate SEO for search results
    */
   getSearchSEO(query: string, resultCount: number): SEOConfig {
-    const orgName = this.organization?.name || 'Events Platform';
+    const orgName = this.organization?.name || "Events Platform";
     const title = `Search: "${query}" - ${orgName}`;
     const description = `Found ${resultCount} events matching "${query}". Discover and book tickets for your next experience.`;
 
@@ -121,7 +146,7 @@ export class SEOManager {
       title,
       description,
       canonical: `${this.baseUrl}/search?q=${encodeURIComponent(query)}`,
-      ogType: 'website',
+      ogType: "website",
       noIndex: true, // Don't index search results
       structuredData: this.getSearchResultsStructuredData(query, resultCount),
     };
@@ -134,11 +159,12 @@ export class SEOManager {
     if (!this.organization) return {};
 
     const structuredData: Record<string, any> = {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
+      "@context": "https://schema.org",
+      "@type": "Organization",
       name: this.organization.name,
       url: this.organization.website || this.baseUrl,
-      description: this.organization.checkoutMessage || 'Premium events platform',
+      description:
+        this.organization.checkoutMessage || "Premium events platform",
     };
 
     if (this.organization.logo) {
@@ -167,7 +193,9 @@ export class SEOManager {
 
     // Add social media links
     if (this.organization.settings?.socialLinks?.length) {
-      structuredData.sameAs = this.organization.settings.socialLinks.map(link => link.url);
+      structuredData.sameAs = this.organization.settings.socialLinks.map(
+        (link) => link.url,
+      );
     }
 
     return structuredData;
@@ -178,14 +206,14 @@ export class SEOManager {
    */
   private getEventStructuredData(event: EventSEOData): Record<string, any> {
     const structuredData: Record<string, any> = {
-      '@context': 'https://schema.org',
-      '@type': 'Event',
+      "@context": "https://schema.org",
+      "@type": "Event",
       name: event.name,
       description: event.description,
       startDate: event.startDate,
       url: event.url,
-      eventStatus: 'https://schema.org/EventScheduled',
-      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     };
 
     if (event.endDate) {
@@ -198,13 +226,13 @@ export class SEOManager {
 
     if (event.location) {
       structuredData.location = {
-        '@type': 'Place',
+        "@type": "Place",
         name: event.location.name,
       };
 
       if (event.location.address) {
         structuredData.location.address = {
-          '@type': 'PostalAddress',
+          "@type": "PostalAddress",
           streetAddress: event.location.address,
           addressLocality: event.location.city,
           addressCountry: event.location.country,
@@ -214,7 +242,7 @@ export class SEOManager {
 
     if (event.organizer) {
       structuredData.organizer = {
-        '@type': 'Organization',
+        "@type": "Organization",
         name: event.organizer.name,
         url: event.organizer.url,
       };
@@ -222,10 +250,10 @@ export class SEOManager {
 
     if (event.price) {
       structuredData.offers = {
-        '@type': 'Offer',
+        "@type": "Offer",
         price: event.price.value,
         priceCurrency: event.price.currency,
-        availability: 'https://schema.org/InStock',
+        availability: "https://schema.org/InStock",
         validFrom: new Date().toISOString(),
       };
     }
@@ -236,12 +264,15 @@ export class SEOManager {
   /**
    * Generate search results structured data
    */
-  private getSearchResultsStructuredData(query: string, resultCount: number): Record<string, any> {
+  private getSearchResultsStructuredData(
+    query: string,
+    resultCount: number,
+  ): Record<string, any> {
     return {
-      '@context': 'https://schema.org',
-      '@type': 'SearchResultsPage',
+      "@context": "https://schema.org",
+      "@type": "SearchResultsPage",
       mainEntity: {
-        '@type': 'ItemList',
+        "@type": "ItemList",
         numberOfItems: resultCount,
         name: `Search results for "${query}"`,
       },
@@ -256,39 +287,39 @@ export class SEOManager {
     document.title = config.title;
 
     // Update or create meta tags
-    this.updateMetaTag('description', config.description);
-    this.updateMetaTag('keywords', config.keywords?.join(', ') || '');
-    
+    this.updateMetaTag("description", config.description);
+    this.updateMetaTag("keywords", config.keywords?.join(", ") || "");
+
     // Canonical URL
     if (config.canonical) {
-      this.updateLinkTag('canonical', config.canonical);
+      this.updateLinkTag("canonical", config.canonical);
     }
 
     // Robots meta
     const robotsContent = [];
-    if (config.noIndex) robotsContent.push('noindex');
-    if (config.noFollow) robotsContent.push('nofollow');
+    if (config.noIndex) robotsContent.push("noindex");
+    if (config.noFollow) robotsContent.push("nofollow");
     if (robotsContent.length > 0) {
-      this.updateMetaTag('robots', robotsContent.join(', '));
+      this.updateMetaTag("robots", robotsContent.join(", "));
     }
 
     // Open Graph tags
-    this.updateMetaTag('og:title', config.title, 'property');
-    this.updateMetaTag('og:description', config.description, 'property');
-    this.updateMetaTag('og:type', config.ogType || 'website', 'property');
+    this.updateMetaTag("og:title", config.title, "property");
+    this.updateMetaTag("og:description", config.description, "property");
+    this.updateMetaTag("og:type", config.ogType || "website", "property");
     if (config.ogImage) {
-      this.updateMetaTag('og:image', config.ogImage, 'property');
+      this.updateMetaTag("og:image", config.ogImage, "property");
     }
     if (config.canonical) {
-      this.updateMetaTag('og:url', config.canonical, 'property');
+      this.updateMetaTag("og:url", config.canonical, "property");
     }
 
     // Twitter Card tags
-    this.updateMetaTag('twitter:card', config.twitterCard || 'summary', 'name');
-    this.updateMetaTag('twitter:title', config.title, 'name');
-    this.updateMetaTag('twitter:description', config.description, 'name');
+    this.updateMetaTag("twitter:card", config.twitterCard || "summary", "name");
+    this.updateMetaTag("twitter:title", config.title, "name");
+    this.updateMetaTag("twitter:description", config.description, "name");
     if (config.ogImage) {
-      this.updateMetaTag('twitter:image', config.ogImage, 'name');
+      this.updateMetaTag("twitter:image", config.ogImage, "name");
     }
 
     // Structured data
@@ -300,19 +331,23 @@ export class SEOManager {
   /**
    * Update or create meta tag
    */
-  private static updateMetaTag(name: string, content: string, attribute: string = 'name'): void {
+  private static updateMetaTag(
+    name: string,
+    content: string,
+    attribute: string = "name",
+  ): void {
     if (!content) return;
 
     const selector = `meta[${attribute}="${name}"]`;
     let meta = document.querySelector(selector) as HTMLMetaElement;
-    
+
     if (!meta) {
-      meta = document.createElement('meta');
+      meta = document.createElement("meta");
       meta.setAttribute(attribute, name);
       document.head.appendChild(meta);
     }
-    
-    meta.setAttribute('content', content);
+
+    meta.setAttribute("content", content);
   }
 
   /**
@@ -323,28 +358,30 @@ export class SEOManager {
 
     const selector = `link[rel="${rel}"]`;
     let link = document.querySelector(selector) as HTMLLinkElement;
-    
+
     if (!link) {
-      link = document.createElement('link');
-      link.setAttribute('rel', rel);
+      link = document.createElement("link");
+      link.setAttribute("rel", rel);
       document.head.appendChild(link);
     }
-    
-    link.setAttribute('href', href);
+
+    link.setAttribute("href", href);
   }
 
   /**
    * Update structured data
    */
   private static updateStructuredData(data: Record<string, any>): void {
-    const existingScript = document.querySelector('script[data-schema-type="seo"]');
+    const existingScript = document.querySelector(
+      'script[data-schema-type="seo"]',
+    );
     if (existingScript) {
       existingScript.remove();
     }
 
-    const script = document.createElement('script');
-    script.setAttribute('type', 'application/ld+json');
-    script.setAttribute('data-schema-type', 'seo');
+    const script = document.createElement("script");
+    script.setAttribute("type", "application/ld+json");
+    script.setAttribute("data-schema-type", "seo");
     script.textContent = JSON.stringify(data);
     document.head.appendChild(script);
   }
@@ -357,49 +394,53 @@ export class SEOManager {
       {
         url: this.baseUrl,
         lastmod: new Date().toISOString(),
-        changefreq: 'daily',
-        priority: '1.0',
+        changefreq: "daily",
+        priority: "1.0",
       },
       {
         url: `${this.baseUrl}/events`,
         lastmod: new Date().toISOString(),
-        changefreq: 'daily',
-        priority: '0.9',
+        changefreq: "daily",
+        priority: "0.9",
       },
       {
         url: `${this.baseUrl}/categories`,
         lastmod: new Date().toISOString(),
-        changefreq: 'weekly',
-        priority: '0.8',
+        changefreq: "weekly",
+        priority: "0.8",
       },
       {
         url: `${this.baseUrl}/about`,
         lastmod: new Date().toISOString(),
-        changefreq: 'monthly',
-        priority: '0.7',
+        changefreq: "monthly",
+        priority: "0.7",
       },
     ];
 
     // Add event URLs
-    events.forEach(event => {
+    events.forEach((event) => {
       urls.push({
         url: event.url,
         lastmod: new Date().toISOString(),
-        changefreq: 'weekly',
-        priority: '0.8',
+        changefreq: "weekly",
+        priority: "0.8",
       });
     });
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(url => `  <url>
+${urls
+  .map(
+    (url) => `  <url>
     <loc>${url.url}</loc>
     <lastmod>${url.lastmod}</lastmod>
     <changefreq>${url.changefreq}</changefreq>
     <priority>${url.priority}</priority>
-  </url>`).join('\n')}
+  </url>`,
+  )
+  .join("\n")}
 </urlset>`;
 
     return sitemap;
   }
-} 
+}

@@ -1,60 +1,73 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Puzzle, Download, Settings, Check, X, AlertCircle } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/Card'
-import { Button } from '~/components/ui/Button'
-import { useOrganization } from '~/contexts/OrganizationContext'
-import { usePlugins } from '~/contexts/PluginContext'
-import { pluginsApi } from '~/lib/api/plugins'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import {
+  Puzzle,
+  Download,
+  Settings,
+  Check,
+  X,
+  AlertCircle,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
+import { Button } from "~/components/ui/Button";
+import { useOrganization } from "~/contexts/OrganizationContext";
+import { usePlugins } from "~/contexts/PluginContext";
+import { pluginsApi } from "~/lib/api/plugins";
 
-export const Route = createFileRoute('/plugins')({
+export const Route = createFileRoute("/plugins")({
   component: PluginsPage,
-})
+});
 
 function PluginsPage() {
-  const { organization } = useOrganization()
-  const { plugins, loading, error, refetch } = usePlugins()
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const { organization } = useOrganization();
+  const { plugins, loading, error, refetch } = usePlugins();
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const { data: availablePlugins, isLoading: availableLoading } = useQuery({
-    queryKey: ['available-plugins'],
+    queryKey: ["available-plugins"],
     queryFn: () => pluginsApi.getAvailablePlugins(),
     staleTime: 1000 * 60 * 5, // 5 minutes
-  })
+  });
 
   const categories = [
-    { id: 'all', name: 'All Plugins', icon: Puzzle },
-    { id: 'payment', name: 'Payment', icon: Check },
-    { id: 'analytics', name: 'Analytics', icon: Settings },
-    { id: 'marketing', name: 'Marketing', icon: Download },
-    { id: 'integration', name: 'Integration', icon: Settings },
-  ]
+    { id: "all", name: "All Plugins", icon: Puzzle },
+    { id: "payment", name: "Payment", icon: Check },
+    { id: "analytics", name: "Analytics", icon: Settings },
+    { id: "marketing", name: "Marketing", icon: Download },
+    { id: "integration", name: "Integration", icon: Settings },
+  ];
 
-  const filteredPlugins = availablePlugins?.filter(plugin => 
-    selectedCategory === 'all' || plugin.category === selectedCategory
-  ) || []
+  const filteredPlugins =
+    availablePlugins?.filter(
+      (plugin) =>
+        selectedCategory === "all" || plugin.category === selectedCategory,
+    ) || [];
 
   const isPluginInstalled = (pluginId: string) => {
-    return plugins.some(p => p.pluginId === pluginId)
-  }
+    return plugins.some((p) => p.pluginId === pluginId);
+  };
 
   const getPluginStatus = (pluginId: string) => {
-    const installedPlugin = plugins.find(p => p.pluginId === pluginId)
-    if (!installedPlugin) return 'not-installed'
-    return installedPlugin.isEnabled ? 'enabled' : 'disabled'
-  }
+    const installedPlugin = plugins.find((p) => p.pluginId === pluginId);
+    if (!installedPlugin) return "not-installed";
+    return installedPlugin.isEnabled ? "enabled" : "disabled";
+  };
 
   if (!organization) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Organization Required</h1>
-          <p className="text-gray-600">Please set up your organization to manage plugins.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Organization Required
+          </h1>
+          <p className="text-gray-600">
+            Please set up your organization to manage plugins.
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -62,9 +75,12 @@ function PluginsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Plugin Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Plugin Management
+          </h1>
           <p className="text-lg text-gray-600">
-            Extend your storefront with powerful plugins for payments, analytics, and more.
+            Extend your storefront with powerful plugins for payments,
+            analytics, and more.
           </p>
         </div>
 
@@ -72,9 +88,9 @@ function PluginsPage() {
         <div className="mb-8">
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => {
-              const Icon = category.icon
-              const isActive = selectedCategory === category.id
-              
+              const Icon = category.icon;
+              const isActive = selectedCategory === category.id;
+
               return (
                 <Button
                   key={category.id}
@@ -85,7 +101,7 @@ function PluginsPage() {
                   <Icon className="h-4 w-4 mr-2" />
                   {category.name}
                 </Button>
-              )
+              );
             })}
           </div>
         </div>
@@ -96,7 +112,9 @@ function PluginsPage() {
             <CardContent className="pt-6">
               <div className="flex items-center">
                 <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-                <span className="text-red-700">Error loading plugins: {error}</span>
+                <span className="text-red-700">
+                  Error loading plugins: {error}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -119,13 +137,13 @@ function PluginsPage() {
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-600">
-                      {plugins.filter(p => p.isEnabled).length}
+                      {plugins.filter((p) => p.isEnabled).length}
                     </div>
                     <div className="text-sm text-gray-500">Enabled</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-yellow-600">
-                      {plugins.filter(p => !p.isEnabled).length}
+                      {plugins.filter((p) => !p.isEnabled).length}
                     </div>
                     <div className="text-sm text-gray-500">Disabled</div>
                   </div>
@@ -140,8 +158,10 @@ function PluginsPage() {
 
         {/* Available Plugins */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Available Plugins</h2>
-          
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Available Plugins
+          </h2>
+
           {availableLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -158,32 +178,47 @@ function PluginsPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPlugins.map((plugin) => {
-                const status = getPluginStatus(plugin.id)
-                const isInstalled = isPluginInstalled(plugin.id)
-                
+                const status = getPluginStatus(plugin.id);
+                const isInstalled = isPluginInstalled(plugin.id);
+
                 return (
-                  <Card key={plugin.id} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={plugin.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-lg">{plugin.displayName}</CardTitle>
-                          <p className="text-sm text-gray-500">by {plugin.author}</p>
+                          <CardTitle className="text-lg">
+                            {plugin.displayName}
+                          </CardTitle>
+                          <p className="text-sm text-gray-500">
+                            by {plugin.author}
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            plugin.category === 'payment' ? 'bg-green-100 text-green-800' :
-                            plugin.category === 'analytics' ? 'bg-blue-100 text-blue-800' :
-                            plugin.category === 'marketing' ? 'bg-purple-100 text-purple-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              plugin.category === "payment"
+                                ? "bg-green-100 text-green-800"
+                                : plugin.category === "analytics"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : plugin.category === "marketing"
+                                    ? "bg-purple-100 text-purple-800"
+                                    : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
                             {plugin.category}
                           </span>
                           {isInstalled && (
-                            <div className={`flex items-center px-2 py-1 text-xs rounded-full ${
-                              status === 'enabled' ? 'bg-green-100 text-green-800' :
-                              'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {status === 'enabled' ? (
+                            <div
+                              className={`flex items-center px-2 py-1 text-xs rounded-full ${
+                                status === "enabled"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {status === "enabled" ? (
                                 <Check className="h-3 w-3 mr-1" />
                               ) : (
                                 <X className="h-3 w-3 mr-1" />
@@ -198,40 +233,45 @@ function PluginsPage() {
                       <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                         {plugin.description}
                       </p>
-                      
+
                       <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                         <span>Version {plugin.version}</span>
                         <span>Priority: {plugin.priority}</span>
                       </div>
 
                       {/* Extension Points */}
-                      {plugin.extensionPoints && plugin.extensionPoints.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-xs font-medium text-gray-700 mb-2">Extension Points:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {plugin.extensionPoints.map((point) => (
-                              <span
-                                key={point}
-                                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                              >
-                                {point}
-                              </span>
-                            ))}
+                      {plugin.extensionPoints &&
+                        plugin.extensionPoints.length > 0 && (
+                          <div className="mb-4">
+                            <p className="text-xs font-medium text-gray-700 mb-2">
+                              Extension Points:
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {plugin.extensionPoints.map((point) => (
+                                <span
+                                  key={point}
+                                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                                >
+                                  {point}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       {/* Metadata */}
                       {plugin.metadata && (
                         <div className="mb-4">
                           {plugin.metadata.paymentProvider && (
                             <div className="text-xs text-gray-600">
-                              <strong>Payment Provider:</strong> {plugin.metadata.paymentProvider}
+                              <strong>Payment Provider:</strong>{" "}
+                              {plugin.metadata.paymentProvider}
                             </div>
                           )}
                           {plugin.metadata.supportedMethods && (
                             <div className="text-xs text-gray-600">
-                              <strong>Methods:</strong> {plugin.metadata.supportedMethods.join(', ')}
+                              <strong>Methods:</strong>{" "}
+                              {plugin.metadata.supportedMethods.join(", ")}
                             </div>
                           )}
                         </div>
@@ -244,7 +284,12 @@ function PluginsPage() {
                             Install (Admin Only)
                           </Button>
                         ) : (
-                          <Button size="sm" variant="outline" className="flex-1" disabled>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            disabled
+                          >
                             <Settings className="h-4 w-4 mr-2" />
                             Configure (Admin Only)
                           </Button>
@@ -252,7 +297,7 @@ function PluginsPage() {
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           )}
@@ -260,12 +305,13 @@ function PluginsPage() {
           {filteredPlugins.length === 0 && !availableLoading && (
             <div className="text-center py-12">
               <Puzzle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No plugins found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No plugins found
+              </h3>
               <p className="text-gray-600">
-                {selectedCategory === 'all' 
-                  ? 'No plugins are available in the marketplace'
-                  : `No ${selectedCategory} plugins are available`
-                }
+                {selectedCategory === "all"
+                  ? "No plugins are available in the marketplace"
+                  : `No ${selectedCategory} plugins are available`}
               </p>
             </div>
           )}
@@ -283,11 +329,13 @@ function PluginsPage() {
                   Develop Custom Plugins
                 </h3>
                 <p className="text-blue-700 text-sm mb-3">
-                  Extend your storefront with custom functionality using our Plugin SDK.
-                  Create payment processors, analytics tools, marketing integrations, and more.
+                  Extend your storefront with custom functionality using our
+                  Plugin SDK. Create payment processors, analytics tools,
+                  marketing integrations, and more.
                 </p>
                 <div className="text-xs text-blue-600">
-                  <strong>Note:</strong> Plugin installation and configuration is managed through the admin panel.
+                  <strong>Note:</strong> Plugin installation and configuration
+                  is managed through the admin panel.
                 </div>
               </div>
             </div>
@@ -295,5 +343,5 @@ function PluginsPage() {
         </Card>
       </div>
     </div>
-  )
-} 
+  );
+}

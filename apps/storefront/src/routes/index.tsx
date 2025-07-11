@@ -1,13 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useOrganization } from '../contexts/OrganizationContext';
-import { useBaseSEO } from '../hooks/use-seo';
-import { Header } from '../components/Header';
-import { Footer } from '../components/Footer';
-import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Calendar, MapPin, Users, Star, Zap, Shield } from 'lucide-react';
+import { createFileRoute } from "@tanstack/react-router";
+import { useOrganization } from "../contexts/OrganizationContext";
+import { useBaseSEO } from "../hooks/use-seo";
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { Calendar, MapPin, Users, Star, Zap, Shield } from "lucide-react";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: Index,
 });
 
@@ -16,9 +16,21 @@ function Index() {
 
   // Apply SEO for home page
   useBaseSEO({
-    title: organization?.name ? `${organization.name} - Premium Events Platform` : 'Events Platform - Discover Amazing Events',
-    description: organization?.checkoutMessage || 'Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience.',
-    keywords: ['events', 'tickets', 'booking', 'entertainment', 'concerts', 'conferences', organization?.name || 'events platform'].filter(Boolean),
+    title: organization?.name
+      ? `${organization.name} - Premium Events Platform`
+      : "Events Platform - Discover Amazing Events",
+    description:
+      organization?.checkoutMessage ||
+      "Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience.",
+    keywords: [
+      "events",
+      "tickets",
+      "booking",
+      "entertainment",
+      "concerts",
+      "conferences",
+      organization?.name || "events platform",
+    ].filter(Boolean),
   });
 
   if (loading) {
@@ -31,11 +43,10 @@ function Index() {
     );
   }
 
-  const organizationName = organization?.name || 'Events Platform';
+  const organizationName = organization?.name || "Events Platform";
 
   return (
     <div className="min-h-screen bg-gray-50">
-      
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -44,13 +55,21 @@ function Index() {
               Welcome to {organizationName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              {organization?.checkoutMessage || 'Discover incredible events, book tickets instantly, and create unforgettable memories'}
+              {organization?.checkoutMessage ||
+                "Discover incredible events, book tickets instantly, and create unforgettable memories"}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-100"
+              >
                 Browse Events
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-blue-600"
+              >
                 Learn More
               </Button>
             </div>
@@ -66,7 +85,8 @@ function Index() {
               Why Choose {organizationName}?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We make discovering and booking events simple, secure, and enjoyable.
+              We make discovering and booking events simple, secure, and
+              enjoyable.
             </p>
           </div>
 
@@ -77,7 +97,8 @@ function Index() {
               </div>
               <h3 className="text-xl font-semibold mb-4">Easy Booking</h3>
               <p className="text-gray-600">
-                Book tickets in just a few clicks with our streamlined checkout process.
+                Book tickets in just a few clicks with our streamlined checkout
+                process.
               </p>
             </Card>
 
@@ -95,7 +116,9 @@ function Index() {
               <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
                 <Zap className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Instant Confirmation</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                Instant Confirmation
+              </h3>
               <p className="text-gray-600">
                 Get your tickets immediately with instant email confirmation.
               </p>
@@ -121,7 +144,9 @@ function Index() {
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="h-48 bg-gradient-to-r from-pink-500 to-rose-500"></div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">Summer Music Festival</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Summer Music Festival
+                </h3>
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPin className="w-4 h-4 mr-1" />
                   <span className="text-sm">Central Park, New York</span>
@@ -140,7 +165,9 @@ function Index() {
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="h-48 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">Tech Conference 2024</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Tech Conference 2024
+                </h3>
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPin className="w-4 h-4 mr-1" />
                   <span className="text-sm">Convention Center, SF</span>
@@ -159,7 +186,9 @@ function Index() {
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="h-48 bg-gradient-to-r from-green-500 to-teal-500"></div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">Art Exhibition Gala</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Art Exhibition Gala
+                </h3>
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPin className="w-4 h-4 mr-1" />
                   <span className="text-sm">Museum of Modern Art</span>
@@ -193,7 +222,9 @@ function Index() {
               <div className="text-gray-600">Events Hosted</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-green-600 mb-2">250K+</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">
+                250K+
+              </div>
               <div className="text-gray-600">Tickets Sold</div>
             </div>
             <div>
@@ -215,18 +246,24 @@ function Index() {
             Ready to Discover Amazing Events?
           </h2>
           <p className="text-xl mb-8 text-blue-100">
-            Join thousands of event-goers who trust {organizationName} for their entertainment needs.
+            Join thousands of event-goers who trust {organizationName} for their
+            entertainment needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100"
+            >
               Browse Events Now
             </Button>
             {organization?.email && (
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="border-white text-white hover:bg-white hover:text-blue-600"
-                onClick={() => window.location.href = `mailto:${organization.email}`}
+                onClick={() =>
+                  (window.location.href = `mailto:${organization.email}`)
+                }
               >
                 Contact Us
               </Button>
@@ -234,7 +271,6 @@ function Index() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

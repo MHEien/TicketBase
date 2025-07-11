@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
-import { useOrganization } from '../contexts/OrganizationContext';
-import { SEOManager, SEOConfig, EventSEOData } from '../lib/seo';
+import { useEffect, useMemo } from "react";
+import { useOrganization } from "../contexts/OrganizationContext";
+import { SEOManager, SEOConfig, EventSEOData } from "../lib/seo";
 
 interface UseSEOOptions {
   title?: string;
@@ -18,13 +18,15 @@ interface UseSEOOptions {
 
 export function useSEO(options: UseSEOOptions = {}) {
   const { organization, currentDomain } = useOrganization();
-  
+
   // Create SEO manager instance
   const seoManager = useMemo(() => {
-    const baseUrl = currentDomain 
-      ? `https://${currentDomain}` 
-      : (typeof window !== 'undefined' ? window.location.origin : 'https://localhost:3000');
-    return new SEOManager(organization, baseUrl, currentDomain || '');
+    const baseUrl = currentDomain
+      ? `https://${currentDomain}`
+      : typeof window !== "undefined"
+        ? window.location.origin
+        : "https://localhost:3000";
+    return new SEOManager(organization, baseUrl, currentDomain || "");
   }, [organization, currentDomain]);
 
   // Generate SEO config based on options
@@ -36,10 +38,16 @@ export function useSEO(options: UseSEOOptions = {}) {
       config = seoManager.getEventSEO(options.eventData);
     } else if (options.categoryName && options.eventCount !== undefined) {
       // Category page SEO
-      config = seoManager.getCategorySEO(options.categoryName, options.eventCount);
+      config = seoManager.getCategorySEO(
+        options.categoryName,
+        options.eventCount,
+      );
     } else if (options.searchQuery && options.searchResultCount !== undefined) {
       // Search results SEO
-      config = seoManager.getSearchSEO(options.searchQuery, options.searchResultCount);
+      config = seoManager.getSearchSEO(
+        options.searchQuery,
+        options.searchResultCount,
+      );
     } else {
       // Default/base SEO
       config = seoManager.getBaseSEO();
@@ -68,7 +76,8 @@ export function useSEO(options: UseSEOOptions = {}) {
     seoManager,
     seoConfig,
     applySEO: (config: SEOConfig) => SEOManager.applySEO(config),
-    generateSitemap: (events: EventSEOData[] = []) => seoManager.generateSitemap(events),
+    generateSitemap: (events: EventSEOData[] = []) =>
+      seoManager.generateSitemap(events),
   };
 }
 
@@ -85,6 +94,15 @@ export function useSearchSEO(query: string, resultCount: number) {
   return useSEO({ searchQuery: query, searchResultCount: resultCount });
 }
 
-export function useBaseSEO(customOptions: Omit<UseSEOOptions, 'eventData' | 'categoryName' | 'eventCount' | 'searchQuery' | 'searchResultCount'> = {}) {
+export function useBaseSEO(
+  customOptions: Omit<
+    UseSEOOptions,
+    | "eventData"
+    | "categoryName"
+    | "eventCount"
+    | "searchQuery"
+    | "searchResultCount"
+  > = {},
+) {
   return useSEO(customOptions);
-} 
+}

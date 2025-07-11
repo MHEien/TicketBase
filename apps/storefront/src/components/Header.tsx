@@ -1,16 +1,17 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
-import { Search, Menu, X } from 'lucide-react';
-import { useOrganization } from '../contexts/OrganizationContext';
-import { Button } from './ui/Button';
-import { clsx } from 'clsx';
+import React from "react";
+import { Link } from "@tanstack/react-router";
+import { Search, Menu, X } from "lucide-react";
+import { useOrganization } from "../contexts/OrganizationContext";
+import { Button } from "./ui/Button";
+import { clsx } from "clsx";
+import { DevelopmentTenantSwitcher } from "./domain/DevelopmentTenantSwitcher";
 
 export const Header: React.FC = () => {
   const { organization, branding, loading } = useOrganization();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const headerStyle = branding?.headerStyle || 'centered';
+  const headerStyle = branding?.headerStyle || "centered";
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,41 +23,40 @@ export const Header: React.FC = () => {
 
   const getHeaderAlignment = () => {
     switch (headerStyle) {
-      case 'left':
-        return 'justify-start';
-      case 'right':
-        return 'justify-end';
-      case 'full-width':
-        return 'justify-between';
-      case 'centered':
+      case "left":
+        return "justify-start";
+      case "right":
+        return "justify-end";
+      case "full-width":
+        return "justify-between";
+      case "centered":
       default:
-        return 'justify-center';
+        return "justify-center";
     }
   };
 
-  const organizationName = organization?.name || 'Events Platform';
+  const organizationName = organization?.name || "Events Platform";
   const organizationLogo = branding?.logo;
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={clsx('flex items-center h-16', getHeaderAlignment())}>
-          
+        <div className={clsx("flex items-center h-16", getHeaderAlignment())}>
           {/* Logo/Brand */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
             {organizationLogo ? (
-              <img 
-                src={organizationLogo} 
+              <img
+                src={organizationLogo}
                 alt={organizationName}
                 className="h-8 w-auto"
               />
             ) : (
-              <div 
+              <div
                 className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold"
-                style={{ backgroundColor: branding?.primaryColor || '#3b82f6' }}
+                style={{ backgroundColor: branding?.primaryColor || "#3b82f6" }}
               >
                 {organizationName.charAt(0)}
               </div>
@@ -68,32 +68,32 @@ export const Header: React.FC = () => {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-8 ml-8">
-            <a 
-              href="/events" 
+            <a
+              href="/events"
               className="text-gray-700 hover:text-gray-900 transition-colors"
             >
               Events
             </a>
-            <a 
-              href="/categories" 
+            <a
+              href="/categories"
               className="text-gray-700 hover:text-gray-900 transition-colors"
             >
               Categories
             </a>
-            <a 
-              href="/search" 
+            <a
+              href="/search"
               className="text-gray-700 hover:text-gray-900 transition-colors"
             >
               Search
             </a>
-            <a 
-              href="/plugins" 
+            <a
+              href="/plugins"
               className="text-gray-700 hover:text-gray-900 transition-colors"
             >
               Plugins
             </a>
-            <Link 
-              to="/about" 
+            <Link
+              to="/about"
               className="text-gray-700 hover:text-gray-900 transition-colors"
             >
               About
@@ -111,13 +111,20 @@ export const Header: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  style={{ 
-                    '--tw-ring-color': branding?.primaryColor || '#3b82f6' 
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      "--tw-ring-color": branding?.primaryColor || "#3b82f6",
+                    } as React.CSSProperties
+                  }
                 />
               </div>
             </form>
           </div>
+
+          {/* Development Tenant Switcher - Only in development */}
+          {import.meta.env.DEV && (
+            <DevelopmentTenantSwitcher className="hidden md:block mr-4" />
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -136,6 +143,13 @@ export const Header: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200">
             <div className="px-2 pt-2 pb-3 space-y-1">
+              {/* Development Tenant Switcher - Mobile */}
+              {import.meta.env.DEV && (
+                <div className="mb-4 px-3">
+                  <DevelopmentTenantSwitcher />
+                </div>
+              )}
+
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="mb-4">
                 <div className="relative">
@@ -145,45 +159,47 @@ export const Header: React.FC = () => {
                     placeholder="Search events..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                     style={{ 
-                       '--tw-ring-color': branding?.primaryColor || '#3b82f6' 
-                     } as React.CSSProperties}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={
+                      {
+                        "--tw-ring-color": branding?.primaryColor || "#3b82f6",
+                      } as React.CSSProperties
+                    }
                   />
                 </div>
               </form>
 
               {/* Mobile Navigation */}
-              <a 
-                href="/events" 
+              <a
+                href="/events"
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Events
               </a>
-              <a 
-                href="/categories" 
+              <a
+                href="/categories"
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Categories
               </a>
-              <a 
-                href="/search" 
+              <a
+                href="/search"
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Search
               </a>
-              <a 
-                href="/plugins" 
+              <a
+                href="/plugins"
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Plugins
               </a>
-              <Link 
-                to="/about" 
+              <Link
+                to="/about"
                 className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -195,4 +211,4 @@ export const Header: React.FC = () => {
       </div>
     </header>
   );
-}; 
+};

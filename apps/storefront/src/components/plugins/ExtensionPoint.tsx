@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { usePlugins } from '../../contexts/PluginContext';
+import React, { useMemo } from "react";
+import { usePlugins } from "../../contexts/PluginContext";
 
 interface ExtensionPointProps {
   name: string;
@@ -24,17 +24,17 @@ export const ExtensionPoint: React.FC<ExtensionPointProps> = ({
 
   const components = useMemo(() => {
     let comps = executeExtensionPoint(name, context);
-    
+
     // Apply filter if provided
     if (filter) {
       comps = comps.filter(filter);
     }
-    
+
     // Limit number of components if specified
     if (maxComponents) {
       comps = comps.slice(0, maxComponents);
     }
-    
+
     return comps;
   }, [name, context, executeExtensionPoint, filter, maxComponents]);
 
@@ -78,8 +78,11 @@ export const PaymentMethods: React.FC<{
   className?: string;
 }> = ({ context, onMethodSelect, className }) => {
   const { getPaymentMethods } = usePlugins();
-  
-  const paymentMethods = useMemo(() => getPaymentMethods(), [getPaymentMethods]);
+
+  const paymentMethods = useMemo(
+    () => getPaymentMethods(),
+    [getPaymentMethods],
+  );
 
   if (paymentMethods.length === 0) {
     return (
@@ -98,10 +101,7 @@ export const PaymentMethods: React.FC<{
     <div className={className}>
       {paymentMethods.map((PaymentMethod, index) => (
         <div key={index} className="mb-4 last:mb-0">
-          <PaymentMethod 
-            context={context}
-            onSelect={onMethodSelect}
-          />
+          <PaymentMethod context={context} onSelect={onMethodSelect} />
         </div>
       ))}
     </div>
@@ -110,9 +110,13 @@ export const PaymentMethods: React.FC<{
 
 export const CheckoutExtensions: React.FC<{
   context?: any;
-  position?: 'before-payment' | 'after-payment' | 'before-submit' | 'after-submit';
+  position?:
+    | "before-payment"
+    | "after-payment"
+    | "before-submit"
+    | "after-submit";
   className?: string;
-}> = ({ context, position = 'before-payment', className }) => {
+}> = ({ context, position = "before-payment", className }) => {
   return (
     <ExtensionPoint
       name="checkout-extensions"
@@ -166,4 +170,4 @@ export const AnalyticsExtensions: React.FC<{
       context={{ ...context, event, data }}
     />
   );
-}; 
+};

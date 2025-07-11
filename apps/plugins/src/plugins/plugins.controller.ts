@@ -37,6 +37,8 @@ import { Public } from '../common/auth/decorators/public.decorator';
 import { Roles } from '../common/auth/decorators/roles.decorator';
 import { Response } from 'express';
 import { PluginStorageService } from './services/plugin-storage.service';
+import { PluginActionService } from './services/plugin-action.service';
+import { ExecutePluginActionDto, PluginActionResponseDto } from './dto/plugin-action.dto';
 
 @ApiTags('plugins')
 @Controller('plugins')
@@ -45,6 +47,7 @@ export class PluginsController {
   constructor(
     private readonly pluginsService: PluginsService,
     private readonly pluginStorageService: PluginStorageService,
+    private readonly pluginActionService: PluginActionService,
   ) {}
 
   @ApiOperation({ summary: 'Get all available plugins' })
@@ -340,6 +343,128 @@ export class PluginsController {
       throw new UnauthorizedException('Extension point parameter is required');
     }
     return this.pluginsService.getPluginsByExtensionPoint(extensionPoint);
+  }
+
+  @ApiOperation({ summary: 'Execute a plugin backend action' })
+  @ApiResponse({
+    status: 200,
+    description: 'Plugin action executed successfully',
+    type: PluginActionResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Authentication required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Plugin not found or action not supported',
+  })
+  @ApiParam({
+    name: 'pluginId',
+    description: 'Plugin ID',
+    required: true,
+  })
+  @ApiBody({ type: ExecutePluginActionDto })
+  @Post(':pluginId/actions')
+  async executePluginAction(
+    @Request() req,
+    @Param('pluginId') pluginId: string,
+    @Body() actionDto: ExecutePluginActionDto,
+  ): Promise<PluginActionResponseDto> {
+    const tenantId = req.user.tenantId;
+    const userId = req.user.userId;
+
+    if (!tenantId) {
+      throw new UnauthorizedException('Tenant ID required');
+    }
+
+    return this.pluginActionService.executeAction(
+      tenantId,
+      pluginId,
+      actionDto.action,
+      actionDto.parameters,
+      actionDto.metadata,
+      {
+        userId,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      },
+    );
+  }
+
+  // Add new public endpoints for organization-specific data
+  @ApiOperation({ 
+    summary: 'Get enabled plugins for organization (public endpoint)',
+    description: 'Returns enabled plugins for a specific organization. Used by storefront for rendering extension points.'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns enabled plugins for the organization',
+  })
+  @ApiQuery({
+    name: 'organizationId',
+    description: 'Organization ID to filter plugins',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'extensionPoint',
+    description: 'Filter by specific extension point',
+    required: false,
+  })
+  @Public() // No auth required for storefront access
+  @Get('public/organizations/enabled')
+  async getEnabledPluginsForOrganization(
+    @Query('organizationId') organizationId: string,
+    @Query('extensionPoint') extensionPoint?: string,
+  ) {
+    if (!organizationId) {
+      throw new BadRequestException('Organization ID is required');
+    }
+
+    const plugins = await this.pluginsService.getInstalledPlugins(organizationId);
+    
+    // Filter to only enabled plugins
+    let enabledPlugins = plugins.filter(plugin => plugin.enabled);
+    
+    // Filter by extension point if specified
+    if (extensionPoint) {
+      enabledPlugins = enabledPlugins.filter(plugin => 
+        plugin.plugin?.extensionPoints?.includes(extensionPoint)
+      );
+    }
+    
+    return enabledPlugins;
+  }
+
+  @ApiOperation({ 
+    summary: 'Get payment plugins for organization (public endpoint)',
+    description: 'Returns enabled payment plugins for an organization. Used by storefront for checkout.'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns enabled payment plugins for the organization',
+  })
+  @ApiQuery({
+    name: 'organizationId',
+    description: 'Organization ID to filter plugins',
+    required: true,
+  })
+  @Public() // No auth required for storefront access
+  @Get('public/organizations/payment')
+  async getPaymentPluginsForOrganization(
+    @Query('organizationId') organizationId: string,
+  ) {
+    if (!organizationId) {
+      throw new BadRequestException('Organization ID is required');
+    }
+
+    const plugins = await this.pluginsService.getInstalledPlugins(organizationId);
+    
+    // Filter to enabled payment plugins
+    return plugins.filter(plugin => 
+      plugin.enabled && 
+      plugin.plugin?.category?.toLowerCase() === 'payment'
+    );
   }
 
   @ApiOperation({ summary: 'Upload a plugin bundle file' })

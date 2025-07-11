@@ -1,97 +1,123 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { useState, useEffect } from 'react'
-import { Calendar, Clock, MapPin, Globe, ArrowLeft, CreditCard, User, Mail, Phone, ShoppingCart } from 'lucide-react'
-import { format } from 'date-fns'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/Card'
-import { Button } from '~/components/ui/Button'
-import { Input } from '~/components/ui/Input'
-import { useOrganization } from '~/contexts/OrganizationContext'
-import { useCart } from '~/contexts/CartContext'
-import { eventsApi } from '~/lib/api/events'
-import { ordersApi } from '~/lib/api/orders'
-import { PaymentMethods, CheckoutExtensions } from '~/components/plugins/ExtensionPoint'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Globe,
+  ArrowLeft,
+  CreditCard,
+  User,
+  Mail,
+  Phone,
+  ShoppingCart,
+} from "lucide-react";
+import { format } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
+import { Button } from "~/components/ui/Button";
+import { Input } from "~/components/ui/Input";
+import { useOrganization } from "~/contexts/OrganizationContext";
+import { useCart } from "~/contexts/CartContext";
+import { eventsApi } from "~/lib/api/events";
+import { ordersApi } from "~/lib/api/orders";
+import {
+  PaymentMethods,
+  CheckoutExtensions,
+} from "~/components/plugins/ExtensionPoint";
 
-export const Route = createFileRoute('/checkout')({
+export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
-})
+});
 
 function CheckoutPage() {
-  const { organization } = useOrganization()
-  const { state: cartState, clearCart, loadCheckoutData, saveCheckoutData, clearCheckoutData } = useCart()
+  const { organization } = useOrganization();
+  const {
+    state: cartState,
+    clearCart,
+    loadCheckoutData,
+    saveCheckoutData,
+    clearCheckoutData,
+  } = useCart();
   const [customerInfo, setCustomerInfo] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-  })
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [specialRequests, setSpecialRequests] = useState('')
-  const [marketingConsent, setMarketingConsent] = useState(false)
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    string | null
+  >(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [specialRequests, setSpecialRequests] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
 
   // Load saved checkout data
   useEffect(() => {
-    const savedData = loadCheckoutData()
+    const savedData = loadCheckoutData();
     if (savedData) {
       setCustomerInfo({
         firstName: savedData.customerInfo.firstName,
         lastName: savedData.customerInfo.lastName,
         email: savedData.customerInfo.email,
-        phone: savedData.customerInfo.phone || '',
-      })
-      setSelectedPaymentMethod(savedData.paymentMethod || null)
-      setSpecialRequests(savedData.specialRequests || '')
-      setMarketingConsent(savedData.marketingConsent || false)
+        phone: savedData.customerInfo.phone || "",
+      });
+      setSelectedPaymentMethod(savedData.paymentMethod || null);
+      setSpecialRequests(savedData.specialRequests || "");
+      setMarketingConsent(savedData.marketingConsent || false);
     }
-  }, [loadCheckoutData])
+  }, [loadCheckoutData]);
 
   // Redirect if cart is empty
   useEffect(() => {
     if (!cartState.isLoading && cartState.items.length === 0) {
-      window.location.href = '/events'
+      window.location.href = "/events";
     }
-  }, [cartState.isLoading, cartState.items.length])
+  }, [cartState.isLoading, cartState.items.length]);
 
   // Fetch event details for all cart items
-  const eventIds = [...new Set(cartState.items.map(item => item.eventId))]
+  const eventIds = [...new Set(cartState.items.map((item) => item.eventId))];
   const { data: events } = useQuery({
-    queryKey: ['events', eventIds],
+    queryKey: ["events", eventIds],
     queryFn: async () => {
-      const eventPromises = eventIds.map(id => eventsApi.getPublicEvent(id))
-      return Promise.all(eventPromises)
+      const eventPromises = eventIds.map((id) => eventsApi.getPublicEvent(id));
+      return Promise.all(eventPromises);
     },
     enabled: eventIds.length > 0,
     staleTime: 1000 * 60 * 5, // 5 minutes
-  })
+  });
 
   const handleInputChange = (field: string, value: string) => {
-    setCustomerInfo(prev => ({
+    setCustomerInfo((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     // Validate required fields
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email) {
-      alert('Please fill in all required fields')
-      return
+    if (
+      !customerInfo.firstName ||
+      !customerInfo.lastName ||
+      !customerInfo.email
+    ) {
+      alert("Please fill in all required fields");
+      return;
     }
 
     if (!selectedPaymentMethod) {
-      alert('Please select a payment method')
-      return
+      alert("Please select a payment method");
+      return;
     }
 
     if (cartState.items.length === 0) {
-      alert('Your cart is empty')
-      return
+      alert("Your cart is empty");
+      return;
     }
 
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     try {
       // Save checkout data
@@ -100,50 +126,49 @@ function CheckoutPage() {
         paymentMethod: selectedPaymentMethod,
         specialRequests,
         marketingConsent,
-      })
+      });
 
       // 1. Create order in backend
       const order = await ordersApi.createOrderFromCart(
         cartState.items,
         customerInfo,
         specialRequests,
-        marketingConsent
-      )
+        marketingConsent,
+      );
 
       // 2. Create payment intent
       const paymentIntent = await ordersApi.createPaymentIntent({
         orderId: order.id,
         paymentMethod: selectedPaymentMethod,
-      })
+      });
 
       // 3. Confirm payment (in real implementation, this would be handled by the payment plugin)
       const paymentResult = await ordersApi.confirmPayment({
         orderId: order.id,
         paymentIntentId: paymentIntent.paymentIntentId,
         paymentMethod: selectedPaymentMethod,
-      })
+      });
 
       if (paymentResult.success) {
         // Clear cart and checkout data
-        clearCart()
-        clearCheckoutData()
-        
+        clearCart();
+        clearCheckoutData();
+
         // Show success message
-        alert('Payment successful! Your tickets have been purchased.')
-        
+        alert("Payment successful! Your tickets have been purchased.");
+
         // Redirect to events page
-        window.location.href = '/events'
+        window.location.href = "/events";
       } else {
-        throw new Error('Payment failed')
+        throw new Error("Payment failed");
       }
-      
     } catch (error) {
-      console.error('Payment processing error:', error)
-      alert('Payment failed. Please try again.')
+      console.error("Payment processing error:", error);
+      alert("Payment failed. Please try again.");
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   if (cartState.isLoading) {
     return (
@@ -152,7 +177,7 @@ function CheckoutPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h1>
         </div>
       </div>
-    )
+    );
   }
 
   if (cartState.items.length === 0) {
@@ -160,14 +185,18 @@ function CheckoutPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">Add some tickets to your cart to proceed with checkout.</p>
-          <Button onClick={() => window.location.href = '/events'}>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Your cart is empty
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Add some tickets to your cart to proceed with checkout.
+          </p>
+          <Button onClick={() => (window.location.href = "/events")}>
             Browse Events
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -175,8 +204,8 @@ function CheckoutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={() => window.history.back()}
             className="mb-4"
           >
@@ -204,32 +233,36 @@ function CheckoutPage() {
                       label="First Name *"
                       type="text"
                       value={customerInfo.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("firstName", e.target.value)
+                      }
                       required
                     />
                     <Input
                       label="Last Name *"
                       type="text"
                       value={customerInfo.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("lastName", e.target.value)
+                      }
                       required
                     />
                   </div>
-                  
+
                   <Input
                     label="Email Address *"
                     type="email"
                     value={customerInfo.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     icon={<Mail className="h-4 w-4 text-gray-400" />}
                     required
                   />
-                  
+
                   <Input
                     label="Phone Number"
                     type="tel"
                     value={customerInfo.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     icon={<Phone className="h-4 w-4 text-gray-400" />}
                   />
 
@@ -255,8 +288,12 @@ function CheckoutPage() {
                         onChange={(e) => setMarketingConsent(e.target.checked)}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <label htmlFor="marketing-consent" className="ml-2 block text-sm text-gray-700">
-                        I agree to receive marketing communications and updates about future events
+                      <label
+                        htmlFor="marketing-consent"
+                        className="ml-2 block text-sm text-gray-700"
+                      >
+                        I agree to receive marketing communications and updates
+                        about future events
                       </label>
                     </div>
                   </div>
@@ -265,13 +302,13 @@ function CheckoutPage() {
             </Card>
 
             {/* Before Payment Extensions */}
-            <CheckoutExtensions 
+            <CheckoutExtensions
               position="before-payment"
-              context={{ 
-                events, 
-                customerInfo, 
+              context={{
+                events,
+                customerInfo,
                 cartState,
-                organization 
+                organization,
               }}
             />
 
@@ -301,14 +338,14 @@ function CheckoutPage() {
             </Card>
 
             {/* After Payment Extensions */}
-            <CheckoutExtensions 
+            <CheckoutExtensions
               position="after-payment"
-              context={{ 
-                events, 
-                customerInfo, 
+              context={{
+                events,
+                customerInfo,
                 cartState,
                 selectedPaymentMethod,
-                organization 
+                organization,
               }}
             />
           </div>
@@ -323,14 +360,19 @@ function CheckoutPage() {
                 {/* Cart Items */}
                 <div className="space-y-4">
                   {cartState.items.map((item) => {
-                    const itemEvent = events?.find(e => e.id === item.eventId)
-                    
+                    const itemEvent = events?.find(
+                      (e) => e.id === item.eventId,
+                    );
+
                     return (
-                      <div key={`${item.eventId}-${item.ticketTypeId}`} className="border-b pb-4">
+                      <div
+                        key={`${item.eventId}-${item.ticketTypeId}`}
+                        className="border-b pb-4"
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold text-lg text-gray-900">
-                              {itemEvent?.title || 'Event'}
+                              {itemEvent?.title || "Event"}
                             </h3>
                             <div className="font-medium text-gray-900 mt-1">
                               {item.ticketTypeName}
@@ -345,34 +387,38 @@ function CheckoutPage() {
                             </div>
                           </div>
                         </div>
-                        
+
                         {itemEvent && (
                           <div className="space-y-1 text-sm text-gray-600">
                             <div className="flex items-center">
                               <Calendar className="h-4 w-4 mr-2" />
-                              <span>{format(new Date(itemEvent.startDate), 'EEEE, MMMM d, yyyy')}</span>
+                              <span>
+                                {format(
+                                  new Date(itemEvent.startDate),
+                                  "EEEE, MMMM d, yyyy",
+                                )}
+                              </span>
                             </div>
                             <div className="flex items-center">
                               <Clock className="h-4 w-4 mr-2" />
                               <span>{itemEvent.startTime}</span>
                             </div>
                             <div className="flex items-center">
-                              {itemEvent.locationType === 'virtual' ? (
+                              {itemEvent.locationType === "virtual" ? (
                                 <Globe className="h-4 w-4 mr-2" />
                               ) : (
                                 <MapPin className="h-4 w-4 mr-2" />
                               )}
                               <span>
-                                {itemEvent.locationType === 'virtual' 
-                                  ? 'Virtual Event' 
-                                  : `${itemEvent.venueName}, ${itemEvent.city}`
-                                }
+                                {itemEvent.locationType === "virtual"
+                                  ? "Virtual Event"
+                                  : `${itemEvent.venueName}, ${itemEvent.city}`}
                               </span>
                             </div>
                           </div>
                         )}
                       </div>
-                    )
+                    );
                   })}
                 </div>
 
@@ -383,42 +429,49 @@ function CheckoutPage() {
                     <span>${cartState.totalPrice.toFixed(2)}</span>
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    {cartState.totalItems} ticket{cartState.totalItems !== 1 ? 's' : ''}
+                    {cartState.totalItems} ticket
+                    {cartState.totalItems !== 1 ? "s" : ""}
                   </div>
                 </div>
 
                 {/* Before Submit Extensions */}
-                <CheckoutExtensions 
+                <CheckoutExtensions
                   position="before-submit"
-                  context={{ 
-                    events, 
-                    customerInfo, 
+                  context={{
+                    events,
+                    customerInfo,
                     cartState,
                     selectedPaymentMethod,
-                    organization 
+                    organization,
                   }}
                 />
 
                 {/* Checkout Button */}
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   size="lg"
                   onClick={handleSubmit}
-                  disabled={!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !selectedPaymentMethod || isProcessing}
+                  disabled={
+                    !customerInfo.firstName ||
+                    !customerInfo.lastName ||
+                    !customerInfo.email ||
+                    !selectedPaymentMethod ||
+                    isProcessing
+                  }
                 >
-                  {isProcessing ? 'Processing...' : 'Complete Purchase'}
+                  {isProcessing ? "Processing..." : "Complete Purchase"}
                 </Button>
 
                 {/* After Submit Extensions */}
-                <CheckoutExtensions 
+                <CheckoutExtensions
                   position="after-submit"
-                  context={{ 
-                    events, 
-                    customerInfo, 
+                  context={{
+                    events,
+                    customerInfo,
                     cartState,
                     selectedPaymentMethod,
                     isProcessing,
-                    organization 
+                    organization,
                   }}
                 />
 
@@ -426,7 +479,9 @@ function CheckoutPage() {
                 <div className="text-xs text-gray-500 text-center">
                   <p>🔒 Your payment information is secure and encrypted</p>
                   {organization?.checkoutMessage && (
-                    <p className="mt-2 italic">"{organization.checkoutMessage}"</p>
+                    <p className="mt-2 italic">
+                      "{organization.checkoutMessage}"
+                    </p>
                   )}
                 </div>
               </CardContent>
@@ -435,5 +490,5 @@ function CheckoutPage() {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

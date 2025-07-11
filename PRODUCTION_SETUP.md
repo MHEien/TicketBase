@@ -5,6 +5,7 @@ This guide walks you through deploying your ticket system in production using Do
 ## 🏗️ Architecture Overview
 
 The production setup uses:
+
 - **Traefik** as a reverse proxy with automatic SSL certificates
 - **Internal Docker networking** for secure service communication
 - **Domain-based routing** using your `heien.dev` domain
@@ -118,6 +119,7 @@ htpasswd -nb admin yourpassword
 ### Required Secrets
 
 Make sure to replace these placeholder values:
+
 - `your_secure_postgres_password`
 - `your_secure_mongo_password`
 - `your_minio_access_key`
@@ -232,11 +234,13 @@ docker-compose exec minio mc mirror /data /backup
 ## 🌐 Network Architecture
 
 ### Internal Network (`ticketbase`)
+
 - **Type**: Bridge network (internal)
 - **Services**: postgres, mongo, minio, api, plugins, admin
 - **Purpose**: Secure internal communication
 
 ### External Network (`traefik`)
+
 - **Type**: Bridge network (public)
 - **Services**: traefik, minio, adminer, api, plugins, admin
 - **Purpose**: Services that need external access
@@ -246,19 +250,21 @@ docker-compose exec minio mc mirror /data /backup
 ### Common Issues
 
 1. **SSL Certificate Issues**
+
    ```bash
    # Check certificate status
    docker-compose logs traefik | grep acme
-   
+
    # Restart Traefik
    docker-compose restart traefik
    ```
 
 2. **Database Connection Issues**
+
    ```bash
    # Check database health
    docker-compose exec postgres pg_isready -U postgres
-   
+
    # Check database logs
    docker-compose logs postgres
    ```
@@ -299,16 +305,19 @@ docker inspect <container_name> | grep -A 10 Health
 ## 🔒 Security Best Practices
 
 1. **Network Security**
+
    - Internal network for database access
    - Only necessary services exposed
    - HTTPS enforced for all public services
 
 2. **Authentication**
+
    - Strong passwords for all services
    - JWT secrets with sufficient entropy
    - Traefik dashboard protected
 
 3. **Data Protection**
+
    - Regular backups
    - Encrypted storage volumes
    - Secure environment variable handling

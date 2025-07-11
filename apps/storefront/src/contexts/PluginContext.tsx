@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useOrganization } from './OrganizationContext';
-import { pluginsApi, InstalledPlugin, Plugin } from '../lib/api/plugins';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import { useOrganization } from "./OrganizationContext";
+import { pluginsApi, InstalledPlugin, Plugin } from "../lib/api/plugins";
 
 interface PluginContextType {
   plugins: InstalledPlugin[];
@@ -8,9 +14,18 @@ interface PluginContextType {
   loading: boolean;
   error: string | null;
   loadPlugin: (pluginId: string) => Promise<any>;
-  executeExtensionPoint: (extensionPoint: string, context?: any) => React.ComponentType<any>[];
+  executeExtensionPoint: (
+    extensionPoint: string,
+    context?: any,
+  ) => React.ComponentType<any>[];
   getPaymentMethods: () => React.ComponentType<any>[];
   getCheckoutExtensions: () => React.ComponentType<any>[];
+  executePluginAction: (
+    pluginId: string,
+    action: string,
+    parameters: any,
+    metadata?: any,
+  ) => Promise<any>;
   refetch: () => Promise<void>;
 }
 
@@ -19,7 +34,7 @@ const PluginContext = createContext<PluginContextType | undefined>(undefined);
 export const usePlugins = () => {
   const context = useContext(PluginContext);
   if (context === undefined) {
-    throw new Error('usePlugins must be used within a PluginProvider');
+    throw new Error("usePlugins must be used within a PluginProvider");
   }
   return context;
 };
@@ -31,7 +46,9 @@ interface PluginProviderProps {
 export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
   const { organization } = useOrganization();
   const [plugins, setPlugins] = useState<InstalledPlugin[]>([]);
-  const [loadedPlugins, setLoadedPlugins] = useState<Map<string, any>>(new Map());
+  const [loadedPlugins, setLoadedPlugins] = useState<Map<string, any>>(
+    new Map(),
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,11 +62,13 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Get enabled plugins for the organization
-      const enabledPlugins = await pluginsApi.getEnabledPlugins(organization.id);
+      const enabledPlugins = await pluginsApi.getEnabledPlugins(
+        organization.id,
+      );
       setPlugins(enabledPlugins);
-      
+
       // Auto-load plugins that are enabled
       for (const plugin of enabledPlugins) {
         if (plugin.isEnabled) {
@@ -57,79 +76,90 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load plugins');
-      console.error('Error fetching plugins:', err);
+      setError(err instanceof Error ? err.message : "Failed to load plugins");
+      console.error("Error fetching plugins:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadPlugin = useCallback(async (pluginId: string): Promise<any> => {
-    if (loadedPlugins.has(pluginId)) {
-      return loadedPlugins.get(pluginId);
-    }
-
-    try {
-      // Get plugin bundle URL
-      const bundle = await pluginsApi.getPluginBundle(pluginId);
-      
-      // Load plugin script dynamically
-      const pluginModule = await loadPluginScript(bundle.bundleUrl);
-      
-      // Get plugin configuration if organization exists
-      let config = {};
-      if (organization?.id) {
-        try {
-          config = await pluginsApi.getPluginConfig(organization.id, pluginId);
-        } catch (configError) {
-          console.warn(`No configuration found for plugin ${pluginId}:`, configError);
-        }
+  const loadPlugin = useCallback(
+    async (pluginId: string): Promise<any> => {
+      if (loadedPlugins.has(pluginId)) {
+        return loadedPlugins.get(pluginId);
       }
-      
-      // Initialize plugin with configuration
-      const initializedPlugin = {
-        ...pluginModule,
-        config,
-        pluginId,
-      };
-      
-      // Store in loaded plugins map
-      setLoadedPlugins(prev => new Map(prev.set(pluginId, initializedPlugin)));
-      
-      return initializedPlugin;
-    } catch (err) {
-      console.error(`Error loading plugin ${pluginId}:`, err);
-      throw err;
-    }
-  }, [organization?.id, loadedPlugins]);
+
+      try {
+        // Get plugin bundle URL
+        const bundle = await pluginsApi.getPluginBundle(pluginId);
+
+        // Load plugin script dynamically
+        const pluginModule = await loadPluginScript(bundle.bundleUrl);
+
+        // Get plugin configuration if organization exists
+        let config = {};
+        if (organization?.id) {
+          try {
+            config = await pluginsApi.getPluginConfig(
+              organization.id,
+              pluginId,
+            );
+          } catch (configError) {
+            // This is expected for public storefront - plugins should work without config access
+            console.debug(
+              `Plugin ${pluginId} running without config (expected for public access)`,
+            );
+          }
+        }
+
+        // Initialize plugin with configuration
+        const initializedPlugin = {
+          ...pluginModule,
+          config,
+          pluginId,
+        };
+
+        // Store in loaded plugins map
+        setLoadedPlugins(
+          (prev) => new Map(prev.set(pluginId, initializedPlugin)),
+        );
+
+        return initializedPlugin;
+      } catch (err) {
+        console.error(`Error loading plugin ${pluginId}:`, err);
+        throw err;
+      }
+    },
+    [organization?.id, loadedPlugins],
+  );
 
   const loadPluginScript = async (bundleUrl: string): Promise<any> => {
     return new Promise((resolve, reject) => {
       // For demo purposes, we'll simulate loading plugins
       // In a real implementation, you'd load the actual JavaScript bundle
-      
+
       // Check if this looks like a Stripe plugin URL
-      if (bundleUrl.includes('stripe') || bundleUrl.includes('payment')) {
+      if (bundleUrl.includes("stripe") || bundleUrl.includes("payment")) {
         // Return mock Stripe plugin structure based on the admin example
         resolve({
           metadata: {
-            id: 'stripe-payment-plugin',
-            name: 'Stripe Payment Gateway',
-            version: '2.0.0',
-            category: 'payment',
+            id: "stripe-payment-plugin",
+            name: "Stripe Payment Gateway",
+            version: "2.0.0",
+            category: "payment",
           },
           extensionPoints: {
-            'payment-methods': StripePaymentMethod,
-            'checkout-confirmation': StripeCheckoutConfirmation,
+            "payment-methods": StripePaymentMethod,
+            "checkout-confirmation": StripeCheckoutConfirmation,
           },
         });
       } else {
         // Generic plugin structure
         resolve({
           metadata: {
-            id: 'generic-plugin',
-            name: 'Generic Plugin',
-            version: '1.0.0',
+            id: "generic-plugin",
+            name: "Generic Plugin",
+            version: "1.0.0",
           },
           extensionPoints: {},
         });
@@ -137,41 +167,76 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
     });
   };
 
-  const executeExtensionPoint = useCallback((extensionPoint: string, context?: any): React.ComponentType<any>[] => {
-    const components: React.ComponentType<any>[] = [];
-    
-    loadedPlugins.forEach((plugin) => {
-      if (plugin.extensionPoints && plugin.extensionPoints[extensionPoint]) {
-        const Component = plugin.extensionPoints[extensionPoint];
-        
-        // Create wrapper component that passes context and configuration
-        const WrappedComponent: React.FC<any> = (props) => {
-          return React.createElement(Component, {
-            ...props,
-            context,
-            configuration: plugin.config,
-            pluginId: plugin.pluginId,
-          });
-        };
-        
-        components.push(WrappedComponent);
+  const executePluginAction = useCallback(
+    async (
+      pluginId: string,
+      action: string,
+      parameters: any,
+      metadata?: any,
+    ) => {
+      try {
+        return await pluginsApi.executePluginAction(
+          pluginId,
+          action,
+          parameters,
+          { ...metadata, organizationId: organization?.id },
+        );
+      } catch (error) {
+        console.error(`Failed to execute plugin action ${pluginId}:${action}:`, error);
+        throw error;
       }
-    });
-    
-    // Sort by priority if available
-    return components.sort((a: any, b: any) => {
-      const aPriority = a.priority || 100;
-      const bPriority = b.priority || 100;
-      return aPriority - bPriority;
-    });
-  }, [loadedPlugins]);
+    },
+    [organization?.id],
+  );
+
+  const executeExtensionPoint = useCallback(
+    (extensionPoint: string, context?: any): React.ComponentType<any>[] => {
+      const components: React.ComponentType<any>[] = [];
+
+      loadedPlugins.forEach((plugin) => {
+        if (plugin.extensionPoints && plugin.extensionPoints[extensionPoint]) {
+          const Component = plugin.extensionPoints[extensionPoint];
+
+          // Create wrapper component that passes context and configuration
+          const WrappedComponent: React.FC<any> = (props) => {
+            // Create onExecuteAction function that's bound to this specific plugin
+            const onExecuteAction = async (action: string, parameters: any, metadata?: any) => {
+              return executePluginAction(plugin.pluginId, action, parameters, metadata);
+            };
+
+            return React.createElement(Component, {
+              ...props,
+              context: {
+                ...context,
+                organizationId: organization?.id,
+                user: context?.user, // Pass user from context if available
+              },
+              configuration: plugin.config,
+              pluginId: plugin.pluginId,
+              onExecuteAction,
+            });
+          };
+
+          components.push(WrappedComponent);
+        }
+      });
+
+      // Sort by priority if available
+      return components.sort((a: any, b: any) => {
+        const aPriority = a.priority || 100;
+        const bPriority = b.priority || 100;
+        return aPriority - bPriority;
+      });
+    },
+    [loadedPlugins, organization?.id, executePluginAction],
+  );
 
   const getPaymentMethods = useCallback(() => {
-    return executeExtensionPoint('payment-methods');
+    return executeExtensionPoint("payment-methods");
   }, [executeExtensionPoint]);
 
   const getCheckoutExtensions = useCallback(() => {
-    return executeExtensionPoint('checkout-extensions');
+    return executeExtensionPoint("checkout-extensions");
   }, [executeExtensionPoint]);
 
   useEffect(() => {
@@ -187,6 +252,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
     executeExtensionPoint,
     getPaymentMethods,
     getCheckoutExtensions,
+    executePluginAction,
     refetch: fetchPlugins,
   };
 
@@ -199,9 +265,9 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
 
 // Mock Stripe Payment Method Component (based on admin plugin example)
 const StripePaymentMethod: React.FC<any> = ({ context, configuration }) => {
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
 
   return (
     <div className="space-y-4">
@@ -215,10 +281,12 @@ const StripePaymentMethod: React.FC<any> = ({ context, configuration }) => {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Expiry Date</label>
+          <label className="text-sm font-medium text-gray-700">
+            Expiry Date
+          </label>
           <input
             type="text"
             placeholder="MM/YY"
@@ -243,7 +311,8 @@ const StripePaymentMethod: React.FC<any> = ({ context, configuration }) => {
         <div className="flex justify-between font-medium">
           <span>Total:</span>
           <span>
-            ${((context?.cart?.total || 0) / 100).toFixed(2)} {context?.cart?.currency || 'USD'}
+            ${((context?.cart?.total || 0) / 100).toFixed(2)}{" "}
+            {context?.cart?.currency || "USD"}
           </span>
         </div>
       </div>
@@ -259,7 +328,7 @@ const StripePaymentMethod: React.FC<any> = ({ context, configuration }) => {
 
 // Mock Stripe Checkout Confirmation Component
 const StripeCheckoutConfirmation: React.FC<any> = ({ context }) => {
-  if (context?.paymentDetails?.provider !== 'stripe') {
+  if (context?.paymentDetails?.provider !== "stripe") {
     return null;
   }
 
@@ -284,9 +353,9 @@ const StripeCheckoutConfirmation: React.FC<any> = ({ context }) => {
         <span className="font-medium">Payment Successful</span>
         <div className="text-xs text-green-600">
           Processed securely by Stripe
-          {context?.paymentDetails?.testMode && ' (Test Mode)'}
+          {context?.paymentDetails?.testMode && " (Test Mode)"}
         </div>
       </div>
     </div>
   );
-}; 
+};

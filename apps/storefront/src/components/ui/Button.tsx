@@ -1,17 +1,17 @@
-import React from 'react';
-import { clsx } from 'clsx';
-import { useOrganization } from '../../contexts/OrganizationContext';
+import React from "react";
+import { clsx } from "clsx";
+import { useOrganization } from "../../contexts/OrganizationContext";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
   children: React.ReactNode;
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   loading = false,
   className,
   children,
@@ -19,74 +19,79 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const { branding } = useOrganization();
-  
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-  
+
+  const baseStyles =
+    "inline-flex items-center justify-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
   };
 
   const getButtonStyles = () => {
-    const buttonStyle = branding?.buttonStyle || 'rounded';
-    
+    const buttonStyle = branding?.buttonStyle || "rounded";
+
     const roundingStyles = {
-      rounded: 'rounded-md',
-      square: 'rounded-none',
-      pill: 'rounded-full',
+      rounded: "rounded-md",
+      square: "rounded-none",
+      pill: "rounded-full",
     };
-    
+
     return roundingStyles[buttonStyle];
   };
 
   const getVariantStyles = () => {
-    const primaryColor = branding?.primaryColor || '#3b82f6';
-    const secondaryColor = branding?.secondaryColor || '#64748b';
-    
+    const primaryColor = branding?.primaryColor || "#3b82f6";
+    const secondaryColor = branding?.secondaryColor || "#64748b";
+
     switch (variant) {
-      case 'primary':
+      case "primary":
         return {
-          className: 'text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2',
+          className:
+            "text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2",
           style: {
             backgroundColor: primaryColor,
             borderColor: primaryColor,
-            '--tw-ring-color': primaryColor,
+            "--tw-ring-color": primaryColor,
           },
         };
-      case 'secondary':
+      case "secondary":
         return {
-          className: 'text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2',
+          className:
+            "text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2",
           style: {
             backgroundColor: secondaryColor,
             borderColor: secondaryColor,
-            '--tw-ring-color': secondaryColor,
+            "--tw-ring-color": secondaryColor,
           },
         };
-      case 'outline':
+      case "outline":
         return {
-          className: 'bg-white border-2 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2',
+          className:
+            "bg-white border-2 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2",
           style: {
             borderColor: primaryColor,
             color: primaryColor,
-            '--tw-ring-color': primaryColor,
+            "--tw-ring-color": primaryColor,
           },
         };
-      case 'ghost':
+      case "ghost":
         return {
-          className: 'hover:bg-gray-100 focus:ring-2 focus:ring-offset-2',
+          className: "hover:bg-gray-100 focus:ring-2 focus:ring-offset-2",
           style: {
             color: primaryColor,
-            '--tw-ring-color': primaryColor,
+            "--tw-ring-color": primaryColor,
           },
         };
       default:
         return {
-          className: 'text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2',
+          className:
+            "text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2",
           style: {
             backgroundColor: primaryColor,
             borderColor: primaryColor,
-            '--tw-ring-color': primaryColor,
+            "--tw-ring-color": primaryColor,
           },
         };
     }
@@ -102,7 +107,7 @@ export const Button: React.FC<ButtonProps> = ({
         sizeStyles[size],
         buttonStyles,
         variantStyles.className,
-        className
+        className,
       )}
       style={variantStyles.style}
       disabled={disabled || loading}
@@ -133,4 +138,4 @@ export const Button: React.FC<ButtonProps> = ({
       {children}
     </button>
   );
-}; 
+};

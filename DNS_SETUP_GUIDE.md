@@ -138,6 +138,7 @@ dig www.heien.dev
 ## 🔧 Common DNS Providers
 
 ### Cloudflare
+
 1. Log in to Cloudflare Dashboard
 2. Select your domain
 3. Go to DNS > Records
@@ -145,6 +146,7 @@ dig www.heien.dev
 5. Set Proxy status to "DNS only" (gray cloud) initially
 
 ### Namecheap
+
 1. Log in to Namecheap account
 2. Go to Domain List
 3. Click "Manage" next to your domain
@@ -152,12 +154,14 @@ dig www.heien.dev
 5. Add A records as shown above
 
 ### GoDaddy
+
 1. Log in to GoDaddy account
 2. Go to My Products > DNS
 3. Select your domain
 4. Add A records as shown above
 
 ### Google Domains
+
 1. Log in to Google Domains
 2. Select your domain
 3. Go to DNS
@@ -191,18 +195,21 @@ curl -I https://traefik.heien.dev
 ## 🚨 Troubleshooting
 
 ### DNS Not Propagating
+
 - Check TTL values (use 300 seconds for faster propagation)
 - Verify records are correctly entered
 - Try different DNS checker tools
 - Flush local DNS cache: `sudo systemctl flush-dns` (Linux) or `ipconfig /flushdns` (Windows)
 
 ### SSL Certificate Issues
+
 - Check DNS propagation first
 - Verify ports 80 and 443 are open
 - Check Traefik logs: `docker-compose logs traefik`
 - Wait 5-10 minutes for initial certificate generation
 
 ### Subdomain Not Working
+
 - Verify A record exists for the subdomain
 - Check domain registrar's DNS settings
 - Ensure no conflicting CNAME records exist
@@ -240,4 +247,4 @@ If you need help with DNS configuration:
 3. Use online DNS testing tools
 4. Check the production setup logs for specific errors
 
-Remember: DNS changes can take time to propagate globally, so be patient! 
+Remember: DNS changes can take time to propagate globally, so be patient!

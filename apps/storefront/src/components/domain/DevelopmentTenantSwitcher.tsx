@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useOrganization } from '../../contexts/OrganizationContext';
-import { organizationsApi } from '../../lib/api/organizations';
-import { Organization } from '../../lib/api/organizations';
+import React, { useState, useEffect } from "react";
+import { useOrganization } from "../../contexts/OrganizationContext";
+import { organizationsApi } from "../../lib/api/organizations";
+import { Organization } from "../../lib/api/organizations";
 
 interface DevelopmentTenantSwitcherProps {
   className?: string;
 }
 
-export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps> = ({ 
-  className = "" 
-}) => {
+export const DevelopmentTenantSwitcher: React.FC<
+  DevelopmentTenantSwitcherProps
+> = ({ className = "" }) => {
   const { organization, refetch } = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -17,7 +17,8 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
   const [error, setError] = useState<string | null>(null);
 
   // Only show in development
-  if (import.meta.env.NODE_ENV !== 'development') {
+  if (import.meta.env.DEV !== true) {
+    console.log("DevelopmentTenantSwitcher is not in development mode");
     return null;
   }
 
@@ -29,10 +30,10 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
       const orgs = await organizationsApi.getAll();
       setOrganizations(orgs);
     } catch (err) {
-      console.warn('Could not fetch organizations list, trying fallback:', err);
-      
+      console.warn("Could not fetch organizations list, trying fallback:", err);
+
       // Fallback: try to get a few organizations by common slugs
-      const commonSlugs = ['demo', 'test', 'sample', 'thunderstorm', 'events'];
+      const commonSlugs = ["demo", "test", "sample", "thunderstorm", "events"];
       const orgs = [];
       for (const slug of commonSlugs) {
         try {
@@ -43,9 +44,9 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
         }
       }
       setOrganizations(orgs);
-      
+
       if (orgs.length === 0) {
-        setError('No organizations found');
+        setError("No organizations found");
       }
     } finally {
       setLoading(false);
@@ -56,29 +57,29 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
     try {
       if (org) {
         // Store selected organization in localStorage
-        localStorage.setItem('dev_selected_org_slug', org.slug);
-        
+        localStorage.setItem("dev_selected_org_slug", org.slug);
+
         // Update URL with organization parameter
         const url = new URL(window.location.href);
-        url.searchParams.set('org', org.slug);
-        window.history.replaceState({}, '', url.toString());
+        url.searchParams.set("org", org.slug);
+        window.history.replaceState({}, "", url.toString());
       } else {
         // Clear organization selection
-        localStorage.removeItem('dev_selected_org_slug');
-        
+        localStorage.removeItem("dev_selected_org_slug");
+
         // Remove org parameter from URL
         const url = new URL(window.location.href);
-        url.searchParams.delete('org');
-        url.searchParams.delete('organization');
-        window.history.replaceState({}, '', url.toString());
+        url.searchParams.delete("org");
+        url.searchParams.delete("organization");
+        window.history.replaceState({}, "", url.toString());
       }
 
       // Trigger organization refetch
       await refetch();
       setIsOpen(false);
     } catch (err) {
-      console.error('Error switching organization:', err);
-      setError('Failed to switch organization');
+      console.error("Error switching organization:", err);
+      setError("Failed to switch organization");
     }
   };
 
@@ -100,15 +101,19 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
         className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
         title="Switch Development Tenant"
       >
-        🏢 {organization?.name || 'No Org'}
+        🏢 {organization?.name || "No Org"}
       </button>
 
       {/* Dropdown Panel */}
       {isOpen && (
         <div className="absolute bottom-full left-0 mb-2 bg-white border border-gray-300 rounded-lg shadow-lg min-w-64 max-w-80 z-50">
           <div className="p-3 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900 text-sm">Development Tenant Switcher</h3>
-            <p className="text-xs text-gray-600 mt-1">Switch between organizations for testing</p>
+            <h3 className="font-semibold text-gray-900 text-sm">
+              Development Tenant Switcher
+            </h3>
+            <p className="text-xs text-gray-600 mt-1">
+              Switch between organizations for testing
+            </p>
           </div>
 
           <div className="max-h-64 overflow-y-auto">
@@ -121,7 +126,7 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
             {error && (
               <div className="p-3 text-center text-red-600 text-xs">
                 {error}
-                <button 
+                <button
                   onClick={fetchOrganizations}
                   className="block mt-1 text-blue-600 hover:text-blue-800 underline"
                 >
@@ -136,7 +141,9 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
                 <button
                   onClick={clearSelection}
                   className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 border-b border-gray-100 ${
-                    !organization ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                    !organization
+                      ? "bg-blue-50 text-blue-700 font-medium"
+                      : "text-gray-700"
                   }`}
                 >
                   <div className="font-medium">No Organization</div>
@@ -149,7 +156,9 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
                     key={org.id}
                     onClick={() => switchToOrganization(org)}
                     className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 border-b border-gray-100 ${
-                      organization?.id === org.id ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                      organization?.id === org.id
+                        ? "bg-blue-50 text-blue-700 font-medium"
+                        : "text-gray-700"
                     }`}
                   >
                     <div className="font-medium">{org.name}</div>
@@ -158,7 +167,9 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
                       {org.customDomain && (
                         <span className="ml-2">
                           • Domain: {org.customDomain}
-                          {org.domainVerified && <span className="text-green-600"> ✓</span>}
+                          {org.domainVerified && (
+                            <span className="text-green-600"> ✓</span>
+                          )}
                         </span>
                       )}
                     </div>
@@ -168,7 +179,7 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
                 {organizations.length === 0 && !loading && (
                   <div className="p-3 text-center text-gray-500 text-xs">
                     No organizations found
-                    <button 
+                    <button
                       onClick={fetchOrganizations}
                       className="block mt-1 text-blue-600 hover:text-blue-800 underline"
                     >
@@ -201,11 +212,8 @@ export const DevelopmentTenantSwitcher: React.FC<DevelopmentTenantSwitcherProps>
 
       {/* Click outside to close */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
       )}
     </div>
   );
-}; 
+};

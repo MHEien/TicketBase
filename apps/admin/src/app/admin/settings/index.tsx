@@ -92,7 +92,8 @@ function SettingsPage() {
   const [isOrganizationLoading, setIsOrganizationLoading] = useState(false);
   const [isBrandingLoading, setIsBrandingLoading] = useState(false);
   const [isDomainLoading, setIsDomainLoading] = useState(false);
-  const [domainVerificationData, setDomainVerificationData] = useState<any>(null);
+  const [domainVerificationData, setDomainVerificationData] =
+    useState<any>(null);
   const [domainVerified, setDomainVerified] = useState(false);
 
   // Organization form
@@ -301,11 +302,11 @@ function SettingsPage() {
           title: "Domain settings saved",
           description: "Your domain settings have been updated successfully.",
         });
-        
+
         // Reset verification status
         setDomainVerified(false);
         setDomainVerificationData(null);
-        
+
         // If domain was set, automatically generate verification token
         if (data.customDomain) {
           await generateVerificationToken();
@@ -334,8 +335,10 @@ function SettingsPage() {
   // Generate domain verification token
   const generateVerificationToken = async () => {
     try {
-      const response = await apiClient.post("/api/organizations/generate-verification-token");
-      
+      const response = await apiClient.post(
+        "/api/organizations/generate-verification-token",
+      );
+
       if (response.status === 200) {
         setDomainVerificationData(response.data);
         toast({
@@ -359,7 +362,7 @@ function SettingsPage() {
 
     try {
       const response = await apiClient.post("/api/organizations/verify-domain");
-      
+
       if (response.status === 200 && response.data.verified) {
         setDomainVerified(true);
         toast({
@@ -369,7 +372,9 @@ function SettingsPage() {
       } else {
         toast({
           title: "Domain verification failed",
-          description: response.data.message || "Please check your DNS settings and try again.",
+          description:
+            response.data.message ||
+            "Please check your DNS settings and try again.",
           variant: "destructive",
         });
       }
@@ -851,10 +856,22 @@ function SettingsPage() {
                             />
                             {domainVerified && (
                               <div className="flex items-center space-x-1 text-green-600">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                  />
                                 </svg>
-                                <span className="text-sm font-medium">Verified</span>
+                                <span className="text-sm font-medium">
+                                  Verified
+                                </span>
                               </div>
                             )}
                           </div>
@@ -872,18 +889,25 @@ function SettingsPage() {
                   {/* Domain Verification Instructions */}
                   {domainVerificationData && (
                     <div className="mt-6 space-y-4">
-                      <h3 className="text-lg font-medium">Domain Verification</h3>
+                      <h3 className="text-lg font-medium">
+                        Domain Verification
+                      </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Complete one of the verification methods below to activate your custom domain:
+                        Complete one of the verification methods below to
+                        activate your custom domain:
                       </p>
 
                       {/* Method 1: DNS TXT Record */}
                       <div className="border rounded-lg p-4 space-y-3">
                         <h4 className="font-medium text-blue-600">
-                          Method 1: {domainVerificationData.instructions.method1.title}
+                          Method 1:{" "}
+                          {domainVerificationData.instructions.method1.title}
                         </h4>
                         <p className="text-sm text-gray-600">
-                          {domainVerificationData.instructions.method1.description}
+                          {
+                            domainVerificationData.instructions.method1
+                              .description
+                          }
                         </p>
                         <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded">
                           <div className="grid grid-cols-3 gap-4 text-sm font-medium mb-2">
@@ -893,13 +917,22 @@ function SettingsPage() {
                           </div>
                           <div className="grid grid-cols-3 gap-4 text-sm">
                             <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded">
-                              {domainVerificationData.instructions.method1.record.type}
+                              {
+                                domainVerificationData.instructions.method1
+                                  .record.type
+                              }
                             </code>
                             <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded">
-                              {domainVerificationData.instructions.method1.record.name}
+                              {
+                                domainVerificationData.instructions.method1
+                                  .record.name
+                              }
                             </code>
                             <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded break-all">
-                              {domainVerificationData.instructions.method1.record.value}
+                              {
+                                domainVerificationData.instructions.method1
+                                  .record.value
+                              }
                             </code>
                           </div>
                         </div>
@@ -908,23 +941,33 @@ function SettingsPage() {
                       {/* Method 2: File Upload */}
                       <div className="border rounded-lg p-4 space-y-3">
                         <h4 className="font-medium text-blue-600">
-                          Method 2: {domainVerificationData.instructions.method2.title}
+                          Method 2:{" "}
+                          {domainVerificationData.instructions.method2.title}
                         </h4>
                         <p className="text-sm text-gray-600">
-                          {domainVerificationData.instructions.method2.description}
+                          {
+                            domainVerificationData.instructions.method2
+                              .description
+                          }
                         </p>
                         <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded">
                           <div className="space-y-2 text-sm">
                             <div>
                               <span className="font-medium">File Path:</span>
                               <code className="ml-2 bg-white dark:bg-gray-700 px-2 py-1 rounded">
-                                {domainVerificationData.instructions.method2.file.path}
+                                {
+                                  domainVerificationData.instructions.method2
+                                    .file.path
+                                }
                               </code>
                             </div>
                             <div>
                               <span className="font-medium">File Content:</span>
                               <code className="ml-2 bg-white dark:bg-gray-700 px-2 py-1 rounded">
-                                {domainVerificationData.instructions.method2.file.content}
+                                {
+                                  domainVerificationData.instructions.method2
+                                    .file.content
+                                }
                               </code>
                             </div>
                           </div>
@@ -934,10 +977,14 @@ function SettingsPage() {
                       {/* Method 3: Meta Tag */}
                       <div className="border rounded-lg p-4 space-y-3">
                         <h4 className="font-medium text-blue-600">
-                          Method 3: {domainVerificationData.instructions.method3.title}
+                          Method 3:{" "}
+                          {domainVerificationData.instructions.method3.title}
                         </h4>
                         <p className="text-sm text-gray-600">
-                          {domainVerificationData.instructions.method3.description}
+                          {
+                            domainVerificationData.instructions.method3
+                              .description
+                          }
                         </p>
                         <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded">
                           <code className="text-sm break-all">
@@ -948,11 +995,14 @@ function SettingsPage() {
 
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                         <p className="text-sm text-blue-700 dark:text-blue-300">
-                          <strong>Important:</strong> After setting up verification, you'll also need to add a CNAME record pointing your domain to our servers:
+                          <strong>Important:</strong> After setting up
+                          verification, you'll also need to add a CNAME record
+                          pointing your domain to our servers:
                         </p>
                         <div className="mt-2 bg-white dark:bg-gray-800 p-2 rounded">
                           <code className="text-sm">
-                            CNAME: {domainForm.watch('customDomain')} → your-platform.vercel.app
+                            CNAME: {domainForm.watch("customDomain")} →
+                            your-platform.vercel.app
                           </code>
                         </div>
                       </div>
@@ -971,16 +1021,17 @@ function SettingsPage() {
                           {isDomainLoading ? "Verifying..." : "Verify Domain"}
                         </Button>
                       )}
-                      {domainForm.watch('customDomain') && !domainVerificationData && (
-                        <Button
-                          variant="outline"
-                          type="button"
-                          onClick={generateVerificationToken}
-                          disabled={isDomainLoading}
-                        >
-                          Generate Verification Instructions
-                        </Button>
-                      )}
+                      {domainForm.watch("customDomain") &&
+                        !domainVerificationData && (
+                          <Button
+                            variant="outline"
+                            type="button"
+                            onClick={generateVerificationToken}
+                            disabled={isDomainLoading}
+                          >
+                            Generate Verification Instructions
+                          </Button>
+                        )}
                     </div>
                     <Button type="submit" disabled={isDomainLoading}>
                       {isDomainLoading ? "Saving..." : "Save Domain Settings"}
@@ -992,12 +1043,12 @@ function SettingsPage() {
           </Card>
 
           {/* DNS Setup Guide */}
-          {domainForm.watch('customDomain') && (
+          {domainForm.watch("customDomain") && (
             <div className="mt-6">
               <DNSSetupGuide
                 organization={{
-                  name: organizationForm.watch('name') || 'Your Organization',
-                  customDomain: domainForm.watch('customDomain'),
+                  name: organizationForm.watch("name") || "Your Organization",
+                  customDomain: domainForm.watch("customDomain"),
                   domainVerified: domainVerified,
                   domainVerificationToken: domainVerificationData?.token,
                 }}
@@ -1008,9 +1059,9 @@ function SettingsPage() {
                     description: "The text has been copied to your clipboard.",
                   });
                 }}
-                             />
-             </div>
-           )}
+              />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

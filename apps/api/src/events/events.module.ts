@@ -5,6 +5,7 @@ import { TicketType } from './entities/ticket-type.entity';
 import { Ticket } from './entities/ticket.entity';
 import { EventsService } from './events.service';
 import { EventsController } from './events.controller';
+import { PublicEventsController } from './public-events.controller';
 import { TicketTypesService } from './ticket-types.service';
 import { TicketTypesController } from './ticket-types.controller';
 import { TicketsService } from './tickets.service';
@@ -18,7 +19,12 @@ import { Activity } from '../activities/entities/activity.entity';
     TypeOrmModule.forFeature([Event, TicketType, Ticket, Activity]),
     UsersModule,
   ],
-  controllers: [EventsController, TicketTypesController, TicketsController],
+  controllers: [
+    EventsController,
+    PublicEventsController,
+    TicketTypesController,
+    TicketsController,
+  ],
   providers: [
     EventsService,
     TicketTypesService,

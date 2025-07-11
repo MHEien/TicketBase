@@ -6,9 +6,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "vite";
 
 export default defineConfig(({ mode, command }) => {
-  const env = loadEnv(mode, '../../', "VITE_");
+  const env = loadEnv(mode, "../../", "VITE_");
   return {
-    envDir: '../../',
+    envDir: "../../",
     server: {
       port: Number(env.VITE_ADMIN_PORT),
     },
