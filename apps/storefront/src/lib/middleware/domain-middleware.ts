@@ -94,26 +94,53 @@ export class DomainMiddleware {
    * Handle development domain organization detection
    */
   private static async handleDevelopmentDomain(): Promise<Organization | null> {
-    // Try environment variable first
+    // Priority order for development tenant selection:
+    // 1. URL parameters (highest priority - for immediate switching)
+    // 2. localStorage (persistent selection)
+    // 3. Environment variable (fallback default)
+
+    // Try URL parameters first (for immediate switching)
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orgParam = urlParams.get('org') || urlParams.get('organization');
+      if (orgParam) {
+        try {
+          const org = await organizationsApi.getBySlug(orgParam);
+          if (org) {
+            // Save to localStorage for persistence
+            localStorage.setItem('dev_selected_org_slug', orgParam);
+            return org;
+          }
+        } catch (error) {
+          console.warn(`Could not load organization from URL param: ${orgParam}`, error);
+        }
+      }
+
+      // Try localStorage for persistent selection
+      const savedOrgSlug = localStorage.getItem('dev_selected_org_slug');
+      if (savedOrgSlug && savedOrgSlug !== 'null') {
+        try {
+          const org = await organizationsApi.getBySlug(savedOrgSlug);
+          if (org) {
+            return org;
+          } else {
+            // Clear invalid stored slug
+            localStorage.removeItem('dev_selected_org_slug');
+          }
+        } catch (error) {
+          console.warn(`Could not load saved organization: ${savedOrgSlug}`, error);
+          localStorage.removeItem('dev_selected_org_slug');
+        }
+      }
+    }
+
+    // Try environment variable as fallback
     const defaultOrgSlug = import.meta.env.VITE_DEFAULT_ORG_SLUG;
     if (defaultOrgSlug) {
       try {
         return await organizationsApi.getBySlug(defaultOrgSlug);
       } catch (error) {
         console.warn(`Could not load default organization: ${defaultOrgSlug}`, error);
-      }
-    }
-
-    // Try URL parameters for development
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const orgParam = urlParams.get('org') || urlParams.get('organization');
-      if (orgParam) {
-        try {
-          return await organizationsApi.getBySlug(orgParam);
-        } catch (error) {
-          console.warn(`Could not load organization from URL param: ${orgParam}`, error);
-        }
       }
     }
 

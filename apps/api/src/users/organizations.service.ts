@@ -234,6 +234,29 @@ export class OrganizationsService {
     return organization ? organization.settings : null;
   }
 
+  async findAllForDevelopment(): Promise<Organization[]> {
+    // Only for development - limit to reasonable number and exclude sensitive data
+    return this.organizationsRepository.find({
+      take: 50, // Limit to 50 organizations
+      order: {
+        name: 'ASC',
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logo: true,
+        favicon: true,
+        website: true,
+        settings: true,
+        customDomain: true,
+        domainVerified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
   async updateOrganizationSettings(
     id: string,
     settings: any,

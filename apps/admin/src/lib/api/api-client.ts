@@ -4,7 +4,7 @@ import { handleTokenRefreshFailure, isTokenRefreshError } from "../auth-utils";
 
 // Create axios instance with base URL from environment variable
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000",
   headers: {
     "Content-Type": "application/json",
   },

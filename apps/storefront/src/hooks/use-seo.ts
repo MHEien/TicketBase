@@ -21,7 +21,9 @@ export function useSEO(options: UseSEOOptions = {}) {
   
   // Create SEO manager instance
   const seoManager = useMemo(() => {
-    const baseUrl = currentDomain ? `https://${currentDomain}` : window.location.origin;
+    const baseUrl = currentDomain 
+      ? `https://${currentDomain}` 
+      : (typeof window !== 'undefined' ? window.location.origin : 'https://localhost:3000');
     return new SEOManager(organization, baseUrl, currentDomain || '');
   }, [organization, currentDomain]);
 

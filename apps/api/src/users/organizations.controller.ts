@@ -391,4 +391,47 @@ export class PublicOrganizationsController {
       updatedAt: organization.updatedAt,
     } as Organization;
   }
+
+  @Get('all')
+  @ApiOperation({
+    summary: 'List all organizations (development only)',
+    description:
+      'Returns a list of all organizations for development purposes. Only available in development mode.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Organizations list',
+    type: [Organization],
+  })
+  @ApiResponse({ status: 403, description: 'Not available in production' })
+  async findAll(): Promise<Organization[]> {
+    // Only allow in development/staging environments
+    const nodeEnv = process.env.NODE_ENV || 'development';
+    if (nodeEnv === 'production') {
+      throw new BadRequestException(
+        'This endpoint is not available in production',
+      );
+    }
+
+    const organizations =
+      await this.organizationsService.findAllForDevelopment();
+
+    // Return only public information for security
+    return organizations.map(
+      (organization) =>
+        ({
+          id: organization.id,
+          name: organization.name,
+          slug: organization.slug,
+          logo: organization.logo,
+          favicon: organization.favicon,
+          website: organization.website,
+          settings: organization.settings,
+          customDomain: organization.customDomain,
+          domainVerified: organization.domainVerified,
+          createdAt: organization.createdAt,
+          updatedAt: organization.updatedAt,
+        }) as Organization,
+    );
+  }
 }

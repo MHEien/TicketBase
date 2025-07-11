@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDomainRouting } from '../../hooks/use-domain-routing';
+import { DevelopmentTenantSwitcher } from './DevelopmentTenantSwitcher';
 
 interface DomainProviderProps {
   children: React.ReactNode;
@@ -152,24 +153,64 @@ export const OrganizationBranding: React.FC = () => {
 };
 
 /**
- * Component that displays domain information for debugging
+ * Component that displays domain information for debugging and provides tenant switching
  */
 export const DomainDebugInfo: React.FC = () => {
   const { domainInfo, currentDomain, organization } = useDomainRouting();
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-  if (process.env.NODE_ENV !== 'development') {
+  if (import.meta.env.NODE_ENV !== 'development') {
     return null;
   }
 
   return (
-    <div className="fixed bottom-4 left-4 bg-black bg-opacity-75 text-white text-xs p-2 rounded max-w-xs">
-      <div><strong>Domain:</strong> {currentDomain}</div>
-      <div><strong>Custom:</strong> {domainInfo?.isCustomDomain ? 'Yes' : 'No'}</div>
-      <div><strong>Fallback:</strong> {domainInfo?.fallbackMode || 'None'}</div>
-      <div><strong>Org:</strong> {organization?.name || 'None'}</div>
-      {organization?.customDomain && (
-        <div><strong>Verified:</strong> {organization.domainVerified ? 'Yes' : 'No'}</div>
-      )}
+    <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
+      {/* Tenant Switcher */}
+      <DevelopmentTenantSwitcher />
+      
+      {/* Debug Info Panel */}
+      <div className="bg-black bg-opacity-90 text-white text-xs rounded-lg max-w-xs">
+        {/* Toggle Header */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full text-left p-2 hover:bg-gray-700 rounded-t-lg flex items-center justify-between"
+        >
+          <span className="font-medium">Debug Info</span>
+          <span className="text-gray-400">
+            {isExpanded ? '▼' : '▶'}
+          </span>
+        </button>
+
+        {/* Expandable Content */}
+        {isExpanded && (
+          <div className="p-2 pt-0 border-t border-gray-600">
+            <div className="space-y-1">
+              <div><strong>Domain:</strong> {currentDomain}</div>
+              <div><strong>Custom:</strong> {domainInfo?.isCustomDomain ? 'Yes' : 'No'}</div>
+              <div><strong>Fallback:</strong> {domainInfo?.fallbackMode || 'None'}</div>
+              <div><strong>Org:</strong> {organization?.name || 'None'}</div>
+              {organization && (
+                <>
+                  <div><strong>Slug:</strong> {organization.slug}</div>
+                  {organization.customDomain && (
+                    <>
+                      <div><strong>Custom Domain:</strong> {organization.customDomain}</div>
+                      <div><strong>Verified:</strong> {organization.domainVerified ? 'Yes' : 'No'}</div>
+                    </>
+                  )}
+                </>
+              )}
+              <div className="pt-1 border-t border-gray-600 mt-2">
+                <div><strong>Env:</strong> {import.meta.env.MODE}</div>
+                <div><strong>API:</strong> {import.meta.env.VITE_API_URL || 'localhost:4000'}</div>
+                {typeof window !== 'undefined' && (
+                  <div><strong>Storage:</strong> {localStorage.getItem('dev_selected_org_slug') || 'None'}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }; 

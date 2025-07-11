@@ -115,3 +115,24 @@ body {
 @utility text-balance {
   text-wrap: balance;
 }
+
+/* Custom Calendar Styles */
+.rdp {
+  --rdp-cell-size: 36px;
+  --rdp-accent-color: hsl(262 83% 58%);
+  --rdp-background-color: hsl(0 0% 100%);
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+}
+
+.rdp-day_selected {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+.rdp-day_today {
+  font-weight: bold;
+}
+
+.rdp-day:hover {
+  background-color: hsl(240 4.8% 95.9%);
+}

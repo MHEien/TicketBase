@@ -18,6 +18,7 @@ import appConfig from './config/app.config';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '../../.env',
       isGlobal: true,
       load: [appConfig],
     }),

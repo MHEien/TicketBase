@@ -68,7 +68,42 @@ export const organizationsApi = {
 
   // Get organization by slug (fallback method)
   async getBySlug(slug: string): Promise<Organization> {
-    return apiClient.get<Organization>(`/organizations/by-slug/${slug}`);
+    // Use public endpoint that doesn't require authentication
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/public/organizations/by-slug?slug=${encodeURIComponent(slug)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Organization not found for this slug');
+      }
+      throw new Error('Failed to fetch organization');
+    }
+
+    return response.json();
+  },
+
+  // Get all organizations (development only)
+  async getAll(): Promise<Organization[]> {
+    // Use public endpoint that doesn't require authentication
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/public/organizations/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error('Organization listing not available in production');
+      }
+      throw new Error('Failed to fetch organizations');
+    }
+
+    return response.json();
   },
 
   // Detect organization based on current domain

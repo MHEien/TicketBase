@@ -2,7 +2,7 @@ import redaxios from 'redaxios';
 
 // Create API client instance with base configuration
 const baseClient = redaxios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
   headers: {
     'Content-Type': 'application/json',
   },

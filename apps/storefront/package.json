@@ -1,5 +1,5 @@
 {
-  "name": "tanstack-start-example-basic-react-query",
+  "name": "storefront",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -28,6 +28,7 @@
     "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^22.5.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
@@ -35,7 +36,7 @@
     "autoprefixer": "^10.4.20",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.7.2",
-    "vite": "^6.3.5",
+    "vite": "^7.0.3",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

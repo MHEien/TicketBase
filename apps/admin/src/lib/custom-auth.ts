@@ -56,7 +56,7 @@ const EXPIRES_AT_KEY = "auth_expires_at";
 
 // Get API base URL
 const getApiBaseUrl = () =>
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+  import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 // Secure token storage utilities
 class TokenStorage {
@@ -153,7 +153,7 @@ class CustomAuth {
     try {
       console.log("Signing in with custom auth...");
 
-      const response = await fetch(`${getApiBaseUrl()}/auth/login`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
