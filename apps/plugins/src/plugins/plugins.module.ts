@@ -28,6 +28,8 @@ import {
 } from './schemas/plugin-config.schema';
 import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
 import { SecureConfigService } from './services/secure-config.service';
+import { PluginSecurityService } from './services/plugin-security.service';
+import { PublicPluginService } from './services/public-plugin.service';
 
 @Module({
   imports: [
@@ -42,7 +44,29 @@ import { SecureConfigService } from './services/secure-config.service';
     MinioModule,
     MulterModule.register({
       limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB max file size
+        fileSize: 5 * 1024 * 1024, // 5MB max file size (reduced from 10MB)
+        files: 1, // Only one file at a time
+      },
+      fileFilter: (req, file, cb) => {
+        // Allow only specific file types
+        const allowedMimeTypes = ['application/javascript', 'application/zip', 'text/javascript'];
+        const allowedExtensions = ['.js', '.mjs', '.zip', '.ts', '.tsx'];
+        
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          return cb(new Error('Invalid file type. Only JavaScript and ZIP files are allowed.'), false);
+        }
+        
+        const ext = file.originalname.toLowerCase().match(/\.[^.]*$/);
+        if (!ext || !allowedExtensions.includes(ext[0])) {
+          return cb(new Error('Invalid file extension. Only .js, .mjs, .zip, .ts, .tsx files are allowed.'), false);
+        }
+        
+        // Basic filename validation
+        if (file.originalname.includes('..') || file.originalname.includes('/') || file.originalname.includes('\\')) {
+          return cb(new Error('Invalid filename. Path traversal not allowed.'), false);
+        }
+        
+        cb(null, true);
       },
     }),
   ],
@@ -60,6 +84,8 @@ import { SecureConfigService } from './services/secure-config.service';
     BundleService,
     PluginStorageService,
     SecureConfigService,
+    PluginSecurityService,
+    PublicPluginService,
   ],
   exports: [
     PluginsService,
@@ -67,6 +93,8 @@ import { SecureConfigService } from './services/secure-config.service';
     PluginEventBus,
     PluginStorageService,
     SecureConfigService,
+    PluginSecurityService,
+    PublicPluginService,
   ],
 })
 export class PluginsModule {}

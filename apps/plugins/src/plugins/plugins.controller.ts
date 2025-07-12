@@ -37,6 +37,7 @@ import { Public } from '../common/auth/decorators/public.decorator';
 import { Roles } from '../common/auth/decorators/roles.decorator';
 import { Response } from 'express';
 import { PluginStorageService } from './services/plugin-storage.service';
+import { PluginSecurityService } from './services/plugin-security.service';
 
 @ApiTags('plugins')
 @Controller('plugins')
@@ -45,6 +46,7 @@ export class PluginsController {
   constructor(
     private readonly pluginsService: PluginsService,
     private readonly pluginStorageService: PluginStorageService,
+    private readonly pluginSecurityService: PluginSecurityService,
   ) {}
 
   @ApiOperation({ summary: 'Get all available plugins' })
@@ -410,7 +412,27 @@ export class PluginsController {
       sourceCode = file.buffer.toString('utf-8');
 
       try {
-        // Check MinIO connection first
+        // 1. Security validation first
+        const securityValidation = await this.pluginSecurityService.validatePluginCode(
+          sourceCode,
+          file.originalname,
+        );
+        
+        if (!securityValidation.safe) {
+          throw new BadRequestException(
+            `Plugin security validation failed: ${securityValidation.risks.join(', ')}`,
+          );
+        }
+
+        // Log warnings if any
+        if (securityValidation.warnings.length > 0) {
+          const logger = new Logger('PluginsController.uploadPlugin');
+          logger.warn(
+            `Plugin security warnings for ${createDto.id}: ${securityValidation.warnings.join(', ')}`,
+          );
+        }
+
+        // 2. Check MinIO connection
         const storageStatus = await this.pluginsService.checkStorageHealth();
         if (!storageStatus.isConnected) {
           throw new BadRequestException(storageStatus.message);
@@ -499,7 +521,28 @@ export class PluginsController {
     }
 
     try {
-      // Check MinIO connection first
+      // 1. Security validation first
+      const sourceCode = file.buffer.toString('utf-8');
+      const securityValidation = await this.pluginSecurityService.validatePluginCode(
+        sourceCode,
+        file.originalname,
+      );
+      
+      if (!securityValidation.safe) {
+        throw new BadRequestException(
+          `Plugin security validation failed: ${securityValidation.risks.join(', ')}`,
+        );
+      }
+
+      // Log warnings if any
+      if (securityValidation.warnings.length > 0) {
+        const logger = new Logger('PluginsController.storePluginBundle');
+        logger.warn(
+          `Plugin security warnings for ${storageDto.pluginId}: ${securityValidation.warnings.join(', ')}`,
+        );
+      }
+
+      // 2. Check MinIO connection
       const storageStatus = await this.pluginsService.checkStorageHealth();
       if (!storageStatus.isConnected) {
         throw new BadRequestException(storageStatus.message);
