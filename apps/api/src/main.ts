@@ -33,10 +33,22 @@ async function bootstrap() {
   // Use cookie-parser middleware
   app.use(cookieParser());
 
-  // Enable CORS
+  // Enhanced CORS configuration
+  const corsConfig = configService.get('security.cors');
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:4000',
-    credentials: true,
+    origin: corsConfig.origins,
+    credentials: corsConfig.credentials,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'x-tenant-id',
+      'x-plugin-id',
+    ],
+    exposedHeaders: ['Content-Length', 'X-Total-Count'],
   });
 
   // Setup Swagger documentation

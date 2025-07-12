@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -53,6 +54,8 @@ interface UpdateUserSettingsDto {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -61,125 +64,152 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    return this.usersService.validateUser(email, password);
+    try {
+      const user = await this.usersService.validateUser(email, password);
+      if (user) {
+        this.logger.log(`User ${email} validated successfully`);
+      } else {
+        this.logger.warn(`Failed login attempt for email: ${email}`);
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(`Error validating user ${email}:`, error.message);
+      return null;
+    }
   }
 
   async login(user: User): Promise<LoginResponse> {
-    const tokens = this.generateTokens(user);
+    try {
+      const tokens = this.generateTokens(user);
 
-    // Create session record
-    const expiresAt = new Date();
-    expiresAt.setSeconds(
-      expiresAt.getSeconds() +
-        parseInt(
-          this.configService.get('jwt.refreshExpiresIn') || '604800',
-          10,
-        ),
-    );
+      // Create session record
+      const expiresAt = new Date();
+      expiresAt.setSeconds(
+        expiresAt.getSeconds() +
+          parseInt(
+            this.configService.get('jwt.refreshExpiresIn') || '604800',
+            10,
+          ),
+      );
 
-    await this.usersService.createSession({
-      userId: user.id,
-      token: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      expiresAt,
-    });
+      await this.usersService.createSession({
+        userId: user.id,
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresAt,
+      });
 
-    // Update user's last active timestamp
-    await this.usersService.updateLastActive(user.id);
+      // Update user's last active timestamp
+      await this.usersService.updateLastActive(user.id);
 
-    // Return user information AND tokens for NextAuth compatibility
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      permissions: user.permissions,
-      organizationId: user.organizationId,
-      ...tokens,
-    };
-  }
+      this.logger.log(`User ${user.email} logged in successfully`);
 
-  async register(registerDto: RegisterDto): Promise<any> {
-    // Check if the user already exists
-    const existingUser = await this.usersService.findByEmail(registerDto.email);
-    if (existingUser) {
-      throw new ConflictException('User with this email already exists');
-    }
-
-    // Generate a slug if not provided
-    const organizationSlug =
-      registerDto.organizationSlug ||
-      registerDto.organizationName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-
-    // Check if organization slug is already taken
-    const existingOrg =
-      await this.organizationsService.findBySlug(organizationSlug);
-    if (existingOrg) {
-      throw new ConflictException('Organization with this slug already exists');
-    }
-
-    // Create the organization first
-    const organization = await this.organizationsService.createOrganization({
-      name: registerDto.organizationName,
-      slug: organizationSlug,
-      email: registerDto.email,
-      settings: {
-        defaultCurrency: 'USD',
-        emailNotifications: true,
-        allowGuestCheckout: true,
-      },
-    });
-
-    // Create the user with the organization
-    const user = await this.usersService.createUser({
-      name: registerDto.name,
-      email: registerDto.email,
-      password: registerDto.password,
-      organizationId: organization.id,
-      role: (registerDto.role as UserRole) || UserRole.OWNER,
-      permissions: ['*'], // Full permissions for the owner
-      status: UserStatus.ACTIVE, // Auto-activate the first user
-      twoFactorEnabled: false, // Default to disabled for new registrations
-    });
-
-    // Generate tokens
-    const tokens = this.generateTokens(user);
-
-    // Create user session
-    const expiresAt = new Date();
-    expiresAt.setSeconds(
-      expiresAt.getSeconds() +
-        parseInt(
-          this.configService.get('jwt.refreshExpiresIn') || '604800',
-          10,
-        ),
-    );
-
-    await this.usersService.createSession({
-      userId: user.id,
-      token: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      expiresAt,
-    });
-
-    // Return the user, organization and tokens
-    return {
-      user: {
+      // Return user information AND tokens for NextAuth compatibility
+      return {
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
-      },
-      organization: {
-        id: organization.id,
-        name: organization.name,
-        slug: organization.slug,
-      },
-      ...tokens,
-    };
+        permissions: user.permissions,
+        organizationId: user.organizationId,
+        ...tokens,
+      };
+    } catch (error) {
+      this.logger.error(`Login failed for user ${user.email}:`, error.message);
+      throw error;
+    }
+  }
+
+  async register(registerDto: RegisterDto): Promise<any> {
+    try {
+      // Check if the user already exists
+      const existingUser = await this.usersService.findByEmail(registerDto.email);
+      if (existingUser) {
+        this.logger.warn(`Registration attempt with existing email: ${registerDto.email}`);
+        throw new ConflictException('User with this email already exists');
+      }
+
+      // Generate a slug if not provided
+      const organizationSlug =
+        registerDto.organizationSlug ||
+        registerDto.organizationName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+
+      // Check if organization slug is already taken
+      const existingOrg =
+        await this.organizationsService.findBySlug(organizationSlug);
+      if (existingOrg) {
+        this.logger.warn(`Registration attempt with existing organization slug: ${organizationSlug}`);
+        throw new ConflictException('Organization with this slug already exists');
+      }
+
+      // Create the organization first
+      const organization = await this.organizationsService.createOrganization({
+        name: registerDto.organizationName,
+        slug: organizationSlug,
+        email: registerDto.email,
+        settings: {
+          defaultCurrency: 'USD',
+          emailNotifications: true,
+          allowGuestCheckout: true,
+        },
+      });
+
+      // Create the user with the organization
+      const user = await this.usersService.createUser({
+        name: registerDto.name,
+        email: registerDto.email,
+        password: registerDto.password,
+        organizationId: organization.id,
+        role: (registerDto.role as UserRole) || UserRole.OWNER,
+        permissions: ['*'], // Full permissions for the owner
+        status: UserStatus.ACTIVE, // Auto-activate the first user
+        twoFactorEnabled: false, // Default to disabled for new registrations
+      });
+
+      // Generate tokens
+      const tokens = this.generateTokens(user);
+
+      // Create user session
+      const expiresAt = new Date();
+      expiresAt.setSeconds(
+        expiresAt.getSeconds() +
+          parseInt(
+            this.configService.get('jwt.refreshExpiresIn') || '604800',
+            10,
+          ),
+      );
+
+      await this.usersService.createSession({
+        userId: user.id,
+        token: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresAt,
+      });
+
+      this.logger.log(`New user registered: ${user.email} for organization: ${organization.name}`);
+
+      // Return the user, organization and tokens
+      return {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        organization: {
+          id: organization.id,
+          name: organization.name,
+          slug: organization.slug,
+        },
+        ...tokens,
+      };
+    } catch (error) {
+      this.logger.error(`Registration failed for email ${registerDto.email}:`, error.message);
+      throw error;
+    }
   }
 
   async refreshTokens(refreshToken: string): Promise<TokenPair> {
@@ -492,33 +522,60 @@ export class AuthService {
   }
 
   private generateTokens(user: User): TokenPair {
-    const payload: JwtPayload = {
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      permissions: user.permissions,
-      organizationId: user.organizationId,
-      tenantId: user.organizationId,
-    };
+    try {
+      // Validate required user data
+      if (!user.id || !user.email || !user.role || !user.organizationId) {
+        this.logger.error('Invalid user data for token generation:', {
+          userId: user.id,
+          email: user.email,
+          role: user.role,
+          organizationId: user.organizationId,
+        });
+        throw new Error('Invalid user data for token generation');
+      }
 
-    const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get('jwt.secret'),
-      expiresIn: parseInt(this.configService.get('jwt.expiresIn') || '900', 10),
-    });
+      const payload: JwtPayload = {
+        sub: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        permissions: user.permissions || [],
+        organizationId: user.organizationId,
+        tenantId: user.organizationId,
+      };
 
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get('jwt.refreshSecret'),
-      expiresIn: parseInt(
-        this.configService.get('jwt.refreshExpiresIn') || '604800',
-        10,
-      ),
-    });
+      // Validate JWT secrets are configured
+      const jwtSecret = this.configService.get('jwt.secret');
+      const jwtRefreshSecret = this.configService.get('jwt.refreshSecret');
+      
+      if (!jwtSecret || !jwtRefreshSecret) {
+        this.logger.error('JWT secrets not configured');
+        throw new Error('JWT configuration error');
+      }
 
-    return {
-      accessToken,
-      refreshToken,
-      expiresIn: parseInt(this.configService.get('jwt.expiresIn') || '900', 10),
-    };
+      const accessToken = this.jwtService.sign(payload, {
+        secret: jwtSecret,
+        expiresIn: parseInt(this.configService.get('jwt.expiresIn') || '900', 10),
+      });
+
+      const refreshToken = this.jwtService.sign(payload, {
+        secret: jwtRefreshSecret,
+        expiresIn: parseInt(
+          this.configService.get('jwt.refreshExpiresIn') || '604800',
+          10,
+        ),
+      });
+
+      this.logger.debug(`Generated tokens for user ${user.email}`);
+
+      return {
+        accessToken,
+        refreshToken,
+        expiresIn: parseInt(this.configService.get('jwt.expiresIn') || '900', 10),
+      };
+    } catch (error) {
+      this.logger.error(`Token generation failed for user ${user.email}:`, error.message);
+      throw error;
+    }
   }
 }
