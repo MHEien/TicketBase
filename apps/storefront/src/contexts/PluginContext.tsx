@@ -5,8 +5,8 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { useOrganization } from "./OrganizationContext";
 import { pluginsApi, InstalledPlugin, Plugin } from "../lib/api/plugins";
+import { getTenantFromClientCookie } from "../lib/tenant";
 
 interface PluginContextType {
   plugins: InstalledPlugin[];
@@ -44,7 +44,7 @@ interface PluginProviderProps {
 }
 
 export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
-  const { organization } = useOrganization();
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [plugins, setPlugins] = useState<InstalledPlugin[]>([]);
   const [loadedPlugins, setLoadedPlugins] = useState<Map<string, any>>(
     new Map(),
@@ -52,8 +52,14 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get organization ID from tenant cookie
+  useEffect(() => {
+    const tenantData = getTenantFromClientCookie();
+    setOrganizationId(tenantData?.organizationId || null);
+  }, []);
+
   const fetchPlugins = async () => {
-    if (!organization?.id) {
+    if (!organizationId) {
       setPlugins([]);
       setLoading(false);
       return;
@@ -65,7 +71,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
 
       // Get enabled plugins for the organization
       const enabledPlugins = await pluginsApi.getEnabledPlugins(
-        organization.id,
+        organizationId,
       );
       setPlugins(enabledPlugins);
 
@@ -98,10 +104,10 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
 
         // Get plugin configuration if organization exists
         let config = {};
-        if (organization?.id) {
+        if (organizationId) {
           try {
             config = await pluginsApi.getPluginConfig(
-              organization.id,
+              organizationId,
               pluginId,
             );
           } catch (configError) {
@@ -130,7 +136,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
         throw err;
       }
     },
-    [organization?.id, loadedPlugins],
+    [organizationId, loadedPlugins],
   );
 
   const loadPluginScript = async (bundleUrl: string): Promise<any> => {
@@ -175,11 +181,11 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
       metadata?: any,
     ) => {
       try {
-        return await pluginsApi.executePluginAction(
+        return pluginsApi.executePluginAction(
           pluginId,
           action,
           parameters,
-          { ...metadata, organizationId: organization?.id },
+          { ...metadata, organizationId: organizationId },
         );
       } catch (error) {
         console.error(
@@ -189,7 +195,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
         throw error;
       }
     },
-    [organization?.id],
+    [organizationId],
   );
 
   const executeExtensionPoint = useCallback(
@@ -220,7 +226,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
               ...props,
               context: {
                 ...context,
-                organizationId: organization?.id,
+                organizationId: organizationId,
                 user: context?.user, // Pass user from context if available
               },
               configuration: plugin.config,
@@ -240,7 +246,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
         return aPriority - bPriority;
       });
     },
-    [loadedPlugins, organization?.id, executePluginAction],
+    [loadedPlugins, organizationId, executePluginAction],
   );
 
   const getPaymentMethods = useCallback(() => {
@@ -253,7 +259,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
 
   useEffect(() => {
     fetchPlugins();
-  }, [organization?.id]);
+  }, [organizationId]);
 
   const contextValue: PluginContextType = {
     plugins,

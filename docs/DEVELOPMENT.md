@@ -6,9 +6,9 @@ This guide provides instructions for setting up the development environment and 
 
 Make sure you have the following software installed on your system:
 
--   **Node.js**: Version 18 or higher.
--   **Docker & Docker Compose**: For running backend services.
--   **Bun**: As the primary package manager and runtime.
+- **Node.js**: Version 18 or higher.
+- **Docker & Docker Compose**: For running backend services.
+- **Bun**: As the primary package manager and runtime.
 
 ## Environment Setup
 
@@ -18,8 +18,9 @@ Make sure you have the following software installed on your system:
     bun install
     ```
 3.  **Environment Variables**: The platform uses `.env` files for configuration. You will need to create a `.env` file in the root of the following packages/apps based on their `.env.example` files:
-    -   `apps/api`
-    -   `apps/plugins`
+
+    - `apps/api`
+    - `apps/plugins`
 
     These files contain critical variables such as database connection strings and JWT secrets.
 
@@ -58,9 +59,9 @@ bun dev --filter=api
 
 ## Code Quality & Conventions
 
--   **Linting**: We use ESLint for code quality. Run `bun lint` to check for issues.
--   **Formatting**: We use Prettier for code formatting. It is recommended to set up your editor to format on save.
--   **Type Checking**: Run `bun typecheck` to validate TypeScript types across the entire monorepo.
+- **Linting**: We use ESLint for code quality. Run `bun lint` to check for issues.
+- **Formatting**: We use Prettier for code formatting. It is recommended to set up your editor to format on save.
+- **Type Checking**: Run `bun typecheck` to validate TypeScript types across the entire monorepo.
 
 ## Creating a Plugin: A Step-by-Step Tutorial
 
@@ -92,6 +93,7 @@ hello-world-plugin/
 This file is the identity card for your plugin. It tells the platform what your plugin is, where it should appear, and what configuration it needs.
 
 **`plugin.json`**
+
 ```json
 {
   "id": "hello-world-plugin",
@@ -99,9 +101,7 @@ This file is the identity card for your plugin. It tells the platform what your 
   "version": "1.0.0",
   "description": "A simple example plugin.",
   "author": "Your Name",
-  "extensionPoints": [
-    "admin-settings"
-  ],
+  "extensionPoints": ["admin-settings"],
   "configSchema": {
     "type": "object",
     "properties": {
@@ -122,24 +122,25 @@ This file is the identity card for your plugin. It tells the platform what your 
 This file contains the React components for your `extensionPoints`. We will also define our secure backend logic here.
 
 **`src/index.tsx`**
+
 ```tsx
-import React, { useState } from 'react';
-import { useAction } from '@ticketsplatform/plugin-sdk'; // Assuming SDK provides this
+import React, { useState } from "react";
+import { useAction } from "@ticketsplatform/plugin-sdk"; // Assuming SDK provides this
 
 // --- Frontend Component for the 'admin-settings' Extension Point ---
 const AdminSettingsComponent = (props) => {
   const { configuration, onSave, saving } = props;
-  const [greeting, setGreeting] = useState(configuration.greeting || 'Hello');
+  const [greeting, setGreeting] = useState(configuration.greeting || "Hello");
 
   // Hook to call our backend action
-  const { execute: sayHello, loading, error, data } = useAction('say-hello');
+  const { execute: sayHello, loading, error, data } = useAction("say-hello");
 
   const handleSave = () => {
     onSave({ greeting });
   };
 
   const handleSayHello = async () => {
-    await sayHello({ name: 'World' });
+    await sayHello({ name: "World" });
   };
 
   return (
@@ -147,36 +148,36 @@ const AdminSettingsComponent = (props) => {
       <h2>Hello World Plugin Settings</h2>
       <div>
         <label>Greeting:</label>
-        <input 
-          type="text" 
-          value={greeting} 
-          onChange={(e) => setGreeting(e.target.value)} 
+        <input
+          type="text"
+          value={greeting}
+          onChange={(e) => setGreeting(e.target.value)}
         />
       </div>
       <button onClick={handleSave} disabled={saving}>
-        {saving ? 'Saving...' : 'Save'}
+        {saving ? "Saving..." : "Save"}
       </button>
 
-      <hr style={{ margin: '20px 0' }} />
+      <hr style={{ margin: "20px 0" }} />
 
       <h3>Test Backend Action</h3>
       <button onClick={handleSayHello} disabled={loading}>
-        {loading ? 'Pinging...' : 'Ping Backend'}
+        {loading ? "Pinging..." : "Ping Backend"}
       </button>
-      {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
-      {data && <p style={{ color: 'green' }}>Backend says: {data.message}</p>}
+      {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
+      {data && <p style={{ color: "green" }}>Backend says: {data.message}</p>}
     </div>
   );
 };
 
 // --- Exported Components for Extension Points ---
 export const extensionPoints = {
-  'admin-settings': AdminSettingsComponent,
+  "admin-settings": AdminSettingsComponent,
 };
 
 // --- Exported Secure Backend Logic ---
 export const backendActions = {
-  'say-hello': async (params, config) => {
+  "say-hello": async (params, config) => {
     // This code runs on the secure plugin server
     // 'config' is the saved, decrypted configuration
     const message = `${config.greeting}, ${params.name}! The time is ${new Date().toLocaleTimeString()}`;
@@ -190,6 +191,7 @@ export const backendActions = {
 Create a minimal `package.json` to identify your plugin as a workspace package.
 
 **`package.json`**
+
 ```json
 {
   "name": "@my-plugins/hello-world",
@@ -215,16 +217,16 @@ Turborepo will detect the new `hello-world-plugin` package and include it in the
 
 ## Testing
 
-*Instructions on how to run the test suite for different parts of the application will be added here.*
+_Instructions on how to run the test suite for different parts of the application will be added here._
 
 ## API Development
 
-*Guidelines for creating and modifying API endpoints will be included here.*
+_Guidelines for creating and modifying API endpoints will be included here._
 
 ## Frontend Development
 
-*Information on the frontend architecture, state management, and component design patterns will be added here.*
+_Information on the frontend architecture, state management, and component design patterns will be added here._
 
 ## Debugging
 
-*Tips and techniques for debugging different services will be provided here.*
+_Tips and techniques for debugging different services will be provided here._

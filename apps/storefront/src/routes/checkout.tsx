@@ -17,7 +17,7 @@ import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
-import { useOrganization } from "~/contexts/OrganizationContext";
+import { getCurrentOrganization } from "~/lib/server-organization";
 import { useCart } from "~/contexts/CartContext";
 import { eventsApi } from "~/lib/api/events";
 import { ordersApi } from "~/lib/api/orders";
@@ -27,11 +27,15 @@ import {
 } from "~/components/plugins/ExtensionPoint";
 
 export const Route = createFileRoute("/checkout")({
+  loader: async () => {
+    const organization = await getCurrentOrganization();
+    return { organization };
+  },
   component: CheckoutPage,
 });
 
 function CheckoutPage() {
-  const { organization } = useOrganization();
+  const { organization } = Route.useLoaderData();
   const {
     state: cartState,
     clearCart,
@@ -80,7 +84,8 @@ function CheckoutPage() {
   const { data: events } = useQuery({
     queryKey: ["events", eventIds],
     queryFn: async () => {
-      const eventPromises = eventIds.map((id) => eventsApi.getPublicEvent(id));
+      if (!organization) return [];
+      const eventPromises = eventIds.map((id) => eventsApi.getPublicEvent(id, organization.id));
       return Promise.all(eventPromises);
     },
     enabled: eventIds.length > 0,

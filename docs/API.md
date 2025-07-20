@@ -10,7 +10,6 @@ The main API is responsible for core functionalities. All routes are prefixed wi
 
 A comprehensive OpenAPI (Swagger) documentation is automatically generated and available at the `/api/docs` endpoint. This interactive documentation provides a full list of endpoints, request/response models, and allows for direct API testing.
 
-
 ### Authentication
 
 Authentication is handled using JSON Web Tokens (JWT). To access protected endpoints, you must first obtain an `accessToken` and a `refreshToken` by authenticating through the login endpoint.
@@ -157,38 +156,38 @@ The Plugin Management API, served from the `/plugins` endpoint, provides authent
 
 ### Plugin Lifecycle
 
--   `POST /plugins`: Creates a new plugin in the system.
--   `POST /plugins/payment`: A specialized endpoint to register a new payment plugin.
--   `PATCH /plugins/:id`: Updates an existing plugin's details.
--   `PATCH /plugins/:id/deprecate`: Marks a plugin as deprecated.
--   `DELETE /plugins/:id`: Removes a plugin from the system.
+- `POST /plugins`: Creates a new plugin in the system.
+- `POST /plugins/payment`: A specialized endpoint to register a new payment plugin.
+- `PATCH /plugins/:id`: Updates an existing plugin's details.
+- `PATCH /plugins/:id/deprecate`: Marks a plugin as deprecated.
+- `DELETE /plugins/:id`: Removes a plugin from the system.
 
 ### Plugin Discovery (Admin)
 
--   `GET /plugins`: Retrieves a list of all plugins, with an optional status filter.
--   `GET /plugins/:id`: Retrieves a single plugin by its ID.
--   `GET /plugins/category/:category`: Finds plugins by their category.
--   `GET /plugins/extension-point/:extensionPoint`: Finds plugins by the extension points they implement.
+- `GET /plugins`: Retrieves a list of all plugins, with an optional status filter.
+- `GET /plugins/:id`: Retrieves a single plugin by its ID.
+- `GET /plugins/category/:category`: Finds plugins by their category.
+- `GET /plugins/extension-point/:extensionPoint`: Finds plugins by the extension points they implement.
 
 ### Plugin Installation & Configuration (Per-Organization)
 
--   `POST /plugins/install`: Installs a plugin for the authenticated user's organization.
--   `DELETE /plugins/:id/uninstall`: Uninstalls a plugin from the organization.
--   `PATCH /plugins/:id/enable`: Enables an installed plugin for the organization.
--   `PATCH /plugins/:id/disable`: Disables an installed plugin.
--   `POST /plugins/:id/configure`: Sets the configuration for an installed plugin.
--   `GET /plugins/:id/configure`: Retrieves the configuration for an installed plugin.
+- `POST /plugins/install`: Installs a plugin for the authenticated user's organization.
+- `DELETE /plugins/:id/uninstall`: Uninstalls a plugin from the organization.
+- `PATCH /plugins/:id/enable`: Enables an installed plugin for the organization.
+- `PATCH /plugins/:id/disable`: Disables an installed plugin.
+- `POST /plugins/:id/configure`: Sets the configuration for an installed plugin.
+- `GET /plugins/:id/configure`: Retrieves the configuration for an installed plugin.
 
 ### Plugin Storage
 
--   `POST /plugins/storage/upload`: Uploads a plugin bundle to the storage server (e.g., MinIO).
+- `POST /plugins/storage/upload`: Uploads a plugin bundle to the storage server (e.g., MinIO).
 
 ## Public Plugin API
 
 The Public Plugin API, served from the `/public/plugins` endpoint, provides unauthenticated access to plugin information required by the storefront and other public clients.
 
--   `GET /public/plugins/available`: Retrieves a list of all active plugins available for installation, similar to a marketplace listing.
--   `GET /public/plugins/organizations/:organizationId/enabled`: Retrieves the enabled plugins for a specific organization. This is crucial for the storefront to know which plugins to render.
--   `GET /public/plugins/organizations/:organizationId/payment`: Retrieves the enabled payment plugins for an organization, used during the checkout process.
--   `GET /public/plugins/:pluginId/bundle`: Retrieves the bundle URL for a specific plugin, allowing the frontend to load the plugin's code.
--   `POST /public/plugins/:pluginId/actions`: Executes a secure backend action for a plugin on behalf of an authenticated user. This is the primary mechanism for the frontend to interact with a plugin's backend logic, for example, to create a payment session.
+- `GET /public/plugins/available`: Retrieves a list of all active plugins available for installation, similar to a marketplace listing.
+- `GET /public/plugins/organizations/:organizationId/enabled`: Retrieves the enabled plugins for a specific organization. This is crucial for the storefront to know which plugins to render.
+- `GET /public/plugins/organizations/:organizationId/payment`: Retrieves the enabled payment plugins for an organization, used during the checkout process.
+- `GET /public/plugins/:pluginId/bundle`: Retrieves the bundle URL for a specific plugin, allowing the frontend to load the plugin's code.
+- `POST /public/plugins/:pluginId/actions`: Executes a secure backend action for a plugin on behalf of an authenticated user. This is the primary mechanism for the frontend to interact with a plugin's backend logic, for example, to create a payment session.

@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { useOrganization } from "../contexts/OrganizationContext";
 import {
   Facebook,
   Twitter,
@@ -21,14 +20,13 @@ const socialIcons = {
 };
 
 export const Footer: React.FC = () => {
-  const { organization, branding } = useOrganization();
-
-  const organizationName = organization?.name || "Events Platform";
+  // Organization data will be applied via server-side rendering and CSS variables
+  const organizationName = "Events Platform"; // Fallback, actual name applied via branding
   const currentYear = new Date().getFullYear();
 
-  // Get custom footer links and social links from organization settings
-  const footerLinks = organization?.settings?.footerLinks || [];
-  const socialLinks = organization?.settings?.socialLinks || [];
+  // Footer links and social links will be handled by server-side rendering
+  const footerLinks: any[] = []; // Will be populated by server-side data
+  const socialLinks: any[] = []; // Will be populated by server-side data
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -37,38 +35,19 @@ export const Footer: React.FC = () => {
           {/* Brand Section */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center space-x-2 mb-4">
-              {branding?.logo ? (
-                <img
-                  src={branding.logo}
-                  alt={organizationName}
-                  className="h-8 w-auto"
-                />
-              ) : (
-                <div
-                  className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold"
-                  style={{
-                    backgroundColor: branding?.primaryColor || "#3b82f6",
-                  }}
-                >
-                  {organizationName.charAt(0)}
-                </div>
-              )}
+              <div
+                className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold"
+                style={{
+                  backgroundColor: "var(--primary-color, #3b82f6)",
+                }}
+              >
+                {organizationName.charAt(0)}
+              </div>
               <span className="text-xl font-bold">{organizationName}</span>
             </Link>
             <p className="text-gray-400 mb-4 max-w-md">
-              {organization?.checkoutMessage ||
-                "Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience."}
+              Discover and book tickets for amazing events. From concerts to conferences, find your next unforgettable experience.
             </p>
-            {organization?.website && (
-              <a
-                href={organization.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                Visit our website
-              </a>
-            )}
 
             {/* Social Links */}
             {socialLinks.length > 0 && (
@@ -145,26 +124,6 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <div className="space-y-2 text-gray-400">
-              {organization?.email && (
-                <p>
-                  <a
-                    href={`mailto:${organization.email}`}
-                    className="hover:text-white transition-colors"
-                  >
-                    {organization.email}
-                  </a>
-                </p>
-              )}
-              {organization?.phone && (
-                <p>
-                  <a
-                    href={`tel:${organization.phone}`}
-                    className="hover:text-white transition-colors"
-                  >
-                    {organization.phone}
-                  </a>
-                </p>
-              )}
               <p>
                 <Link to="/" className="hover:text-white transition-colors">
                   Support
@@ -204,34 +163,12 @@ export const Footer: React.FC = () => {
             © {currentYear} {organizationName}. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            {organization?.settings?.privacyPolicyUrl ? (
-              <a
-                href={organization.settings.privacyPolicyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white transition-colors"
-              >
-                Privacy Policy
-              </a>
-            ) : (
-              <Link to="/" className="hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
-            )}
-            {organization?.settings?.termsOfServiceUrl ? (
-              <a
-                href={organization.settings.termsOfServiceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-white transition-colors"
-              >
-                Terms of Service
-              </a>
-            ) : (
-              <Link to="/" className="hover:text-white transition-colors">
-                Terms of Service
-              </Link>
-            )}
+            <Link to="/" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/" className="hover:text-white transition-colors">
+              Terms of Service
+            </Link>
             <Link to="/" className="hover:text-white transition-colors">
               Help
             </Link>

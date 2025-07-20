@@ -1,18 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useOrganization } from "../contexts/OrganizationContext";
+import { getCurrentOrganization } from "../lib/server-organization";
 import { useBaseSEO } from "../hooks/use-seo";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
-
+import { organizationBrandingQueryOptions } from "~/lib/branding";
 export const Route = createFileRoute("/about")({
+  loader: async () => {
+    const organization = await getCurrentOrganization();
+    const branding = await organizationBrandingQueryOptions().queryFn();
+    return { organization, branding };
+  },
   component: About,
 });
 
 function About() {
-  const { organization, branding, domainInfo, loading } = useOrganization();
+  const { organization } = Route.useLoaderData();
 
   const organizationName = organization?.name || "Events Platform";
 
@@ -31,7 +34,7 @@ function About() {
     ],
   });
 
-  if (loading) {
+  if (!organization) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -41,7 +44,7 @@ function About() {
     );
   }
 
-  const currentTheme = branding?.themeName || "default";
+  const currentTheme = organization?.settings?.themeName || "default";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,11 +113,7 @@ function About() {
             <div className="space-y-3 text-gray-600">
               <p>
                 <strong>Current Domain:</strong>{" "}
-                {domainInfo?.domain || "localhost"}
-              </p>
-              <p>
-                <strong>Custom Domain:</strong>{" "}
-                {domainInfo?.isCustomDomain ? "Yes" : "No"}
+                {organization?.customDomain || "localhost"}
               </p>
               {organization?.customDomain && (
                 <p>
@@ -156,13 +155,13 @@ function About() {
                   <div
                     className="w-12 h-12 rounded-lg shadow-md border-2 border-white"
                     style={{
-                      backgroundColor: branding?.primaryColor || "#3b82f6",
+                      backgroundColor: organization?.settings?.primaryColor || "#3b82f6",
                     }}
                   ></div>
                   <div>
                     <p className="font-medium">Primary Color</p>
                     <p className="text-sm text-gray-600">
-                      {branding?.primaryColor || "#3b82f6"}
+                      {organization?.settings?.primaryColor || "#3b82f6"}
                     </p>
                   </div>
                 </div>
@@ -170,13 +169,13 @@ function About() {
                   <div
                     className="w-12 h-12 rounded-lg shadow-md border-2 border-white"
                     style={{
-                      backgroundColor: branding?.secondaryColor || "#64748b",
+                      backgroundColor: organization?.settings?.secondaryColor || "#64748b",
                     }}
                   ></div>
                   <div>
                     <p className="font-medium">Secondary Color</p>
                     <p className="text-sm text-gray-600">
-                      {branding?.secondaryColor || "#64748b"}
+                      {organization?.settings?.secondaryColor || "#64748b"}
                     </p>
                   </div>
                 </div>
@@ -190,7 +189,7 @@ function About() {
                 <div>
                   <p className="font-medium">Font Family</p>
                   <p className="text-sm text-gray-600">
-                    {branding?.fontFamily || "Inter, system-ui, sans-serif"}
+                    {organization?.settings?.fontFamily || "Inter, system-ui, sans-serif"}
                   </p>
                 </div>
                 <div>
@@ -202,7 +201,7 @@ function About() {
                 <div>
                   <p className="font-medium">Button Style</p>
                   <p className="text-sm text-gray-600 capitalize">
-                    {branding?.buttonStyle || "rounded"}
+                    {organization?.settings?.buttonStyle || "rounded"}
                   </p>
                 </div>
               </div>

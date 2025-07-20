@@ -11,16 +11,20 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Button } from "~/components/ui/Button";
-import { useOrganization } from "~/contexts/OrganizationContext";
+import { getCurrentOrganization } from "~/lib/server-organization";
 import { usePlugins } from "~/contexts/PluginContext";
 import { pluginsApi } from "~/lib/api/plugins";
 
 export const Route = createFileRoute("/plugins")({
   component: PluginsPage,
+  loader: async () => {
+    const organization = await getCurrentOrganization();
+    return { organization };
+  },
 });
 
 function PluginsPage() {
-  const { organization } = useOrganization();
+  const { organization } = Route.useLoaderData();
   const { plugins, loading, error, refetch } = usePlugins();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 

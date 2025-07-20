@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Calendar,
@@ -16,12 +16,23 @@ import {
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Button } from "~/components/ui/Button";
-import { useOrganization } from "~/contexts/OrganizationContext";
+import { getCurrentOrganization } from "~/lib/server-organization";
 import { eventsApi, Event, TicketType } from "~/lib/api/events";
 import { EventDetailExtensions } from "~/components/plugins/ExtensionPoint";
 import { useCart } from "~/contexts/CartContext";
+import { eventQueryOptions } from "~/utils/events";
 
 export const Route = createFileRoute("/events/$eventId")({
+  loader: async ({ params: { eventId }, context }) => {
+    const data = await context.queryClient.ensureQueryData(
+      eventQueryOptions(eventId),
+    );
+    const organization = await getCurrentOrganization();
+    return { data, organization };
+  },
+  head: ({ loaderData }) => ({
+    meta: loaderData ? [{ title: loaderData.data.title }] : undefined,
+  }),
   component: EventDetailPage,
 });
 
@@ -34,7 +45,7 @@ interface TicketSelection {
 
 function EventDetailPage() {
   const { eventId } = Route.useParams();
-  const { organization } = useOrganization();
+  const { organization } = Route.useLoaderData();
   const {
     addItem,
     updateQuantity,
@@ -44,22 +55,11 @@ function EventDetailPage() {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Fetch event details
   const {
     data: event,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["event", eventId, organization?.id],
-    queryFn: () => {
-      if (!organization?.id) {
-        throw new Error("Organization ID is required");
-      }
-      return eventsApi.getPublicEvent(eventId, organization.id);
-    },
-    enabled: !!organization?.id && !!eventId, // Only run query when we have both organization ID and event ID
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  } = useSuspenseQuery(eventQueryOptions(eventId));
 
   const handleTicketQuantityChange = (
     ticketType: TicketType,

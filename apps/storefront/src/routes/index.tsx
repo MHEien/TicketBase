@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useOrganization } from "../contexts/OrganizationContext";
+import { getCurrentOrganization } from "../lib/server-organization";
 import { useBaseSEO } from "../hooks/use-seo";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -9,10 +9,14 @@ import { Calendar, MapPin, Users, Star, Zap, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  loader: async () => {
+    const organization = await getCurrentOrganization();
+    return { organization };
+  },
 });
 
 function Index() {
-  const { organization, loading } = useOrganization();
+  const { organization } = Route.useLoaderData();
 
   // Apply SEO for home page
   useBaseSEO({
@@ -33,15 +37,6 @@ function Index() {
     ].filter(Boolean),
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
-    );
-  }
 
   const organizationName = organization?.name || "Events Platform";
 

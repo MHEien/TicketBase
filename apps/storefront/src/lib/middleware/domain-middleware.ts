@@ -1,4 +1,10 @@
 import { Organization, organizationsApi } from "../api/organizations";
+import {
+  getTenantServerFn,
+  setTenantServerFn,
+  shouldSetTenantCookie,
+  getTenantFromClientCookie,
+} from "../tenant";
 
 export interface DomainDetectionResult {
   organization: Organization | null;
@@ -39,6 +45,81 @@ export class DomainMiddleware {
       let organization: Organization | null = null;
       let fallbackMode: "development" | "default" | null = null;
 
+      // First, try to get organization from tenant cookie (server-side)
+      try {
+        const tenantData = await getTenantServerFn();
+        if (tenantData && tenantData.organizationId) {
+          // Verify the tenant cookie is for the current domain or development
+          if (
+            this.isDevelopmentDomain(domain) ||
+            tenantData.domain === domain
+          ) {
+            try {
+              organization = await organizationsApi.getBySlug(
+                tenantData.organizationSlug,
+              );
+              if (organization) {
+                console.log(
+                  `Organization loaded from tenant cookie: ${organization.name}`,
+                );
+                // Update cache
+                this.setCachedOrganization(domain, organization);
+                return {
+                  organization,
+                  domain,
+                  isCustomDomain: !this.isDevelopmentDomain(domain),
+                  fallbackMode: this.isDevelopmentDomain(domain)
+                    ? "development"
+                    : null,
+                };
+              }
+            } catch (error) {
+              console.warn(
+                `Could not load organization from tenant cookie: ${tenantData.organizationSlug}`,
+                error,
+              );
+            }
+          }
+        }
+      } catch (error) {
+        // Server function might not be available on client-side, try client cookie
+        if (typeof window !== "undefined") {
+          const clientTenantData = getTenantFromClientCookie();
+          if (clientTenantData && clientTenantData.organizationId) {
+            if (
+              this.isDevelopmentDomain(domain) ||
+              clientTenantData.domain === domain
+            ) {
+              try {
+                organization = await organizationsApi.getBySlug(
+                  clientTenantData.organizationSlug,
+                );
+                if (organization) {
+                  console.log(
+                    `Organization loaded from client tenant cookie: ${organization.name}`,
+                  );
+                  this.setCachedOrganization(domain, organization);
+                  return {
+                    organization,
+                    domain,
+                    isCustomDomain: !this.isDevelopmentDomain(domain),
+                    fallbackMode: this.isDevelopmentDomain(domain)
+                      ? "development"
+                      : null,
+                  };
+                }
+              } catch (error) {
+                console.warn(
+                  `Could not load organization from client tenant cookie: ${clientTenantData.organizationSlug}`,
+                  error,
+                );
+              }
+            }
+          }
+        }
+      }
+
+      // Fallback to original domain detection logic
       if (this.isDevelopmentDomain(domain)) {
         // Development environment handling
         fallbackMode = "development";
@@ -51,6 +132,27 @@ export class DomainMiddleware {
           console.warn(`No organization found for domain: ${domain}`, error);
           // Could implement fallback to default organization here
           fallbackMode = "default";
+        }
+      }
+
+      // If we found an organization and should set a cookie, set it
+      if (
+        organization &&
+        shouldSetTenantCookie(domain, organization.customDomain)
+      ) {
+        try {
+          await setTenantServerFn({
+            data: {
+              organizationId: organization.id,
+              organizationSlug: organization.slug,
+              domain: domain,
+            },
+          });
+          console.log(
+            `Tenant cookie set for organization: ${organization.name}`,
+          );
+        } catch (error) {
+          console.warn("Could not set tenant cookie:", error);
         }
       }
 

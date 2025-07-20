@@ -334,15 +334,15 @@ export async function uploadEventImage(
       {
         headers: {
           // Remove Content-Type header to let browser set multipart/form-data boundary
-          'Content-Type': undefined,
+          "Content-Type": undefined,
         },
-      }
+      },
     );
 
     return response.data;
   } catch (error: any) {
     console.error("Error uploading event image:", error);
-    
+
     // Extract error message from axios error
     if (error.response?.data?.message) {
       throw new Error(error.response.data.message);

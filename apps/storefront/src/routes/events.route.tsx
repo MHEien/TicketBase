@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import {
   Search,
@@ -15,11 +15,17 @@ import { format } from "date-fns";
 import { Card, CardContent } from "~/components/ui/Card";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
-import { useOrganization } from "~/contexts/OrganizationContext";
+import { getCurrentOrganization } from "~/lib/server-organization";
 import { eventsApi, Event, EventFilters } from "~/lib/api/events";
+import { eventsQueryOptions, fetchEvents } from "~/utils/events";
 
 export const Route = createFileRoute("/events")({
   component: EventsPage,
+  loader: async ({ context, params }) => {
+    await context.queryClient.ensureQueryData(eventsQueryOptions(params));
+    const organization = await getCurrentOrganization();
+    return { organization };
+  },
   validateSearch: (search: Record<string, unknown>) => {
     return {
       category: (search.category as string) || undefined,
@@ -38,7 +44,7 @@ interface SearchParams {
 }
 
 function EventsPage() {
-  const { organization } = useOrganization();
+  const { organization } = Route.useLoaderData();
   const { category, search: searchQuery, location, page } = Route.useSearch();
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -60,24 +66,12 @@ function EventsPage() {
   // Fetch events
   const {
     data: events,
-    isLoading,
     error,
-  } = useQuery({
-    queryKey: ["events", organization?.id, filters],
-    queryFn: () => {
-      if (!organization?.id) {
-        // Don't make API call if we don't have an organization ID
-        // The backend requires organizationId for all public event endpoints
-        return Promise.resolve([]);
-      }
-      return eventsApi.getEventsByOrganization(organization.id, filters);
-    },
-    enabled: !!organization?.id, // Only run query when we have an organization ID
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+    isLoading,
+  } = useSuspenseQuery(eventsQueryOptions(filters));
 
   // Fetch categories
-  const { data: categories } = useQuery({
+  const { data: categories } = useSuspenseQuery({
     queryKey: ["event-categories"],
     queryFn: () => eventsApi.getEventCategories(),
     staleTime: 1000 * 60 * 10, // 10 minutes

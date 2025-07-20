@@ -9,13 +9,13 @@ This documentation provides a complete guide for developers, administrators, and
 - [Architecture](./ARCHITECTURE.md)
 - [Development Guide](./DEVELOPMENT.md)
 - [API Reference](./API.md)
--   **[Deployment Guide](./DEPLOYMENT.md)**: Instructions for deploying the platform.
--   **[Plugin SDK Reference](./PLUGIN-SDK.md)**: A guide for developers on how to build plugins for the platform.
--   **[UI Component Library](./UI.md)**: A guide to the shared UI components.
+- **[Deployment Guide](./DEPLOYMENT.md)**: Instructions for deploying the platform.
+- **[Plugin SDK Reference](./PLUGIN-SDK.md)**: A guide for developers on how to build plugins for the platform.
+- **[UI Component Library](./UI.md)**: A guide to the shared UI components.
 
 ## Quick Start
 
-*Instructions for setting up and running the project will be added here.*
+_Instructions for setting up and running the project will be added here._
 
 ## Project Structure
 

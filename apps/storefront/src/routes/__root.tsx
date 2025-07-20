@@ -10,7 +10,7 @@ import * as React from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
-import { OrganizationProvider } from "~/contexts/OrganizationContext";
+
 import { PluginProvider } from "~/contexts/PluginContext";
 import { CartProvider } from "~/contexts/CartContext";
 import { Header } from "~/components/Header";
@@ -66,36 +66,28 @@ export const Route = createRootRouteWithContext<{
   errorComponent: (props) => {
     return (
       <RootDocument>
-        <OrganizationProvider>
-          <DefaultCatchBoundary {...props} />
-        </OrganizationProvider>
+        <DefaultCatchBoundary {...props} />
       </RootDocument>
     );
   },
-  notFoundComponent: () => (
-    <OrganizationProvider>
-      <NotFound />
-    </OrganizationProvider>
-  ),
+  notFoundComponent: () => <NotFound />,
   component: RootComponent,
 });
 
 function RootComponent() {
   return (
     <RootDocument>
-      <OrganizationProvider>
-        <PluginProvider>
-          <CartProvider>
-            <OrganizationBranding />
-            <Header />
-            <main className="flex-1">
-              <Outlet />
-            </main>
-            <Footer />
-            <DomainDebugInfo />
-          </CartProvider>
-        </PluginProvider>
-      </OrganizationProvider>
+      <PluginProvider>
+        <CartProvider>
+          <OrganizationBranding />
+          <Header />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+          <DomainDebugInfo />
+        </CartProvider>
+      </PluginProvider>
     </RootDocument>
   );
 }

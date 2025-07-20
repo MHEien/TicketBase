@@ -42,8 +42,8 @@ In a real-world production environment, you would typically use a container orch
 
 ## Monitoring and Logging
 
-*Details on the monitoring and logging infrastructure will be added here.*
+_Details on the monitoring and logging infrastructure will be added here._
 
 ## Maintenance
 
-*Instructions for common maintenance tasks, such as database backups and updates, will be provided here.*
+_Instructions for common maintenance tasks, such as database backups and updates, will be provided here._

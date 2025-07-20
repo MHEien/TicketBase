@@ -1,6 +1,5 @@
 import React from "react";
 import { clsx } from "clsx";
-import { useOrganization } from "../../contexts/OrganizationContext";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost";
@@ -18,7 +17,6 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const { branding } = useOrganization();
 
   const baseStyles =
     "inline-flex items-center justify-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
@@ -30,30 +28,21 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const getButtonStyles = () => {
-    const buttonStyle = branding?.buttonStyle || "rounded";
-
-    const roundingStyles = {
-      rounded: "rounded-md",
-      square: "rounded-none",
-      pill: "rounded-full",
-    };
-
-    return roundingStyles[buttonStyle];
+    // Default button style - can be overridden by server-side branding CSS
+    return "rounded-md";
   };
 
   const getVariantStyles = () => {
-    const primaryColor = branding?.primaryColor || "#3b82f6";
-    const secondaryColor = branding?.secondaryColor || "#64748b";
-
+    // Use CSS variables for colors - set by server-side branding
     switch (variant) {
       case "primary":
         return {
           className:
             "text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2",
           style: {
-            backgroundColor: primaryColor,
-            borderColor: primaryColor,
-            "--tw-ring-color": primaryColor,
+            backgroundColor: "var(--primary-color, #3b82f6)",
+            borderColor: "var(--primary-color, #3b82f6)",
+            "--tw-ring-color": "var(--primary-color, #3b82f6)",
           },
         };
       case "secondary":
@@ -61,9 +50,9 @@ export const Button: React.FC<ButtonProps> = ({
           className:
             "text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2",
           style: {
-            backgroundColor: secondaryColor,
-            borderColor: secondaryColor,
-            "--tw-ring-color": secondaryColor,
+            backgroundColor: "var(--secondary-color, #64748b)",
+            borderColor: "var(--secondary-color, #64748b)",
+            "--tw-ring-color": "var(--secondary-color, #64748b)",
           },
         };
       case "outline":
@@ -71,17 +60,17 @@ export const Button: React.FC<ButtonProps> = ({
           className:
             "bg-white border-2 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-offset-2",
           style: {
-            borderColor: primaryColor,
-            color: primaryColor,
-            "--tw-ring-color": primaryColor,
+            borderColor: "var(--primary-color, #3b82f6)",
+            color: "var(--primary-color, #3b82f6)",
+            "--tw-ring-color": "var(--primary-color, #3b82f6)",
           },
         };
       case "ghost":
         return {
           className: "hover:bg-gray-100 focus:ring-2 focus:ring-offset-2",
           style: {
-            color: primaryColor,
-            "--tw-ring-color": primaryColor,
+            color: "var(--primary-color, #3b82f6)",
+            "--tw-ring-color": "var(--primary-color, #3b82f6)",
           },
         };
       default:
@@ -89,9 +78,9 @@ export const Button: React.FC<ButtonProps> = ({
           className:
             "text-white shadow-sm hover:opacity-90 focus:ring-2 focus:ring-offset-2",
           style: {
-            backgroundColor: primaryColor,
-            borderColor: primaryColor,
-            "--tw-ring-color": primaryColor,
+            backgroundColor: "var(--primary-color, #3b82f6)",
+            borderColor: "var(--primary-color, #3b82f6)",
+            "--tw-ring-color": "var(--primary-color, #3b82f6)",
           },
         };
     }

@@ -1,17 +1,13 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { Search, Menu, X } from "lucide-react";
-import { useOrganization } from "../contexts/OrganizationContext";
 import { Button } from "./ui/Button";
 import { clsx } from "clsx";
 import { DevelopmentTenantSwitcher } from "./domain/DevelopmentTenantSwitcher";
 
 export const Header: React.FC = () => {
-  const { organization, branding, loading } = useOrganization();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
-
-  const headerStyle = branding?.headerStyle || "centered";
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,46 +17,28 @@ export const Header: React.FC = () => {
     }
   };
 
-  const getHeaderAlignment = () => {
-    switch (headerStyle) {
-      case "left":
-        return "justify-start";
-      case "right":
-        return "justify-end";
-      case "full-width":
-        return "justify-between";
-      case "centered":
-      default:
-        return "justify-center";
-    }
-  };
+  // Default to centered alignment - can be overridden by server-side branding
+  const headerAlignment = "justify-center";
 
-  const organizationName = organization?.name || "Events Platform";
-  const organizationLogo = branding?.logo;
+  // Organization data will be applied via server-side rendering and CSS variables
+  const organizationName = "Events Platform"; // Fallback, actual name applied via branding
+  const organizationLogo = null; // Logo applied via server-side branding
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={clsx("flex items-center h-16", getHeaderAlignment())}>
+        <div className={clsx("flex items-center h-16", headerAlignment)}>
           {/* Logo/Brand */}
           <Link
             to="/"
             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
-            {organizationLogo ? (
-              <img
-                src={organizationLogo}
-                alt={organizationName}
-                className="h-8 w-auto"
-              />
-            ) : (
-              <div
-                className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold"
-                style={{ backgroundColor: branding?.primaryColor || "#3b82f6" }}
-              >
-                {organizationName.charAt(0)}
-              </div>
-            )}
+            <div
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold"
+              style={{ backgroundColor: "var(--primary-color, #3b82f6)" }}
+            >
+              {organizationName.charAt(0)}
+            </div>
             <span className="text-xl font-bold text-gray-900">
               {organizationName}
             </span>
@@ -111,11 +89,9 @@ export const Header: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  style={
-                    {
-                      "--tw-ring-color": branding?.primaryColor || "#3b82f6",
-                    } as React.CSSProperties
-                  }
+                  style={{
+                    "--tw-ring-color": "var(--primary-color, #3b82f6)",
+                  } as React.CSSProperties}
                 />
               </div>
             </form>
@@ -160,11 +136,9 @@ export const Header: React.FC = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    style={
-                      {
-                        "--tw-ring-color": branding?.primaryColor || "#3b82f6",
-                      } as React.CSSProperties
-                    }
+                    style={{
+                      "--tw-ring-color": "var(--primary-color, #3b82f6)",
+                    } as React.CSSProperties}
                   />
                 </div>
               </form>

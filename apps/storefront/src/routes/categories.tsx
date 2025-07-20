@@ -3,10 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Calendar, Users, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Button } from "~/components/ui/Button";
-import { useOrganization } from "~/contexts/OrganizationContext";
+import { getCurrentOrganization } from "~/lib/server-organization";
 import { eventsApi } from "~/lib/api/events";
 
 export const Route = createFileRoute("/categories")({
+  loader: async () => {
+    const organization = await getCurrentOrganization();
+    return { organization };
+  },
   component: CategoriesPage,
 });
 
@@ -19,7 +23,7 @@ interface CategoryStats {
 }
 
 function CategoriesPage() {
-  const { organization } = useOrganization();
+  const { organization } = Route.useLoaderData();
 
   // Fetch categories
   const { data: categories, isLoading: categoriesLoading } = useQuery({

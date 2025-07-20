@@ -13,10 +13,14 @@ import { format } from "date-fns";
 import { Card, CardContent } from "~/components/ui/Card";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
-import { useOrganization } from "~/contexts/OrganizationContext";
 import { eventsApi } from "~/lib/api/events";
+import { getCurrentOrganization } from "~/lib/server-organization";
 
 export const Route = createFileRoute("/search")({
+  loader: async () => {
+    const organization = await getCurrentOrganization();
+    return { organization };
+  },
   component: SearchPage,
   validateSearch: (search: Record<string, unknown>) => {
     return {
@@ -28,7 +32,7 @@ export const Route = createFileRoute("/search")({
 });
 
 function SearchPage() {
-  const { organization } = useOrganization();
+  const { organization } = Route.useLoaderData();
   const { q: query, category, location } = Route.useSearch();
 
   const [localQuery, setLocalQuery] = useState(query || "");

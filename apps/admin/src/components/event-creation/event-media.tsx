@@ -24,7 +24,9 @@ export function EventMedia() {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
-  const [placeholderUploading, setPlaceholderUploading] = useState<string | null>(null);
+  const [placeholderUploading, setPlaceholderUploading] = useState<
+    string | null
+  >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // For demo purposes, we'll use placeholder images
@@ -37,27 +39,30 @@ export function EventMedia() {
     "/workshop-event.png",
   ];
 
-  const uploadPlaceholderImage = async (imagePath: string, isGallery: boolean = false) => {
+  const uploadPlaceholderImage = async (
+    imagePath: string,
+    isGallery: boolean = false,
+  ) => {
     try {
       setPlaceholderUploading(imagePath);
-      
+
       // Fetch the placeholder image
       const response = await fetch(imagePath);
       if (!response.ok) {
-        throw new Error('Failed to fetch placeholder image');
+        throw new Error("Failed to fetch placeholder image");
       }
-      
+
       const blob = await response.blob();
-      const filename = imagePath.split('/').pop() || 'placeholder.png';
+      const filename = imagePath.split("/").pop() || "placeholder.png";
       const file = new File([blob], filename, { type: blob.type });
-      
+
       // Upload to MinIO
       const tempEventId = "draft-" + Date.now();
       const uploadResponse = await uploadEventImage(tempEventId, file);
-      
+
       if (isGallery) {
-        updateEventData({ 
-          galleryImages: [...eventData.galleryImages, uploadResponse.imageUrl] 
+        updateEventData({
+          galleryImages: [...eventData.galleryImages, uploadResponse.imageUrl],
         });
       } else {
         updateEventData({ featuredImage: uploadResponse.imageUrl });
@@ -67,13 +72,16 @@ export function EventMedia() {
         title: "Image selected",
         description: "Placeholder image has been uploaded successfully.",
       });
-      
+
       return uploadResponse.imageUrl;
     } catch (error) {
-      console.error('Placeholder upload error:', error);
+      console.error("Placeholder upload error:", error);
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "Failed to upload placeholder image",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to upload placeholder image",
         variant: "destructive",
       });
     } finally {
@@ -221,8 +229,19 @@ export function EventMedia() {
                   src={eventData.featuredImage || "/placeholder.svg"}
                   alt="Featured event image"
                   className="aspect-video w-full object-cover"
-                  onLoad={() => console.log("✅ Image loaded successfully:", eventData.featuredImage)}
-                  onError={(e) => console.error("❌ Image failed to load:", eventData.featuredImage, e)}
+                  onLoad={() =>
+                    console.log(
+                      "✅ Image loaded successfully:",
+                      eventData.featuredImage,
+                    )
+                  }
+                  onError={(e) =>
+                    console.error(
+                      "❌ Image failed to load:",
+                      eventData.featuredImage,
+                      e,
+                    )
+                  }
                 />
                 <Button
                   variant="ghost"
@@ -283,15 +302,15 @@ export function EventMedia() {
               <div className="grid grid-cols-3 gap-2">
                 {placeholderImages.slice(0, 3).map((image, index) => {
                   const isUploading = placeholderUploading === image;
-                  const isSelected = eventData.featuredImage?.includes(image.split('/').pop() || '');
-                  
+                  const isSelected = eventData.featuredImage?.includes(
+                    image.split("/").pop() || "",
+                  );
+
                   return (
                     <div
                       key={index}
                       className={`relative cursor-pointer overflow-hidden rounded-md border transition-all hover:opacity-90 ${
-                        isSelected
-                          ? "ring-2 ring-primary ring-offset-2"
-                          : ""
+                        isSelected ? "ring-2 ring-primary ring-offset-2" : ""
                       } ${isUploading ? "opacity-50" : ""}`}
                       onClick={() => {
                         if (!isUploading && !placeholderUploading) {
@@ -385,11 +404,11 @@ export function EventMedia() {
                       // For demo, add a random placeholder image that's not already in the gallery
                       const availableImages = placeholderImages.filter(
                         (img) => {
-                          const filename = img.split('/').pop() || '';
-                          return !eventData.galleryImages.some(galleryImg => 
-                            galleryImg.includes(filename)
+                          const filename = img.split("/").pop() || "";
+                          return !eventData.galleryImages.some((galleryImg) =>
+                            galleryImg.includes(filename),
                           );
-                        }
+                        },
                       );
                       if (availableImages.length > 0) {
                         const randomIndex = Math.floor(
@@ -408,7 +427,9 @@ export function EventMedia() {
                     )}
                   </div>
                   <span className="mt-2 text-xs text-muted-foreground">
-                    {galleryUploading || placeholderUploading ? "Uploading..." : "Add Image"}
+                    {galleryUploading || placeholderUploading
+                      ? "Uploading..."
+                      : "Add Image"}
                   </span>
                 </div>
               )}

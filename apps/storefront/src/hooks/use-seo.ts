@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from "react";
-import { useOrganization } from "../contexts/OrganizationContext";
+import { useEffect, useMemo, useState } from "react";
+import { getOrganizationWithBrandingServerFn } from "../utils/branding";
 import { SEOManager, SEOConfig, EventSEOData } from "../lib/seo";
 
 interface UseSEOOptions {
@@ -17,7 +17,15 @@ interface UseSEOOptions {
 }
 
 export function useSEO(options: UseSEOOptions = {}) {
-  const { organization, currentDomain } = useOrganization();
+  const [organization, setOrganization] = useState(null);
+  const [currentDomain, setCurrentDomain] = useState(null);
+
+  useEffect(() => {
+    getOrganizationWithBrandingServerFn().then(({ organization, branding }) => {
+      setOrganization(organization);
+      setCurrentDomain(branding?.currentDomain);
+    });
+  }, []);
 
   // Create SEO manager instance
   const seoManager = useMemo(() => {

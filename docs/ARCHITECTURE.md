@@ -28,24 +28,26 @@ The plugin system is a cornerstone of the TicketBase platform, designed for secu
 A plugin consists of three main parts:
 
 1.  **Manifest (`plugin.json`)**: A JSON file that serves as the plugin's identity card. It declares:
-    *   **Metadata**: `id`, `name`, `version`, `author`, etc.
-    *   **Extension Points**: An array of strings indicating where the plugin injects itself into the platform UI (e.g., `admin-settings`, `payment-methods`).
-    *   **Configuration Schema (`configSchema`)**: A JSON Schema object that defines the plugin's configuration options. The platform uses this schema to automatically generate a settings form in the admin panel, validate user input, and determine which fields require encryption.
-    *   **Permissions**: The platform permissions the plugin requires (e.g., `read:orders`).
-    *   **Build Information**: Entry points and output for the plugin's source code.
+
+    - **Metadata**: `id`, `name`, `version`, `author`, etc.
+    - **Extension Points**: An array of strings indicating where the plugin injects itself into the platform UI (e.g., `admin-settings`, `payment-methods`).
+    - **Configuration Schema (`configSchema`)**: A JSON Schema object that defines the plugin's configuration options. The platform uses this schema to automatically generate a settings form in the admin panel, validate user input, and determine which fields require encryption.
+    - **Permissions**: The platform permissions the plugin requires (e.g., `read:orders`).
+    - **Build Information**: Entry points and output for the plugin's source code.
 
 2.  **Frontend Components (React)**: The UI of the plugin, written in React. The plugin's entry point (e.g., `index.tsx`) exports a map of React components corresponding to the `extensionPoints` declared in the manifest. These components are dynamically rendered by the host application (e.g., the Admin Panel).
 
     The platform provides a rich context to these components via props and hooks, including:
-    *   `configuration`: The plugin's saved configuration data.
-    *   `onSave`: A function the plugin calls to save its configuration. The platform handles the actual saving, including encrypting any fields marked as `sensitive` in the `configSchema`.
-    *   `executeAction`: A hook used to securely call backend logic.
+
+    - `configuration`: The plugin's saved configuration data.
+    - `onSave`: A function the plugin calls to save its configuration. The platform handles the actual saving, including encrypting any fields marked as `sensitive` in the `configSchema`.
+    - `executeAction`: A hook used to securely call backend logic.
 
 3.  **Backend Actions (Node.js)**: For operations that require sensitive data or must be performed securely on a server, plugins can define a `backendActions` object. This object maps action names to `async` functions.
 
-    *   **Execution Environment**: These functions run on the secure Plugin Server (a separate NestJS microservice), not in the user's browser.
-    *   **Secure Configuration Access**: Backend actions receive the plugin's decrypted configuration as an argument, allowing them to use sensitive data like API keys.
-    *   **Example**: A payment plugin's frontend might collect payment details, then call a `create-checkout-session` backend action. This action, running on the server, would use the secret Stripe API key to create a session and return a session ID to the frontend.
+    - **Execution Environment**: These functions run on the secure Plugin Server (a separate NestJS microservice), not in the user's browser.
+    - **Secure Configuration Access**: Backend actions receive the plugin's decrypted configuration as an argument, allowing them to use sensitive data like API keys.
+    - **Example**: A payment plugin's frontend might collect payment details, then call a `create-checkout-session` backend action. This action, running on the server, would use the secret Stripe API key to create a session and return a session ID to the frontend.
 
 #### Communication Flow
 
@@ -58,6 +60,7 @@ The frontend and backend of a plugin do not communicate directly. The process is
 5.  The result is passed back through the proxy to the frontend component.
 
 This architecture allows plugin developers to build powerful integrations without needing to manage backend infrastructure, authentication, or data encryption, as the platform handles these concerns.
+
 - **Analytics Service**: Collects and processes data for reporting and insights.
 - **Notification Service**: Manages and sends notifications to users (e.g., email, SMS).
 
@@ -67,7 +70,7 @@ The plugin system is a cornerstone of the TicketBase platform, designed for maxi
 
 ## Database Schema
 
-*Detailed diagrams and descriptions of the database schemas for PostgreSQL and MongoDB will be added here.*
+_Detailed diagrams and descriptions of the database schemas for PostgreSQL and MongoDB will be added here._
 
 ## Security
 

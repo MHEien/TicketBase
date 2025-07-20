@@ -1,9 +1,22 @@
-import { useOrganization } from "../contexts/OrganizationContext";
 import { DomainMiddleware } from "../lib/middleware/domain-middleware";
 import { Organization } from "../lib/api/organizations";
+import { getTenantFromClientCookie } from "../lib/tenant";
+import { organizationsApi } from "../lib/api/organizations";
+import { useState, useEffect } from "react";
 
 export const useDomainRouting = () => {
-  const { organization, domainInfo, currentDomain } = useOrganization();
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const currentDomain = typeof window !== "undefined" ? window.location.hostname : null;
+
+  // Get organization from tenant cookie
+  useEffect(() => {
+    const tenantData = getTenantFromClientCookie();
+    if (tenantData && tenantData.organizationSlug) {
+      organizationsApi.getBySlug(tenantData.organizationSlug)
+        .then(org => setOrganization(org))
+        .catch(() => setOrganization(null));
+    }
+  }, []);
 
   /**
    * Generate URL for a given path within the current organization's domain
@@ -20,21 +33,38 @@ export const useDomainRouting = () => {
    * Check if we're on a custom domain
    */
   const isCustomDomain = () => {
-    return domainInfo?.isCustomDomain || false;
+    if (!organization || !currentDomain) return false;
+    return organization.customDomain === currentDomain && organization.domainVerified;
   };
 
   /**
    * Check if we're in development mode
    */
   const isDevelopmentMode = () => {
-    return domainInfo?.fallbackMode === "development";
+    if (!currentDomain) return false;
+    const devDomains = ["localhost", "127.0.0.1", "0.0.0.0"];
+    return (
+      devDomains.includes(currentDomain) ||
+      currentDomain.endsWith(".local") ||
+      currentDomain.endsWith(".localhost") ||
+      currentDomain.includes("localhost:") ||
+      currentDomain.includes("127.0.0.1:") ||
+      currentDomain.includes("0.0.0.0:") ||
+      currentDomain.endsWith(".vercel.app") ||
+      currentDomain.endsWith(".netlify.app") ||
+      currentDomain.endsWith(".dev")
+    );
   };
 
   /**
    * Get the current organization's domain info
    */
   const getDomainInfo = () => {
-    return domainInfo;
+    return {
+      domain: currentDomain,
+      isCustomDomain: isCustomDomain(),
+      fallbackMode: isDevelopmentMode() ? "development" as const : null,
+    };
   };
 
   /**
@@ -144,7 +174,7 @@ export const useDomainRouting = () => {
     // Organization info
     organization,
     currentDomain,
-    domainInfo,
+    domainInfo: getDomainInfo(),
 
     // URL generation
     generateUrl,
