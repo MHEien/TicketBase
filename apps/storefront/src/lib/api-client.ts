@@ -1,4 +1,5 @@
 import redaxios from "redaxios";
+import { getAuthServerFn, getAuthFromClientCookie } from "./auth-cookies";
 
 // Create API client instance with base configuration
 const baseClient = redaxios.create({
@@ -11,7 +12,7 @@ const baseClient = redaxios.create({
 // Enhanced API client with auth handling
 const apiClient = {
   async get<T>(url: string, config?: any): Promise<T> {
-    const authHeaders = this.getAuthHeaders();
+    const authHeaders = await this.getAuthHeaders();
     const response = await baseClient.get(url, {
       ...config,
       headers: { ...authHeaders, ...config?.headers },
@@ -20,7 +21,7 @@ const apiClient = {
   },
 
   async post<T>(url: string, data?: any, config?: any): Promise<T> {
-    const authHeaders = this.getAuthHeaders();
+    const authHeaders = await this.getAuthHeaders();
     const response = await baseClient.post(url, data, {
       ...config,
       headers: { ...authHeaders, ...config?.headers },
@@ -29,7 +30,7 @@ const apiClient = {
   },
 
   async patch<T>(url: string, data?: any, config?: any): Promise<T> {
-    const authHeaders = this.getAuthHeaders();
+    const authHeaders = await this.getAuthHeaders();
     const response = await baseClient.patch(url, data, {
       ...config,
       headers: { ...authHeaders, ...config?.headers },
@@ -38,7 +39,7 @@ const apiClient = {
   },
 
   async delete<T>(url: string, config?: any): Promise<T> {
-    const authHeaders = this.getAuthHeaders();
+    const authHeaders = await this.getAuthHeaders();
     const response = await baseClient.delete(url, {
       ...config,
       headers: { ...authHeaders, ...config?.headers },
@@ -46,8 +47,27 @@ const apiClient = {
     return response.data;
   },
 
-  getAuthHeaders() {
-    const token = localStorage.getItem("auth_token");
+  async getAuthHeaders() {
+    let token: string | null = null;
+
+    // Try server-side cookie first (for SSR)
+    if (typeof window === 'undefined') {
+      try {
+        const authData = await getAuthServerFn();
+        token = authData?.token || null;
+      } catch (error) {
+        console.error('Error getting auth from server cookie:', error);
+      }
+    } else {
+      // Client-side: try localStorage first (for backward compatibility)
+      // then fall back to client cookie reading
+      try {
+        token = localStorage.getItem("auth_token") || getAuthFromClientCookie();
+      } catch (error) {
+        console.error('Error getting auth from client storage:', error);
+      }
+    }
+
     return token ? { Authorization: `Bearer ${token}` } : {};
   },
 };
