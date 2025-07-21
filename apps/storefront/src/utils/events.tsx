@@ -32,7 +32,11 @@ export const fetchEvent = createServerFn({ method: "GET" })
   .validator((d: string) => d)
   .handler(async ({ data }) => {
     console.info(`Fetching event with id ${data}...`);
-    const event = await eventsApi.getPublicEvent(data, data);
+    const organization = await getCurrentOrganization();
+    if (!organization) {
+      throw new Error("No organization found");
+    }
+    const event = await eventsApi.getPublicEvent(data, organization.id);
     return event;
   });
 
