@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Convert your CSS variables to v4 @theme format */
+@theme {
+  /* Colors using HSL format - wrap your existing values */
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(240 10% 3.9%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(240 10% 3.9%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(240 10% 3.9%);
+  --color-primary: hsl(262 83% 58%);
+  --color-primary-foreground: hsl(0 0% 98%);
+  --color-secondary: hsl(240 4.8% 95.9%);
+  --color-secondary-foreground: hsl(240 5.9% 10%);
+  --color-muted: hsl(240 4.8% 95.9%);
+  --color-muted-foreground: hsl(240 3.8% 46.1%);
+  --color-accent: hsl(240 4.8% 95.9%);
+  --color-accent-foreground: hsl(240 5.9% 10%);
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+  --color-border: hsl(240 5.9% 90%);
+  --color-input: hsl(240 5.9% 90%);
+  --color-ring: hsl(262 83% 58%);
+
+  /* Chart colors */
+  --color-chart-1: hsl(262 83% 58%);
+  --color-chart-2: hsl(221 83% 53%);
+  --color-chart-3: hsl(316 70% 50%);
+  --color-chart-4: hsl(175 84% 32%);
+  --color-chart-5: hsl(41 96% 50%);
+
+  /* Border radius */
+  --radius: 0.75rem;
+
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: hsl(240 10% 3.9%);
+    --color-foreground: hsl(0 0% 98%);
+    --color-card: hsl(240 10% 3.9%);
+    --color-card-foreground: hsl(0 0% 98%);
+    --color-popover: hsl(240 10% 3.9%);
+    --color-popover-foreground: hsl(0 0% 98%);
+    --color-primary: hsl(262 83% 58%);
+    --color-primary-foreground: hsl(0 0% 98%);
+    --color-secondary: hsl(240 3.7% 15.9%);
+    --color-secondary-foreground: hsl(0 0% 98%);
+    --color-muted: hsl(240 3.7% 15.9%);
+    --color-muted-foreground: hsl(240 5% 64.9%);
+    --color-accent: hsl(240 3.7% 15.9%);
+    --color-accent-foreground: hsl(0 0% 98%);
+    --color-destructive: hsl(0 62.8% 30.6%);
+    --color-destructive-foreground: hsl(0 0% 98%);
+    --color-border: hsl(240 3.7% 15.9%);
+    --color-input: hsl(240 3.7% 15.9%);
+    --color-ring: hsl(262 83% 58%);
+  }
+}
+
+/* If you're using class-based dark mode, use this instead */
+.dark {
+  --color-background: hsl(240 10% 3.9%);
+  --color-foreground: hsl(0 0% 98%);
+  --color-card: hsl(240 10% 3.9%);
+  --color-card-foreground: hsl(0 0% 98%);
+  --color-popover: hsl(240 10% 3.9%);
+  --color-popover-foreground: hsl(0 0% 98%);
+  --color-primary: hsl(262 83% 58%);
+  --color-primary-foreground: hsl(0 0% 98%);
+  --color-secondary: hsl(240 3.7% 15.9%);
+  --color-secondary-foreground: hsl(0 0% 98%);
+  --color-muted: hsl(240 3.7% 15.9%);
+  --color-muted-foreground: hsl(240 5% 64.9%);
+  --color-accent: hsl(240 3.7% 15.9%);
+  --color-accent-foreground: hsl(0 0% 98%);
+  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+  --color-border: hsl(240 3.7% 15.9%);
+  --color-input: hsl(240 3.7% 15.9%);
+  --color-ring: hsl(262 83% 58%);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+/* Custom keyframes for animations */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Base styles */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-background text-foreground;
+}
+
+/* Custom utilities */
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Custom Calendar Styles */
+.rdp {
+  --rdp-cell-size: 36px;
+  --rdp-accent-color: hsl(262 83% 58%);
+  --rdp-background-color: hsl(0 0% 100%);
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+}
+
+.rdp-day_selected {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+.rdp-day_today {
+  font-weight: bold;
+}
+
+.rdp-day:hover {
+  background-color: hsl(240 4.8% 95.9%);
+}
+
+:root {
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

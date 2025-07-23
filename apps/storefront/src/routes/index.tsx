@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentOrganization } from "../lib/server-organization";
+import { pagesApi } from "../lib/api/pages";
 import { useBaseSEO } from "../hooks/use-seo";
 import { Header } from "../components/Header";
+import { PageRenderer } from "../lib/puck/renderer";
 import { Footer } from "../components/Footer";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -31,12 +33,23 @@ export const Route = createFileRoute("/")({
   component: Index,
   loader: async () => {
     const organization = await getCurrentOrganization();
-    return { organization };
+    if (!organization) {
+      return { organization: null, homepage: null };
+    }
+
+    // Try to get a custom Puck homepage
+    try {
+      const homepage = await pagesApi.getHomepage(organization.id);
+      return { organization, homepage };
+    } catch (error) {
+      // No custom homepage found, use default layout
+      return { organization, homepage: null };
+    }
   },
 });
 
 function Index() {
-  const { organization } = Route.useLoaderData();
+  const { organization, homepage } = Route.useLoaderData();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -73,6 +86,20 @@ function Index() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // If we have a custom Puck homepage, render it
+  if (homepage) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main>
+          <PageRenderer data={{ content: homepage.content.content || [], root: homepage.content.root || {} }} />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Otherwise, render the default homepage layout
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Subtle Background Pattern */}

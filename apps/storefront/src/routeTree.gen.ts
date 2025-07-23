@@ -28,6 +28,7 @@ import { Route as PostsIndexRouteImport } from './routes/posts.index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as UsersUserIdRouteImport } from './routes/users.$userId'
 import { Route as PostsPostIdRouteImport } from './routes/posts.$postId'
+import { Route as PagesSlugRouteImport } from './routes/pages/$slug'
 import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 import { Route as PathlessLayoutNestedLayoutRouteImport } from './routes/_pathlessLayout/_nested-layout'
 import { Route as PostsPostIdDeepRouteImport } from './routes/posts_.$postId.deep'
@@ -122,6 +123,11 @@ const PostsPostIdRoute = PostsPostIdRouteImport.update({
   path: '/$postId',
   getParentRoute: () => PostsRouteRoute,
 } as any)
+const PagesSlugRoute = PagesSlugRouteImport.update({
+  id: '/pages/$slug',
+  path: '/pages/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsEventIdRoute = EventsEventIdRouteImport.update({
   id: '/$eventId',
   path: '/$eventId',
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/redirect': typeof RedirectRoute
   '/search': typeof SearchRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/events/': typeof EventsIndexRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/redirect': typeof RedirectRoute
   '/search': typeof SearchRoute
   '/events/$eventId': typeof EventsEventIdRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/events': typeof EventsIndexRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/_pathlessLayout/_nested-layout': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/events/$eventId': typeof EventsEventIdRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/users/$userId': typeof UsersUserIdRoute
   '/events/': typeof EventsIndexRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/redirect'
     | '/search'
     | '/events/$eventId'
+    | '/pages/$slug'
     | '/posts/$postId'
     | '/users/$userId'
     | '/events/'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/redirect'
     | '/search'
     | '/events/$eventId'
+    | '/pages/$slug'
     | '/posts/$postId'
     | '/users/$userId'
     | '/events'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/_pathlessLayout/_nested-layout'
     | '/events/$eventId'
+    | '/pages/$slug'
     | '/posts/$postId'
     | '/users/$userId'
     | '/events/'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   PluginsRoute: typeof PluginsRoute
   RedirectRoute: typeof RedirectRoute
   SearchRoute: typeof SearchRoute
+  PagesSlugRoute: typeof PagesSlugRoute
   PostsPostIdDeepRoute: typeof PostsPostIdDeepRoute
 }
 export interface FileServerRoutesByFullPath {
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/posts/$postId'
       preLoaderRoute: typeof PostsPostIdRouteImport
       parentRoute: typeof PostsRouteRoute
+    }
+    '/pages/$slug': {
+      id: '/pages/$slug'
+      path: '/pages/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof PagesSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/events/$eventId': {
       id: '/events/$eventId'
@@ -608,6 +628,7 @@ const rootRouteChildren: RootRouteChildren = {
   PluginsRoute: PluginsRoute,
   RedirectRoute: RedirectRoute,
   SearchRoute: SearchRoute,
+  PagesSlugRoute: PagesSlugRoute,
   PostsPostIdDeepRoute: PostsPostIdDeepRoute,
 }
 export const routeTree = rootRouteImport

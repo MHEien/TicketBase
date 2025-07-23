@@ -19,6 +19,7 @@ import { Route as LoginIndexRouteImport } from './app/login/index'
 import { Route as AdminIndexRouteImport } from './app/admin/index'
 import { Route as AdminUsersIndexRouteImport } from './app/admin/users/index'
 import { Route as AdminSettingsIndexRouteImport } from './app/admin/settings/index'
+import { Route as AdminPagesIndexRouteImport } from './app/admin/pages/index'
 import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
 import { Route as AdminDepartmentsIndexRouteImport } from './app/admin/departments/index'
 import { Route as AdminCreateEventIndexRouteImport } from './app/admin/create-event/index'
@@ -31,6 +32,7 @@ import { Route as AdminEventsNewIndexRouteImport } from './app/admin/events/new/
 import { Route as AdminEventsIdIndexRouteImport } from './app/admin/events/$id/index'
 import { Route as AdminDepartmentsNewIndexRouteImport } from './app/admin/departments/new/index'
 import { Route as AdminDepartmentsIdIndexRouteImport } from './app/admin/departments/$id/index'
+import { Route as AdminPagesEditorPageIdRouteImport } from './app/admin/pages/editor/$pageId'
 import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin/settings/plugins/submit/index'
 import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
@@ -83,6 +85,11 @@ const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminPagesIndexRoute = AdminPagesIndexRouteImport.update({
+  id: '/pages/',
+  path: '/pages/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
@@ -146,6 +153,11 @@ const AdminDepartmentsNewIndexRoute =
 const AdminDepartmentsIdIndexRoute = AdminDepartmentsIdIndexRouteImport.update({
   id: '/departments/$id/',
   path: '/departments/$id/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminPagesEditorPageIdRoute = AdminPagesEditorPageIdRouteImport.update({
+  id: '/pages/editor/$pageId',
+  path: '/pages/editor/$pageId',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminSettingsPluginsSubmitIndexRoute =
@@ -226,8 +238,10 @@ export interface FileRoutesByFullPath {
   '/admin/create-event': typeof AdminCreateEventIndexRoute
   '/admin/departments': typeof AdminDepartmentsIndexRoute
   '/admin/events': typeof AdminEventsIndexRoute
+  '/admin/pages': typeof AdminPagesIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/admin/pages/editor/$pageId': typeof AdminPagesEditorPageIdRoute
   '/admin/departments/$id': typeof AdminDepartmentsIdIndexRoute
   '/admin/departments/new': typeof AdminDepartmentsNewIndexRoute
   '/admin/events/$id': typeof AdminEventsIdIndexRoute
@@ -249,8 +263,10 @@ export interface FileRoutesByTo {
   '/admin/create-event': typeof AdminCreateEventIndexRoute
   '/admin/departments': typeof AdminDepartmentsIndexRoute
   '/admin/events': typeof AdminEventsIndexRoute
+  '/admin/pages': typeof AdminPagesIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/admin/pages/editor/$pageId': typeof AdminPagesEditorPageIdRoute
   '/admin/departments/$id': typeof AdminDepartmentsIdIndexRoute
   '/admin/departments/new': typeof AdminDepartmentsNewIndexRoute
   '/admin/events/$id': typeof AdminEventsIdIndexRoute
@@ -275,8 +291,10 @@ export interface FileRoutesById {
   '/admin/create-event/': typeof AdminCreateEventIndexRoute
   '/admin/departments/': typeof AdminDepartmentsIndexRoute
   '/admin/events/': typeof AdminEventsIndexRoute
+  '/admin/pages/': typeof AdminPagesIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
+  '/admin/pages/editor/$pageId': typeof AdminPagesEditorPageIdRoute
   '/admin/departments/$id/': typeof AdminDepartmentsIdIndexRoute
   '/admin/departments/new/': typeof AdminDepartmentsNewIndexRoute
   '/admin/events/$id/': typeof AdminEventsIdIndexRoute
@@ -302,8 +320,10 @@ export interface FileRouteTypes {
     | '/admin/create-event'
     | '/admin/departments'
     | '/admin/events'
+    | '/admin/pages'
     | '/admin/settings'
     | '/admin/users'
+    | '/admin/pages/editor/$pageId'
     | '/admin/departments/$id'
     | '/admin/departments/new'
     | '/admin/events/$id'
@@ -325,8 +345,10 @@ export interface FileRouteTypes {
     | '/admin/create-event'
     | '/admin/departments'
     | '/admin/events'
+    | '/admin/pages'
     | '/admin/settings'
     | '/admin/users'
+    | '/admin/pages/editor/$pageId'
     | '/admin/departments/$id'
     | '/admin/departments/new'
     | '/admin/events/$id'
@@ -350,8 +372,10 @@ export interface FileRouteTypes {
     | '/admin/create-event/'
     | '/admin/departments/'
     | '/admin/events/'
+    | '/admin/pages/'
     | '/admin/settings/'
     | '/admin/users/'
+    | '/admin/pages/editor/$pageId'
     | '/admin/departments/$id/'
     | '/admin/departments/new/'
     | '/admin/events/$id/'
@@ -502,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/pages/': {
+      id: '/admin/pages/'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AdminPagesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/events/': {
       id: '/admin/events/'
       path: '/events'
@@ -584,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/departments/$id'
       fullPath: '/admin/departments/$id'
       preLoaderRoute: typeof AdminDepartmentsIdIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/pages/editor/$pageId': {
+      id: '/admin/pages/editor/$pageId'
+      path: '/pages/editor/$pageId'
+      fullPath: '/admin/pages/editor/$pageId'
+      preLoaderRoute: typeof AdminPagesEditorPageIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/settings/plugins/submit/': {
@@ -678,8 +716,10 @@ interface AdminRouteRouteChildren {
   AdminCreateEventIndexRoute: typeof AdminCreateEventIndexRoute
   AdminDepartmentsIndexRoute: typeof AdminDepartmentsIndexRoute
   AdminEventsIndexRoute: typeof AdminEventsIndexRoute
+  AdminPagesIndexRoute: typeof AdminPagesIndexRoute
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+  AdminPagesEditorPageIdRoute: typeof AdminPagesEditorPageIdRoute
   AdminDepartmentsIdIndexRoute: typeof AdminDepartmentsIdIndexRoute
   AdminDepartmentsNewIndexRoute: typeof AdminDepartmentsNewIndexRoute
   AdminEventsIdIndexRoute: typeof AdminEventsIdIndexRoute
@@ -699,8 +739,10 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCreateEventIndexRoute: AdminCreateEventIndexRoute,
   AdminDepartmentsIndexRoute: AdminDepartmentsIndexRoute,
   AdminEventsIndexRoute: AdminEventsIndexRoute,
+  AdminPagesIndexRoute: AdminPagesIndexRoute,
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
+  AdminPagesEditorPageIdRoute: AdminPagesEditorPageIdRoute,
   AdminDepartmentsIdIndexRoute: AdminDepartmentsIdIndexRoute,
   AdminDepartmentsNewIndexRoute: AdminDepartmentsNewIndexRoute,
   AdminEventsIdIndexRoute: AdminEventsIdIndexRoute,
