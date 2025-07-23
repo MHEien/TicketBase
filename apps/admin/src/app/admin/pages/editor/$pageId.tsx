@@ -1,3 +1,4 @@
+import React from 'react'
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Puck, usePuck, type Config, createUsePuck } from '@measured/puck'
@@ -281,7 +282,13 @@ const advancedPuckConfig: Config = {
             { label: "Large", value: "gap-12" },
           ],
         },
-        responsive: { type: "switch", label: "Mobile Stack" },
+        responsive: { 
+          type: "custom", 
+          label: "Mobile Stack",
+          render: ({ value, onChange }) => (
+            <Switch checked={value} onCheckedChange={onChange} />
+          )
+        },
         column1: { type: "slot" },
         column2: { type: "slot" },
         column3: { type: "slot" },
@@ -300,7 +307,7 @@ const advancedPuckConfig: Config = {
         };
         
         return (
-          <div className={cn("grid", gridCols[columns], gap)}>
+          <div className={cn("grid", gridCols[columns as keyof typeof gridCols], gap)}>
             <div><Column1 /></div>
             <div><Column2 /></div>
             {columns !== "2" && <div><Column3 /></div>}
@@ -406,7 +413,7 @@ const advancedPuckConfig: Config = {
         color: "#1f2937",
       },
       render: ({ text, level, style, alignment, color }) => {
-        const Tag = level as keyof JSX.IntrinsicElements;
+        const Tag = level as keyof React.JSX.IntrinsicElements;
         const sizeClasses = {
           h1: "text-5xl md:text-6xl font-bold",
           h2: "text-4xl md:text-5xl font-bold",
@@ -424,7 +431,7 @@ const advancedPuckConfig: Config = {
         
         return (
           <Tag 
-            className={cn(sizeClasses[level], styleClasses[style], alignment, "mb-4")}
+            className={cn(sizeClasses[level as keyof typeof sizeClasses], styleClasses[style as keyof typeof styleClasses], alignment, "mb-4")}
             style={style === "default" ? { color } : {}}
           >
             {text}
@@ -478,7 +485,7 @@ const advancedPuckConfig: Config = {
           className={cn(size, alignment, lineHeight, "mb-4")}
           style={{ color }}
         >
-          {text.split('\n').map((paragraph, index) => (
+          {text.split('\n').map((paragraph: string, index: number) => (
             <p key={index} className="mb-4 last:mb-0">
               {paragraph}
             </p>
@@ -598,8 +605,20 @@ const advancedPuckConfig: Config = {
             { label: "Horizontal", value: "horizontal" },
           ],
         },
-        showPrice: { type: "switch", label: "Show Price" },
-        showLocation: { type: "switch", label: "Show Location" },
+        showPrice: { 
+          type: "custom", 
+          label: "Show Price",
+          render: ({ value, onChange }) => (
+            <Switch checked={value} onCheckedChange={onChange} />
+          )
+        },
+        showLocation: { 
+          type: "custom", 
+          label: "Show Location",
+          render: ({ value, onChange }) => (
+            <Switch checked={value} onCheckedChange={onChange} />
+          )
+        },
         buttonText: { type: "text", label: "Button Text" },
       },
       defaultProps: {
@@ -708,7 +727,7 @@ const advancedPuckConfig: Config = {
         };
 
         return (
-          <div className={cn("p-8 text-center", styleClasses[style])}>
+          <div className={cn("p-8 text-center", styleClasses[style as keyof typeof styleClasses])}>
             <h3 className="text-2xl font-bold mb-6">{title}</h3>
             <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
               {Object.entries(timeLeft).map(([unit, value]) => (
@@ -758,7 +777,13 @@ const advancedPuckConfig: Config = {
             { label: "Extra Large", value: "xl" },
           ],
         },
-        fullWidth: { type: "switch", label: "Full Width" },
+        fullWidth: { 
+          type: "custom", 
+          label: "Full Width",
+          render: ({ value, onChange }) => (
+            <Switch checked={value} onCheckedChange={onChange} />
+          )
+        },
         icon: {
           type: "select",
           options: [
@@ -806,13 +831,13 @@ const advancedPuckConfig: Config = {
             <button 
               className={cn(
                 "font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center",
-                variantClasses[variant],
-                sizeClasses[size],
+                variantClasses[variant as keyof typeof variantClasses],
+                sizeClasses[size as keyof typeof sizeClasses],
                 fullWidth && "w-full"
               )}
             >
               {text}
-              {icon !== "none" && icons[icon]}
+              {icon !== "none" && icons[icon as keyof typeof icons]}
             </button>
           </a>
         );
@@ -838,27 +863,27 @@ const advancedPuckConfig: Config = {
 const viewports = [
   {
     width: 1920,
-    height: "auto",
+    height: "auto" as const,
     label: "Desktop Large",
     icon: <Monitor className="w-4 h-4" />,
   },
   {
     width: 1440,
-    height: "auto", 
+    height: "auto" as const, 
     label: "Desktop",
     icon: <Monitor className="w-4 h-4" />,
   },
   {
     width: 768,
-    height: "auto",
+    height: "auto" as const,
     label: "Tablet",
     icon: <Tablet className="w-4 h-4" />,
   },
   {
     width: 375,
-    height: "auto",
+    height: "auto" as const,
     label: "Mobile",
-    icon: <Phone className="w-4 h-4" />,
+    icon: <Smartphone className="w-4 h-4" />,
   },
 ];
 
@@ -1512,16 +1537,18 @@ function PageEditor() {
                 ),
                 
                 // Custom header actions
-                headerActions: ({ appState, dispatch }) => (
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => dispatch({ type: "setData", data: { content: [], root: {} } })}
-                    >
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Clear All
-                    </Button>
+                headerActions: () => {
+                  const { appState, dispatch } = usePuck();
+                  return (
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => dispatch({ type: "setData", data: { content: [], root: {} } })}
+                      >
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Clear All
+                      </Button>
                     
                     <Button
                       variant={isPreviewMode ? "default" : "ghost"}
@@ -1531,8 +1558,9 @@ function PageEditor() {
                       <Eye className="w-4 h-4 mr-2" />
                       {isPreviewMode ? 'Edit' : 'Preview'}
                     </Button>
-                  </div>
-                ),
+                    </div>
+                  );
+                },
               }}
             >
               {/* Custom interface using Puck's compositional API */}
