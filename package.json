@@ -23,6 +23,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@craftjs/core": "^0.2.12",
     "systemjs": "^6.15.1"
   }
 }
