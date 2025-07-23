@@ -34,9 +34,9 @@ import type {
   PageSettings,
   ViewportConfig
 } from '@/types/editor'
-import { PageEditorHeader } from '@/components/editor/PageEditorHeader'
-import { PageSettingsDialog } from '@/components/editor/PageSettingsDialog'
-import { KeyboardShortcutsDialog } from '@/components/editor/KeyboardShortcutDialog'
+import { PageEditorHeader } from './PageEditorHeader'
+import { PageSettingsDialog } from './PageSettingsDialog'
+import { KeyboardShortcutsDialog } from './KeyboardShortcutDialog'
 
 export const Route = createFileRoute('/admin/pages/editor/$pageId')({
   component: PageEditor,
@@ -217,7 +217,7 @@ function PageEditor() {
               Loading Advanced Editor
             </h3>
             <p className="text-slate-600">
-              Initializing professional page builder with event components...
+              Initializing professional page builder with AI-powered components...
             </p>
           </div>
           <Progress value={78} className="w-64 mx-auto" />
@@ -253,7 +253,7 @@ function PageEditor() {
           collaborators={collaborators}
         />
 
-        {/* Puck Editor with Custom Interface */}
+        {/* Advanced Puck Editor with Custom Interface */}
         <div className="flex-1 overflow-hidden relative bg-slate-50">
           {puckData && (
             <Puck

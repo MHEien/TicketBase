@@ -1,18 +1,18 @@
-import type { Config } from '@measured/puck';
+import type { Config } from '@measured/puck'
 
 // Import components from storefront (we'll create lightweight versions for admin)
-import { Hero } from './components/Hero';
-import { EventGrid } from './components/EventGrid';
-import { EventCarousel } from './components/EventCarousel';
-import { AdvancedEventGrid } from './components/AdvancedEventGrid';
-import { FeaturedEvents } from './components/FeaturedEvents';
-import { NewsletterSignup } from './components/NewsletterSignup';
-import { TextBlock } from './components/TextBlock';
-import { ImageBlock } from './components/ImageBlock';
-import { ButtonBlock } from './components/ButtonBlock';
-import { StatsBlock } from './components/StatsBlock';
-import { TestimonialsBlock } from './components/TestimonialsBlock';
-import { CTABlock } from './components/CTABlock';
+import { Hero } from './components/Hero'
+import { EventGrid } from './components/EventGrid'
+import { EventCarousel } from './components/EventCarousel'
+import { AdvancedEventGrid } from './components/AdvancedEventGrid'
+import { FeaturedEvents } from './components/FeaturedEvents'
+import { NewsletterSignup } from './components/NewsletterSignup'
+import { TextBlock } from './components/TextBlock'
+import { ImageBlock } from './components/ImageBlock'
+import { ButtonBlock } from './components/ButtonBlock'
+import { StatsBlock } from './components/StatsBlock'
+import { TestimonialsBlock } from './components/TestimonialsBlock'
+import { CTABlock } from './components/CTABlock'
 
 type Components = {
   Hero: {
@@ -108,6 +108,17 @@ type Components = {
 };
 
 export const config: Config<Components> = {
+  categories: {
+    layout: {
+      components: ['Hero', 'TextBlock', 'ImageBlock', 'ButtonBlock'],
+    },
+    events: {
+      components: ['EventGrid', 'EventCarousel', 'AdvancedEventGrid', 'FeaturedEvents'],
+    },
+    engagement: {
+      components: ['NewsletterSignup', 'TestimonialsBlock', 'CTABlock', 'StatsBlock'],
+    },
+  },
   components: {
     Hero: {
       fields: {
@@ -130,6 +141,7 @@ export const config: Config<Components> = {
       },
       render: Hero,
     },
+
     EventGrid: {
       fields: {
         title: { type: 'text' },
@@ -277,6 +289,7 @@ export const config: Config<Components> = {
       },
       render: NewsletterSignup,
     },
+
     TextBlock: {
       fields: {
         text: { type: 'textarea' },
@@ -424,17 +437,6 @@ export const config: Config<Components> = {
         backgroundColor: '#3B82F6',
       },
       render: CTABlock,
-    },
-  },
-  categories: {
-    layout: {
-      components: ['Hero', 'TextBlock', 'ImageBlock', 'ButtonBlock'],
-    },
-    events: {
-      components: ['EventGrid', 'EventCarousel', 'AdvancedEventGrid', 'FeaturedEvents'],
-    },
-    engagement: {
-      components: ['NewsletterSignup', 'TestimonialsBlock', 'CTABlock', 'StatsBlock'],
     },
   },
 };
