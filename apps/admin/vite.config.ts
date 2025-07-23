@@ -4,6 +4,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { loadEnv } from "vite";
+import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, "../../", "VITE_");
@@ -20,7 +21,9 @@ export default defineConfig(({ mode, command }) => {
         tsr: {
           routesDirectory: "src/app",
         },
+        customViteReactPlugin: true,
       }),
+      react(),
     ],
     build: {
       target: "esnext",

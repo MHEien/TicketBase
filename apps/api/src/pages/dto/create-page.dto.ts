@@ -27,7 +27,7 @@ export class CreatePageDto {
   description?: string;
 
   @IsObject()
-  content: Record<string, any>; // Puck page configuration
+  content: Record<string, any>; // Reka.js state configuration
 
   @IsOptional()
   @IsEnum(PageStatus)

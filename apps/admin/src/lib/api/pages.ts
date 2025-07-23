@@ -2,10 +2,10 @@ import axios from 'axios'
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://api.yourdomain.com' 
-  : 'http://localhost:3001'
+  : 'http://localhost:4000'
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`,
   withCredentials: true,
 })
 
@@ -13,13 +13,19 @@ export interface Page {
   id: string
   title: string
   slug: string
-  content: any // Puck data structure
+  description?: string
+  content: Record<string, any> // Reka.js state configuration
   status: 'draft' | 'published' | 'archived'
   isHomepage: boolean
-  metaTitle?: string
-  metaDescription?: string
-  metaKeywords?: string
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string
+  featuredImage?: string
+  metadata?: Record<string, any>
+  sortOrder: number
   organizationId: string
+  createdBy: string
+  updatedBy: string
   createdAt: string
   updatedAt: string
 }
@@ -27,12 +33,16 @@ export interface Page {
 export interface CreatePageDto {
   title: string
   slug: string
-  content?: any
+  description?: string
+  content: Record<string, any> // Reka.js state configuration
   status?: 'draft' | 'published' | 'archived'
   isHomepage?: boolean
-  metaTitle?: string
-  metaDescription?: string
-  metaKeywords?: string
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string
+  featuredImage?: string
+  metadata?: Record<string, any>
+  sortOrder?: number
 }
 
 export interface UpdatePageDto extends Partial<CreatePageDto> {}
@@ -96,13 +106,24 @@ export const pagesApi = {
   },
 
   // Public endpoints (used for preview)
-  async getPublicPage(slug: string) {
-    const response = await api.get(`/public/pages/${slug}`)
+  async getPublicPage(slug: string, organizationId: string) {
+    const response = await api.get(`/public/pages/by-slug/${slug}`, {
+      params: { organizationId }
+    })
     return response.data
   },
 
-  async getHomepage() {
-    const response = await api.get('/public/pages/homepage')
+  async getHomepage(organizationId: string) {
+    const response = await api.get('/public/pages/homepage', {
+      params: { organizationId }
+    })
+    return response.data
+  },
+
+  async getPublishedPages(organizationId: string) {
+    const response = await api.get('/public/pages', {
+      params: { organizationId }
+    })
     return response.data
   },
 }

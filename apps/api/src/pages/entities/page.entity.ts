@@ -36,7 +36,7 @@ export class Page {
   description?: string;
 
   @Column({ type: 'jsonb' })
-  content: Record<string, any>; // Puck page configuration
+  content: Record<string, any>; // Reka.js state configuration
 
   @Column({
     type: 'enum',
