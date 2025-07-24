@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { usePuck, Config } from '@measured/puck';
 import '@measured/puck/puck.css';
 import './fullscreen-puck.css';
-import { Settings, Plus, Layers, Undo, Redo, X, Monitor, Smartphone, Tablet, ZoomIn, ZoomOut, Save, Globe, Sparkles, MousePointer, Type, Link, Move, RotateCcw, Maximize, Layout, Image as ImageIcon, Video, Grid, Columns, Mail, Star, TrendingUp, Quote, Palette, Zap, Target } from 'lucide-react';
+import { Settings, Plus, Layers, Undo, Redo, X, Monitor, Smartphone, Tablet, ZoomIn, ZoomOut, Save, Globe, Sparkles, MousePointer, Type, Link, Move, RotateCcw, Maximize, Layout, Image as ImageIcon, Video, Grid, Columns, Mail, Star, TrendingUp, Quote, Palette, Zap, Target, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -2886,6 +2886,7 @@ export const CustomActionBar = ({ children }: ComponentListProps) => {
 // Enhanced preview with sophisticated bottom toolbar
 export const CustomPreview = ({ children }: ComponentListProps) => {
   const [isAutoViewport, setIsAutoViewport] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   const CustomBottomToolbar = () => {
     const { appState, history, dispatch } = usePuck();
@@ -3014,6 +3015,28 @@ export const CustomPreview = ({ children }: ComponentListProps) => {
       console.log('Publishing:', appState.data);
     };
 
+    const handlePreview = () => {
+      const newPreviewMode = !isPreviewMode;
+      setIsPreviewMode(newPreviewMode);
+      
+      // Add/remove preview mode class to body to hide floating buttons
+      if (newPreviewMode) {
+        document.body.classList.add('puck-preview-mode');
+      } else {
+        document.body.classList.remove('puck-preview-mode');
+      }
+      
+      // Toggle Puck's editing capabilities
+      dispatch({
+        type: 'setUi',
+        ui: {
+          ...appState.ui,
+          leftSideBarVisible: !newPreviewMode,
+          rightSideBarVisible: !newPreviewMode,
+        }
+      });
+    };
+
     const handleUndo = () => {
       if (history.hasPast) {
         history.back();
@@ -3037,7 +3060,14 @@ export const CustomPreview = ({ children }: ComponentListProps) => {
         className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
         style={{ position: 'fixed' }}
       >
-        <Card className="shadow-2xl border-border/50 backdrop-blur-xl bg-card/95">
+        <Card className={`shadow-2xl border-border/50 backdrop-blur-xl ${isPreviewMode ? 'bg-primary/10 border-primary/30' : 'bg-card/95'}`}>
+          {isPreviewMode && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+              <Badge variant="default" className="text-xs bg-primary text-primary-foreground">
+                Preview Mode
+              </Badge>
+            </div>
+          )}
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               {/* Undo/Redo Group */}
@@ -3133,10 +3163,22 @@ export const CustomPreview = ({ children }: ComponentListProps) => {
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
                 <Button 
+                  onClick={handlePreview}
+                  variant={isPreviewMode ? "default" : "outline"}
+                  size="sm"
+                  className="h-8"
+                  title={isPreviewMode ? "Exit Preview" : "Enter Preview Mode"}
+                >
+                  {isPreviewMode ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {isPreviewMode ? "Exit Preview" : "Preview"}
+                </Button>
+
+                <Button 
                   onClick={handleSave}
                   variant="outline"
                   size="sm"
                   className="h-8"
+                  disabled={isPreviewMode}
                 >
                   <Save size={14} />
                   Save
@@ -3147,6 +3189,7 @@ export const CustomPreview = ({ children }: ComponentListProps) => {
                   variant="default"
                   size="sm"
                   className="h-8"
+                  disabled={isPreviewMode}
                 >
                   <Globe size={14} />
                   Publish
@@ -3174,6 +3217,20 @@ export const CustomPreview = ({ children }: ComponentListProps) => {
       }
     }
   }, [isAutoViewport]);
+
+  // Cleanup preview mode on unmount
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('puck-preview-mode');
+    };
+  }, []);
+
+  // Handle preview mode cleanup when component unmounts
+  useEffect(() => {
+    if (!isPreviewMode) {
+      document.body.classList.remove('puck-preview-mode');
+    }
+  }, [isPreviewMode]);
 
   return (
     <>

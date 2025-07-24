@@ -332,3 +332,16 @@
     color: hsl(var(--primary));
   }
 }
+
+/* Preview Mode Styles - Hide floating action buttons but keep toolbar */
+.puck-preview-mode .fixed.bottom-32.right-6,
+.puck-preview-mode .fixed.bottom-48.right-6,
+.puck-preview-mode .fixed.bottom-64.right-6,
+.puck-preview-mode .fixed.bottom-80.right-6 {
+  display: none !important;
+}
+
+/* Ensure bottom toolbar remains visible in preview mode */
+.puck-preview-mode .fixed.bottom-4 {
+  display: block !important;
+}

@@ -53,7 +53,7 @@ export const FullscreenPuckApp = () => {
           components: CustomComponentList,
           fields: CustomFields, 
           outline: CustomOutline,
-          actionBar: CustomActionBar,
+          //actionBar: CustomActionBar,
           componentItem: CustomComponentItem,
           preview: CustomPreview,
         }}
