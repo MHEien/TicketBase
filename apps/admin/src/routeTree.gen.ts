@@ -17,6 +17,7 @@ import { Route as RegisterIndexRouteImport } from './app/register/index'
 import { Route as OnboardingIndexRouteImport } from './app/onboarding/index'
 import { Route as LoginIndexRouteImport } from './app/login/index'
 import { Route as AdminIndexRouteImport } from './app/admin/index'
+import { Route as AdminTestPuckRouteImport } from './app/admin/test-puck'
 import { Route as AdminUsersIndexRouteImport } from './app/admin/users/index'
 import { Route as AdminSettingsIndexRouteImport } from './app/admin/settings/index'
 import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
@@ -74,6 +75,11 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminTestPuckRoute = AdminTestPuckRouteImport.update({
+  id: '/test-puck',
+  path: '/test-puck',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
@@ -222,6 +228,7 @@ const ApiOnboardingCompleteRouteServerRoute =
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/onboarding': typeof OnboardingRouteRouteWithChildren
+  '/admin/test-puck': typeof AdminTestPuckRoute
   '/admin/': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
 }
 export interface FileRoutesByTo {
+  '/admin/test-puck': typeof AdminTestPuckRoute
   '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/admin': typeof AdminRouteRouteWithChildren
   '/onboarding': typeof OnboardingRouteRouteWithChildren
+  '/admin/test-puck': typeof AdminTestPuckRoute
   '/admin/': typeof AdminIndexRoute
   '/login/': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/admin'
     | '/onboarding'
+    | '/admin/test-puck'
     | '/admin/'
     | '/login'
     | '/onboarding/'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/settings/plugins/submit'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/admin/test-puck'
     | '/admin'
     | '/login'
     | '/onboarding'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/admin'
     | '/onboarding'
+    | '/admin/test-puck'
     | '/admin/'
     | '/login/'
     | '/onboarding/'
@@ -498,6 +510,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/test-puck': {
+      id: '/admin/test-puck'
+      path: '/test-puck'
+      fullPath: '/admin/test-puck'
+      preLoaderRoute: typeof AdminTestPuckRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/users/': {
@@ -690,6 +709,7 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminTestPuckRoute: typeof AdminTestPuckRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivityIndexRoute: typeof AdminActivityIndexRoute
   AdminAnalyticsIndexRoute: typeof AdminAnalyticsIndexRoute
@@ -712,6 +732,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminTestPuckRoute: AdminTestPuckRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminActivityIndexRoute: AdminActivityIndexRoute,
   AdminAnalyticsIndexRoute: AdminAnalyticsIndexRoute,

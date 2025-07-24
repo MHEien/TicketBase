@@ -133,7 +133,7 @@ import {
   Flower,
   Mountain,
   Waves,
-  Zap as ZapIcon
+  Zap as ZapIcon,
 } from "lucide-react";
 
 // Import UI components
@@ -144,46 +144,77 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Enhanced field types
 const ColorPickerField = ({ onChange, value, field }: any) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const colors = [
-    '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e',
-    '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
-    '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'
+    "#ef4444",
+    "#f97316",
+    "#f59e0b",
+    "#eab308",
+    "#84cc16",
+    "#22c55e",
+    "#10b981",
+    "#14b8a6",
+    "#06b6d4",
+    "#0ea5e9",
+    "#3b82f6",
+    "#6366f1",
+    "#8b5cf6",
+    "#a855f7",
+    "#d946ef",
+    "#ec4899",
+    "#f43f5e",
   ];
 
   return (
     <FieldLabel label={field.label}>
       <div className="space-y-3">
         <div className="flex items-center space-x-2">
-          <div 
+          <div
             className="w-8 h-8 rounded-lg border-2 border-gray-300 cursor-pointer shadow-sm"
-            style={{ backgroundColor: value || '#3b82f6' }}
+            style={{ backgroundColor: value || "#3b82f6" }}
             onClick={() => setIsOpen(!isOpen)}
           />
           <Input
             type="text"
-            value={value || '#3b82f6'}
+            value={value || "#3b82f6"}
             onChange={(e) => onChange(e.target.value)}
             placeholder="#3b82f6"
             className="flex-1"
           />
         </div>
         {isOpen && (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-6 gap-2 p-3 bg-gray-50 rounded-lg"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
             {colors.map((color) => (
@@ -206,61 +237,64 @@ const ColorPickerField = ({ onChange, value, field }: any) => {
 
 const IconPickerField = ({ onChange, value, field }: any) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  
+  const [searchQuery, setSearchQuery] = React.useState("");
+
   const iconOptions = [
-    { name: 'Heart', icon: Heart, category: 'general' },
-    { name: 'Star', icon: Star, category: 'general' },
-    { name: 'Zap', icon: Zap, category: 'general' },
-    { name: 'Crown', icon: Crown, category: 'general' },
-    { name: 'Shield', icon: Shield, category: 'security' },
-    { name: 'Lock', icon: Lock, category: 'security' },
-    { name: 'Unlock', icon: Unlock, category: 'security' },
-    { name: 'Mail', icon: Mail, category: 'communication' },
-    { name: 'Phone', icon: Phone, category: 'communication' },
-    { name: 'MessageCircle', icon: MessageCircle, category: 'communication' },
-    { name: 'Send', icon: Send, category: 'communication' },
-    { name: 'Home', icon: Home, category: 'places' },
-    { name: 'Building', icon: Building, category: 'places' },
-    { name: 'MapPin', icon: MapPin, category: 'places' },
-    { name: 'Globe', icon: Globe, category: 'places' },
-    { name: 'TrendingUp', icon: TrendingUp, category: 'charts' },
-    { name: 'BarChart', icon: BarChart, category: 'charts' },
-    { name: 'PieChart', icon: PieChart, category: 'charts' },
-    { name: 'Activity', icon: Activity, category: 'charts' },
-    { name: 'ShoppingCart', icon: ShoppingCart, category: 'commerce' },
-    { name: 'CreditCard', icon: CreditCard, category: 'commerce' },
-    { name: 'Gift', icon: Gift, category: 'commerce' },
-    { name: 'DollarSign', icon: DollarSign, category: 'commerce' },
-    { name: 'Camera', icon: Camera, category: 'media' },
-    { name: 'Video', icon: Video, category: 'media' },
-    { name: 'Music', icon: Music, category: 'media' },
-    { name: 'Image', icon: Image, category: 'media' },
+    { name: "Heart", icon: Heart, category: "general" },
+    { name: "Star", icon: Star, category: "general" },
+    { name: "Zap", icon: Zap, category: "general" },
+    { name: "Crown", icon: Crown, category: "general" },
+    { name: "Shield", icon: Shield, category: "security" },
+    { name: "Lock", icon: Lock, category: "security" },
+    { name: "Unlock", icon: Unlock, category: "security" },
+    { name: "Mail", icon: Mail, category: "communication" },
+    { name: "Phone", icon: Phone, category: "communication" },
+    { name: "MessageCircle", icon: MessageCircle, category: "communication" },
+    { name: "Send", icon: Send, category: "communication" },
+    { name: "Home", icon: Home, category: "places" },
+    { name: "Building", icon: Building, category: "places" },
+    { name: "MapPin", icon: MapPin, category: "places" },
+    { name: "Globe", icon: Globe, category: "places" },
+    { name: "TrendingUp", icon: TrendingUp, category: "charts" },
+    { name: "BarChart", icon: BarChart, category: "charts" },
+    { name: "PieChart", icon: PieChart, category: "charts" },
+    { name: "Activity", icon: Activity, category: "charts" },
+    { name: "ShoppingCart", icon: ShoppingCart, category: "commerce" },
+    { name: "CreditCard", icon: CreditCard, category: "commerce" },
+    { name: "Gift", icon: Gift, category: "commerce" },
+    { name: "DollarSign", icon: DollarSign, category: "commerce" },
+    { name: "Camera", icon: Camera, category: "media" },
+    { name: "Video", icon: Video, category: "media" },
+    { name: "Music", icon: Music, category: "media" },
+    { name: "Image", icon: Image, category: "media" },
   ];
 
-  const filteredIcons = iconOptions.filter(icon => 
-    icon.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredIcons = iconOptions.filter((icon) =>
+    icon.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const SelectedIcon = iconOptions.find(icon => icon.name === value)?.icon || Heart;
+  const SelectedIcon =
+    iconOptions.find((icon) => icon.name === value)?.icon || Heart;
 
   return (
     <FieldLabel label={field.label}>
       <div className="space-y-3">
-        <div 
+        <div
           className="flex items-center space-x-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50"
           onClick={() => setIsOpen(!isOpen)}
         >
           <SelectedIcon className="w-5 h-5 text-gray-600" />
-          <span className="flex-1 text-sm">{value || 'Select icon'}</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <span className="flex-1 text-sm">{value || "Select icon"}</span>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
         </div>
-        
+
         {isOpen && (
           <motion.div
             className="border rounded-lg p-3 bg-white shadow-lg"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
           >
             <Input
@@ -299,7 +333,7 @@ const IconPickerField = ({ onChange, value, field }: any) => {
 };
 
 const SpacingField = ({ onChange, value, field }: any) => {
-  const [mode, setMode] = React.useState<'all' | 'individual'>('all');
+  const [mode, setMode] = React.useState<"all" | "individual">("all");
   const spacing = value || { top: 16, right: 16, bottom: 16, left: 16 };
 
   const handleChange = (newSpacing: any) => {
@@ -309,64 +343,90 @@ const SpacingField = ({ onChange, value, field }: any) => {
   return (
     <FieldLabel label={field.label}>
       <div className="space-y-3">
-        <Tabs value={mode} onValueChange={(value) => setMode(value as 'all' | 'individual')}>
+        <Tabs
+          value={mode}
+          onValueChange={(value) => setMode(value as "all" | "individual")}
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="all">All Sides</TabsTrigger>
             <TabsTrigger value="individual">Individual</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="all" className="space-y-3">
             <div>
-              <Label className="text-sm text-gray-600">Spacing: {spacing.top}px</Label>
+              <Label className="text-sm text-gray-600">
+                Spacing: {spacing.top}px
+              </Label>
               <Slider
                 value={[spacing.top]}
-                onValueChange={([value]) => handleChange({ 
-                  top: value, right: value, bottom: value, left: value 
-                })}
+                onValueChange={([value]) =>
+                  handleChange({
+                    top: value,
+                    right: value,
+                    bottom: value,
+                    left: value,
+                  })
+                }
                 max={100}
                 step={4}
                 className="mt-2"
               />
             </div>
           </TabsContent>
-          
+
           <TabsContent value="individual" className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm text-gray-600">Top: {spacing.top}px</Label>
+                <Label className="text-sm text-gray-600">
+                  Top: {spacing.top}px
+                </Label>
                 <Slider
                   value={[spacing.top]}
-                  onValueChange={([value]) => handleChange({ ...spacing, top: value })}
+                  onValueChange={([value]) =>
+                    handleChange({ ...spacing, top: value })
+                  }
                   max={100}
                   step={4}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Right: {spacing.right}px</Label>
+                <Label className="text-sm text-gray-600">
+                  Right: {spacing.right}px
+                </Label>
                 <Slider
                   value={[spacing.right]}
-                  onValueChange={([value]) => handleChange({ ...spacing, right: value })}
+                  onValueChange={([value]) =>
+                    handleChange({ ...spacing, right: value })
+                  }
                   max={100}
                   step={4}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Bottom: {spacing.bottom}px</Label>
+                <Label className="text-sm text-gray-600">
+                  Bottom: {spacing.bottom}px
+                </Label>
                 <Slider
                   value={[spacing.bottom]}
-                  onValueChange={([value]) => handleChange({ ...spacing, bottom: value })}
+                  onValueChange={([value]) =>
+                    handleChange({ ...spacing, bottom: value })
+                  }
                   max={100}
                   step={4}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-600">Left: {spacing.left}px</Label>
+                <Label className="text-sm text-gray-600">
+                  Left: {spacing.left}px
+                </Label>
                 <Slider
                   value={[spacing.left]}
-                  onValueChange={([value]) => handleChange({ ...spacing, left: value })}
+                  onValueChange={([value]) =>
+                    handleChange({ ...spacing, left: value })
+                  }
                   max={100}
                   step={4}
                   className="mt-1"
@@ -382,27 +442,43 @@ const SpacingField = ({ onChange, value, field }: any) => {
 
 const AnimationField = ({ onChange, value, field }: any) => {
   const animations = [
-    { name: 'None', value: 'none', description: 'No animation' },
-    { name: 'Fade In', value: 'fadeIn', description: 'Fade in from transparent' },
-    { name: 'Slide Up', value: 'slideUp', description: 'Slide up from bottom' },
-    { name: 'Slide Down', value: 'slideDown', description: 'Slide down from top' },
-    { name: 'Slide Left', value: 'slideLeft', description: 'Slide in from right' },
-    { name: 'Slide Right', value: 'slideRight', description: 'Slide in from left' },
-    { name: 'Scale', value: 'scale', description: 'Scale up from small' },
-    { name: 'Bounce', value: 'bounce', description: 'Bounce in effect' },
-    { name: 'Flip', value: 'flip', description: 'Flip animation' },
-    { name: 'Wobble', value: 'wobble', description: 'Wobble effect' },
+    { name: "None", value: "none", description: "No animation" },
+    {
+      name: "Fade In",
+      value: "fadeIn",
+      description: "Fade in from transparent",
+    },
+    { name: "Slide Up", value: "slideUp", description: "Slide up from bottom" },
+    {
+      name: "Slide Down",
+      value: "slideDown",
+      description: "Slide down from top",
+    },
+    {
+      name: "Slide Left",
+      value: "slideLeft",
+      description: "Slide in from right",
+    },
+    {
+      name: "Slide Right",
+      value: "slideRight",
+      description: "Slide in from left",
+    },
+    { name: "Scale", value: "scale", description: "Scale up from small" },
+    { name: "Bounce", value: "bounce", description: "Bounce in effect" },
+    { name: "Flip", value: "flip", description: "Flip animation" },
+    { name: "Wobble", value: "wobble", description: "Wobble effect" },
   ];
 
   const [duration, setDuration] = React.useState(value?.duration || 0.8);
   const [delay, setDelay] = React.useState(value?.delay || 0);
 
   const handleChange = (updates: any) => {
-    const newValue = { 
-      type: value?.type || 'fadeIn',
+    const newValue = {
+      type: value?.type || "fadeIn",
       duration,
       delay,
-      ...updates 
+      ...updates,
     };
     onChange(newValue);
   };
@@ -411,8 +487,13 @@ const AnimationField = ({ onChange, value, field }: any) => {
     <FieldLabel label={field.label}>
       <div className="space-y-4">
         <div>
-          <Label className="text-sm text-gray-600 mb-2 block">Animation Type</Label>
-          <Select value={value?.type || 'fadeIn'} onValueChange={(type) => handleChange({ type })}>
+          <Label className="text-sm text-gray-600 mb-2 block">
+            Animation Type
+          </Label>
+          <Select
+            value={value?.type || "fadeIn"}
+            onValueChange={(type) => handleChange({ type })}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select animation" />
             </SelectTrigger>
@@ -421,7 +502,9 @@ const AnimationField = ({ onChange, value, field }: any) => {
                 <SelectItem key={anim.value} value={anim.value}>
                   <div>
                     <div className="font-medium">{anim.name}</div>
-                    <div className="text-sm text-gray-500">{anim.description}</div>
+                    <div className="text-sm text-gray-500">
+                      {anim.description}
+                    </div>
                   </div>
                 </SelectItem>
               ))}
@@ -459,7 +542,7 @@ const AnimationField = ({ onChange, value, field }: any) => {
           />
         </div>
 
-        {value?.type !== 'none' && (
+        {value?.type !== "none" && (
           <motion.div
             className="p-3 bg-blue-50 rounded-lg border-2 border-blue-200"
             initial={{ scale: 0.8, opacity: 0 }}
@@ -468,7 +551,9 @@ const AnimationField = ({ onChange, value, field }: any) => {
             key={`${value?.type}-${duration}-${delay}`}
           >
             <div className="text-sm text-blue-800 font-medium">Preview</div>
-            <div className="text-sm text-blue-600">Animation: {animations.find(a => a.value === value?.type)?.name}</div>
+            <div className="text-sm text-blue-600">
+              Animation: {animations.find((a) => a.value === value?.type)?.name}
+            </div>
           </motion.div>
         )}
       </div>
@@ -477,29 +562,29 @@ const AnimationField = ({ onChange, value, field }: any) => {
 };
 
 const AIContentField = ({ onChange, value, field }: any) => {
-  const [prompt, setPrompt] = React.useState('');
+  const [prompt, setPrompt] = React.useState("");
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
-    
+
     setIsGenerating(true);
     try {
       // Simulate AI generation - in a real app, you'd call your AI API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const generatedContent = `Generated content based on: "${prompt}"\n\nThis is where AI would generate relevant content for your component. The AI would understand the context and create appropriate text, headings, or descriptions.`;
-      
+
       onChange(generatedContent);
       setSuggestions([
-        'Make it more professional',
-        'Add call-to-action language',
-        'Make it shorter and punchier',
-        'Include emotional appeal'
+        "Make it more professional",
+        "Add call-to-action language",
+        "Make it shorter and punchier",
+        "Include emotional appeal",
       ]);
     } catch (error) {
-      console.error('Failed to generate content:', error);
+      console.error("Failed to generate content:", error);
     } finally {
       setIsGenerating(false);
     }
@@ -509,18 +594,20 @@ const AIContentField = ({ onChange, value, field }: any) => {
     <FieldLabel label={field.label}>
       <div className="space-y-3">
         <Textarea
-          value={value || ''}
+          value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Enter your content or use AI to generate..."
           className="min-h-24"
         />
-        
+
         <div className="border-t pt-3">
           <div className="flex items-center space-x-2 mb-2">
             <Sparkles className="w-4 h-4 text-purple-500" />
-            <Label className="text-sm font-medium text-purple-700">AI Assistant</Label>
+            <Label className="text-sm font-medium text-purple-700">
+              AI Assistant
+            </Label>
           </div>
-          
+
           <div className="flex space-x-2">
             <Input
               placeholder="Describe what you want..."
@@ -528,7 +615,7 @@ const AIContentField = ({ onChange, value, field }: any) => {
               onChange={(e) => setPrompt(e.target.value)}
               className="flex-1"
             />
-            <Button 
+            <Button
               onClick={handleGenerate}
               disabled={!prompt.trim() || isGenerating}
               size="sm"
@@ -546,10 +633,12 @@ const AIContentField = ({ onChange, value, field }: any) => {
               )}
             </Button>
           </div>
-          
+
           {suggestions.length > 0 && (
             <div className="mt-3">
-              <Label className="text-xs text-gray-500 mb-2 block">Quick suggestions:</Label>
+              <Label className="text-xs text-gray-500 mb-2 block">
+                Quick suggestions:
+              </Label>
               <div className="space-y-1">
                 {suggestions.map((suggestion, index) => (
                   <Button
@@ -575,7 +664,7 @@ const AIContentField = ({ onChange, value, field }: any) => {
 interface HeroSectionProps {
   title: string;
   subtitle: string;
-  backgroundType: 'gradient' | 'image' | 'video' | 'solid';
+  backgroundType: "gradient" | "image" | "video" | "solid";
   backgroundColor: string;
   backgroundGradient: {
     from: string;
@@ -619,7 +708,7 @@ export const enhancedConfig: Config = {
           label: "Main Title",
         },
         subtitle: {
-          type: "custom", 
+          type: "custom",
           render: AIContentField,
           label: "Subtitle",
         },
@@ -647,7 +736,7 @@ export const enhancedConfig: Config = {
               label: "From Color",
             },
             to: {
-              type: "custom", 
+              type: "custom",
               render: ColorPickerField,
               label: "To Color",
             },
@@ -748,7 +837,8 @@ export const enhancedConfig: Config = {
       },
       defaultProps: {
         title: "Welcome to Our Amazing Platform",
-        subtitle: "Discover the future of digital experiences with our cutting-edge solutions",
+        subtitle:
+          "Discover the future of digital experiences with our cutting-edge solutions",
         backgroundType: "gradient",
         backgroundColor: "#3b82f6",
         backgroundGradient: {
@@ -806,7 +896,7 @@ export const enhancedConfig: Config = {
         };
 
         // Conditionally show fields based on background type
-        if (data.props.backgroundType === 'gradient') {
+        if (data.props.backgroundType === "gradient") {
           fields.backgroundGradient = {
             type: "object",
             objectFields: {
@@ -832,13 +922,13 @@ export const enhancedConfig: Config = {
             },
             label: "Gradient Settings",
           };
-        } else if (data.props.backgroundType === 'solid') {
+        } else if (data.props.backgroundType === "solid") {
           fields.backgroundColor = {
             type: "custom",
             render: ColorPickerField,
             label: "Background Color",
           };
-        } else if (data.props.backgroundType === 'image') {
+        } else if (data.props.backgroundType === "image") {
           fields.backgroundImage = {
             type: "text",
             label: "Background Image URL",
@@ -902,22 +992,39 @@ export const enhancedConfig: Config = {
 
         return fields;
       },
-      render: ({ title, subtitle, backgroundType, backgroundColor, backgroundGradient, backgroundImage, overlay, textColor, buttonText, buttonStyle, buttonColor, animation, spacing, height, alignment, puck }: any) => {
+      render: ({
+        title,
+        subtitle,
+        backgroundType,
+        backgroundColor,
+        backgroundGradient,
+        backgroundImage,
+        overlay,
+        textColor,
+        buttonText,
+        buttonStyle,
+        buttonColor,
+        animation,
+        spacing,
+        height,
+        alignment,
+        puck,
+      }: any) => {
         const getBackgroundStyle = () => {
           switch (backgroundType) {
-            case 'gradient':
+            case "gradient":
               return {
-                background: `linear-gradient(${backgroundGradient?.direction || 'to-r'}, ${backgroundGradient?.from || '#3b82f6'}, ${backgroundGradient?.to || '#8b5cf6'})`,
+                background: `linear-gradient(${backgroundGradient?.direction || "to-r"}, ${backgroundGradient?.from || "#3b82f6"}, ${backgroundGradient?.to || "#8b5cf6"})`,
               };
-            case 'image':
+            case "image":
               return {
                 backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               };
-            case 'solid':
+            case "solid":
               return {
-                backgroundColor: backgroundColor || '#3b82f6',
+                backgroundColor: backgroundColor || "#3b82f6",
               };
             default:
               return {};
@@ -925,37 +1032,69 @@ export const enhancedConfig: Config = {
         };
 
         const getAnimationProps = () => {
-          if (!animation || animation.type === 'none') return {};
-          
+          if (!animation || animation.type === "none") return {};
+
           const animationMap: Record<string, any> = {
             fadeIn: { initial: { opacity: 0 }, animate: { opacity: 1 } },
-            slideUp: { initial: { y: 50, opacity: 0 }, animate: { y: 0, opacity: 1 } },
-            slideDown: { initial: { y: -50, opacity: 0 }, animate: { y: 0, opacity: 1 } },
-            slideLeft: { initial: { x: 50, opacity: 0 }, animate: { x: 0, opacity: 1 } },
-            slideRight: { initial: { x: -50, opacity: 0 }, animate: { x: 0, opacity: 1 } },
-            scale: { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 } },
-            bounce: { initial: { scale: 0.3, opacity: 0 }, animate: { scale: 1, opacity: 1 } },
+            slideUp: {
+              initial: { y: 50, opacity: 0 },
+              animate: { y: 0, opacity: 1 },
+            },
+            slideDown: {
+              initial: { y: -50, opacity: 0 },
+              animate: { y: 0, opacity: 1 },
+            },
+            slideLeft: {
+              initial: { x: 50, opacity: 0 },
+              animate: { x: 0, opacity: 1 },
+            },
+            slideRight: {
+              initial: { x: -50, opacity: 0 },
+              animate: { x: 0, opacity: 1 },
+            },
+            scale: {
+              initial: { scale: 0.8, opacity: 0 },
+              animate: { scale: 1, opacity: 1 },
+            },
+            bounce: {
+              initial: { scale: 0.3, opacity: 0 },
+              animate: { scale: 1, opacity: 1 },
+            },
           };
 
           return {
             ...animationMap[animation.type],
-            transition: { duration: animation.duration || 0.8, delay: animation.delay || 0 },
+            transition: {
+              duration: animation.duration || 0.8,
+              delay: animation.delay || 0,
+            },
           };
         };
 
-        const heightClass = height === 'screen' ? 'min-h-screen' : 
-                           height === '3/4' ? 'min-h-[75vh]' : 
-                           height === '1/2' ? 'min-h-[50vh]' : 'min-h-max';
+        const heightClass =
+          height === "screen"
+            ? "min-h-screen"
+            : height === "3/4"
+              ? "min-h-[75vh]"
+              : height === "1/2"
+                ? "min-h-[50vh]"
+                : "min-h-max";
 
-        const alignmentClass = alignment === 'center' ? 'text-center' :
-                              alignment === 'right' ? 'text-right' : 'text-left';
+        const alignmentClass =
+          alignment === "center"
+            ? "text-center"
+            : alignment === "right"
+              ? "text-right"
+              : "text-left";
 
-        const spacingStyle = spacing ? {
-          paddingTop: `${spacing.top}px`,
-          paddingBottom: `${spacing.bottom}px`,
-          paddingLeft: `${spacing.left}px`,
-          paddingRight: `${spacing.right}px`,
-        } : {};
+        const spacingStyle = spacing
+          ? {
+              paddingTop: `${spacing.top}px`,
+              paddingBottom: `${spacing.bottom}px`,
+              paddingLeft: `${spacing.left}px`,
+              paddingRight: `${spacing.right}px`,
+            }
+          : {};
 
         return (
           <motion.section
@@ -964,48 +1103,54 @@ export const enhancedConfig: Config = {
             {...getAnimationProps()}
           >
             {/* Overlay */}
-            {backgroundType === 'image' && overlay?.enabled && (
-              <div 
+            {backgroundType === "image" && overlay?.enabled && (
+              <div
                 className="absolute inset-0"
                 style={{
-                  backgroundColor: overlay.color || '#000000',
+                  backgroundColor: overlay.color || "#000000",
                   opacity: (overlay.opacity || 50) / 100,
                 }}
               />
             )}
 
             {/* Content */}
-            <div className={`relative z-10 max-w-4xl mx-auto px-4 ${alignmentClass}`}>
-              <motion.h1 
+            <div
+              className={`relative z-10 max-w-4xl mx-auto px-4 ${alignmentClass}`}
+            >
+              <motion.h1
                 className="text-4xl md:text-6xl font-bold mb-6"
-                style={{ color: textColor || '#ffffff' }}
+                style={{ color: textColor || "#ffffff" }}
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: (animation?.delay || 0) + 0.2 }}
               >
                 {title || "Welcome to Our Platform"}
               </motion.h1>
-              
-              <motion.p 
+
+              <motion.p
                 className="text-xl md:text-2xl mb-8 opacity-90"
-                style={{ color: textColor || '#ffffff' }}
+                style={{ color: textColor || "#ffffff" }}
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: (animation?.delay || 0) + 0.4 }}
               >
                 {subtitle || "Discover amazing possibilities"}
               </motion.p>
-              
+
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: (animation?.delay || 0) + 0.6 }}
               >
-                <Button 
+                <Button
                   size="lg"
-                  variant={buttonStyle as any || "default"}
-                  className={`text-lg px-8 py-6 ${buttonStyle === 'primary' ? 'text-gray-900' : ''}`}
-                  style={buttonStyle === 'primary' ? { backgroundColor: buttonColor || '#ffffff' } : {}}
+                  variant={(buttonStyle as any) || "default"}
+                  className={`text-lg px-8 py-6 ${buttonStyle === "primary" ? "text-gray-900" : ""}`}
+                  style={
+                    buttonStyle === "primary"
+                      ? { backgroundColor: buttonColor || "#ffffff" }
+                      : {}
+                  }
                 >
                   {buttonText || "Get Started"}
                 </Button>
@@ -1015,7 +1160,10 @@ export const enhancedConfig: Config = {
             {/* Decorative elements for editing mode */}
             {puck?.isEditing && (
               <div className="absolute top-4 left-4 z-20">
-                <Badge variant="secondary" className="bg-black/20 text-white border-white/20">
+                <Badge
+                  variant="secondary"
+                  className="bg-black/20 text-white border-white/20"
+                >
                   <Layout className="w-3 h-3 mr-1" />
                   Hero Section
                 </Badge>
@@ -1069,7 +1217,8 @@ export const enhancedConfig: Config = {
       defaultProps: {
         icon: "Star",
         title: "Amazing Feature",
-        content: "This is a smart card component with AI-powered content generation and beautiful animations.",
+        content:
+          "This is a smart card component with AI-powered content generation and beautiful animations.",
         cardStyle: "glass",
         primaryColor: "#3b82f6",
         animation: {
@@ -1078,43 +1227,84 @@ export const enhancedConfig: Config = {
           delay: 0,
         },
       },
-      render: ({ icon, title, content, cardStyle, primaryColor, animation, puck }: any) => {
+      render: ({
+        icon,
+        title,
+        content,
+        cardStyle,
+        primaryColor,
+        animation,
+        puck,
+      }: any) => {
         const getCardStyles = () => {
           switch (cardStyle) {
-            case 'glass':
-              return 'bg-white/10 backdrop-blur-md border border-white/20';
-            case 'solid':
-              return 'bg-white border border-gray-200 shadow-lg';
-            case 'outline':
-              return 'bg-transparent border-2 border-gray-300';
-            case 'gradient':
+            case "glass":
+              return "bg-white/10 backdrop-blur-md border border-white/20";
+            case "solid":
+              return "bg-white border border-gray-200 shadow-lg";
+            case "outline":
+              return "bg-transparent border-2 border-gray-300";
+            case "gradient":
               return `bg-gradient-to-br from-${primaryColor}/10 to-${primaryColor}/30 border border-${primaryColor}/20`;
             default:
-              return 'bg-white border border-gray-200 shadow-lg';
+              return "bg-white border border-gray-200 shadow-lg";
           }
         };
 
         const iconOptions: Record<string, any> = {
-          Star, Heart, Zap, Crown, Shield, Lock, Mail, Phone, MessageCircle,
-          Home, Building, MapPin, Globe, TrendingUp, BarChart, ShoppingCart,
-          Camera, Video, Music, Image, Type, Layout, Grid, Settings
+          Star,
+          Heart,
+          Zap,
+          Crown,
+          Shield,
+          Lock,
+          Mail,
+          Phone,
+          MessageCircle,
+          Home,
+          Building,
+          MapPin,
+          Globe,
+          TrendingUp,
+          BarChart,
+          ShoppingCart,
+          Camera,
+          Video,
+          Music,
+          Image,
+          Type,
+          Layout,
+          Grid,
+          Settings,
         };
 
         const IconComponent = iconOptions[icon] || Star;
 
         const getAnimationProps = () => {
-          if (!animation || animation.type === 'none') return {};
-          
+          if (!animation || animation.type === "none") return {};
+
           const animationMap: Record<string, any> = {
             fadeIn: { initial: { opacity: 0 }, animate: { opacity: 1 } },
-            slideUp: { initial: { y: 50, opacity: 0 }, animate: { y: 0, opacity: 1 } },
-            slideDown: { initial: { y: -50, opacity: 0 }, animate: { y: 0, opacity: 1 } },
-            scale: { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 } },
+            slideUp: {
+              initial: { y: 50, opacity: 0 },
+              animate: { y: 0, opacity: 1 },
+            },
+            slideDown: {
+              initial: { y: -50, opacity: 0 },
+              animate: { y: 0, opacity: 1 },
+            },
+            scale: {
+              initial: { scale: 0.8, opacity: 0 },
+              animate: { scale: 1, opacity: 1 },
+            },
           };
 
           return {
             ...animationMap[animation.type],
-            transition: { duration: animation.duration || 0.6, delay: animation.delay || 0 },
+            transition: {
+              duration: animation.duration || 0.6,
+              delay: animation.delay || 0,
+            },
           };
         };
 
@@ -1125,9 +1315,12 @@ export const enhancedConfig: Config = {
             whileHover={{ y: -5, scale: 1.02 }}
           >
             <div className="flex items-start space-x-4">
-              <div 
+              <div
                 className="p-3 rounded-lg"
-                style={{ backgroundColor: primaryColor + '20', color: primaryColor }}
+                style={{
+                  backgroundColor: primaryColor + "20",
+                  color: primaryColor,
+                }}
               >
                 <IconComponent className="w-6 h-6" />
               </div>
@@ -1135,9 +1328,7 @@ export const enhancedConfig: Config = {
                 <h3 className="text-lg font-semibold mb-2 text-gray-900">
                   {title}
                 </h3>
-                <p className="text-gray-600">
-                  {content}
-                </p>
+                <p className="text-gray-600">{content}</p>
               </div>
             </div>
 
@@ -1242,17 +1433,17 @@ export const enhancedSave = async (data: Data) => {
   try {
     // Here you would call your API to save the data
     console.log("Saving enhanced Puck data:", data);
-    
+
     // Example API call:
     // const response = await fetch('/api/pages/save', {
     //   method: 'POST',
     //   headers: { 'Content-Type': 'application/json' },
     //   body: JSON.stringify(data)
     // });
-    
+
     return { success: true };
   } catch (error) {
     console.error("Failed to save:", error);
     throw error;
   }
-}; 
+};

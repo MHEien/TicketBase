@@ -42,7 +42,8 @@
 }
 
 /* Target any remaining white areas aggressively */
-.fullscreen-puck-editor > div:not([class*="_PuckCanvas"]):not([class*="_PuckPreview"]) {
+.fullscreen-puck-editor
+  > div:not([class*="_PuckCanvas"]):not([class*="_PuckPreview"]) {
   background: hsl(var(--color-secondary)) !important;
 }
 
@@ -132,7 +133,9 @@
 /* Enhanced viewport and zoom support */
 .fullscreen-puck-editor .Puck-preview iframe,
 .fullscreen-puck-editor .Puck-frame {
-  transition: transform 0.3s ease, width 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
   border-radius: 8px;
 }
 
@@ -214,7 +217,7 @@
 }
 
 .fullscreen-puck-editor .resize-handle::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 2px;
   right: 2px;
@@ -249,7 +252,9 @@
 }
 
 .fullscreen-puck-editor [data-panel="draggable"]:hover {
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 10px 10px -5px rgb(0 0 0 / 0.04);
 }
 
 /* Custom floating animations */
@@ -302,7 +307,7 @@
   .floating-button {
     padding: 0.75rem !important;
   }
-  
+
   .floating-popover {
     width: 90vw !important;
     max-width: 320px;
@@ -318,13 +323,13 @@
     border-color: hsl(var(--border));
     color: hsl(var(--foreground));
   }
-  
+
   .fullscreen-puck-editor .Puck-dropZone {
     background: hsl(var(--muted) / 0.3);
     border-color: hsl(var(--border));
     color: hsl(var(--muted-foreground));
   }
-  
+
   .fullscreen-puck-editor .Puck-dropZone:hover,
   .fullscreen-puck-editor .Puck-dropZone--isOver {
     border-color: hsl(var(--primary));

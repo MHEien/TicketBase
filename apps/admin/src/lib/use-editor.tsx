@@ -1,7 +1,7 @@
-import { invariant } from '@rekajs/utils';
-import * as React from 'react';
+import { invariant } from "@rekajs/utils";
+import * as React from "react";
 
-import { EditorContext } from '@/components/editor/provider';
+import { EditorContext } from "@/components/editor/provider";
 
 export const useMaybeEditor = () => {
   const { editor } = React.useContext(EditorContext);
@@ -12,13 +12,13 @@ export const useMaybeEditor = () => {
 export const useEditor = () => {
   const editor = useMaybeEditor();
 
-  invariant(editor, 'Editor not found');
+  invariant(editor, "Editor not found");
 
   return editor;
 };
 
 export const useEditorActiveComponent = () => {
   const editor = useEditor();
-  invariant(editor.activeComponentEditor, 'No active Component Editor');
+  invariant(editor.activeComponentEditor, "No active Component Editor");
   return editor.activeComponentEditor;
 };
