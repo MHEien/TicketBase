@@ -1,49 +1,255 @@
-/* Simplified fullscreen-puck.css - using overrides approach */
+/* Comprehensive fullscreen-puck.css */
 
-/* Basic fullscreen setup */
+/* Basic fullscreen setup with enhanced background control */
 .fullscreen-puck-editor {
   height: 100vh;
   overflow: hidden;
+  background: hsl(var(--color-secondary)) !important;
 }
 
-/* Ensure preview takes full space */
+/* Target specific Puck CSS module classes for background override */
+.fullscreen-puck-editor [class*="_PuckLayout"],
+.fullscreen-puck-editor [class*="_PuckLayout-inner"],
+.fullscreen-puck-editor [class*="_Puck_"],
+.fullscreen-puck-editor .Puck,
+.fullscreen-puck-editor .Puck-root,
+.fullscreen-puck-editor .Puck-editor,
+.fullscreen-puck-editor .Puck-container,
+.fullscreen-puck-editor > div {
+  background: hsl(var(--color-secondary)) !important;
+  background-color: hsl(var(--color-secondary)) !important;
+}
+
+/* Specifically target the layout areas */
+.fullscreen-puck-editor [class*="_PuckLayout-leftSideBar"],
+.fullscreen-puck-editor [class*="_PuckLayout-rightSideBar"] {
+  background: hsl(var(--color-secondary)) !important;
+  background-color: hsl(var(--color-secondary)) !important;
+}
+
+/* Target sidebar sections and content areas */
+.fullscreen-puck-editor [class*="_SidebarSection"],
+.fullscreen-puck-editor [class*="_SidebarSection-content"],
+.fullscreen-puck-editor [class*="_PuckFields"] {
+  background: hsl(var(--color-secondary)) !important;
+  background-color: hsl(var(--color-secondary)) !important;
+}
+
+/* Remove white borders and backgrounds */
+.fullscreen-puck-editor [class*="_PuckLayout"] {
+  border: none !important;
+  background: hsl(var(--color-secondary)) !important;
+}
+
+/* Target any remaining white areas aggressively */
+.fullscreen-puck-editor > div:not([class*="_PuckCanvas"]):not([class*="_PuckPreview"]) {
+  background: hsl(var(--color-secondary)) !important;
+}
+
+/* Keep canvas area with proper background */
+.fullscreen-puck-editor [class*="_PuckCanvas"],
+.fullscreen-puck-editor [class*="_PuckPreview"],
+.fullscreen-puck-editor .Puck-preview,
+.fullscreen-puck-editor .Puck-frame,
+.fullscreen-puck-editor .Puck-frame > div,
+.fullscreen-puck-editor iframe {
+  background: hsl(var(--color-background)) !important;
+  background-color: hsl(var(--color-background)) !important;
+}
+
 .fullscreen-puck-editor .Puck-preview {
   height: 100vh !important;
   width: 100% !important;
-  border: none !important;
 }
 
-/* Hide default sidebars (handled by ui prop) */
 .fullscreen-puck-editor .Puck-sideBar {
   display: none !important;
+}
+
+/* Remove any borders that might cause white lines */
+.fullscreen-puck-editor [class*="_PuckLayout"],
+.fullscreen-puck-editor [class*="_SidebarSection"] {
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+/* Ensure no gaps or margins create white space */
+.fullscreen-puck-editor [class*="_PuckLayout-inner"] {
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Enhanced dropzone styling */
 .fullscreen-puck-editor .Puck-dropZone {
   min-height: 120px;
-  border: 2px dashed #e2e8f0;
-  border-radius: 8px;
+  border: 2px dashed hsl(var(--border));
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
-  transition: all 0.2s ease;
-  background: #f8fafc;
-  margin: 8px 0;
+  transition: all 0.3s ease;
+  background: hsl(var(--muted) / 0.3);
+  margin: 12px 0;
 }
 
 .fullscreen-puck-editor .Puck-dropZone:hover,
 .fullscreen-puck-editor .Puck-dropZone--isOver {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
-  color: #1d4ed8;
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.05);
+  color: hsl(var(--primary));
   transform: scale(1.01);
 }
 
 .fullscreen-puck-editor .Puck-dropZone--isEmpty::after {
-  content: "Drop components here";
+  content: "Drop components here to build your page";
   font-weight: 500;
+}
+
+.fullscreen-puck-editor .Puck-dragDropContext {
+  position: relative;
+  z-index: 10;
+}
+
+.fullscreen-puck-editor .Puck-frame {
+  position: relative;
+  z-index: 10;
+}
+
+.fullscreen-puck-editor .Puck-dragPreview {
+  z-index: 35 !important;
+  filter: drop-shadow(0 20px 25px rgb(0 0 0 / 0.15));
+}
+
+.fullscreen-puck-editor [data-rfd-drag-handle-draggable-id] {
+  pointer-events: auto !important;
+}
+
+/* Enhanced viewport and zoom support */
+.fullscreen-puck-editor .Puck-preview iframe,
+.fullscreen-puck-editor .Puck-frame {
+  transition: transform 0.3s ease, width 0.3s ease;
+  border-radius: 8px;
+}
+
+.fullscreen-puck-editor .Puck-preview {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: auto;
+  padding: 20px;
+}
+
+/* Enhanced zoom support */
+.fullscreen-puck-editor .Puck-frame {
+  transform-origin: top center;
+  will-change: transform;
+}
+
+.fullscreen-puck-editor .Puck-preview[data-viewport="tablet"],
+.fullscreen-puck-editor .Puck-preview[data-viewport="mobile"] {
+  background: hsl(var(--muted) / 0.3);
+}
+
+/* Auto viewport support */
+.fullscreen-puck-editor .Puck-frame[data-auto-viewport="true"] {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: none !important;
+}
+
+.fullscreen-puck-editor .Puck-preview[data-auto-viewport="true"] {
+  padding: 24px;
+}
+
+.fullscreen-puck-editor .Puck-frame[data-auto-viewport="true"] iframe {
+  width: 100% !important;
+  border-radius: 0;
+}
+
+/* Enhanced focus states */
+.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id]:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Component selection highlight */
+.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id] {
+  transition: outline 0.2s ease;
+}
+
+.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id]:hover {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Custom scrollbars */
+.fullscreen-puck-editor ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.fullscreen-puck-editor ::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.fullscreen-puck-editor ::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+.fullscreen-puck-editor ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Draggable Panel Styles */
+.fullscreen-puck-editor .resize-handle {
+  position: relative;
+}
+
+.fullscreen-puck-editor .resize-handle::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background: repeating-linear-gradient(
+    45deg,
+    hsl(var(--muted-foreground) / 0.4),
+    hsl(var(--muted-foreground) / 0.4) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.fullscreen-puck-editor .panel-content {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+}
+
+/* Prevent text selection during drag */
+.fullscreen-puck-editor .cursor-grab:active,
+.fullscreen-puck-editor .cursor-grabbing {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Panel animations */
+.fullscreen-puck-editor [data-panel="draggable"] {
+  transition: box-shadow 0.2s ease;
+}
+
+.fullscreen-puck-editor [data-panel="draggable"]:hover {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
 }
 
 /* Custom floating animations */
@@ -72,33 +278,23 @@
   }
 }
 
-/* Component selection highlight */
-.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id] {
-  transition: outline 0.2s ease;
-}
-
-.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id]:hover {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
 /* Custom scrollbar for popovers */
 .floating-popover::-webkit-scrollbar {
   width: 6px;
 }
 
 .floating-popover::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: hsl(var(--muted));
   border-radius: 3px;
 }
 
 .floating-popover::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
 }
 
 .floating-popover::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* Responsive adjustments */
@@ -115,24 +311,24 @@
   }
 }
 
-/* Dark mode support */
+/* Dark mode support using CSS custom properties */
 @media (prefers-color-scheme: dark) {
   .floating-popover {
-    background-color: #1f2937;
-    border-color: #374151;
-    color: #f9fafb;
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
   }
   
   .fullscreen-puck-editor .Puck-dropZone {
-    background: #1f2937;
-    border-color: #4b5563;
-    color: #9ca3af;
+    background: hsl(var(--muted) / 0.3);
+    border-color: hsl(var(--border));
+    color: hsl(var(--muted-foreground));
   }
   
   .fullscreen-puck-editor .Puck-dropZone:hover,
   .fullscreen-puck-editor .Puck-dropZone--isOver {
-    border-color: #3b82f6;
-    background-color: #1e3a8a;
-    color: #93c5fd;
+    border-color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.05);
+    color: hsl(var(--primary));
   }
 }
