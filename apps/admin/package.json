@@ -100,6 +100,7 @@
     "use-sync-external-store": "latest",
     "uuid": "^11.1.0",
     "valtio": "^2.1.5",
+    "valtio-yjs": "^0.6.1",
     "vaul": "^0.9.6",
     "vite": "^7.0.3",
     "y-webrtc": "^10.3.0",

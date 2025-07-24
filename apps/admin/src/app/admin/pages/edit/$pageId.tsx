@@ -1,19 +1,18 @@
-import { EditorContextProvider } from '@/components/editor';
-import { AppEditor } from '@/components/page-editor';
-import { TooltipProvider } from '@radix-ui/react-tooltip';
-import { createFileRoute } from '@tanstack/react-router'
-import React from 'react';
+
+import { createFileRoute } from "@tanstack/react-router";
+import { FullscreenPuckApp } from "@/components/editor";
 
 export const Route = createFileRoute('/admin/pages/edit/$pageId')({
-  component: RouteComponent,
+  loader: ({params}) => {
+    return {
+      pageId: params.pageId,
+    }
+  },
+  component: EditorPage
 })
 
-function RouteComponent() {
-  return (
-    <EditorContextProvider>
-      <TooltipProvider>
-        <AppEditor />
-      </TooltipProvider>
-    </EditorContextProvider>
-  );
+function EditorPage() {
+  const { pageId } = Route.useParams()
+
+  return <FullscreenPuckApp />
 }

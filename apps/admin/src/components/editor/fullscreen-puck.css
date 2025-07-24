@@ -1,0 +1,138 @@
+/* Simplified fullscreen-puck.css - using overrides approach */
+
+/* Basic fullscreen setup */
+.fullscreen-puck-editor {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Ensure preview takes full space */
+.fullscreen-puck-editor .Puck-preview {
+  height: 100vh !important;
+  width: 100% !important;
+  border: none !important;
+}
+
+/* Hide default sidebars (handled by ui prop) */
+.fullscreen-puck-editor .Puck-sideBar {
+  display: none !important;
+}
+
+/* Enhanced dropzone styling */
+.fullscreen-puck-editor .Puck-dropZone {
+  min-height: 120px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+  margin: 8px 0;
+}
+
+.fullscreen-puck-editor .Puck-dropZone:hover,
+.fullscreen-puck-editor .Puck-dropZone--isOver {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  transform: scale(1.01);
+}
+
+.fullscreen-puck-editor .Puck-dropZone--isEmpty::after {
+  content: "Drop components here";
+  font-weight: 500;
+}
+
+/* Custom floating animations */
+.floating-button {
+  transition: all 0.2s ease;
+}
+
+.floating-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom popover styling */
+.floating-popover {
+  animation: popoverIn 0.2s ease-out;
+}
+
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Component selection highlight */
+.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id] {
+  transition: outline 0.2s ease;
+}
+
+.fullscreen-puck-editor .Puck-frame [data-rfd-draggable-id]:hover {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar for popovers */
+.floating-popover::-webkit-scrollbar {
+  width: 6px;
+}
+
+.floating-popover::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.floating-popover::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.floating-popover::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .floating-button {
+    padding: 0.75rem !important;
+  }
+  
+  .floating-popover {
+    width: 90vw !important;
+    max-width: 320px;
+    left: 5vw !important;
+    right: 5vw !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .floating-popover {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .fullscreen-puck-editor .Puck-dropZone {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #9ca3af;
+  }
+  
+  .fullscreen-puck-editor .Puck-dropZone:hover,
+  .fullscreen-puck-editor .Puck-dropZone--isOver {
+    border-color: #3b82f6;
+    background-color: #1e3a8a;
+    color: #93c5fd;
+  }
+}
