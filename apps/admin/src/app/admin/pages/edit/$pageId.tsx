@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PageEditor } from "@/components/editor"; 
 import { Loader2 } from "lucide-react";
 import { pageQueryOptions } from "@/utils/pages";
+import { PageEditor } from "@repo/editor/components/index"
+import { pagesApi } from "@ticketbase/api";
+import "@/lib/api-config"; // Initialize API client authentication
 
 export const Route = createFileRoute("/admin/pages/edit/$pageId")({
   loader: async ({ params: { pageId }, context }) => {
@@ -42,6 +44,22 @@ function EditorPage() {
   }
 
   const initialPage = pageQuery.data;
+
+  const handleSavePageData = async (pageData: any, puckData?: any) => {
+    // Combine page metadata with Puck content data
+    const payload = {
+      ...pageData,
+      content: puckData || pageData.content, // Use puckData if provided, fallback to pageData.content
+    };
+    
+    console.log('Admin app saving page:', { pageId, pageData, puckData, payload });
+    
+    if (pageId !== "new") {
+      await pagesApi.updatePage(pageId, payload);
+    } else {
+      await pagesApi.createPage(payload);
+    }
+  };
   
   if (!initialPage) {
     return (
@@ -78,5 +96,5 @@ function EditorPage() {
     );
   }
 
-  return <PageEditor initialPage={initialPage} />;
+  return <PageEditor initialPage={initialPage} onSavePageData={handleSavePageData} />;
 }

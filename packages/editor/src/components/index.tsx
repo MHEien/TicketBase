@@ -3,7 +3,7 @@ import { Puck } from '@measured/puck';
 import '@measured/puck/puck.css';
 import './fullscreen-puck.css';
 import { CustomComponentList, CustomFields, CustomActionBar, CustomOutline, CustomPreview, CustomComponentItem, createAdvancedConfig, GlobalStylesPanel } from './fields';
-import type { Page } from '@/types';
+import type { Page } from '@ticketbase/api';
 
 // Main App Component
 export function PageEditor({
@@ -109,15 +109,13 @@ export function PageEditor({
               initialPageData={{
                 title: initialPage?.title || '',
                 slug: initialPage?.slug || '',
-                description: initialPage?.description || '',
+                description: initialPage?.seoDescription || '',
                 status: initialPage?.status || 'draft',
                 isHomepage: initialPage?.isHomepage || false,
-                sortOrder: initialPage?.sortOrder || 0,
-                featuredImage: initialPage?.featuredImage || '',
+                sortOrder: 0,
                 seoTitle: initialPage?.seoTitle || '',
                 seoDescription: initialPage?.seoDescription || '',
                 seoKeywords: initialPage?.seoKeywords || '',
-                metadata: initialPage?.metadata ? JSON.stringify(initialPage.metadata, null, 2) : ''
               }}
               onSavePageData={handleSavePageData}
             />

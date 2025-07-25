@@ -9,6 +9,8 @@
     "start": "vite preview"
   },
   "dependencies": {
+    "@ticketbase/api": "*",
+    "@repo/editor": "*",
     "@craftjs/core": "^0.2.12",
     "@craftjs/layers": "^0.2.7",
     "@craftjs/utils": "^0.2.5",

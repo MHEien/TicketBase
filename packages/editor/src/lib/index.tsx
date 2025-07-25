@@ -9,83 +9,9 @@ import {
   Clock,
   Globe,
 } from "lucide-react";
-
+import type { AnimationConfig, AnimationType, FeatureGridProps, GlassCardProps, HeroSectionProps, StatsSectionProps } from "./types";
 // Type definitions for component props
-interface HeroSectionProps {
-  title: string;
-  subtitle: string;
-  backgroundType: "gradient" | "image" | "video" | "solid";
-  gradientFrom: string;
-  gradientTo: string;
-  solidColor?: string;
-  backgroundImage?: string;
-  buttonText: string;
-  buttonStyle: "primary" | "secondary" | "outline" | "ghost";
-  animation: "fadeIn" | "slideUp" | "scale" | "bounce" | "none";
-  overlay: false | "light" | "medium" | "heavy";
-  height: "screen" | "3/4" | "1/2" | "auto";
-}
 
-interface GlassCardProps {
-  title: string;
-  content: string;
-  icon: string;
-  blur:
-    | "backdrop-blur-sm"
-    | "backdrop-blur-md"
-    | "backdrop-blur-lg"
-    | "backdrop-blur-xl";
-  opacity:
-    | "bg-white/5"
-    | "bg-white/10"
-    | "bg-white/20"
-    | "bg-white/30"
-    | "bg-black/10"
-    | "bg-black/20";
-  borderStyle:
-    | "border-white/20"
-    | "border-white/40"
-    | "border-gray-300/20"
-    | "border-transparent";
-  padding: string;
-  rounded: string;
-}
-
-interface FeatureGridProps {
-  title: string;
-  subtitle: string;
-  columns:
-    | "grid-cols-1"
-    | "grid-cols-2"
-    | "grid-cols-3"
-    | "grid-cols-4"
-    | "grid-cols-auto-fit";
-  gap: "gap-4" | "gap-6" | "gap-8" | "gap-12";
-  features: Array<{
-    icon: string;
-    title: string;
-    description: string;
-  }>;
-}
-
-interface StatsSectionProps {
-  title: string;
-  backgroundColor: "transparent" | "dark-glass" | "light-glass";
-  stats: Array<{
-    number: string;
-    label: string;
-    icon: React.ComponentType<{ size: number; className?: string }>;
-  }>;
-}
-
-// Animation definitions
-type AnimationType = "fadeIn" | "slideUp" | "scale" | "bounce" | "none";
-
-interface AnimationConfig {
-  initial: Record<string, any>;
-  animate: Record<string, any>;
-  transition: Record<string, any>;
-}
 
 const animations: Record<AnimationType, AnimationConfig> = {
   fadeIn: {

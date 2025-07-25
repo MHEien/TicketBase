@@ -15,10 +15,10 @@ import { Slider } from '@repo/ui/components/ui/slider';
 import { Switch } from '@repo/ui/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/ui/tabs';
 import { Separator } from '@repo/ui/components/ui/separator';
-import type { BreakpointKey, ColorPickerFieldProps, ComponentItemProps, ResponsiveTypographyFieldProps } from '@/types';
+import type { BreakpointKey, ColorPickerFieldProps, ComponentItemProps, ResponsiveTypographyFieldProps } from '@repo/editor/lib/types';
 import { BREAKPOINTS } from '@/lib/constants';
-import type{ ResponsiveSpacingFieldProps, TypographyFieldProps, SpacingFieldProps, BorderFieldProps, DraggableResizablePanelProps, ComponentListProps } from '@/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@repo/ui/components/ui/dialog';
+import type{ ResponsiveSpacingFieldProps, TypographyFieldProps, SpacingFieldProps, BorderFieldProps, DraggableResizablePanelProps, ComponentListProps } from '@repo/editor/lib/types';
+import { Dialog, DialogContent, DialogClose } from '@repo/ui/components/ui/dialog';
 
 export const ResponsiveTypographyField: React.FC<ResponsiveTypographyFieldProps> = ({ value, onChange, label }) => {
   const [activeBreakpoint, setActiveBreakpoint] = useState<BreakpointKey>('desktop');
@@ -3046,57 +3046,43 @@ export const CustomPreview = ({
     };
 
     const handleSave = async ({ pageId }: { pageId: string }) => {
-      if (pageId === "new") {
-        if (!currentPageSettings.title) {
-          throw new Error("Title is required");
-        }
-        if (!currentPageSettings.slug) {
-          currentPageSettings.slug = currentPageSettings.title.toLowerCase().replace(/ /g, '-');
-        }
-        const payload = {
-          title: currentPageSettings.title,
-          slug: currentPageSettings.slug,
-          description: currentPageSettings.description,
-          status: currentPageSettings.status,
-          isHomepage: currentPageSettings.isHomepage,
-          sortOrder: currentPageSettings.sortOrder,
-          seoTitle: currentPageSettings.seoTitle,
-          seoDescription: currentPageSettings.seoDescription,
-          seoKeywords: currentPageSettings.seoKeywords,
-          metadata: currentPageSettings.metadata ? JSON.parse(currentPageSettings.metadata) : null,
-          content: appState.data,
-        }
-        console.log("Creating page with payload:", payload);
-        try {
-          const result = await pagesApi.createPage(payload);
-          console.log("Page created successfully:", result);
-          return result;
-        } catch (error: any) {
-          console.error("Error creating page:", error);
-          console.error("Error details:", {
-            message: error.message,
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data
-          });
-          throw error;
-        }
-      } else {
-        const payload = {
-          title: currentPageSettings.title,
-          slug: currentPageSettings.slug,
-          description: currentPageSettings.description,
-          status: currentPageSettings.status,
-          isHomepage: currentPageSettings.isHomepage,
-          sortOrder: currentPageSettings.sortOrder,
-          seoTitle: currentPageSettings.seoTitle,
-          seoDescription: currentPageSettings.seoDescription,
-          seoKeywords: currentPageSettings.seoKeywords,
-          metadata: currentPageSettings.metadata ? JSON.parse(currentPageSettings.metadata) : null,
-          content: appState.data,
-        }
-        console.log("Updating page with payload:", payload); 
-        await pagesApi.updatePage(pageId, payload);
+      if (!onSavePageData) {
+        console.warn('No onSavePageData callback provided - save operation will be skipped');
+        return;
+      }
+
+      if (!currentPageSettings.title) {
+        throw new Error("Title is required");
+      }
+      
+      if (!currentPageSettings.slug) {
+        currentPageSettings.slug = currentPageSettings.title.toLowerCase().replace(/ /g, '-');
+      }
+      
+      const pageData = {
+        title: currentPageSettings.title,
+        slug: currentPageSettings.slug,
+        description: currentPageSettings.description,
+        status: currentPageSettings.status,
+        isHomepage: currentPageSettings.isHomepage,
+        sortOrder: currentPageSettings.sortOrder,
+        seoTitle: currentPageSettings.seoTitle,
+        seoDescription: currentPageSettings.seoDescription,
+        seoKeywords: currentPageSettings.seoKeywords,
+        metadata: currentPageSettings.metadata ? JSON.parse(currentPageSettings.metadata) : null,
+      };
+      
+      const puckData = appState.data;
+      
+      console.log(pageId === "new" ? "Creating page with data:" : "Updating page with data:", { pageData, puckData });
+      
+      try {
+        const result = await onSavePageData(pageData, puckData);
+        console.log("Page saved successfully:", result);
+        return result;
+      } catch (error: any) {
+        console.error("Error saving page:", error);
+        throw error;
       }
     };
 
