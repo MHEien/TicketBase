@@ -1,16 +1,30 @@
 import axios from "axios";
-import { getSession } from "@/lib/auth-client";
-import { handleTokenRefreshFailure, isTokenRefreshError } from "../auth-utils";
-import { getAuthServerFn, getAuthFromClientCookie } from "../auth-cookies";
 
-// Helper function to get the correct API base URL for the environment
+// Configuration interface for the API client
+export interface ApiClientConfig {
+  baseURL: string;
+  getAuthToken?: () => Promise<string | null> | string | null;
+  onAuthError?: (error: any) => void;
+  debug?: boolean;
+}
+
+// Default configuration
+export let apiConfig: ApiClientConfig = {
+  baseURL: "http://localhost:4000",
+  debug: false,
+};
+
+// Function to configure the API client
+export function configureApiClient(config: Partial<ApiClientConfig>) {
+  apiConfig = { ...apiConfig, ...config };
+  
+  // Update the axios instance base URL
+  apiClient.defaults.baseURL = apiConfig.baseURL;
+}
+
+// Helper function to get the API base URL from configuration
 function getApiBaseUrl(): string {
-  // For server-side, use environment variable or default
-  if (typeof window === "undefined") {
-    return process.env.VITE_API_URL || process.env.API_URL || "http://localhost:4000";
-  }
-  // For client-side, use Vite environment variable
-  return import.meta.env.VITE_API_URL || "http://localhost:4000";
+  return apiConfig.baseURL;
 }
 
 // Create axios instance with base URL
@@ -37,70 +51,29 @@ function debugLog(operation: string, details: any) {
   console.groupEnd();
 }
 
-// Helper function to get auth headers for both server and client environments
+// Helper function to get auth headers using the configured auth provider
 async function getAuthHeaders(): Promise<{ Authorization?: string }> {
-  let accessToken: string | null = null;
-
-  // Server-side: Try to get auth from server cookie first
-  if (typeof window === "undefined") {
-    try {
-      const authData = await getAuthServerFn();
-      accessToken = authData?.accessToken || null;
-      
-      debugLog("Server Auth Check", {
-        hasAuthData: !!authData,
-        hasAccessToken: !!authData?.accessToken,
-        userId: authData?.userId,
-        tokenLength: authData?.accessToken?.length,
-      });
-    } catch (error) {
-      console.error("Error getting auth from server cookie:", error);
-    }
-  } else {
-    // Client-side: Try to get session from existing auth client
-    try {
-      const session = await getSession();
-      accessToken = session?.accessToken || null;
-
-      debugLog("Client Auth Check", {
-        sessionExists: !!session,
-        hasAccessToken: !!session?.accessToken,
-        user: session?.user
-          ? {
-              id: session.user.id,
-              email: session.user.email,
-              name: session.user.name,
-            }
-          : null,
-      });
-
-      // Fallback to client cookie if session doesn't have token
-      if (!accessToken) {
-        accessToken = getAuthFromClientCookie();
-        
-        debugLog("Client Cookie Fallback", {
-          hasToken: !!accessToken,
-          tokenLength: accessToken?.length,
-        });
-      }
-    } catch (error) {
-      console.error("Error getting auth from client session:", error);
-      
-      // Final fallback to client cookie
-      try {
-        accessToken = getAuthFromClientCookie();
-        
-        debugLog("Client Cookie Final Fallback", {
-          hasToken: !!accessToken,
-          tokenLength: accessToken?.length,
-        });
-      } catch (cookieError) {
-        console.error("Error getting auth from client cookie:", cookieError);
-      }
-    }
+  if (!apiConfig.getAuthToken) {
+    return {};
   }
 
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+  try {
+    const accessToken = await apiConfig.getAuthToken();
+    
+    if (apiConfig.debug) {
+      debugLog("Auth Token Retrieved", {
+        hasToken: !!accessToken,
+        tokenLength: accessToken?.length,
+      });
+    }
+
+    return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+  } catch (error) {
+    if (apiConfig.debug) {
+      console.error("Error getting auth token:", error);
+    }
+    return {};
+  }
 }
 
 // Add request interceptor to include auth token and debug logging
@@ -184,19 +157,22 @@ apiClient.interceptors.response.use(
     // Check if this is a token refresh error (only handle on client-side)
     if (
       error.response?.status === 401 &&
-      isTokenRefreshError(error.response?.data) &&
       shouldRedirect &&
       typeof window !== "undefined" // Only handle redirects on client-side
     ) {
-      debugLog("Token Refresh Error", {
-        shouldRedirect,
-        requestPath,
-        responseData: error.response?.data,
-        environment: "client",
-      });
+      if (apiConfig.debug) {
+        debugLog("Auth Error", {
+          shouldRedirect,
+          requestPath,
+          responseData: error.response?.data,
+          environment: "client",
+        });
+      }
 
-      // Handle token refresh failure by logging out and redirecting
-      await handleTokenRefreshFailure(error);
+      // Call the configured auth error handler if available
+      if (apiConfig.onAuthError) {
+        await apiConfig.onAuthError(error);
+      }
     }
     return Promise.reject(error);
   },

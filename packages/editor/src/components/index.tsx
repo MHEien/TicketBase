@@ -1,17 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Puck } from '@measured/puck';
 import '@measured/puck/puck.css';
 import './fullscreen-puck.css';
 import { CustomComponentList, CustomFields, CustomActionBar, CustomOutline, CustomPreview, CustomComponentItem, createAdvancedConfig, GlobalStylesPanel } from './fields';
-import { Page } from '@/lib/api/pages';
-import { pagesApi } from '@/lib/api/pages';
-import { usePuck } from '@measured/puck';
+import type { Page } from '@/types';
 
 // Main App Component
 export function PageEditor({
   initialPage,
+  onSavePageData,
 }: {
   initialPage: Page;
+  onSavePageData: (pageData: any, puckData?: any) => Promise<void>;
 }) {
   const config = createAdvancedConfig();
   const initialData = initialPage ? initialPage.content : {};
@@ -20,10 +20,7 @@ export function PageEditor({
   const handlePublish = useCallback(async (data: any) => {
     try {
       if (initialPage && initialPage.id !== 'new') {
-        await pagesApi.updatePage(initialPage.id, {
-          content: data,
-          status: 'published'
-        });
+        await onSavePageData(data);
         console.log('Page published successfully');
       } else {
         // For new pages, we need title and slug from the settings modal
@@ -44,7 +41,7 @@ export function PageEditor({
           ...pageData,
           content: puckData || initialData
         };
-        await pagesApi.updatePage(initialPage.id, updateData);
+        await onSavePageData(updateData);
         console.log('Page updated successfully');
       } else {
         // Create new page
@@ -52,8 +49,8 @@ export function PageEditor({
           ...pageData,
           content: puckData || initialData
         };
-        const newPage = await pagesApi.createPage(createData);
-        console.log('Page created successfully:', newPage);
+        await onSavePageData(createData);
+        console.log('Page created successfully');
         
         // Optionally redirect to the new page editor
         // window.location.href = `/admin/pages/edit/${newPage.id}`;

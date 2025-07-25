@@ -3,10 +3,11 @@ import {
   createRootRoute,
   HeadContent,
   Scripts,
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SessionProvider } from "@/components/session-provider";
+import { SessionProvider, User } from "@/components/session-provider";
 import { AuthErrorHandler } from "@/components/ui/auth-error-handler";
 import { PluginSDKProvider } from "@/lib/plugin-sdk-context";
 import { DateRangeProvider } from "@/hooks/use-date-range";
@@ -22,7 +23,10 @@ const queryClient = new QueryClient({
   },
 });
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  user: User;
+}>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { BREAKPOINTS } from "./constants";
 
 export type BreakpointKey = keyof typeof BREAKPOINTS;

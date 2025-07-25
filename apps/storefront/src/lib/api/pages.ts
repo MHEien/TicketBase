@@ -1,24 +1,24 @@
 import { apiClient } from '../api-client';
 
 export interface Page {
-  id: string;
-  organizationId: string;
-  title: string;
-  slug: string;
-  description?: string;
-  content: Record<string, any>; // Puck page configuration
-  status: 'draft' | 'published' | 'archived';
-  isHomepage: boolean;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoKeywords?: string;
-  featuredImage?: string;
-  metadata?: Record<string, any>;
-  sortOrder: number;
-  createdBy: string;
-  updatedBy: string;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  title: string
+  slug: string
+  description?: string
+  content: Record<string, any> // Reka.js state configuration
+  status: 'draft' | 'published' | 'archived'
+  isHomepage: boolean
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string
+  featuredImage?: string
+  metadata?: Record<string, any>
+  sortOrder: number
+  organizationId: string
+  createdBy: string
+  updatedBy: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface PagesResponse {
@@ -30,13 +30,13 @@ export interface PagesResponse {
 export const pagesApi = {
   // Public endpoints for storefront
   async getBySlug(slug: string, organizationId: string): Promise<Page> {
-    const response = await apiClient.get(`/public/pages/by-slug/${slug}?organizationId=${organizationId}`);
+    const response = await apiClient.get(`/public/pages/by-slug/${slug}?organizationId=${organizationId}`) as { data: Page };
     return response.data;
   },
 
   async getHomepage(organizationId: string): Promise<Page | null> {
     try {
-      const response = await apiClient.get(`/public/pages/homepage?organizationId=${organizationId}`);
+      const response = await apiClient.get(`/public/pages/homepage?organizationId=${organizationId}`) as { data: Page };
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -47,7 +47,7 @@ export const pagesApi = {
   },
 
   async getPublishedPages(organizationId: string): Promise<PagesResponse> {
-    const response = await apiClient.get(`/public/pages?organizationId=${organizationId}`);
+    const response = await apiClient.get(`/public/pages?organizationId=${organizationId}`) as { data: PagesResponse };
     return response.data;
   },
 
@@ -70,37 +70,37 @@ export const pagesApi = {
       });
     }
     
-    const response = await apiClient.get(`/pages?${queryParams.toString()}`);
+    const response = await apiClient.get(`/pages?${queryParams.toString()}`) as { data: PagesResponse };
     return response.data;
   },
 
   async getById(id: string): Promise<Page> {
-    const response = await apiClient.get(`/pages/${id}`);
+    const response = await apiClient.get(`/pages/${id}`) as { data: Page };
     return response.data;
   },
 
   async create(data: Partial<Page>): Promise<Page> {
-    const response = await apiClient.post('/pages', data);
+    const response = await apiClient.post('/pages', data) as { data: Page };
     return response.data;
   },
 
   async update(id: string, data: Partial<Page>): Promise<Page> {
-    const response = await apiClient.patch(`/pages/${id}`, data);
+    const response = await apiClient.patch(`/pages/${id}`, data) as { data: Page };
     return response.data;
   },
 
   async publish(id: string): Promise<Page> {
-    const response = await apiClient.patch(`/pages/${id}/publish`);
+    const response = await apiClient.patch(`/pages/${id}/publish`) as { data: Page };
     return response.data;
   },
 
   async unpublish(id: string): Promise<Page> {
-    const response = await apiClient.patch(`/pages/${id}/unpublish`);
+    const response = await apiClient.patch(`/pages/${id}/unpublish`) as { data: Page };
     return response.data;
   },
 
   async duplicate(id: string): Promise<Page> {
-    const response = await apiClient.post(`/pages/${id}/duplicate`);
+    const response = await apiClient.post(`/pages/${id}/duplicate`) as { data: Page };
     return response.data;
   },
 

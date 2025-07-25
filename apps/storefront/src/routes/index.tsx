@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getCurrentOrganization } from "../lib/server-organization";
-import { pagesApi } from "../lib/api/pages";
+import { pagesApi } from "@ticketbase/api";
 import { useBaseSEO } from "../hooks/use-seo";
 import { Header } from "../components/Header";
-import { PageRenderer } from "../lib/puck/renderer";
 import { Footer } from "../components/Footer";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -28,6 +27,7 @@ import {
   Ticket
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Renderer } from "@repo/editor"
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -40,9 +40,11 @@ export const Route = createFileRoute("/")({
     // Try to get a custom Puck homepage
     try {
       const homepage = await pagesApi.getHomepage(organization.id);
+      console.log('Homepage found:', JSON.stringify(homepage));
       return { organization, homepage };
     } catch (error) {
       // No custom homepage found, use default layout
+      console.log('No custom homepage found, using default layout:', error);
       return { organization, homepage: null };
     }
   },
@@ -88,13 +90,10 @@ function Index() {
 
   // If we have a custom Puck homepage, render it
   if (homepage) {
+    console.log('Rendering homepage with content:', homepage.content);
     return (
       <div className="min-h-screen bg-white">
-        <Header />
-        <main>
-          <PageRenderer data={{ content: homepage.content.content || [], root: homepage.content.root || {} }} />
-        </main>
-        <Footer />
+        <Renderer data={homepage.content} />
       </div>
     );
   }

@@ -1,0 +1,47 @@
+{
+  "name": "@ticketbase/api",
+  "version": "1.0.0",
+  "description": "Shared API client package for TicketBase applications",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "require": "./index.ts",
+      "types": "./index.ts"
+    },
+    "./types": {
+      "import": "./types.ts",
+      "require": "./types.ts",
+      "types": "./types.ts"
+    }
+  },
+  "files": [
+    "*.ts",
+    "!example-usage.ts",
+    "!*.test.ts"
+  ],
+  "keywords": [
+    "api",
+    "client",
+    "ticketbase",
+    "typescript"
+  ],
+  "author": "TicketBase Team",
+  "license": "MIT"
+}
