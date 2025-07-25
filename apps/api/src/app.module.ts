@@ -13,11 +13,13 @@ import { PluginsModule } from './plugins/plugins.module';
 import { CustomersModule } from './customers/customers.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ActivitiesModule } from './activities/activities.module';
+import { PagesModule } from './pages/pages.module';
 import appConfig from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '../../.env',
       isGlobal: true,
       load: [appConfig],
     }),
@@ -48,6 +50,7 @@ import appConfig from './config/app.config';
     CustomersModule,
     AnalyticsModule,
     ActivitiesModule,
+    PagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

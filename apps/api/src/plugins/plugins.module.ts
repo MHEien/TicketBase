@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PluginsService } from './plugins.service';
 import { PluginsProxyService } from './plugins-proxy.service';
 import { PluginsController } from './plugins.controller';
+import { PublicPluginsController } from './public-plugins.controller';
 import { PluginProxyController } from './plugin-proxy.controller';
 import { BundleProxyController } from './bundle-proxy.controller';
 import { HttpModule } from '@nestjs/axios';
@@ -10,6 +11,7 @@ import { HttpModule } from '@nestjs/axios';
   imports: [HttpModule],
   controllers: [
     PluginsController,
+    PublicPluginsController,
     PluginProxyController,
     BundleProxyController, // Only the proxy controller, not the direct bundle controller
   ],

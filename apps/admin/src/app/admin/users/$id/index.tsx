@@ -62,7 +62,9 @@ export const Route = createFileRoute("/admin/users/$id/")({
 function UserDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [user, setUser] = useState<Awaited<ReturnType<typeof fetchUser>> | undefined>(undefined);
+  const [user, setUser] = useState<
+    Awaited<ReturnType<typeof fetchUser>> | undefined
+  >(undefined);
   const [loading, setLoading] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] =
@@ -75,13 +77,13 @@ function UserDetailPage() {
         const fetchedUser = await fetchUser(id);
         setUser(fetchedUser);
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
         setUser(undefined);
       } finally {
         setLoading(false);
       }
     };
-    
+
     loadUser();
   }, [id]);
 

@@ -1,0 +1,141 @@
+/// <reference types="vite/client" />
+import {
+  HeadContent,
+  Link,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
+import * as React from "react";
+import type { QueryClient } from "@tanstack/react-query";
+import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
+import { NotFound } from "~/components/NotFound";
+
+import { PluginProvider } from "~/contexts/PluginContext";
+import { CartProvider } from "~/contexts/CartContext";
+import { Header } from "~/components/Header";
+import { Footer } from "~/components/Footer";
+import {
+  OrganizationBranding,
+  DomainDebugInfo,
+} from "~/components/domain/DomainProvider";
+import appCss from "~/styles/app.css?url";
+import { seo } from "~/utils/seo";
+
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
+  head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      ...seo({
+        title: "Events Platform | Discover and Book Amazing Events",
+        description:
+          "Discover and book tickets for amazing events near you. From concerts to conferences, find your next unforgettable experience.",
+      }),
+    ],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
+      { rel: "icon", href: "/favicon.ico" },
+    ],
+  }),
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultCatchBoundary {...props} />
+      </RootDocument>
+    );
+  },
+  notFoundComponent: () => <NotFound />,
+  component: RootComponent,
+});
+
+function RootComponent() {
+  return (
+    <RootDocument>
+      <PluginProvider>
+        <CartProvider>
+          <OrganizationBranding />
+          <Header />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+          <DomainDebugInfo />
+        </CartProvider>
+      </PluginProvider>
+    </RootDocument>
+  );
+}
+
+// Client-only devtools component to avoid SSR issues
+function ClientOnlyDevtools() {
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || !import.meta.env.DEV) {
+    return null;
+  }
+
+  // Lazy load devtools only on client
+  const TanStackRouterDevtools = React.lazy(() =>
+    import("@tanstack/react-router-devtools").then((res) => ({
+      default: res.TanStackRouterDevtools,
+    })),
+  );
+
+  const ReactQueryDevtools = React.lazy(() =>
+    import("@tanstack/react-query-devtools").then((res) => ({
+      default: res.ReactQueryDevtools,
+    })),
+  );
+
+  return (
+    <React.Suspense fallback={null}>
+      <TanStackRouterDevtools position="bottom-right" />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
+    </React.Suspense>
+  );
+}
+
+function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <head>
+        <HeadContent />
+      </head>
+      <body className="min-h-screen bg-gray-50 flex flex-col">
+        {children}
+        <ClientOnlyDevtools />
+        <Scripts />
+      </body>
+    </html>
+  );
+}

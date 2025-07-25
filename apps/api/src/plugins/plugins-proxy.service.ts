@@ -617,6 +617,77 @@ export class PluginsProxyService {
     }
   }
 
+  // Public endpoints for organization plugin data (no auth required)
+  async getEnabledPluginsPublic(
+    organizationId: string,
+    extensionPoint?: string,
+  ): Promise<InstalledPlugin[]> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/public/organizations/enabled`;
+      const params = new URLSearchParams();
+      params.append('organizationId', organizationId);
+      if (extensionPoint) {
+        params.append('extensionPoint', extensionPoint);
+      }
+
+      const response = await firstValueFrom(
+        this.httpService
+          .get<InstalledPlugin[]>(`${url}?${params.toString()}`)
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(
+                error,
+                `Get enabled plugins for organization ${organizationId} (public)`,
+              );
+              throw error;
+            }),
+          ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(
+          error,
+          `Get enabled plugins for organization ${organizationId} (public)`,
+        );
+      }
+      throw error;
+    }
+  }
+
+  async getPaymentPluginsPublic(
+    organizationId: string,
+  ): Promise<InstalledPlugin[]> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/public/organizations/payment`;
+      const params = new URLSearchParams();
+      params.append('organizationId', organizationId);
+
+      const response = await firstValueFrom(
+        this.httpService
+          .get<InstalledPlugin[]>(`${url}?${params.toString()}`)
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.handleHttpError(
+                error,
+                `Get payment plugins for organization ${organizationId} (public)`,
+              );
+              throw error;
+            }),
+          ),
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(
+          error,
+          `Get payment plugins for organization ${organizationId} (public)`,
+        );
+      }
+      throw error;
+    }
+  }
+
   async uploadPluginStorage(
     file: Buffer,
     filename: string,
@@ -689,6 +760,75 @@ export class PluginsProxyService {
     } catch (error) {
       if (error instanceof AxiosError) {
         this.handleHttpError(error, `Upload plugin storage ${pluginId}`);
+      }
+      throw error;
+    }
+  }
+
+  async executePluginAction(
+    tenantId: string,
+    pluginId: string,
+    action: string,
+    parameters: any,
+    metadata?: any,
+    authToken?: string,
+  ): Promise<any> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/${pluginId}/actions`;
+      const headers = this.createAuthHeaders(authToken);
+
+      this.logger.debug('🔄 Executing plugin action:', {
+        url,
+        pluginId,
+        action,
+        tenantId,
+        hasAuthToken: !!authToken,
+      });
+
+      const response = await firstValueFrom(
+        this.httpService
+          .post<any>(
+            url,
+            {
+              action,
+              parameters,
+              metadata,
+            },
+            { headers },
+          )
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.logger.error('❌ Plugin action execution failed:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message,
+                url,
+                pluginId,
+                action,
+              });
+              this.handleHttpError(
+                error,
+                `Execute plugin action ${pluginId}:${action}`,
+              );
+              throw error;
+            }),
+          ),
+      );
+
+      this.logger.debug('✅ Plugin action execution successful:', {
+        status: response.status,
+        pluginId,
+        action,
+      });
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(
+          error,
+          `Execute plugin action ${pluginId}:${action}`,
+        );
       }
       throw error;
     }

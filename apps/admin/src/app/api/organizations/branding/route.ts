@@ -2,7 +2,7 @@ import { createServerFileRoute } from "@tanstack/react-start/server";
 import { getSession } from "@/lib/auth-client";
 
 // Configure API URL based on environment
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 // Update organization branding settings
 export const ServerRoute = createServerFileRoute(
@@ -13,7 +13,7 @@ export const ServerRoute = createServerFileRoute(
       const session = await getSession();
 
       // Ensure the user is authenticated
-      if (!session?.user || !session.session.token) {
+      if (!session?.user || !session.accessToken) {
         return Response.json(
           { message: "Authentication required" },
           { status: 401 },
@@ -31,7 +31,7 @@ export const ServerRoute = createServerFileRoute(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.session.token}`,
+          Authorization: `Bearer ${session.accessToken}`,
         },
         body: JSON.stringify({
           organizationSettings: body.settings,

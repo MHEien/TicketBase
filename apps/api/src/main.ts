@@ -34,10 +34,19 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Enable CORS
+  const allowedOrigins = configService.get('plugins.allowedOrigins') || [
+    'http://localhost:3000', // Admin app
+    'http://localhost:3001', // Storefront app
+    'http://localhost:4000', // API server
+    'http://localhost:5000', // Plugin server
+  ];
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:4000',
+    origin: allowedOrigins,
     credentials: true,
   });
+
+  console.log(`CORS enabled for origins: ${allowedOrigins.join(', ')}`);
 
   // Setup Swagger documentation
   const config = new DocumentBuilder()

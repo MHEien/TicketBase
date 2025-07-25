@@ -146,9 +146,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/upload").methods(
 
         // Get API server URL for proxying to plugin server
         const API_SERVER_URL =
-          process.env.API_SERVER_URL ||
-          process.env.NEXT_PUBLIC_API_SERVER_URL ||
-          "http://localhost:4000";
+          import.meta.env.VITE_API_URL || "http://localhost:4000";
 
         try {
           // Step 1: Upload bundle to storage

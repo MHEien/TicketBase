@@ -1,6 +1,7 @@
 // Custom authentication implementation for NestJS backend integration
 // Maintains API compatibility with Better Auth while working directly with backend
 import Cookies from "js-cookie";
+import { setAuthServerFn, clearAuthServerFn } from "./auth-cookies";
 
 interface User {
   id: string;
@@ -56,16 +57,16 @@ const EXPIRES_AT_KEY = "auth_expires_at";
 
 // Get API base URL
 const getApiBaseUrl = () =>
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+  import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 // Secure token storage utilities
 class TokenStorage {
-  static setTokens(tokens: AuthTokens, user: User): void {
+  static async setTokens(tokens: AuthTokens, user: User): Promise<void> {
     if (typeof window === "undefined") return;
 
     const expiresAt = Math.floor(Date.now() / 1000) + tokens.expiresIn;
 
-    // Set cookies with secure attributes
+    // Set client-side cookies with secure attributes
     Cookies.set(ACCESS_TOKEN_KEY, tokens.accessToken, {
       secure: true,
       sameSite: "strict",
@@ -86,6 +87,25 @@ class TokenStorage {
       sameSite: "strict",
       expires: 7, // days
     });
+
+    // Also store in server-accessible cookies for SSR/server routes
+    try {
+      await setAuthServerFn({
+        data: {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          organizationId: user.organizationId,
+          expiresAt,
+        }
+      });
+    } catch (error) {
+      console.error("Failed to set server auth cookie:", error);
+      // Don't fail the entire login process if server cookie setting fails
+    }
   }
 
   static getAccessToken(): string | null {
@@ -118,13 +138,22 @@ class TokenStorage {
     return Date.now() / 1000 > expiresAt - 60;
   }
 
-  static clearTokens(): void {
+  static async clearTokens(): Promise<void> {
     if (typeof window === "undefined") return;
 
+    // Clear client-side cookies
     Cookies.remove(ACCESS_TOKEN_KEY);
     Cookies.remove(REFRESH_TOKEN_KEY);
     Cookies.remove(USER_DATA_KEY);
     Cookies.remove(EXPIRES_AT_KEY);
+
+    // Also clear server-accessible cookies
+    try {
+      await clearAuthServerFn();
+    } catch (error) {
+      console.error("Failed to clear server auth cookie:", error);
+      // Don't fail the entire logout process if server cookie clearing fails
+    }
   }
 
   static hasValidSession(): boolean {
@@ -153,7 +182,7 @@ class CustomAuth {
     try {
       console.log("Signing in with custom auth...");
 
-      const response = await fetch(`${getApiBaseUrl()}/auth/login`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -186,7 +215,7 @@ class CustomAuth {
         organizationId: data.organizationId,
       };
 
-      TokenStorage.setTokens(
+      await TokenStorage.setTokens(
         {
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
@@ -228,7 +257,7 @@ class CustomAuth {
       console.log("Signing out with custom auth...");
 
       // Clear cookies
-      TokenStorage.clearTokens();
+      await TokenStorage.clearTokens();
 
       // Optionally call backend logout endpoint
       const refreshToken = TokenStorage.getRefreshToken();
@@ -260,7 +289,7 @@ class CustomAuth {
     } catch (error) {
       console.error("Sign out error:", error);
       // Still clear tokens even if backend call fails
-      TokenStorage.clearTokens();
+      await TokenStorage.clearTokens();
 
       const redirectUrl = options?.callbackUrl || "/login";
       if (options?.redirect !== false) {
@@ -295,7 +324,7 @@ class CustomAuth {
       console.error("Token refresh failed:", response.status, errorText);
 
       // Clear invalid tokens
-      TokenStorage.clearTokens();
+      await TokenStorage.clearTokens();
       throw new Error("Token refresh failed");
     }
 
@@ -311,7 +340,7 @@ class CustomAuth {
     // Update stored tokens
     const user = TokenStorage.getUser();
     if (user) {
-      TokenStorage.setTokens(tokens, user);
+      await TokenStorage.setTokens(tokens, user);
     }
 
     return tokens;

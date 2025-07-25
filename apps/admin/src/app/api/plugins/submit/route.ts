@@ -264,7 +264,7 @@ export const ServerRoute = createServerFileRoute("/api/plugins/submit").methods(
 
         // Submit to the plugin server's marketplace endpoint
         const PLUGIN_SERVER_URL =
-          process.env.PLUGIN_SERVER_URL || "http://localhost:5000";
+          import.meta.env.VITE_PLUGIN_SERVER_URL || "http://localhost:5000";
 
         try {
           const response = await fetch(`${PLUGIN_SERVER_URL}/marketplace`, {

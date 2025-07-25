@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Save, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventBasicDetails } from "@/components/event-creation/event-basic-details";
 import { EventDateTime } from "@/components/event-creation/event-date-time";
@@ -14,6 +14,7 @@ import { EventMedia } from "@/components/event-creation/event-media";
 import { EventPreview } from "@/components/event-creation/event-preview";
 import { useToast } from "@/hooks/use-toast";
 import { useEventCreation } from "@/hooks/use-event-creation";
+import { createEvent, type CreateEventDto } from "@/lib/api/events-api";
 
 export const Route = createFileRoute("/admin/create-event/")({
   component: CreateEventPage,
@@ -23,6 +24,7 @@ function CreateEventPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
+  const [saving, setSaving] = useState(false);
   const { eventData, isValid, resetEventData } = useEventCreation();
 
   const steps = [
@@ -46,18 +48,66 @@ function CreateEventPage() {
     }
   };
 
-  const handleSave = () => {
-    // In a real app, this would save to a database
-    console.log("Saving event:", eventData);
+  const handleSave = async () => {
+    if (!isValid() || saving) return;
 
-    toast({
-      title: "Event Created",
-      description: `${eventData.title} has been created successfully.`,
-    });
+    try {
+      setSaving(true);
 
-    // Reset form and navigate back to dashboard
-    resetEventData();
-    router.navigate({ to: "/admin" });
+      // Transform the event data to match the API format
+      const createEventPayload: CreateEventDto = {
+        title: eventData.title,
+        description: eventData.description,
+        category: eventData.category,
+        startDate: eventData.startDate ? eventData.startDate.toISOString() : "",
+        endDate: eventData.endDate ? eventData.endDate.toISOString() : "",
+        startTime: eventData.startTime,
+        endTime: eventData.endTime,
+        timeZone: eventData.timeZone,
+        locationType: eventData.locationType,
+        venueName: eventData.venueName,
+        address: eventData.address,
+        city: eventData.city,
+        state: eventData.state,
+        zipCode: eventData.zipCode,
+        country: eventData.country,
+        virtualEventUrl: eventData.virtualEventUrl,
+        featuredImage: eventData.featuredImage,
+        galleryImages: eventData.galleryImages,
+        ticketTypes: eventData.ticketTypes.map((ticket) => ({
+          name: ticket.name,
+          description: ticket.description,
+          price: ticket.price,
+          quantity: ticket.quantity,
+        })),
+        visibility: "public", // Default to public
+      };
+
+      console.log("Creating event:", createEventPayload);
+
+      const createdEvent = await createEvent(createEventPayload);
+
+      toast({
+        title: "Event Created",
+        description: `${eventData.title} has been created successfully.`,
+      });
+
+      // Reset form and navigate back to dashboard
+      resetEventData();
+      router.navigate({ to: "/admin" });
+    } catch (error) {
+      console.error("Error creating event:", error);
+      toast({
+        title: "Error Creating Event",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create event. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -84,6 +134,7 @@ function CreateEventPage() {
               size="icon"
               onClick={() => router.navigate({ to: "/admin" })}
               className="rounded-full"
+              disabled={saving}
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -95,6 +146,7 @@ function CreateEventPage() {
               size="sm"
               onClick={handleCancel}
               className="gap-1 rounded-full"
+              disabled={saving}
             >
               <X className="h-4 w-4" />
               <span>Cancel</span>
@@ -103,11 +155,15 @@ function CreateEventPage() {
               variant="default"
               size="sm"
               onClick={handleSave}
-              disabled={!isValid()}
+              disabled={!isValid() || saving}
               className="gap-1 rounded-full"
             >
-              <Save className="h-4 w-4" />
-              <span>Save Event</span>
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              <span>{saving ? "Creating..." : "Save Event"}</span>
             </Button>
           </div>
         </div>
@@ -128,13 +184,13 @@ function CreateEventPage() {
                   }`}
                   onClick={() => {
                     // Only allow navigating to completed steps or the current step + 1
-                    if (index <= currentStep + 1) {
+                    if (index <= currentStep + 1 && !saving) {
                       setCurrentStep(index);
                     }
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  disabled={index > currentStep + 1}
+                  disabled={index > currentStep + 1 || saving}
                 >
                   <span className="text-sm font-medium">{index + 1}</span>
                   {index < currentStep && (
@@ -180,7 +236,7 @@ function CreateEventPage() {
           <Button
             variant="outline"
             onClick={handlePrevious}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 || saving}
             className="gap-1 rounded-full"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -191,6 +247,7 @@ function CreateEventPage() {
             <Button
               variant="default"
               onClick={handleNext}
+              disabled={saving}
               className="gap-1 rounded-full"
             >
               <span>Next</span>
@@ -200,11 +257,15 @@ function CreateEventPage() {
             <Button
               variant="default"
               onClick={handleSave}
-              disabled={!isValid()}
+              disabled={!isValid() || saving}
               className="gap-1 rounded-full"
             >
-              <Save className="h-4 w-4" />
-              <span>Create Event</span>
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              <span>{saving ? "Creating..." : "Create Event"}</span>
             </Button>
           )}
         </div>

@@ -109,7 +109,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
 
   // Create authenticated API client
   const createApiClient = () => {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
     const request = async (method: string, url: string, data?: any) => {
       const fullUrl = url.startsWith("http") ? url : `${baseURL}${url}`;
@@ -214,9 +214,9 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
       api: createApiClient(),
 
       env: {
-        API_URL: process.env.NEXT_PUBLIC_API_URL,
-        APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-        NODE_ENV: process.env.NODE_ENV,
+        API_URL: import.meta.env.VITE_API_URL,
+        APP_NAME: import.meta.env.VITE_APP_NAME,
+        NODE_ENV: import.meta.env.NODE_ENV,
       },
 
       navigation: {

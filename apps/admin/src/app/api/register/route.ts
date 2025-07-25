@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-start/server";
 
 // Configure API URL based on environment
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const apiBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const registerSchema = z.object({
   name: z.string().min(2),

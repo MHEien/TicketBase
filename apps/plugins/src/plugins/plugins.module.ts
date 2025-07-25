@@ -28,6 +28,7 @@ import {
 } from './schemas/plugin-config.schema';
 import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
 import { SecureConfigService } from './services/secure-config.service';
+import { PluginActionService } from './services/plugin-action.service';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { SecureConfigService } from './services/secure-config.service';
     BundleService,
     PluginStorageService,
     SecureConfigService,
+    PluginActionService,
   ],
   exports: [
     PluginsService,
@@ -67,6 +69,7 @@ import { SecureConfigService } from './services/secure-config.service';
     PluginEventBus,
     PluginStorageService,
     SecureConfigService,
+    PluginActionService,
   ],
 })
 export class PluginsModule {}

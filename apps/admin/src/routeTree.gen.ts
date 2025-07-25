@@ -17,6 +17,7 @@ import { Route as RegisterIndexRouteImport } from './app/register/index'
 import { Route as OnboardingIndexRouteImport } from './app/onboarding/index'
 import { Route as LoginIndexRouteImport } from './app/login/index'
 import { Route as AdminIndexRouteImport } from './app/admin/index'
+import { Route as AdminTestPuckRouteImport } from './app/admin/test-puck'
 import { Route as AdminUsersIndexRouteImport } from './app/admin/users/index'
 import { Route as AdminSettingsIndexRouteImport } from './app/admin/settings/index'
 import { Route as AdminEventsIndexRouteImport } from './app/admin/events/index'
@@ -31,6 +32,7 @@ import { Route as AdminEventsNewIndexRouteImport } from './app/admin/events/new/
 import { Route as AdminEventsIdIndexRouteImport } from './app/admin/events/$id/index'
 import { Route as AdminDepartmentsNewIndexRouteImport } from './app/admin/departments/new/index'
 import { Route as AdminDepartmentsIdIndexRouteImport } from './app/admin/departments/$id/index'
+import { Route as AdminPagesEditPageIdRouteImport } from './app/admin/pages/edit/$pageId'
 import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin/settings/plugins/submit/index'
 import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
@@ -73,6 +75,11 @@ const LoginIndexRoute = LoginIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminTestPuckRoute = AdminTestPuckRouteImport.update({
+  id: '/test-puck',
+  path: '/test-puck',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
@@ -148,6 +155,11 @@ const AdminDepartmentsIdIndexRoute = AdminDepartmentsIdIndexRouteImport.update({
   path: '/departments/$id/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminPagesEditPageIdRoute = AdminPagesEditPageIdRouteImport.update({
+  id: '/pages/edit/$pageId',
+  path: '/pages/edit/$pageId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminSettingsPluginsSubmitIndexRoute =
   AdminSettingsPluginsSubmitIndexRouteImport.update({
     id: '/settings/plugins/submit/',
@@ -216,6 +228,7 @@ const ApiOnboardingCompleteRouteServerRoute =
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/onboarding': typeof OnboardingRouteRouteWithChildren
+  '/admin/test-puck': typeof AdminTestPuckRoute
   '/admin/': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -228,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AdminEventsIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/admin/pages/edit/$pageId': typeof AdminPagesEditPageIdRoute
   '/admin/departments/$id': typeof AdminDepartmentsIdIndexRoute
   '/admin/departments/new': typeof AdminDepartmentsNewIndexRoute
   '/admin/events/$id': typeof AdminEventsIdIndexRoute
@@ -239,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings/plugins/submit': typeof AdminSettingsPluginsSubmitIndexRoute
 }
 export interface FileRoutesByTo {
+  '/admin/test-puck': typeof AdminTestPuckRoute
   '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -251,6 +266,7 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AdminEventsIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
+  '/admin/pages/edit/$pageId': typeof AdminPagesEditPageIdRoute
   '/admin/departments/$id': typeof AdminDepartmentsIdIndexRoute
   '/admin/departments/new': typeof AdminDepartmentsNewIndexRoute
   '/admin/events/$id': typeof AdminEventsIdIndexRoute
@@ -265,6 +281,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/admin': typeof AdminRouteRouteWithChildren
   '/onboarding': typeof OnboardingRouteRouteWithChildren
+  '/admin/test-puck': typeof AdminTestPuckRoute
   '/admin/': typeof AdminIndexRoute
   '/login/': typeof LoginIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -277,6 +294,7 @@ export interface FileRoutesById {
   '/admin/events/': typeof AdminEventsIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
+  '/admin/pages/edit/$pageId': typeof AdminPagesEditPageIdRoute
   '/admin/departments/$id/': typeof AdminDepartmentsIdIndexRoute
   '/admin/departments/new/': typeof AdminDepartmentsNewIndexRoute
   '/admin/events/$id/': typeof AdminEventsIdIndexRoute
@@ -292,6 +310,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/admin'
     | '/onboarding'
+    | '/admin/test-puck'
     | '/admin/'
     | '/login'
     | '/onboarding/'
@@ -304,6 +323,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/settings'
     | '/admin/users'
+    | '/admin/pages/edit/$pageId'
     | '/admin/departments/$id'
     | '/admin/departments/new'
     | '/admin/events/$id'
@@ -315,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/settings/plugins/submit'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/admin/test-puck'
     | '/admin'
     | '/login'
     | '/onboarding'
@@ -327,6 +348,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/settings'
     | '/admin/users'
+    | '/admin/pages/edit/$pageId'
     | '/admin/departments/$id'
     | '/admin/departments/new'
     | '/admin/events/$id'
@@ -340,6 +362,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/admin'
     | '/onboarding'
+    | '/admin/test-puck'
     | '/admin/'
     | '/login/'
     | '/onboarding/'
@@ -352,6 +375,7 @@ export interface FileRouteTypes {
     | '/admin/events/'
     | '/admin/settings/'
     | '/admin/users/'
+    | '/admin/pages/edit/$pageId'
     | '/admin/departments/$id/'
     | '/admin/departments/new/'
     | '/admin/events/$id/'
@@ -488,6 +512,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/test-puck': {
+      id: '/admin/test-puck'
+      path: '/test-puck'
+      fullPath: '/admin/test-puck'
+      preLoaderRoute: typeof AdminTestPuckRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/users/': {
       id: '/admin/users/'
       path: '/users'
@@ -586,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDepartmentsIdIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/pages/edit/$pageId': {
+      id: '/admin/pages/edit/$pageId'
+      path: '/pages/edit/$pageId'
+      fullPath: '/admin/pages/edit/$pageId'
+      preLoaderRoute: typeof AdminPagesEditPageIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/settings/plugins/submit/': {
       id: '/admin/settings/plugins/submit/'
       path: '/settings/plugins/submit'
@@ -671,6 +709,7 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminTestPuckRoute: typeof AdminTestPuckRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivityIndexRoute: typeof AdminActivityIndexRoute
   AdminAnalyticsIndexRoute: typeof AdminAnalyticsIndexRoute
@@ -680,6 +719,7 @@ interface AdminRouteRouteChildren {
   AdminEventsIndexRoute: typeof AdminEventsIndexRoute
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+  AdminPagesEditPageIdRoute: typeof AdminPagesEditPageIdRoute
   AdminDepartmentsIdIndexRoute: typeof AdminDepartmentsIdIndexRoute
   AdminDepartmentsNewIndexRoute: typeof AdminDepartmentsNewIndexRoute
   AdminEventsIdIndexRoute: typeof AdminEventsIdIndexRoute
@@ -692,6 +732,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminTestPuckRoute: AdminTestPuckRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminActivityIndexRoute: AdminActivityIndexRoute,
   AdminAnalyticsIndexRoute: AdminAnalyticsIndexRoute,
@@ -701,6 +742,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminEventsIndexRoute: AdminEventsIndexRoute,
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
+  AdminPagesEditPageIdRoute: AdminPagesEditPageIdRoute,
   AdminDepartmentsIdIndexRoute: AdminDepartmentsIdIndexRoute,
   AdminDepartmentsNewIndexRoute: AdminDepartmentsNewIndexRoute,
   AdminEventsIdIndexRoute: AdminEventsIdIndexRoute,
