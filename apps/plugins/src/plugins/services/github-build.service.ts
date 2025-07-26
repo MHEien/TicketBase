@@ -24,6 +24,7 @@ export class GitHubBuildService {
   private readonly githubToken: string;
   private readonly githubOwner: string;
   private readonly githubRepo: string;
+  private readonly githubBranch: string;
 
   constructor(private readonly configService: ConfigService) {
     this.githubToken = this.configService.get<string>('GITHUB_TOKEN');
@@ -39,7 +40,8 @@ export class GitHubBuildService {
 
     try {
       const workflowId = 'plugin-build.yml';
-      const ref = 'main'; // or 'master' depending on your default branch
+      // Use your current branch name instead of main
+      const ref = 'your-current-branch-name'; // Replace with your actual branch name
 
       const response = await axios.post(
         `https://api.github.com/repos/${this.githubOwner}/${this.githubRepo}/actions/workflows/${workflowId}/dispatches`,

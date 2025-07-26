@@ -625,10 +625,10 @@ export class PluginsService {
         this.logger.debug('📄 plugin.json content:', content);
         
         try {
-          pluginMetadata = JSON.parse(content);
+        pluginMetadata = JSON.parse(content);
           this.logger.debug('✅ plugin.json parsed successfully:', pluginMetadata);
-          pluginId = pluginMetadata.id;
-          version = pluginMetadata.version || version;
+        pluginId = pluginMetadata.id;
+        version = pluginMetadata.version || version;
         } catch (parseError) {
           this.logger.error('❌ Failed to parse plugin.json:', parseError);
           throw new BadRequestException('Invalid plugin.json format');
@@ -709,7 +709,7 @@ export class PluginsService {
       
       await this.githubBuildService.triggerBuild({
         pluginId,
-        sourceCode,
+            sourceCode,
         packageJson,
         callbackUrl,
       });
