@@ -29,6 +29,8 @@ import {
 import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
 import { SecureConfigService } from './services/secure-config.service';
 import { PluginActionService } from './services/plugin-action.service';
+import { GitHubBuildService } from './services/github-build.service';
+import { GitHubBuildController } from './github-build.controller';
 
 @Module({
   imports: [
@@ -53,6 +55,7 @@ import { PluginActionService } from './services/plugin-action.service';
     WebhookController,
     PluginBundleController, // This serves bundles directly from MinIO
     DebugController,
+    GitHubBuildController,
   ],
   providers: [
     PluginsService,
@@ -62,6 +65,7 @@ import { PluginActionService } from './services/plugin-action.service';
     PluginStorageService,
     SecureConfigService,
     PluginActionService,
+    GitHubBuildService,
   ],
   exports: [
     PluginsService,

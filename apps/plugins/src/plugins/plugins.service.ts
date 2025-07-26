@@ -18,6 +18,8 @@ import {
 import { BundleService } from './services/bundle.service';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { SecureConfigService } from './services/secure-config.service';
+import { GitHubBuildService } from './services/github-build.service';
+import { ConfigService } from '@nestjs/config';
 import * as JSZip from 'jszip';
 
 @Injectable()
@@ -33,6 +35,8 @@ export class PluginsService {
     private bundleService: BundleService,
     private pluginStorageService: PluginStorageService,
     private secureConfigService: SecureConfigService,
+    private githubBuildService: GitHubBuildService,
+    private configService: ConfigService,
   ) {}
 
   async findAll(): Promise<PluginDocument[]> {
@@ -587,9 +591,17 @@ export class PluginsService {
     try {
       // Extract ZIP contents
       this.logger.log(`Building plugin from ZIP: ${filename}`);
+      this.logger.debug('📦 ZIP file details:', {
+        filename,
+        bufferSize: zipBuffer?.length || 0,
+        bufferType: typeof zipBuffer,
+      });
+      
       if (!zipBuffer || zipBuffer.length === 0) {
         throw new BadRequestException('Invalid ZIP file provided');
       }
+      
+      this.logger.debug('🔍 Loading ZIP file with JSZip...');
       const zip = new JSZip();
       await zip.loadAsync(zipBuffer);
 
@@ -599,16 +611,31 @@ export class PluginsService {
         throw new BadRequestException('ZIP file is empty or invalid');
       }
 
+      const zipFiles = Object.keys(zip.files);
+      this.logger.log(`ZIP filenames: ${zipFiles}`);
+      this.logger.debug('📋 Detailed ZIP file list:', zipFiles);
+
       // Extract plugin.json for metadata
       const pluginJsonFile = zip.file('plugin.json');
       this.logger.log(`Found plugin.json: ${!!pluginJsonFile}`);
+      
       if (pluginJsonFile) {
+        this.logger.debug('📄 Reading plugin.json content...');
         const content = await pluginJsonFile.async('text');
-        pluginMetadata = JSON.parse(content);
-        pluginId = pluginMetadata.id;
-        version = pluginMetadata.version || version;
+        this.logger.debug('📄 plugin.json content:', content);
+        
+        try {
+          pluginMetadata = JSON.parse(content);
+          this.logger.debug('✅ plugin.json parsed successfully:', pluginMetadata);
+          pluginId = pluginMetadata.id;
+          version = pluginMetadata.version || version;
+        } catch (parseError) {
+          this.logger.error('❌ Failed to parse plugin.json:', parseError);
+          throw new BadRequestException('Invalid plugin.json format');
+        }
       } else {
         // Generate plugin ID from filename
+        this.logger.debug('🔧 No plugin.json found, generating plugin ID from filename');
         pluginId = filename
           .replace('.zip', '')
           .toLowerCase()
@@ -621,75 +648,104 @@ export class PluginsService {
       let sourceCode = '';
       const possibleEntryPoints = ['src/index.tsx', 'src/index.ts', 'index.tsx', 'index.ts'];
       
+      this.logger.debug('🔍 Looking for entry point files:', possibleEntryPoints);
+      
       for (const entryPoint of possibleEntryPoints) {
         const sourceFile = zip.file(entryPoint);
+        this.logger.debug(`Checking for ${entryPoint}: ${!!sourceFile}`);
+        
         if (sourceFile) {
+          this.logger.debug(`📄 Found entry point: ${entryPoint}`);
           sourceCode = await sourceFile.async('text');
+          this.logger.debug(`📄 Entry point content length: ${sourceCode.length}`);
+          this.logger.debug(`📄 Entry point preview: ${sourceCode.substring(0, 200)}...`);
           break;
         }
       }
+      
       this.logger.log(`Found entry point source code: ${!!sourceCode}`);
 
       if (!sourceCode) {
+        this.logger.error('❌ No entry point found in ZIP:', {
+          checkedFiles: possibleEntryPoints,
+          availableFiles: zipFiles,
+        });
         throw new Error('No entry point found (src/index.tsx, src/index.ts, index.tsx, or index.ts)');
       }
 
       // Validate plugin structure
+      this.logger.debug('🔍 Validating plugin structure...');
       const isValid = await this.bundleService.validatePluginStructure(sourceCode);
       if (!isValid) {
+        this.logger.error('❌ Plugin structure validation failed');
         throw new BadRequestException('Invalid plugin structure');
       }
       this.logger.log(`Plugin structure validated for ${pluginId}`);
 
-      // Generate bundle using existing BundleService
-      const bundleBuffer = await this.bundleService.generateBundleBuffer(pluginId, sourceCode);
-      this.logger.log(`Generated bundle for ${pluginId} (${bundleBuffer.length} bytes)`);
-      // Store bundle in MinIO
-      const bundleUrl = await this.pluginStorageService.storePluginBundle(
-        pluginId,
-        version,
-        bundleBuffer,
-        'application/javascript',
-      );
-      this.logger.log(`Stored bundle at ${bundleUrl}`);
-
-      // Analyze bundle for extension points
-      const { extensionPoints, metadata } = await this.bundleService.analyzeBundle(sourceCode);
-      this.logger.log(`Analyzed extension points: ${extensionPoints.join(', ')}`);
-
-      // Create plugin metadata if we have it
-      if (pluginMetadata) {
-        try {
-          await this.createPlugin(
-            pluginMetadata.id,
-            pluginMetadata.name || pluginMetadata.displayName,
-            pluginMetadata.version,
-            pluginMetadata.description,
-            pluginMetadata.category,
-            sourceCode,
-            pluginMetadata.requiredPermissions || [],
-            bundleUrl,
-            extensionPoints,
-            pluginMetadata.configSchema,
-          );
-
-          this.logger.log(`✅ Plugin metadata created automatically for ${pluginId}`);
-        } catch (error) {
-          this.logger.warn(`Plugin bundle created but metadata creation failed: ${error.message}`);
-        }
+      // Extract package.json for GitHub Actions build
+      let packageJson = '';
+      const packageJsonFile = zip.file('package.json');
+      if (packageJsonFile) {
+        packageJson = await packageJsonFile.async('text');
+        this.logger.debug('📦 Found package.json for GitHub Actions build');
+      } else {
+        // Create a minimal package.json if none exists
+        packageJson = JSON.stringify({
+          name: pluginId,
+          version: version,
+          type: 'module',
+          scripts: {
+            build: 'bun build src/index.tsx --outdir dist --format esm --external react --external react-dom --minify'
+          },
+          dependencies: {},
+          devDependencies: {}
+        }, null, 2);
+        this.logger.debug('📦 Created minimal package.json for GitHub Actions build');
       }
-      // Return build result
-      this.logger.log(`Plugin ${pluginId} v${version} built successfully`);
 
+      // Trigger GitHub Actions build
+      this.logger.debug('🚀 Triggering GitHub Actions build...');
+      const callbackUrl = `${this.configService.get('APP_URL', 'http://localhost:4000')}/github-build/callback`;
+      
+      await this.githubBuildService.triggerBuild({
+        pluginId,
+        sourceCode,
+        packageJson,
+        callbackUrl,
+      });
+
+      this.logger.log(`✅ GitHub Actions build triggered for ${pluginId}`);
+      
+      // For now, return a placeholder response since the actual bundle will come via callback
+      // In a real implementation, you might want to implement a polling mechanism or webhook handling
       return {
         pluginId,
         version,
-        bundleUrl,
-        bundleSize: bundleBuffer.length,
-        metadata: pluginMetadata || { id: pluginId, extensionPoints, metadata },
+        bundleUrl: `pending://${pluginId}`, // Placeholder URL
+        bundleSize: 0, // Will be updated when bundle is received
+        metadata: pluginMetadata || { id: pluginId, extensionPoints: [], metadata: {} },
       };
     } catch (error) {
       this.logger.error(`Failed to build plugin from ZIP: ${error.message}`);
+      this.logger.error('Build error details:', {
+        error: error.message,
+        errorStack: error.stack,
+        errorName: error.name,
+        errorCode: error.code,
+        filename,
+      });
+      
+      // Log additional error details if available
+      if (error.stderr) {
+        this.logger.error('🔍 Build stderr output:', error.stderr);
+      }
+      if (error.stdout) {
+        this.logger.error('🔍 Build stdout output:', error.stdout);
+      }
+      if (error.cmd) {
+        this.logger.error('🔍 Failed command:', error.cmd);
+      }
+      
       throw new BadRequestException(`Failed to build plugin: ${error.message}`);
     }
   }

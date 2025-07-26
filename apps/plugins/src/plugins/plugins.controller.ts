@@ -525,10 +525,13 @@ export class PluginsController {
     logger.debug('🔄 Starting plugin build process:', {
       filename: file.originalname,
       fileSize: file.size,
+      mimetype: file.mimetype,
+      encoding: file.encoding,
     });
 
     try {
       // Use the BundleService to extract, build, and store the plugin
+      logger.debug('📦 Calling buildPluginFromZip service...');
       const result = await this.pluginsService.buildPluginFromZip(
         file.buffer,
         file.originalname,
@@ -541,6 +544,8 @@ export class PluginsController {
         pluginId: result.pluginId,
         buildTime,
         bundleUrl: result.bundleUrl,
+        bundleSize: result.bundleSize,
+        metadata: result.metadata,
       });
 
       return {
@@ -557,11 +562,27 @@ export class PluginsController {
         },
       };
     } catch (error) {
+      const buildTime = Date.now() - startTime;
+      
       logger.error('❌ Plugin build failed:', {
         filename: file.originalname,
         error: error.message,
-        buildTime: Date.now() - startTime,
+        errorStack: error.stack,
+        buildTime,
+        errorName: error.name,
+        errorCode: error.code,
       });
+
+      // Log additional error details if available
+      if (error.stderr) {
+        logger.error('🔍 Build stderr output:', error.stderr);
+      }
+      if (error.stdout) {
+        logger.error('🔍 Build stdout output:', error.stdout);
+      }
+      if (error.cmd) {
+        logger.error('🔍 Failed command:', error.cmd);
+      }
 
       throw new BadRequestException(
         `Failed to build plugin: ${error.message}`,
