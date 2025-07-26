@@ -488,7 +488,7 @@ export function PluginSettings({ pluginId, onClose }: PluginSettingsProps) {
         </Card>
 
         {/* Development Debug Card */}
-        {process.env.NODE_ENV === "development" && (
+        {import.meta.env.NODE_ENV === "development" && (
           <Card className="border-dashed">
             <CardHeader>
               <CardTitle className="text-sm">Debug Information</CardTitle>

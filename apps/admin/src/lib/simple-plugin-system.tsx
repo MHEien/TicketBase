@@ -293,7 +293,7 @@ export const ExtensionPoint: React.FC<ExtensionPointProps> = ({
     <>
       {components.map(({ pluginId, component: Component }) => {
         // Debug log the context being passed to plugin components
-        if (process.env.NODE_ENV === "development") {
+        if (import.meta.env.NODE_ENV === "development") {
           console.log(
             `🔧 Passing context to plugin "${pluginId}" for extension point "${name}":`,
             context,

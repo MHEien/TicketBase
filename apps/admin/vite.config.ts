@@ -3,15 +3,17 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import react from "@vitejs/plugin-react";
+import { loadEnv } from "vite";
+import react from '@vitejs/plugin-react';
 
-export default defineConfig(() => {
+export default defineConfig(({ mode, command }) => {
+  const env = loadEnv(mode, "../../", "VITE_");
   return {
+    envDir: "../../",
     server: {
-      port: 3000,
+      port: Number(env.VITE_ADMIN_PORT),
     },
     plugins: [
-      react(),
       tailwindcss(),
       tsconfigPaths(),
       tanstackStart({
@@ -19,7 +21,9 @@ export default defineConfig(() => {
         tsr: {
           routesDirectory: "src/app",
         },
+        customViteReactPlugin: true,
       }),
+      react(),
     ],
     build: {
       target: "esnext",

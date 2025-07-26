@@ -321,7 +321,7 @@ const PluginSettingsContent = () => {
         </Card>
 
         {/* Development Debug Card (only show in development) */}
-        {process.env.NODE_ENV === "development" && (
+        {import.meta.env.NODE_ENV === "development" && (
           <Card>
             <CardHeader>
               <CardTitle className="text-sm">Debug Information</CardTitle>

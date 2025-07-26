@@ -1,10 +1,21 @@
 import axios from "axios";
 import { getSession } from "@/lib/auth-client";
 import { handleTokenRefreshFailure, isTokenRefreshError } from "../auth-utils";
+import { getAuthServerFn, getAuthFromClientCookie } from "../auth-cookies";
 
-// Create axios instance with base URL from environment variable
+// Helper function to get the correct API base URL for the environment
+function getApiBaseUrl(): string {
+  // For server-side, use environment variable or default
+  if (typeof window === "undefined") {
+    return process.env.VITE_API_URL || process.env.API_URL || "http://localhost:4000";
+  }
+  // For client-side, use Vite environment variable
+  return import.meta.env.VITE_API_URL || "http://localhost:4000";
+}
+
+// Create axios instance with base URL
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+  baseURL: getApiBaseUrl(),
   headers: {
     "Content-Type": "application/json",
   },
@@ -21,8 +32,75 @@ const noRedirectPaths = [
 function debugLog(operation: string, details: any) {
   console.group(`🌐 API Client Debug: ${operation}`);
   console.log("Timestamp:", new Date().toISOString());
+  console.log("Environment:", typeof window === "undefined" ? "server" : "client");
   console.log("Details:", details);
   console.groupEnd();
+}
+
+// Helper function to get auth headers for both server and client environments
+async function getAuthHeaders(): Promise<{ Authorization?: string }> {
+  let accessToken: string | null = null;
+
+  // Server-side: Try to get auth from server cookie first
+  if (typeof window === "undefined") {
+    try {
+      const authData = await getAuthServerFn();
+      accessToken = authData?.accessToken || null;
+      
+      debugLog("Server Auth Check", {
+        hasAuthData: !!authData,
+        hasAccessToken: !!authData?.accessToken,
+        userId: authData?.userId,
+        tokenLength: authData?.accessToken?.length,
+      });
+    } catch (error) {
+      console.error("Error getting auth from server cookie:", error);
+    }
+  } else {
+    // Client-side: Try to get session from existing auth client
+    try {
+      const session = await getSession();
+      accessToken = session?.accessToken || null;
+
+      debugLog("Client Auth Check", {
+        sessionExists: !!session,
+        hasAccessToken: !!session?.accessToken,
+        user: session?.user
+          ? {
+              id: session.user.id,
+              email: session.user.email,
+              name: session.user.name,
+            }
+          : null,
+      });
+
+      // Fallback to client cookie if session doesn't have token
+      if (!accessToken) {
+        accessToken = getAuthFromClientCookie();
+        
+        debugLog("Client Cookie Fallback", {
+          hasToken: !!accessToken,
+          tokenLength: accessToken?.length,
+        });
+      }
+    } catch (error) {
+      console.error("Error getting auth from client session:", error);
+      
+      // Final fallback to client cookie
+      try {
+        accessToken = getAuthFromClientCookie();
+        
+        debugLog("Client Cookie Final Fallback", {
+          hasToken: !!accessToken,
+          tokenLength: accessToken?.length,
+        });
+      } catch (cookieError) {
+        console.error("Error getting auth from client cookie:", cookieError);
+      }
+    }
+  }
+
+  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
 }
 
 // Add request interceptor to include auth token and debug logging
@@ -34,50 +112,25 @@ apiClient.interceptors.request.use(
       url: config.url,
       baseURL: config.baseURL,
       fullURL: `${config.baseURL}${config.url}`,
-      headers: {
-        ...config.headers,
-        // Don't log the actual auth token for security
-        Authorization: config.headers.Authorization ? "[REDACTED]" : undefined,
-      },
-      data: config.data,
+      environment: typeof window === "undefined" ? "server" : "client",
     });
 
-    // Try to get the session
-    const session = await getSession();
+    // Get auth headers for the current environment
+    const authHeaders = await getAuthHeaders();
 
-    debugLog("Session Check", {
-      sessionExists: !!session,
-      sessionKeys: session ? Object.keys(session) : [],
-      hasAccessToken: !!session?.accessToken,
-      user: session?.user
-        ? {
-            id: session.user.id,
-            email: session.user.email,
-            name: session.user.name,
-          }
-        : null,
-    });
-
-    // If we have a session with an access token, add it to the headers
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    // Add auth headers if available
+    if (authHeaders.Authorization) {
+      config.headers.Authorization = authHeaders.Authorization;
 
       debugLog("Auth Token Added", {
         hasToken: true,
-        tokenLength: session.accessToken.length,
-        tokenPreview: session.accessToken.substring(0, 20) + "...",
+        tokenPreview: authHeaders.Authorization.substring(0, 20) + "...",
+        environment: typeof window === "undefined" ? "server" : "client",
       });
     } else {
       debugLog("Auth Token Missing", {
         hasToken: false,
-        sessionExists: !!session,
-        sessionData: session
-          ? {
-              keys: Object.keys(session),
-              hasUser: !!session.user,
-              hasAccessToken: !!session.accessToken,
-            }
-          : null,
+        environment: typeof window === "undefined" ? "server" : "client",
       });
     }
 
@@ -105,7 +158,7 @@ apiClient.interceptors.response.use(
       dataLength: Array.isArray(response.data)
         ? response.data.length
         : undefined,
-      headers: response.headers,
+      environment: typeof window === "undefined" ? "server" : "client",
     });
 
     return response;
@@ -119,7 +172,7 @@ apiClient.interceptors.response.use(
       method: error.config?.method?.toUpperCase(),
       errorMessage: error.message,
       responseData: error.response?.data,
-      responseHeaders: error.response?.headers,
+      environment: typeof window === "undefined" ? "server" : "client",
     });
 
     // Check if the request URL is in the noRedirectPaths list
@@ -128,22 +181,22 @@ apiClient.interceptors.response.use(
       (path) => requestPath && requestPath.includes(path),
     );
 
-    // Check if this is a token refresh error
+    // Check if this is a token refresh error (only handle on client-side)
     if (
       error.response?.status === 401 &&
       isTokenRefreshError(error.response?.data) &&
-      shouldRedirect
+      shouldRedirect &&
+      typeof window !== "undefined" // Only handle redirects on client-side
     ) {
       debugLog("Token Refresh Error", {
         shouldRedirect,
         requestPath,
         responseData: error.response?.data,
+        environment: "client",
       });
 
       // Handle token refresh failure by logging out and redirecting
-      if (typeof window !== "undefined") {
-        await handleTokenRefreshFailure(error);
-      }
+      await handleTokenRefreshFailure(error);
     }
     return Promise.reject(error);
   },

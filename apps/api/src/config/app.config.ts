@@ -16,8 +16,8 @@ export default () => ({
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'refresh-secret-key',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '604800', // 7 days in seconds
   },
-  nextAuth: {
-    secret: process.env.NEXTAUTH_SECRET || 'nextauth-secret-key',
+  auth: {
+    secret: process.env.AUTH_SECRET || 'nextauth-secret-key',
   },
   plugins: {
     serverUrl: process.env.PLUGIN_SERVER_URL || 'http://localhost:5000',

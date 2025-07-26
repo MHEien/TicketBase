@@ -22,7 +22,7 @@ export function ExtensionPoint({
   };
 
   // Debug log in development
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.NODE_ENV === "development") {
     console.log(`🔧 ExtensionPoint "${name}" context:`, extensionContext);
   }
 
