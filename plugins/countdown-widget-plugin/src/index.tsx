@@ -246,7 +246,8 @@ const countdownWidgetDefinition: PuckWidgetDefinition = createPuckWidget({
 // ADMIN SETTINGS COMPONENT
 // =============================================================================
 
-const AdminSettings = createExtensionPoint<AdminSettingsContext>(({ context, sdk }) => {
+const AdminSettings = createExtensionPoint<AdminSettingsContext>((props) => {
+  const sdk = usePlatformSDK();
   const { config, saveConfig, loading } = usePluginConfig('countdown-widget');
   const [settings, setSettings] = sdk.hooks.useState(config || {
     defaultDuration: 7,

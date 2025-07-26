@@ -85,10 +85,7 @@ export default function PluginUploadInterface() {
         setUploadProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
 
-      const file = new File([sourceFile], sourceFile.name, { type: sourceFile.type });
-      formData.append("plugin", file);
-
-      const result = await uploadPluginBuild(file);
+      const result = await uploadPluginBuild(sourceFile);
 
       clearInterval(progressInterval);
       setUploadProgress(100);

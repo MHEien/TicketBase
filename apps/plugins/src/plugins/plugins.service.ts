@@ -634,6 +634,25 @@ export class PluginsService {
         throw new Error('No entry point found (src/index.tsx, src/index.ts, index.tsx, or index.ts)');
       }
 
+      // Extract additional config files
+      const extractedFiles = new Map<string, string>();
+      
+      // Extract package.json if it exists
+      const packageJsonFile = zip.file('package.json');
+      if (packageJsonFile) {
+        const packageJsonContent = await packageJsonFile.async('text');
+        extractedFiles.set('package.json', packageJsonContent);
+        this.logger.log('Found package.json in ZIP');
+      }
+
+      // Extract tsconfig.json if it exists
+      const tsconfigFile = zip.file('tsconfig.json');
+      if (tsconfigFile) {
+        const tsconfigContent = await tsconfigFile.async('text');
+        extractedFiles.set('tsconfig.json', tsconfigContent);
+        this.logger.log('Found tsconfig.json in ZIP');
+      }
+
       // Validate plugin structure
       const isValid = await this.bundleService.validatePluginStructure(sourceCode);
       if (!isValid) {
@@ -641,8 +660,8 @@ export class PluginsService {
       }
       this.logger.log(`Plugin structure validated for ${pluginId}`);
 
-      // Generate bundle using existing BundleService
-      const bundleBuffer = await this.bundleService.generateBundleBuffer(pluginId, sourceCode);
+      // Generate bundle using existing BundleService with extracted files
+      const bundleBuffer = await this.bundleService.generateBundleBuffer(pluginId, sourceCode, extractedFiles);
       this.logger.log(`Generated bundle for ${pluginId} (${bundleBuffer.length} bytes)`);
       // Store bundle in MinIO
       const bundleUrl = await this.pluginStorageService.storePluginBundle(

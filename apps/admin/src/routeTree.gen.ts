@@ -37,7 +37,6 @@ import { Route as AdminSettingsPluginsSubmitIndexRouteImport } from './app/admin
 import { Route as AdminSettingsPluginsIdIndexRouteImport } from './app/admin/settings/plugins/$id/index'
 import { Route as AdminEventsIdEditIndexRouteImport } from './app/admin/events/$id/edit/index'
 import { ServerRoute as ApiRegisterRouteServerRouteImport } from './app/api/register/route'
-import { ServerRoute as ApiPluginsUploadRouteServerRouteImport } from './app/api/plugins/upload/route'
 import { ServerRoute as ApiPluginsSubmitRouteServerRouteImport } from './app/api/plugins/submit/route'
 import { ServerRoute as ApiPluginsGithubRouteServerRouteImport } from './app/api/plugins/github/route'
 import { ServerRoute as ApiOrganizationsSettingsRouteServerRouteImport } from './app/api/organizations/settings/route'
@@ -182,12 +181,6 @@ const ApiRegisterRouteServerRoute = ApiRegisterRouteServerRouteImport.update({
   path: '/api/register',
   getParentRoute: () => rootServerRouteImport,
 } as any)
-const ApiPluginsUploadRouteServerRoute =
-  ApiPluginsUploadRouteServerRouteImport.update({
-    id: '/api/plugins/upload',
-    path: '/api/plugins/upload',
-    getParentRoute: () => rootServerRouteImport,
-  } as any)
 const ApiPluginsSubmitRouteServerRoute =
   ApiPluginsSubmitRouteServerRouteImport.update({
     id: '/api/plugins/submit',
@@ -401,7 +394,6 @@ export interface FileServerRoutesByFullPath {
   '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
   '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
   '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
-  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/register': typeof ApiRegisterRouteServerRoute
@@ -411,7 +403,6 @@ export interface FileServerRoutesByTo {
   '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
   '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
   '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
-  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
@@ -422,7 +413,6 @@ export interface FileServerRoutesById {
   '/api/organizations/settings': typeof ApiOrganizationsSettingsRouteServerRoute
   '/api/plugins/github': typeof ApiPluginsGithubRouteServerRoute
   '/api/plugins/submit': typeof ApiPluginsSubmitRouteServerRoute
-  '/api/plugins/upload': typeof ApiPluginsUploadRouteServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
@@ -434,7 +424,6 @@ export interface FileServerRouteTypes {
     | '/api/organizations/settings'
     | '/api/plugins/github'
     | '/api/plugins/submit'
-    | '/api/plugins/upload'
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
     | '/api/register'
@@ -444,7 +433,6 @@ export interface FileServerRouteTypes {
     | '/api/organizations/settings'
     | '/api/plugins/github'
     | '/api/plugins/submit'
-    | '/api/plugins/upload'
   id:
     | '__root__'
     | '/api/register'
@@ -454,7 +442,6 @@ export interface FileServerRouteTypes {
     | '/api/organizations/settings'
     | '/api/plugins/github'
     | '/api/plugins/submit'
-    | '/api/plugins/upload'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
@@ -465,7 +452,6 @@ export interface RootServerRouteChildren {
   ApiOrganizationsSettingsRouteServerRoute: typeof ApiOrganizationsSettingsRouteServerRoute
   ApiPluginsGithubRouteServerRoute: typeof ApiPluginsGithubRouteServerRoute
   ApiPluginsSubmitRouteServerRoute: typeof ApiPluginsSubmitRouteServerRoute
-  ApiPluginsUploadRouteServerRoute: typeof ApiPluginsUploadRouteServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -656,13 +642,6 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiRegisterRouteServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
-    '/api/plugins/upload': {
-      id: '/api/plugins/upload'
-      path: '/api/plugins/upload'
-      fullPath: '/api/plugins/upload'
-      preLoaderRoute: typeof ApiPluginsUploadRouteServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
     '/api/plugins/submit': {
       id: '/api/plugins/submit'
       path: '/api/plugins/submit'
@@ -790,7 +769,6 @@ const rootServerRouteChildren: RootServerRouteChildren = {
     ApiOrganizationsSettingsRouteServerRoute,
   ApiPluginsGithubRouteServerRoute: ApiPluginsGithubRouteServerRoute,
   ApiPluginsSubmitRouteServerRoute: ApiPluginsSubmitRouteServerRoute,
-  ApiPluginsUploadRouteServerRoute: ApiPluginsUploadRouteServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)

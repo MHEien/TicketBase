@@ -257,17 +257,15 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
     [session, status, router, toast],
   );
 
-  // Make SDK and React globally available for plugins
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      console.log("🔧 Setting up global React and PluginSDK...");
+  // IMMEDIATE SETUP: Make SDK and React globally available for plugins
+  // This needs to happen synchronously, not in useEffect
+  if (typeof window !== "undefined") {
+    console.log("🔧 Setting up global React and PluginSDK immediately...");
 
-      // CRITICAL: Validate React first
-      if (!React || !React.useState || !React.useEffect) {
-        console.error("❌ React or React hooks not available in provider");
-        return;
-      }
-
+    // CRITICAL: Validate React first
+    if (!React || !React.useState || !React.useEffect) {
+      console.error("❌ React or React hooks not available in provider");
+    } else {
       // Create a robust React instance with thorough validation
       const ReactWithHooks = {
         // Copy all React properties first
@@ -289,73 +287,17 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
         PureComponent: React.PureComponent,
       };
 
-      // Validate each hook individually
-      const hooks = [
-        "useState",
-        "useEffect",
-        "useCallback",
-        "useMemo",
-        "useContext",
-        "useReducer",
-        "useRef",
-      ];
-      const missingHooks = hooks.filter(
-        (hook) =>
-          typeof ReactWithHooks[hook as keyof typeof ReactWithHooks] !==
-          "function",
-      );
-
-      if (missingHooks.length > 0) {
-        console.error("❌ Missing React hooks:", missingHooks);
-        console.error("Available React properties:", Object.keys(React));
-        return;
-      }
-
-      console.log("✅ All React hooks validated successfully");
-      console.log(
-        "React hook types:",
-        hooks.map(
-          (hook) =>
-            `${hook}: ${typeof ReactWithHooks[hook as keyof typeof ReactWithHooks]}`,
-        ),
-      );
-
-      // Make React available globally with comprehensive validation
+      // Make React and SDK available globally immediately
       (window as any).React = ReactWithHooks;
       window.PluginSDK = pluginSDK;
 
-      // Final validation that global React is working
-      try {
-        const testState = (window as any).React.useState;
-        if (typeof testState !== "function") {
-          throw new Error("Global React.useState is not a function");
-        }
-        console.log("✅ Global React validation passed");
-      } catch (error) {
-        console.error("❌ Global React validation failed:", error);
-      }
+      console.log("✅ Global React and PluginSDK set up immediately");
+    }
+  }
 
-      // Validate that React hooks are properly available globally
-      const globalReact = (window as any).React;
-      if (!globalReact || !globalReact.useState || !globalReact.useEffect) {
-        console.error(
-          "❌ React hooks not properly available in global scope after assignment",
-        );
-        console.error("Global React:", globalReact);
-        console.error(
-          "Global React keys:",
-          globalReact ? Object.keys(globalReact) : "React is null",
-        );
-      } else {
-        console.log("✅ React and hooks are properly available globally");
-        console.log("Global React hook validation:", {
-          useState: typeof globalReact.useState,
-          useEffect: typeof globalReact.useEffect,
-          useCallback: typeof globalReact.useCallback,
-          useMemo: typeof globalReact.useMemo,
-        });
-      }
-
+  // Additional setup in useEffect for non-critical features
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
       // Create a plugin registry if it doesn't exist
       if (!(window as any).__PLUGIN_REGISTRY) {
         (window as any).__PLUGIN_REGISTRY = {
@@ -372,7 +314,7 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
         console.log("✅ Plugin registry created");
       }
 
-      // Additional debugging for plugin development
+      // Final validation
       console.log("🔧 Plugin development environment ready:", {
         hasReact: !!(window as any).React,
         hasPluginSDK: !!window.PluginSDK,
