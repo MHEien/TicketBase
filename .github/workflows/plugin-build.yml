@@ -18,7 +18,8 @@ on:
 
 jobs:
   build-plugin:
-    runs-on: self-hosted
+    runs-on: [self-hosted, windows, x64]
+    
     
     steps:
     - name: Checkout code
