@@ -55,15 +55,16 @@ export class BundleService {
 
     // Create a temporary directory for processing
     const tempDir = await this.createTempDirectory();
+    this.logger.log(`Created temporary directory: ${tempDir}`);
     const pluginDir = path.join(tempDir, 'plugin');
-
+    this.logger.log(`Using plugin directory: ${pluginDir}`);
     try {
       // Set up a minimal project structure
       await this.setupPluginProject(pluginDir, sourceCode);
-
+      this.logger.log(`Plugin project structure set up at: ${pluginDir}`);
       // Bundle the code
-      await this.bundlePlugin(pluginDir);
-
+      const response = await this.bundlePlugin(pluginDir);
+      console.log('Bundling result:', response);
       // Read the bundle
       const bundlePath = path.join(pluginDir, 'dist', 'bundle.js');
       const bundleContent = await fs.promises.readFile(bundlePath);
@@ -71,6 +72,7 @@ export class BundleService {
       return bundleContent;
     } finally {
       // Clean up temp directory
+      this.logger.log(`Cleaning up temporary directory: ${tempDir}`);
       await this.cleanupTempDirectory(tempDir);
     }
   }
@@ -179,10 +181,15 @@ export class BundleService {
       private: true,
       scripts: {
         build:
-          'esbuild src/index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --jsx=automatic --target=es2020',
+          'tsc && esbuild src/index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --jsx=automatic --target=es2020 --external:react --external:react-dom',
       },
       dependencies: {
         esbuild: '^0.19.2',
+        typescript: '^5.0.0',
+      },
+      devDependencies: {
+        '@types/react': '^19.0.8',
+        '@types/react-dom': '^19.0.3',
       },
     };
 
@@ -190,16 +197,46 @@ export class BundleService {
       path.join(pluginDir, 'package.json'),
       JSON.stringify(packageJson, null, 2),
     );
+
+    // Create tsconfig.json
+    const tsConfig = {
+      compilerOptions: {
+        target: 'ES2020',
+        lib: ['ES2020', 'DOM', 'DOM.Iterable'],
+        allowJs: true,
+        skipLibCheck: true,
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+        strict: true,
+        forceConsistentCasingInFileNames: true,
+        module: 'ESNext',
+        moduleResolution: 'node',
+        resolveJsonModule: true,
+        isolatedModules: true,
+        noEmit: true,
+        jsx: 'react-jsx',
+        declaration: true,
+        outDir: 'dist',
+        baseUrl: '.',
+      },
+      include: ['src/**/*'],
+      exclude: ['node_modules', 'dist'],
+    };
+
+    await fs.promises.writeFile(
+      path.join(pluginDir, 'tsconfig.json'),
+      JSON.stringify(tsConfig, null, 2),
+    );
   }
 
   private async bundlePlugin(pluginDir: string): Promise<void> {
     // Install dependencies
-    await execPromise('npm install', { cwd: pluginDir });
+    await execPromise('bun install', { cwd: pluginDir });
 
     // Create dist directory
     await fs.promises.mkdir(path.join(pluginDir, 'dist'), { recursive: true });
 
     // Bundle the plugin
-    await execPromise('npm run build', { cwd: pluginDir });
+    await execPromise('bun run build', { cwd: pluginDir });
   }
 }

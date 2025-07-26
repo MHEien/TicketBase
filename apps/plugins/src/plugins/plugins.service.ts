@@ -18,6 +18,7 @@ import {
 import { BundleService } from './services/bundle.service';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { SecureConfigService } from './services/secure-config.service';
+import * as JSZip from 'jszip';
 
 @Injectable()
 export class PluginsService {
@@ -561,6 +562,136 @@ export class PluginsService {
    */
   async getPluginRatings(pluginId: string): Promise<PluginRatingDocument[]> {
     return this.pluginRatingModel.find({ pluginId }).exec();
+  }
+
+  /**
+   * Build plugin from ZIP file containing source code
+   * @param zipBuffer - ZIP file buffer containing plugin source
+   * @param filename - Original filename
+   * @returns Plugin build result with bundle URL and metadata
+   */
+  async buildPluginFromZip(
+    zipBuffer: Buffer,
+    filename: string,
+  ): Promise<{
+    pluginId: string;
+    version: string;
+    bundleUrl: string;
+    bundleSize: number;
+    metadata: any;
+  }> {
+    let pluginMetadata: any = null;
+    let pluginId: string;
+    let version = '1.0.0';
+
+    try {
+      // Extract ZIP contents
+      this.logger.log(`Building plugin from ZIP: ${filename}`);
+      if (!zipBuffer || zipBuffer.length === 0) {
+        throw new BadRequestException('Invalid ZIP file provided');
+      }
+      const zip = new JSZip();
+      await zip.loadAsync(zipBuffer);
+
+      this.logger.log(`Extracting ZIP contents for ${filename}`);
+      // Check for plugin.json metadata
+      if (!zip.files || Object.keys(zip.files).length === 0) {
+        throw new BadRequestException('ZIP file is empty or invalid');
+      }
+
+      // Extract plugin.json for metadata
+      const pluginJsonFile = zip.file('plugin.json');
+      this.logger.log(`Found plugin.json: ${!!pluginJsonFile}`);
+      if (pluginJsonFile) {
+        const content = await pluginJsonFile.async('text');
+        pluginMetadata = JSON.parse(content);
+        pluginId = pluginMetadata.id;
+        version = pluginMetadata.version || version;
+      } else {
+        // Generate plugin ID from filename
+        pluginId = filename
+          .replace('.zip', '')
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, '-');
+      }
+
+      this.logger.log(`Using plugin ID: ${pluginId}, version: ${version}`);
+
+      // Extract source code (look for src/index.tsx or src/index.ts)
+      let sourceCode = '';
+      const possibleEntryPoints = ['src/index.tsx', 'src/index.ts', 'index.tsx', 'index.ts'];
+      
+      for (const entryPoint of possibleEntryPoints) {
+        const sourceFile = zip.file(entryPoint);
+        if (sourceFile) {
+          sourceCode = await sourceFile.async('text');
+          break;
+        }
+      }
+      this.logger.log(`Found entry point source code: ${!!sourceCode}`);
+
+      if (!sourceCode) {
+        throw new Error('No entry point found (src/index.tsx, src/index.ts, index.tsx, or index.ts)');
+      }
+
+      // Validate plugin structure
+      const isValid = await this.bundleService.validatePluginStructure(sourceCode);
+      if (!isValid) {
+        throw new BadRequestException('Invalid plugin structure');
+      }
+      this.logger.log(`Plugin structure validated for ${pluginId}`);
+
+      // Generate bundle using existing BundleService
+      const bundleBuffer = await this.bundleService.generateBundleBuffer(pluginId, sourceCode);
+      this.logger.log(`Generated bundle for ${pluginId} (${bundleBuffer.length} bytes)`);
+      // Store bundle in MinIO
+      const bundleUrl = await this.pluginStorageService.storePluginBundle(
+        pluginId,
+        version,
+        bundleBuffer,
+        'application/javascript',
+      );
+      this.logger.log(`Stored bundle at ${bundleUrl}`);
+
+      // Analyze bundle for extension points
+      const { extensionPoints, metadata } = await this.bundleService.analyzeBundle(sourceCode);
+      this.logger.log(`Analyzed extension points: ${extensionPoints.join(', ')}`);
+
+      // Create plugin metadata if we have it
+      if (pluginMetadata) {
+        try {
+          await this.createPlugin(
+            pluginMetadata.id,
+            pluginMetadata.name || pluginMetadata.displayName,
+            pluginMetadata.version,
+            pluginMetadata.description,
+            pluginMetadata.category,
+            sourceCode,
+            pluginMetadata.requiredPermissions || [],
+            bundleUrl,
+            extensionPoints,
+            pluginMetadata.configSchema,
+          );
+
+          this.logger.log(`✅ Plugin metadata created automatically for ${pluginId}`);
+        } catch (error) {
+          this.logger.warn(`Plugin bundle created but metadata creation failed: ${error.message}`);
+        }
+      }
+      // Return build result
+      this.logger.log(`Plugin ${pluginId} v${version} built successfully`);
+
+      return {
+        pluginId,
+        version,
+        bundleUrl,
+        bundleSize: bundleBuffer.length,
+        metadata: pluginMetadata || { id: pluginId, extensionPoints, metadata },
+      };
+    } catch (error) {
+      this.logger.error(`Failed to build plugin from ZIP: ${error.message}`);
+      throw new BadRequestException(`Failed to build plugin: ${error.message}`);
+    }
   }
 
   /**

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { uploadPluginBuild, type PluginBuildResult } from "@ticketbase/api";
 import {
   Card,
   CardContent,
@@ -27,14 +28,8 @@ import {
   HardDrive,
 } from "lucide-react";
 
-interface BuildResult {
-  success: boolean;
-  bundleUrl?: string;
-  errors?: string[];
-  warnings?: string[];
-  buildTime: number;
-  bundleSize: number;
-}
+// Use the type from the API client package
+type BuildResult = PluginBuildResult;
 
 export default function PluginUploadInterface() {
   const [activeTab, setActiveTab] = useState("source");
@@ -90,18 +85,21 @@ export default function PluginUploadInterface() {
         setUploadProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
 
-      const response = await fetch("/api/plugins/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const file = new File([sourceFile], sourceFile.name, { type: sourceFile.type });
+      formData.append("plugin", file);
+
+      const result = await uploadPluginBuild(file);
 
       clearInterval(progressInterval);
       setUploadProgress(100);
-
-      const result: BuildResult = await response.json();
       setBuildResult(result);
     } catch (error) {
       setBuildResult({
+        bundleUrl: "",
+        warnings: [],
+        metadata: {},
+        pluginId: "",
+        version: "",
         success: false,
         errors: [
           "Upload failed: " +
@@ -137,6 +135,12 @@ export default function PluginUploadInterface() {
     } catch (error) {
       setBuildResult({
         success: false,
+        bundleUrl: "",
+        warnings: [],
+        metadata: {},
+        pluginId: "",
+        version: "",
+
         errors: [
           "GitHub setup failed: " +
             (error instanceof Error ? error.message : "Unknown error"),

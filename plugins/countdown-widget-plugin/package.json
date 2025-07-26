@@ -9,7 +9,7 @@
     "plugin.json"
   ],
   "scripts": {
-    "build": "tsc && rollup -c",
+    "build": "tsc && bun build src/index.tsx --outdir dist --format esm --external react --external react-dom",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },

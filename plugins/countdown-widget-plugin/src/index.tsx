@@ -4,9 +4,11 @@ import {
   createPuckWidget, 
   createExtensionPoint,
   usePlatformSDK,
+  usePluginConfig,
   registerPuckComponents,
   type PluginDefinition,
-  type PuckWidgetDefinition 
+  type PuckWidgetDefinition,
+  type AdminSettingsContext 
 } from 'ticketsplatform-plugin-sdk';
 import { motion } from 'framer-motion';
 
@@ -36,7 +38,7 @@ interface CountdownProps {
   className: string;
 }
 
-const CountdownWidget: React.FC<CountdownProps> = ({
+const CountdownWidget = ({
   title,
   targetDate,
   description,
@@ -47,7 +49,7 @@ const CountdownWidget: React.FC<CountdownProps> = ({
   textColor,
   accentColor,
   className,
-}) => {
+}: CountdownProps): React.ReactElement => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -244,8 +246,8 @@ const countdownWidgetDefinition: PuckWidgetDefinition = createPuckWidget({
 // ADMIN SETTINGS COMPONENT
 // =============================================================================
 
-const AdminSettings = createExtensionPoint(({ context, sdk }) => {
-  const { config, saveConfig, loading } = sdk.hooks.usePluginConfig('countdown-widget');
+const AdminSettings = createExtensionPoint<AdminSettingsContext>(({ context, sdk }) => {
+  const { config, saveConfig, loading } = usePluginConfig('countdown-widget');
   const [settings, setSettings] = sdk.hooks.useState(config || {
     defaultDuration: 7,
     allowSecondsToggle: true,
@@ -276,24 +278,34 @@ const AdminSettings = createExtensionPoint(({ context, sdk }) => {
     return <div className="p-4">Loading settings...</div>;
   }
 
+  const Card = sdk.components.Card as React.ComponentType<any>;
+  const CardHeader = sdk.components.CardHeader as React.ComponentType<any>;
+  const CardTitle = sdk.components.CardTitle as React.ComponentType<any>;
+  const CardDescription = sdk.components.CardDescription as React.ComponentType<any>;
+  const CardContent = sdk.components.CardContent as React.ComponentType<any>;
+  const Label = sdk.components.Label as React.ComponentType<any>;
+  const Input = sdk.components.Input as React.ComponentType<any>;
+  const Switch = sdk.components.Switch as React.ComponentType<any>;
+  const Button = sdk.components.Button as React.ComponentType<any>;
+
   return (
-    <sdk.components.Card>
-      <sdk.components.CardHeader>
-        <sdk.components.CardTitle>Countdown Widget Settings</sdk.components.CardTitle>
-        <sdk.components.CardDescription>
+    <Card>
+      <CardHeader>
+        <CardTitle>Countdown Widget Settings</CardTitle>
+        <CardDescription>
           Configure default settings for countdown widgets.
-        </sdk.components.CardDescription>
-      </sdk.components.CardHeader>
-      <sdk.components.CardContent className="space-y-4">
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
         <div>
-          <sdk.components.Label htmlFor="defaultDuration">
+          <Label htmlFor="defaultDuration">
             Default Duration (days)
-          </sdk.components.Label>
-          <sdk.components.Input
+          </Label>
+          <Input
             id="defaultDuration"
             type="number"
             value={settings.defaultDuration}
-            onChange={(e) => setSettings({
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({
               ...settings,
               defaultDuration: parseInt(e.target.value) || 7,
             })}
@@ -301,28 +313,28 @@ const AdminSettings = createExtensionPoint(({ context, sdk }) => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <sdk.components.Switch
+          <Switch
             id="allowSecondsToggle"
             checked={settings.allowSecondsToggle}
-            onCheckedChange={(checked) => setSettings({
+            onCheckedChange={(checked: boolean) => setSettings({
               ...settings,
               allowSecondsToggle: checked,
             })}
           />
-          <sdk.components.Label htmlFor="allowSecondsToggle">
+          <Label htmlFor="allowSecondsToggle">
             Allow seconds display toggle
-          </sdk.components.Label>
+          </Label>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <sdk.components.Label htmlFor="defaultTextColor">
+            <Label htmlFor="defaultTextColor">
               Default Text Color
-            </sdk.components.Label>
-            <sdk.components.Input
+            </Label>
+            <Input
               id="defaultTextColor"
               value={settings.defaultColors?.text || '#ffffff'}
-              onChange={(e) => setSettings({
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({
                 ...settings,
                 defaultColors: {
                   ...settings.defaultColors,
@@ -332,13 +344,13 @@ const AdminSettings = createExtensionPoint(({ context, sdk }) => {
             />
           </div>
           <div>
-            <sdk.components.Label htmlFor="defaultAccentColor">
+            <Label htmlFor="defaultAccentColor">
               Default Accent Color
-            </sdk.components.Label>
-            <sdk.components.Input
+            </Label>
+            <Input
               id="defaultAccentColor"
               value={settings.defaultColors?.accent || '#3B82F6'}
-              onChange={(e) => setSettings({
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({
                 ...settings,
                 defaultColors: {
                   ...settings.defaultColors,
@@ -349,11 +361,11 @@ const AdminSettings = createExtensionPoint(({ context, sdk }) => {
           </div>
         </div>
 
-        <sdk.components.Button onClick={handleSave} className="w-full">
+        <Button onClick={handleSave} className="w-full">
           Save Settings
-        </sdk.components.Button>
-      </sdk.components.CardContent>
-    </sdk.components.Card>
+        </Button>
+      </CardContent>
+    </Card>
   );
 });
 

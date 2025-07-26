@@ -1087,6 +1087,74 @@ export class PluginsController {
     }
   }
 
+  @Post('upload')
+  @ApiOperation({ summary: 'Upload and build plugin from source code' })
+  @ApiResponse({
+    status: 201,
+    description: 'Plugin successfully uploaded, built, and stored',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        bundleUrl: { type: 'string', description: 'URL to the built bundle' },
+        fileName: { type: 'string', description: 'Original file name' },
+        pluginId: { type: 'string', description: 'Plugin ID' },
+        version: { type: 'string', description: 'Plugin version' },
+        metadata: { type: 'object', description: 'Plugin metadata' },
+        buildInfo: { type: 'object', description: 'Build information' },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        plugin: {
+          type: 'string',
+          format: 'binary',
+          description: 'Plugin ZIP file containing source code',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('plugin'))
+  async uploadPlugin(@UploadedFile() file: any): Promise<any> {
+    const operation = 'uploadPlugin';
+
+    try {
+      this.debugLog(operation, {
+        filename: file?.originalname,
+        size: file?.size,
+        description: 'Uploading plugin to plugin server for build',
+      });
+
+      if (!file || !file.buffer) {
+        throw new Error('Plugin file is required');
+      }
+
+      // Forward the file to the plugin server for building
+      const result = await this.pluginsService.uploadPluginForBuild(
+        file.buffer,
+        file.originalname,
+      );
+
+      this.debugLog(`${operation} - Success`, {
+        filename: file.originalname,
+        pluginId: result.pluginId,
+        bundleUrl: result.bundleUrl,
+      });
+
+      return result;
+    } catch (error) {
+      this.errorLog(operation, error, {
+        filename: file?.originalname,
+        size: file?.size,
+      });
+      throw error;
+    }
+  }
+
   @Post('metadata/create')
   @ApiOperation({ summary: 'Create plugin metadata entry in MongoDB' })
   @ApiResponse({

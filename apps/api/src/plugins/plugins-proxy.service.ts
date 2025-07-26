@@ -834,6 +834,88 @@ export class PluginsProxyService {
     }
   }
 
+  async uploadPluginForBuild(
+    file: Buffer,
+    filename: string,
+    authToken?: string,
+  ): Promise<{
+    success: boolean;
+    bundleUrl: string;
+    fileName: string;
+    pluginId: string;
+    version: string;
+    metadata: any;
+    buildInfo: any;
+  }> {
+    try {
+      const url = `${this.getPluginServerUrl()}/plugins/build`;
+
+      // Create FormData for multipart upload
+      const formData = new FormData();
+
+      // Create a Blob from the buffer
+      const blob = new Blob([file], { type: 'application/zip' });
+
+      // Add the file as a blob
+      formData.append('plugin', blob, filename);
+
+      // Create headers
+      const headers: Record<string, string> = {};
+
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
+      this.logger.debug('🔄 Uploading plugin for build:', {
+        url,
+        filename,
+        fileSize: file.length,
+        hasAuthToken: !!authToken,
+      });
+
+      const response = await firstValueFrom(
+        this.httpService
+          .post<{
+            success: boolean;
+            bundleUrl: string;
+            fileName: string;
+            pluginId: string;
+            version: string;
+            metadata: any;
+            buildInfo: any;
+          }>(url, formData, { headers })
+          .pipe(
+            catchError((error: AxiosError) => {
+              this.logger.error('❌ Plugin build upload failed:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message,
+                url,
+                filename,
+              });
+              this.handleHttpError(error, `Upload plugin for build ${filename}`);
+              throw error;
+            }),
+          ),
+      );
+
+      this.logger.debug('✅ Plugin build upload successful:', {
+        status: response.status,
+        filename,
+        pluginId: response.data.pluginId,
+        bundleUrl: response.data.bundleUrl,
+      });
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        this.handleHttpError(error, `Upload plugin for build ${filename}`);
+      }
+      throw error;
+    }
+  }
+
   async createPluginMetadata(
     createPluginDto: {
       id: string;

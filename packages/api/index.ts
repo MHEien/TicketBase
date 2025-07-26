@@ -13,6 +13,7 @@ export * from './users-api';
 export * from './departments';
 export * from './events-api';
 export * from './analytics-api';
+export * from './plugins-api';
 export * from './users-api'
 export * from './pages'
 
@@ -43,3 +44,10 @@ export type {
   AuthResponse,
   AnalyticsData
 } from './types';
+
+// Export plugin types
+export type {
+  Plugin,
+  InstalledPlugin,
+  PluginBuildResult
+} from './plugins-api';

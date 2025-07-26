@@ -474,6 +474,101 @@ export class PluginsController {
     );
   }
 
+  @ApiOperation({ summary: 'Build plugin from source code (ZIP file)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Plugin successfully built and stored',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        bundleUrl: { type: 'string', description: 'URL to the built bundle' },
+        fileName: { type: 'string', description: 'Original file name' },
+        pluginId: { type: 'string', description: 'Plugin ID' },
+        version: { type: 'string', description: 'Plugin version' },
+        metadata: { type: 'object', description: 'Plugin metadata' },
+        buildInfo: {
+          type: 'object',
+          properties: {
+            buildTime: { type: 'number', description: 'Build time in ms' },
+            bundleSize: { type: 'number', description: 'Bundle size in bytes' },
+            compiled: { type: 'boolean', description: 'Whether plugin was compiled' },
+          },
+        },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        plugin: {
+          type: 'string',
+          format: 'binary',
+          description: 'Plugin ZIP file containing source code, plugin.json, and package.json',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('plugin'))
+  @Public() // Make this endpoint public for admin uploads
+  @Post('build')
+  async buildPlugin(@UploadedFile() file: any) {
+    const logger = new Logger('PluginsController.buildPlugin');
+    const startTime = Date.now();
+
+    if (!file || !file.buffer) {
+      throw new BadRequestException('Plugin ZIP file is required');
+    }
+
+    logger.debug('🔄 Starting plugin build process:', {
+      filename: file.originalname,
+      fileSize: file.size,
+    });
+
+    try {
+      // Use the BundleService to extract, build, and store the plugin
+      const result = await this.pluginsService.buildPluginFromZip(
+        file.buffer,
+        file.originalname,
+      );
+
+      const buildTime = Date.now() - startTime;
+
+      logger.debug('✅ Plugin build completed successfully:', {
+        filename: file.originalname,
+        pluginId: result.pluginId,
+        buildTime,
+        bundleUrl: result.bundleUrl,
+      });
+
+      return {
+        success: true,
+        bundleUrl: result.bundleUrl,
+        fileName: file.originalname,
+        pluginId: result.pluginId,
+        version: result.version,
+        metadata: result.metadata,
+        buildInfo: {
+          buildTime,
+          bundleSize: result.bundleSize,
+          compiled: true,
+        },
+      };
+    } catch (error) {
+      logger.error('❌ Plugin build failed:', {
+        filename: file.originalname,
+        error: error.message,
+        buildTime: Date.now() - startTime,
+      });
+
+      throw new BadRequestException(
+        `Failed to build plugin: ${error.message}`,
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Upload a plugin bundle file' })
   @ApiResponse({ status: 201, description: 'Plugin successfully created' })
   @ApiConsumes('multipart/form-data')
