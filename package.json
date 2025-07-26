@@ -20,7 +20,8 @@
   "packageManager": "bun@1.2.4",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "plugins/*"
   ],
   "dependencies": {
     "@craftjs/core": "^0.2.12",

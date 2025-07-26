@@ -213,3 +213,30 @@ export interface ResponsiveSpacingFieldProps {
     createdAt: string
     updatedAt: string
   }
+
+  // Plugin integration types
+  export interface PluginPuckComponent {
+    label: string;
+    defaultProps: Record<string, any>;
+    fields: Record<string, any>;
+    render: (props: any) => React.ReactElement;
+    category?: string;
+    icon?: string;
+  }
+
+  export interface PluginComponentDefinition {
+    id: string;
+    name: string;
+    component: PluginPuckComponent;
+    pluginId: string;
+    version: string;
+    extensionPoint: string;
+  }
+
+  export interface PluginRegistry {
+    components: Map<string, PluginComponentDefinition>;
+    subscribe: (callback: (components: PluginComponentDefinition[]) => void) => () => void;
+    register: (definition: PluginComponentDefinition) => void;
+    unregister: (componentId: string) => void;
+    getActiveComponents: () => PluginComponentDefinition[];
+  }

@@ -1,0 +1,39 @@
+{
+  "name": "countdown-widget-plugin",
+  "version": "1.0.0",
+  "description": "Event countdown widget plugin for TicketBase",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "plugin.json"
+  ],
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ticketsplatform-plugin-sdk": "workspace:*",
+    "framer-motion": "^11.0.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "typescript": "^5.7.0",
+    "rollup": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "framer-motion": "^11.0.0"
+  },
+  "keywords": [
+    "ticketbase",
+    "plugin",
+    "countdown",
+    "widget",
+    "event"
+  ],
+  "author": "TicketBase Team",
+  "license": "MIT"
+}

@@ -1,0 +1,69 @@
+{
+  "id": "countdown-widget",
+  "name": "Event Countdown Widget",
+  "version": "1.0.0",
+  "description": "Beautiful countdown timer widget for events and promotions with glassmorphism effects",
+  "author": "TicketBase Team",
+  "authorEmail": "plugins@ticketbase.com",
+  "category": "layout",
+  "displayName": "Countdown Timer",
+  "iconUrl": "⏰",
+  "repositoryUrl": "https://github.com/ticketbase/plugins/countdown-widget",
+  "requiredPermissions": [],
+  "priority": 1,
+  "extensionPoints": [
+    "admin-settings",
+    "storefront-widgets"
+  ],
+  "puckComponents": [
+    {
+      "id": "countdown-widget",
+      "name": "Event Countdown",
+      "category": "Event Widgets",
+      "description": "Animated countdown timer with glassmorphism styling"
+    }
+  ],
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "defaultDuration": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 365,
+        "default": 7,
+        "title": "Default Duration (days)"
+      },
+      "allowSecondsToggle": {
+        "type": "boolean",
+        "default": true,
+        "title": "Allow seconds display toggle"
+      },
+      "defaultColors": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "default": "#ffffff",
+            "title": "Default text color"
+          },
+          "accent": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "default": "#3B82F6",
+            "title": "Default accent color"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "framer-motion": "^11.0.0"
+  },
+  "bundleConfig": {
+    "externals": ["react", "framer-motion"],
+    "format": "esm",
+    "minify": true
+  }
+}

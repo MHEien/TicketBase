@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Puck } from '@measured/puck';
 import '@measured/puck/puck.css';
 import './fullscreen-puck.css';
-import { CustomComponentList, CustomFields, CustomActionBar, CustomOutline, CustomPreview, CustomComponentItem, createAdvancedConfig, GlobalStylesPanel } from './fields';
+import { CustomComponentList, CustomFields, CustomOutline, CustomPreview, CustomComponentItem, createAdvancedConfig, GlobalStylesPanel } from './fields';
 import type { Page } from '@ticketbase/api';
 
 // Main App Component

@@ -17,7 +17,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.tsx --format cjs,esm --dts",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
     "prepublishOnly": "bun run build"

@@ -5,5 +5,3 @@ export const BREAKPOINTS = {
   tablet: { label: "Tablet", icon: Tablet, maxWidth: 1024 },
   desktop: { label: "Desktop", icon: Monitor, maxWidth: Infinity },
 } as const;
-
-type BreakpointKey = keyof typeof BREAKPOINTS;
