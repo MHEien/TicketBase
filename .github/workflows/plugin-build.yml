@@ -18,22 +18,17 @@ on:
 
 jobs:
   build-plugin:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: latest
+    - name: Check Node.js and Bun
+      run: |
+        echo "Node.js version: $(node --version)"
+        echo "Bun version: $(bun --version)"
+        echo "Current directory: $(pwd)"
 
     - name: Create plugin directory
       run: |
