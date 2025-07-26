@@ -181,7 +181,7 @@ export class BundleService {
       private: true,
       scripts: {
         build:
-          'bunx tsc && bunx esbuild src/index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --jsx=automatic --target=es2020 --external:react --external:react-dom',
+          'tsc && esbuild src/index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --jsx=automatic --target=es2020 --external:react --external:react-dom',
       },
       dependencies: {
         esbuild: '^0.19.2',
@@ -235,15 +235,8 @@ export class BundleService {
 
     // Create dist directory
     await fs.promises.mkdir(path.join(pluginDir, 'dist'), { recursive: true });
-    const filesInDir = await fs.promises.readdir(pluginDir);
-    console.log('Files in directory:', filesInDir);
 
     // Bundle the plugin
-    const response = await execPromise('bunx tsc && bun build src/index.tsx --outdir dist --format esm --external react --external react-dom', { cwd: pluginDir });
-    if (response.stderr) {
-      console.error('Bundle error:', response.stderr);
-    } else {
-      console.log('Bundle response:', response.stdout);
-    }
+    await execPromise('bun run build', { cwd: pluginDir });
   }
 }

@@ -41,15 +41,6 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   PLUGIN_ASSETS_BUCKET?: string = 'plugin-bundles';
-
-  @IsString()
-  GITHUB_TOKEN: string;
-
-  @IsString()
-  GITHUB_OWNER: string;
-
-  @IsString()
-  GITHUB_REPO: string;
 }
 
 export function validate(config: Record<string, unknown>) {

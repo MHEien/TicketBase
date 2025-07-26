@@ -9,7 +9,7 @@
     "plugin.json"
   ],
   "scripts": {
-    "build": "bunx tsc && bun build src/index.tsx --outdir dist --format esm --external react --external react-dom",
+    "build": "tsc && bun build src/index.tsx --outdir dist --format esm --external react --external react-dom",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },
@@ -20,9 +20,8 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
-    "typescript": "^5.8.3",
-    "rollup": "^4.0.0",
-    "esbuild": "^0.19.0"
+    "typescript": "^5.7.0",
+    "rollup": "^4.0.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
