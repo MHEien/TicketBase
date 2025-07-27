@@ -1,5 +1,5 @@
 import type { PluginRegistry, PluginComponentDefinition } from './types';
-
+import '@/components/fullscreen-puck.css';
 // Extend Window interface to include loadedPlugins
 declare global {
   interface Window {

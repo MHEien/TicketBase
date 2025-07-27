@@ -2,6 +2,8 @@
 import React from "react";
 import { type Config, type Data, FieldLabel } from "@measured/puck";
 import { motion } from "framer-motion";
+import { enhancedLayoutComponents } from './enhanced-layout-components';
+import { createAdvancedConfig } from './config';
 import {
   Type,
   Image,
@@ -39,6 +41,7 @@ import {
   Building,
   MapPin,
 } from "lucide-react";
+import '@/components/fullscreen-puck.css';
 
 // Import UI components
 import { Badge } from "@repo/ui/components/ui/badge";
@@ -553,9 +556,20 @@ const AIContentField = ({ onChange, value, field }: any) => {
 };
 
 
+// Create static config instance
+const staticConfig = createAdvancedConfig();
+
 // Enhanced Puck configuration
 export const enhancedConfig: Config = {
   components: {
+    // Include enhanced layout components
+    ...enhancedLayoutComponents,
+    
+    // Include original components from static config for backward compatibility
+    GlassCard: staticConfig.components?.GlassCard,
+    FeatureGrid: staticConfig.components?.FeatureGrid, 
+    StatsSection: staticConfig.components?.StatsSection,
+    AdvancedHeading: staticConfig.components?.AdvancedHeading,
     HeroSection: {
       label: "Hero Section",
       fields: {
@@ -1206,36 +1220,16 @@ export const enhancedConfig: Config = {
   // Enhanced categories with better organization
   categories: {
     layout: {
-      title: "Layout & Structure",
-      components: ["HeroSection"],
+      title: "Layout & Structure", 
+      components: ["HeroSection", "GridLayout", "FlexboxLayout", "SlotContainer"],
     },
     content: {
       title: "Content & Media",
-      components: ["SmartCard"],
+      components: ["SmartCard", "CardGrid", "GlassCard", "FeatureGrid"],
     },
-    data: {
-      title: "Data & Analytics",
-      components: [],
-    },
-    commerce: {
-      title: "E-commerce",
-      components: [],
-    },
-    social: {
-      title: "Social & Reviews",
-      components: [],
-    },
-    forms: {
-      title: "Forms & Input",
-      components: [],
-    },
-    navigation: {
-      title: "Navigation",
-      components: [],
-    },
-    marketing: {
-      title: "Marketing & CTA",
-      components: [],
+    advanced: {
+      title: "Advanced Components",
+      components: ["AdvancedHeading", "StatsSection"],
     },
   },
 

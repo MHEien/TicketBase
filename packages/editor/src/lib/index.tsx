@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import type { AnimationConfig, AnimationType, FeatureGridProps, GlassCardProps, HeroSectionProps, StatsSectionProps } from "./types";
 // Type definitions for component props
-
+import '@/components/fullscreen-puck.css';
 
 const animations: Record<AnimationType, AnimationConfig> = {
   fadeIn: {
@@ -603,6 +603,9 @@ export const initialData: Data = {
     },
   },
 };
+
+// Export enhanced config  
+export { enhancedConfig } from './enhanced-config';
 
 // Save function
 export const save = async (data: Data): Promise<Data> => {

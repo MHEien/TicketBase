@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:puckeditor.com)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": []
+  }
+}

@@ -2,7 +2,7 @@
 export { PageEditor } from './components';
 export { Renderer } from './components/renderer';
 export { config } from './lib';
-
+import '@/components/fullscreen-puck.css';
 // Plugin integration exports
 export { dynamicConfig, useDynamicPuckConfig } from './lib/dynamic-config';
 export { 

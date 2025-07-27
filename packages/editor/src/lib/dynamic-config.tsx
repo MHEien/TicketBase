@@ -1,19 +1,22 @@
 import React from "react";
 import type { Config } from "@measured/puck";
-import { config as staticConfig } from "./index";
+import { config as staticConfig, enhancedConfig } from "./index";
 import { pluginRegistry } from "./plugin-registry";
 import type { PluginComponentDefinition } from "./types";
+import '@/components/fullscreen-puck.css';
 
 interface DynamicConfigOptions {
   tenantId?: string;
   enabledExtensionPoints?: string[];
   plugins?: any[]; // Pre-loaded plugin data
+  useEnhancedConfig?: boolean; // Option to use enhanced config
 }
 
 class DynamicPuckConfig {
   private baseConfig: Config;
   private currentConfig: Config;
   private subscribers: Set<(config: Config) => void> = new Set();
+  private useEnhanced: boolean = false;
 
   constructor(baseConfig: Config) {
     this.baseConfig = baseConfig;
@@ -189,6 +192,13 @@ class DynamicPuckConfig {
 
   async initialize(options: DynamicConfigOptions = {}): Promise<void> {
     console.log('🔧 Dynamic Config: Initializing with options:', options);
+    
+    // Switch to enhanced config if requested
+    if (options.useEnhancedConfig && !this.useEnhanced) {
+      this.useEnhanced = true;
+      this.baseConfig = enhancedConfig;
+      console.log('🔧 Dynamic Config: Switched to enhanced config');
+    }
     
     if (options.plugins && Array.isArray(options.plugins)) {
       console.log('🔧 Dynamic Config: Loading plugin components from provided data:', options.plugins.length, 'plugins');

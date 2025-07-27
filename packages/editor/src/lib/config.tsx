@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { type Config } from '@measured/puck';
 import '@measured/puck/puck.css';
-import './fullscreen-puck.css';
+import '@/components/fullscreen-puck.css';
 import { Plus, X, Star } from 'lucide-react';
 import { Button } from '@repo/ui/components/ui/button';
 import { Input } from '@repo/ui/components/ui/input';

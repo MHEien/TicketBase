@@ -23,7 +23,8 @@ export function PageEditor({
   
   const { config, loading } = useDynamicPuckConfig({ 
     tenantId: initialPage?.organizationId,
-    plugins: plugins
+    plugins: plugins,
+    useEnhancedConfig: true,
   });
   const initialData = initialPage ? initialPage.content : {};
 
