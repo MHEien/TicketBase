@@ -291,6 +291,7 @@ export class PluginsService {
     bundleUrl?: string,
     providedExtensionPoints?: string[],
     configSchema?: any,
+    pluginMetadata?: any,
   ): Promise<PluginDocument> {
     this.logger.log(`Creating plugin ${id} v${version}`);
 
@@ -305,12 +306,20 @@ export class PluginsService {
         `Using provided extension points: ${extensionPoints.join(', ')}`,
       );
 
-      // Create basic metadata including configSchema
+      // Create basic metadata including configSchema and puckComponents
       metadata = {
         installCount: 0,
         lastUpdated: new Date().toISOString(),
         ...(configSchema && { configSchema }),
+        ...(pluginMetadata?.puckComponents && { puckComponents: pluginMetadata.puckComponents }),
       };
+      
+      this.logger.log('Plugin metadata being stored:', {
+        hasConfigSchema: !!configSchema,
+        hasPuckComponents: !!pluginMetadata?.puckComponents,
+        puckComponentsCount: pluginMetadata?.puckComponents?.length || 0,
+        puckComponentsData: pluginMetadata?.puckComponents,
+      });
     } else {
       // Validate plugin structure only when analyzing source code
       const isValid =
@@ -690,6 +699,7 @@ export class PluginsService {
             bundleUrl,
             extensionPoints,
             pluginMetadata.configSchema,
+            pluginMetadata,
           );
 
           this.logger.log(`✅ Plugin metadata created automatically for ${pluginId}`);

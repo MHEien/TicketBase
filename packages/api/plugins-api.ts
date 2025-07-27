@@ -148,3 +148,13 @@ export async function getPluginConfig(
   });
   return response.data;
 }
+
+/**
+ * Get enabled plugins for a tenant (for Puck editor integration)
+ * @param tenantId - Tenant ID
+ * @returns Array of enabled plugins with metadata
+ */
+export async function getEnabledPlugins(tenantId: string): Promise<InstalledPlugin[]> {
+  const response = await apiClient.get(`/api/plugins/organization/${tenantId}/enabled`);
+  return response.data;
+}

@@ -1,14 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { pageQueryOptions } from "@/utils/pages";
 import { PageEditor } from "@repo/editor/components/index"
-import { pagesApi } from "@ticketbase/api";
+import { pagesApi, getEnabledPlugins } from "@ticketbase/api";
+import { useSession } from "@/lib/auth-client";
 import "@/lib/api-config"; // Initialize API client authentication
+
 
 export const Route = createFileRoute("/admin/pages/edit/$pageId")({
   loader: async ({ params: { pageId }, context }) => {
+    // Validate pageId - should be 'new' or a valid UUID, and not contain file extensions
+    if (pageId.includes('.') || (pageId !== "new" && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId))) {
+      throw new Error(`Invalid page ID: ${pageId}`);
+    }
+
     let data = null;
+
     if (pageId !== "new") {
       data = await context.queryClient.ensureQueryData(
         pageQueryOptions(pageId),
@@ -17,6 +25,7 @@ export const Route = createFileRoute("/admin/pages/edit/$pageId")({
       data = {
         id: "new",
         title: "",
+        content: "",
       };
     }
     
@@ -29,17 +38,36 @@ export const Route = createFileRoute("/admin/pages/edit/$pageId")({
 
 function EditorPage() {
   const { pageId } = Route.useParams();
+  const { page } = Route.useLoaderData();
+  const { data: session } = useSession();
+
+  console.log("🔧 EditorPage: Session data:", session);
+  console.log("🔧 EditorPage: User organization ID:", session?.user?.organizationId);
+
+  // Load enabled plugins using authenticated API client
+  const { data: plugins, isLoading: pluginsLoading } = useQuery({
+    queryKey: ['enabled-plugins', session?.user?.organizationId],
+    queryFn: () => getEnabledPlugins(session?.user?.organizationId!),
+    enabled: !!session?.user?.organizationId,
+  });
+
+  console.log("🔧 EditorPage: Loaded plugins:", plugins);
 
   let pageQuery = null;
   if (pageId !== "new") {
     pageQuery = useSuspenseQuery(pageQueryOptions(pageId));
+    // Merge loader data with query data and add organization ID
+    pageQuery.data = { 
+      ...pageQuery.data, 
+      ...page,
+      organizationId: pageQuery.data.organizationId || session?.user?.organizationId
+    };
   } else {
     pageQuery = {
       data: {
-        id: "new",
-        title: "",
-        content: "",
-      },
+        ...page,
+        organizationId: session?.user?.organizationId
+      }
     }
   }
 
@@ -61,6 +89,16 @@ function EditorPage() {
     }
   };
   
+  // Show loading state while plugins are loading
+  if (pluginsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading editor and plugins...</span>
+      </div>
+    );
+  }
+
   if (!initialPage) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -96,5 +134,9 @@ function EditorPage() {
     );
   }
 
-  return <PageEditor initialPage={initialPage} onSavePageData={handleSavePageData} />;
+  return <PageEditor 
+    initialPage={initialPage} 
+    onSavePageData={handleSavePageData} 
+    plugins={plugins || []} 
+  />;
 }

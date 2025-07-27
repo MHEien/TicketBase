@@ -2,18 +2,29 @@ import { useCallback } from 'react';
 import { Puck } from '@measured/puck';
 import '@measured/puck/puck.css';
 import './fullscreen-puck.css';
-import { CustomComponentList, CustomFields, CustomOutline, CustomPreview, CustomComponentItem, createAdvancedConfig, GlobalStylesPanel } from './fields';
+import { CustomComponentList, CustomFields, CustomOutline, CustomPreview, CustomComponentItem, GlobalStylesPanel } from './fields';
 import type { Page } from '@ticketbase/api';
+import { useDynamicPuckConfig } from '@/lib/dynamic-config';
 
 // Main App Component
 export function PageEditor({
   initialPage,
   onSavePageData,
+  plugins = [],
 }: {
   initialPage: Page;
   onSavePageData: (pageData: any, puckData?: any) => Promise<void>;
+  plugins?: any[];
 }) {
-  const config = createAdvancedConfig();
+  // Use dynamic config that includes activated plugin components
+  console.log('📝 PageEditor: Initial page:', initialPage);
+  console.log('📝 PageEditor: Organization ID:', initialPage?.organizationId);
+  console.log('📝 PageEditor: Plugins received:', plugins);
+  
+  const { config, loading } = useDynamicPuckConfig({ 
+    tenantId: initialPage?.organizationId,
+    plugins: plugins
+  });
   const initialData = initialPage ? initialPage.content : {};
 
   // Handle page publishing (saves content only)
@@ -60,6 +71,18 @@ export function PageEditor({
       throw error;
     }
   }, [initialPage, initialData]);
+
+  // Show loading state while fetching plugin components
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600">Loading editor components...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fullscreen-puck-editor">

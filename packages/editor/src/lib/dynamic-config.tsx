@@ -7,6 +7,7 @@ import type { PluginComponentDefinition } from "./types";
 interface DynamicConfigOptions {
   tenantId?: string;
   enabledExtensionPoints?: string[];
+  plugins?: any[]; // Pre-loaded plugin data
 }
 
 class DynamicPuckConfig {
@@ -187,9 +188,18 @@ class DynamicPuckConfig {
   }
 
   async initialize(options: DynamicConfigOptions = {}): Promise<void> {
-    if (options.tenantId) {
-      // Load tenant-specific plugin components
+    console.log('🔧 Dynamic Config: Initializing with options:', options);
+    
+    if (options.plugins && Array.isArray(options.plugins)) {
+      console.log('🔧 Dynamic Config: Loading plugin components from provided data:', options.plugins.length, 'plugins');
+      // Load from pre-loaded plugin data
+      pluginRegistry.loadPluginComponentsFromData(options.plugins);
+    } else if (options.tenantId) {
+      console.log('🔧 Dynamic Config: Loading plugin components for tenant (legacy):', options.tenantId);
+      // Legacy approach - now just logs a warning
       await pluginRegistry.loadPluginComponents(options.tenantId);
+    } else {
+      console.log('🔧 Dynamic Config: No plugins or tenantId provided, skipping plugin loading');
     }
   }
 

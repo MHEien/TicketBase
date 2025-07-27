@@ -30,10 +30,7 @@ const noRedirectPaths = [
 
 // Debug logging helper
 function debugLog(operation: string, details: any) {
-  console.group(`🌐 API Client Debug: ${operation}`);
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("Environment:", typeof window === "undefined" ? "server" : "client");
-  console.log("Details:", details);
+
   console.groupEnd();
 }
 
