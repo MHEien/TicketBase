@@ -13,10 +13,12 @@ import { Separator } from '@repo/ui/components/ui/separator';
 import type{ ComponentListProps } from '@repo/editor/lib/types';
 import { FloatingActionButton } from './fab';
 import { DraggableResizablePanel } from './resizeable';
+import { DynamicStyleControls } from './dynamic-style-controls';
+import { AnimationField } from './animation';
 
 export const CustomFields = ({ children }: ComponentListProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const { selectedItem } = usePuck();
+    const { selectedItem, dispatch } = usePuck();
     
     // Auto-open properties panel when a component is selected
     useEffect(() => {
@@ -60,94 +62,118 @@ export const CustomFields = ({ children }: ComponentListProps) => {
               </TabsContent>
               
               <TabsContent value="style" className="space-y-4 mt-4">
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-muted-foreground">Style Controls</h4>
-                  <p className="text-xs text-muted-foreground">Advanced styling options will appear here based on the selected component.</p>
-                </div>
+                <DynamicStyleControls />
               </TabsContent>
               
               <TabsContent value="advanced" className="space-y-4 mt-4">
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-muted-foreground">Advanced Settings</h4>
-                  <div className="space-y-2">
-                    <Label className="text-xs">CSS Classes</Label>
-                    <Input placeholder="custom-class another-class" className="h-8 text-xs" />
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-muted-foreground">Advanced Settings</h4>
+                    <div className="space-y-2">
+                      <Label className="text-xs">CSS Classes</Label>
+                      <Input
+                        value={selectedItem?.props?.customClasses || ''}
+                        onChange={(e) => dispatch({
+                          type: 'setData',
+                          payload: {
+                            ...selectedItem,
+                            props: { ...selectedItem?.props, customClasses: e.target.value }
+                          }
+                        })}
+                        placeholder="custom-class another-class" 
+                        className="h-8 text-xs" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">Component ID</Label>
+                      <Input
+                        value={selectedItem?.props?.customId || ''}
+                        onChange={(e) => dispatch({
+                          type: 'setData',
+                          payload: {
+                            ...selectedItem,
+                            props: { ...selectedItem?.props, customId: e.target.value }
+                          }
+                        })}
+                        placeholder="unique-id" 
+                        className="h-8 text-xs" 
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Component ID</Label>
-                    <Input placeholder="unique-id" className="h-8 text-xs" />
-                  </div>
+                  
                   <Separator />
-                                   <div className="space-y-2">
-                     <Label className="text-xs text-muted-foreground">Responsive Visibility</Label>
-                     <div className="space-y-2">
-                       <div className="flex items-center space-x-2">
-                         <Switch defaultChecked id="show-desktop" />
-                         <Label htmlFor="show-desktop" className="text-xs">Desktop</Label>
-                       </div>
-                       <div className="flex items-center space-x-2">
-                         <Switch defaultChecked id="show-tablet" />
-                         <Label htmlFor="show-tablet" className="text-xs">Tablet</Label>
-                       </div>
-                       <div className="flex items-center space-x-2">
-                         <Switch defaultChecked id="show-mobile" />
-                         <Label htmlFor="show-mobile" className="text-xs">Mobile</Label>
-                       </div>
-                     </div>
-                   </div>
-                   
-                   <Separator />
-                   
-                   <div className="space-y-2">
-                     <Label className="text-xs text-muted-foreground">Animations</Label>
-                     <div className="space-y-2">
-                       <div>
-                         <Label className="text-xs text-muted-foreground">Entrance Animation</Label>
-                         <Select defaultValue="none">
-                           <SelectTrigger className="h-8">
-                             <SelectValue />
-                           </SelectTrigger>
-                           <SelectContent>
-                             <SelectItem value="none">None</SelectItem>
-                             <SelectItem value="fadeIn">Fade In</SelectItem>
-                             <SelectItem value="slideUp">Slide Up</SelectItem>
-                             <SelectItem value="slideDown">Slide Down</SelectItem>
-                             <SelectItem value="slideLeft">Slide Left</SelectItem>
-                             <SelectItem value="slideRight">Slide Right</SelectItem>
-                             <SelectItem value="zoomIn">Zoom In</SelectItem>
-                             <SelectItem value="bounce">Bounce</SelectItem>
-                           </SelectContent>
-                         </Select>
-                       </div>
-                       
-                       <div>
-                         <Label className="text-xs text-muted-foreground">Animation Delay: 0ms</Label>
-                         <Slider
-                           defaultValue={[0]}
-                           max={2000}
-                           min={0}
-                           step={100}
-                           className="w-full"
-                         />
-                       </div>
-                       
-                       <div>
-                         <Label className="text-xs text-muted-foreground">Animation Duration: 600ms</Label>
-                         <Slider
-                           defaultValue={[600]}
-                           max={2000}
-                           min={200}
-                           step={100}
-                           className="w-full"
-                         />
-                       </div>
-                       
-                       <div className="flex items-center space-x-2">
-                         <Switch id="repeat-animation" />
-                         <Label htmlFor="repeat-animation" className="text-xs">Repeat on scroll</Label>
-                       </div>
-                     </div>
-                   </div>
+                  
+                  <div className="space-y-3">
+                    <Label className="text-xs text-muted-foreground">Responsive Visibility</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Switch 
+                          checked={selectedItem?.props?.showOnDesktop !== false}
+                          onCheckedChange={(checked) => dispatch({
+                            type: 'setData',
+                            payload: {
+                              ...selectedItem,
+                              props: { ...selectedItem?.props, showOnDesktop: checked }
+                            }
+                          })}
+                          id="show-desktop" 
+                        />
+                        <Label htmlFor="show-desktop" className="text-xs">Desktop</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch 
+                          checked={selectedItem?.props?.showOnTablet !== false}
+                          onCheckedChange={(checked) => dispatch({
+                            type: 'setData',
+                            payload: {
+                              ...selectedItem,
+                              props: { ...selectedItem?.props, showOnTablet: checked }
+                            }
+                          })}
+                          id="show-tablet" 
+                        />
+                        <Label htmlFor="show-tablet" className="text-xs">Tablet</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch 
+                          checked={selectedItem?.props?.showOnMobile !== false}
+                          onCheckedChange={(checked) => dispatch({
+                            type: 'setData',
+                            payload: {
+                              ...selectedItem,
+                              props: { ...selectedItem?.props, showOnMobile: checked }
+                            }
+                          })}
+                          id="show-mobile" 
+                        />
+                        <Label htmlFor="show-mobile" className="text-xs">Mobile</Label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <AnimationField
+                    value={selectedItem?.props?.animation || {
+                      type: 'none',
+                      duration: 600,
+                      delay: 0,
+                      easing: 'ease-out',
+                      trigger: 'onScrollIntoView',
+                      repeat: false,
+                      repeatCount: 1,
+                      direction: 'normal',
+                      fillMode: 'forwards',
+                    }}
+                    onChange={(value) => dispatch({
+                      type: 'setData',
+                      payload: {
+                        ...selectedItem,
+                        props: { ...selectedItem?.props, animation: value }
+                      }
+                    })}
+                    label="Animations"
+                  />
                 </div>
               </TabsContent>
             </Tabs>

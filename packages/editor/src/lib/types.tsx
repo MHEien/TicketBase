@@ -240,3 +240,79 @@ export interface ResponsiveSpacingFieldProps {
     unregister: (componentId: string) => void;
     getActiveComponents: () => PluginComponentDefinition[];
   }
+
+  // New Advanced Field Types
+  export interface ShadowFieldProps {
+    value: Array<{
+      id: string;
+      type: 'box' | 'text';
+      offsetX: number;
+      offsetY: number;
+      blurRadius: number;
+      spreadRadius: number;
+      color: string;
+      opacity: number;
+      inset: boolean;
+    }>;
+    onChange: (value: any) => void;
+    label?: string;
+  }
+
+  export interface TransformFieldProps {
+    value: {
+      scaleX: number;
+      scaleY: number;
+      rotate: number;
+      skewX: number;
+      skewY: number;
+      translateX: number;
+      translateY: number;
+    };
+    onChange: (value: any) => void;
+    label?: string;
+  }
+
+  export interface FilterFieldProps {
+    value: {
+      blur: number;
+      brightness: number;
+      contrast: number;
+      saturate: number;
+      hue: number;
+      sepia: number;
+      grayscale: number;
+      invert: number;
+      opacity: number;
+    };
+    onChange: (value: any) => void;
+    label?: string;
+  }
+
+  export interface GradientPickerFieldProps {
+    value: {
+      type: 'linear' | 'radial';
+      direction: number;
+      stops: Array<{
+        color: string;
+        position: number;
+      }>;
+    };
+    onChange: (value: any) => void;
+    label?: string;
+  }
+
+  export interface AnimationFieldProps {
+    value: {
+      type: string;
+      duration: number;
+      delay: number;
+      easing: string;
+      trigger: string;
+      repeat: boolean;
+      repeatCount: number;
+      direction: string;
+      fillMode: string;
+    };
+    onChange: (value: any) => void;
+    label?: string;
+  }
