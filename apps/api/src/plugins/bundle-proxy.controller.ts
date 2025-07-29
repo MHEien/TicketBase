@@ -38,9 +38,9 @@ export class BundleProxyController {
         throw new Error('Plugin server URL not configured');
       }
 
-      // Extract the path after /plugins/bundles/
+      // Extract the path after /api/plugins/bundles/
       const fullPath = req.path;
-      const bundlesPath = '/plugins/bundles/';
+      const bundlesPath = '/api/plugins/bundles/';
       const path = fullPath.startsWith(bundlesPath)
         ? fullPath.substring(bundlesPath.length)
         : fullPath;

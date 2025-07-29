@@ -349,19 +349,14 @@ export class PluginsService {
           throw new Error(storageStatus.message);
         }
 
-        // Generate the bundle from source
-        const bundleBuffer = await this.bundleService.generateBundleBuffer(
+        // Generate the Module Federation bundle
+        const bundleResult = await this.bundleService.generateBundle(
           id,
           sourceCode,
         );
 
-        // Store the bundle in MinIO and get the URL
-        finalBundleUrl = await this.pluginStorageService.storePluginBundle(
-          id,
-          version,
-          bundleBuffer,
-          'application/javascript',
-        );
+        // Use the remoteEntryUrl from Module Federation
+        finalBundleUrl = bundleResult.remoteEntryUrl;
       } catch (error) {
         this.logger.error(
           `Failed to store plugin bundle: ${error.message}`,
@@ -442,21 +437,18 @@ export class PluginsService {
       const version = updates.version || plugin.version;
 
       // Generate the bundle from source
-      const bundleBuffer = await this.bundleService.generateBundleBuffer(
+      // Generate the Module Federation bundle
+      const bundleResult = await this.bundleService.generateBundle(
         id,
         updates.sourceCode,
       );
 
-      // Store the bundle in MinIO and get the URL
-      const bundleUrl = await this.pluginStorageService.storePluginBundle(
-        id,
-        version,
-        bundleBuffer,
-        'application/javascript',
-      );
-
-      // Update with new bundle data
-      updateData.bundleUrl = bundleUrl;
+      // Update with new bundle data from Module Federation
+      updateData.bundleUrl = bundleResult.remoteEntryUrl;
+      
+      if (bundleResult.metadata) {
+        updateData.federationMetadata = bundleResult.metadata;
+      }
       updateData.extensionPoints = extensionPoints;
       updateData.metadata = metadata;
 
@@ -588,6 +580,7 @@ export class PluginsService {
     bundleUrl: string;
     bundleSize: number;
     metadata: any;
+    federationMetadata?: any;
   }> {
     let pluginMetadata: any = null;
     let pluginId: string;
@@ -670,16 +663,13 @@ export class PluginsService {
       this.logger.log(`Plugin structure validated for ${pluginId}`);
 
       // Generate bundle using existing BundleService with extracted files
-      const bundleBuffer = await this.bundleService.generateBundleBuffer(pluginId, sourceCode, extractedFiles);
-      this.logger.log(`Generated bundle for ${pluginId} (${bundleBuffer.length} bytes)`);
-      // Store bundle in MinIO
-      const bundleUrl = await this.pluginStorageService.storePluginBundle(
-        pluginId,
-        version,
-        bundleBuffer,
-        'application/javascript',
-      );
-      this.logger.log(`Stored bundle at ${bundleUrl}`);
+      // Generate Module Federation bundle
+      const bundleResult = await this.bundleService.generateBundle(pluginId, sourceCode, extractedFiles, version);
+      this.logger.log(`Generated Module Federation bundle for ${pluginId}`);
+      
+      // Use the remoteEntryUrl from the bundle result
+      const bundleUrl = bundleResult.remoteEntryUrl;
+      this.logger.log(`Bundle available at ${bundleUrl}`);
 
       // Analyze bundle for extension points
       const { extensionPoints, metadata } = await this.bundleService.analyzeBundle(sourceCode);
@@ -714,8 +704,9 @@ export class PluginsService {
         pluginId,
         version,
         bundleUrl,
-        bundleSize: bundleBuffer.length,
+        bundleSize: 0, // Bundle size not available in Module Federation metadata
         metadata: pluginMetadata || { id: pluginId, extensionPoints, metadata },
+        federationMetadata: bundleResult.metadata,
       };
     } catch (error) {
       this.logger.error(`Failed to build plugin from ZIP: ${error.message}`);

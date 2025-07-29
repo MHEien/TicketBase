@@ -12,6 +12,7 @@ import {
   Logger,
   UseInterceptors,
   UploadedFile,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IsNotEmpty, IsString } from 'class-validator';
@@ -26,7 +27,7 @@ import {
   ApiProperty,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { PluginsProxyService } from './plugins-proxy.service';
 import { CreatePluginDto } from './dto/create-plugin.dto';
 import { UpdatePluginDto } from './dto/update-plugin.dto';
@@ -1154,6 +1155,9 @@ export class PluginsController {
       throw error;
     }
   }
+
+  // Bundle serving is now handled by BundleProxyController
+  // Removed duplicate @Get('bundles/*') route to avoid conflicts
 
   @Post('metadata/create')
   @ApiOperation({ summary: 'Create plugin metadata entry in MongoDB' })

@@ -74,9 +74,22 @@ export class PluginBundleController {
       }
 
       // Reconstruct the object key for MinIO
-      const objectKey = fullPath; // Use the full path as the object key
+      // Remove 'plugins/' prefix if present to match MinIO storage structure
+      let objectKey = fullPath;
+      if (objectKey.startsWith('plugins/')) {
+        objectKey = objectKey.substring('plugins/'.length);
+      }
 
       this.logger.debug(`Looking for object with key: ${objectKey}`);
+      this.logger.debug(`Full path parts: ${JSON.stringify(pathParts)}`);
+      
+      // Debug: List available objects to see what's actually in storage
+      try {
+        const allObjects = await this.pluginStorageService.debugListAllObjects();
+        this.logger.debug(`Available objects in bucket: ${JSON.stringify(allObjects.map(obj => obj.name))}`);
+      } catch (debugError) {
+        this.logger.warn(`Could not list bucket objects for debugging: ${debugError.message}`);
+      }
 
       const stream =
         await this.pluginStorageService.getPluginBundleStream(objectKey);

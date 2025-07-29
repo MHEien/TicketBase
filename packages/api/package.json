@@ -29,10 +29,16 @@
       "import": "./types.ts",
       "require": "./types.ts",
       "types": "./types.ts"
+    },
+    "./services/module-federation-loader": {
+      "import": "./src/services/module-federation-loader.ts",
+      "require": "./src/services/module-federation-loader.ts",
+      "types": "./src/services/module-federation-loader.ts"
     }
   },
   "files": [
     "*.ts",
+    "src/**/*.ts",
     "!example-usage.ts",
     "!*.test.ts"
   ],

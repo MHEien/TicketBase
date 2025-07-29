@@ -56,7 +56,7 @@ export class PluginStorageService {
     contentType = 'application/javascript',
   ): Promise<string> {
     try {
-      const objectKey = `${pluginId}/v${version}/bundle-${uuid()}.js`;
+      const objectKey = `${pluginId}/v${version}/remoteEntry.js`;
 
       this.logger.debug(`Storing bundle with key: ${objectKey}`);
       this.logger.debug(`Buffer size: ${bundleBuffer.length} bytes`);
@@ -72,8 +72,9 @@ export class PluginStorageService {
         },
       );
 
-      // Generate public URL for the plugin bundle
-      const bundleUrl = `${this.serverUrl}/plugins/bundles/${objectKey}`;
+      // Generate public URL for the plugin bundle through API server
+      const apiServerUrl = this.configService.get('API_SERVER_URL', 'http://localhost:4000');
+      const bundleUrl = `${apiServerUrl}/api/plugins/bundles/${objectKey}`;
 
       this.logger.log(
         `Stored plugin bundle for ${pluginId} v${version} at ${bundleUrl}`,

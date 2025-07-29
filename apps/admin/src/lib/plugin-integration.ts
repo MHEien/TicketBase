@@ -10,6 +10,8 @@ import { PluginMetadata } from "./simple-plugin-system";
  * Transform InstalledPlugin from plugin-api to PluginMetadata for simple plugin system
  */
 function transformToPluginMetadata(installedPlugin: any): PluginMetadata {
+  const bundleUrl = installedPlugin.bundleUrl || installedPlugin.url || "";
+
   return {
     id: installedPlugin.pluginId || installedPlugin.id || "unknown-plugin",
     name:
@@ -18,7 +20,7 @@ function transformToPluginMetadata(installedPlugin: any): PluginMetadata {
     extensionPoints: Array.isArray(installedPlugin.extensionPoints)
       ? installedPlugin.extensionPoints
       : [],
-    bundleUrl: installedPlugin.bundleUrl || installedPlugin.url || "",
+    bundleUrl: bundleUrl,
     enabled: installedPlugin.enabled !== false, // default to true if not specified
   };
 }

@@ -24,9 +24,10 @@ export class AssetsService {
     fileName: string,
     fileContent: Buffer,
     contentType: string,
+    version: string = '1.0.0',
   ): Promise<string> {
     const bucket = this.configService.get('PLUGIN_ASSETS_BUCKET');
-    const key = `plugins/${pluginId}/${fileName}`;
+    const key = `${pluginId}/v${version}/${fileName}`;
 
     await this.s3Client
       .putObject({
@@ -37,21 +38,14 @@ export class AssetsService {
       })
       .promise();
 
-    // Use configured endpoint for URL construction
-    const endpoint = this.configService.get('S3_ENDPOINT');
-
-    // If using MinIO, construct URL properly
-    if (endpoint) {
-      return `${endpoint}/${bucket}/${key}`;
-    }
-
-    // Fallback to AWS S3 URL format
-    return `https://${bucket}.s3.amazonaws.com/${key}`;
+    // Return API server proxy URL with correct /api prefix and versioning
+    const apiServerUrl = this.configService.get('API_SERVER_URL', 'http://localhost:4000');
+    return `${apiServerUrl}/api/plugins/bundles/${key}`;
   }
 
   getPluginAssetUrl(pluginId: string, fileName: string): Promise<string> {
     const bucket = this.configService.get('PLUGIN_ASSETS_BUCKET');
-    const key = `plugins/${pluginId}/${fileName}`;
+    const key = `${pluginId}/${fileName}`;
 
     // Generate a pre-signed URL for the asset
     const signedUrl = this.s3Client.getSignedUrl('getObject', {

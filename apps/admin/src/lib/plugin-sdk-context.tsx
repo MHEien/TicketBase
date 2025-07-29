@@ -257,41 +257,22 @@ export const PluginSDKProvider: React.FC<{ children: ReactNode }> = ({
     [session, status, router, toast],
   );
 
-  // IMMEDIATE SETUP: Make SDK and React globally available for plugins
+  // IMMEDIATE SETUP: Make SDK available for Module Federation
   // This needs to happen synchronously, not in useEffect
   if (typeof window !== "undefined") {
-    console.log("🔧 Setting up global React and PluginSDK immediately...");
+    console.log("🔧 Setting up Module Federation Plugin SDK...");
 
     // CRITICAL: Validate React first
     if (!React || !React.useState || !React.useEffect) {
       console.error("❌ React or React hooks not available in provider");
     } else {
-      // Create a robust React instance with thorough validation
-      const ReactWithHooks = {
-        // Copy all React properties first
-        ...React,
-
-        // Explicitly set essential hooks with validation
-        useState: React.useState,
-        useEffect: React.useEffect,
-        useCallback: React.useCallback,
-        useMemo: React.useMemo,
-        useContext: React.useContext,
-        useReducer: React.useReducer,
-        useRef: React.useRef,
-
-        // Essential React functions
-        createElement: React.createElement,
-        Fragment: React.Fragment,
-        Component: React.Component,
-        PureComponent: React.PureComponent,
-      };
-
-      // Make React and SDK available globally immediately
-      (window as any).React = ReactWithHooks;
+      // Module Federation approach - expose via shared dependency pattern
+      (window as any).__SHARED_PLUGIN_SDK__ = pluginSDK;
+      
+      // Backward compatibility - keep the old global approach
       window.PluginSDK = pluginSDK;
 
-      console.log("✅ Global React and PluginSDK set up immediately");
+      console.log("✅ Module Federation Plugin SDK set up immediately");
     }
   }
 

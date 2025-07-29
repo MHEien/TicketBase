@@ -63,9 +63,25 @@ export class Plugin {
   })
   category: PluginCategory;
 
-  @ApiProperty({ description: 'URL to the plugin bundle' })
+  @ApiProperty({ description: 'URL to the plugin bundle (remoteEntry.js for Module Federation)' })
   @Column({ name: 'bundle_url' })
   bundleUrl: string;
+
+  @ApiProperty({ 
+    description: 'Module Federation metadata', 
+    required: false,
+    example: {
+      federationName: 'countdown_widget_plugin',
+      exposes: { './plugin': './src/index.tsx' },
+      shared: { react: { singleton: true } }
+    }
+  })
+  @Column({ type: 'jsonb', nullable: true, name: 'federation_metadata' })
+  federationMetadata?: {
+    federationName: string;
+    exposes: Record<string, string>;
+    shared: Record<string, any>;
+  };
 
   @ApiProperty({
     description: 'List of extension points this plugin implements',

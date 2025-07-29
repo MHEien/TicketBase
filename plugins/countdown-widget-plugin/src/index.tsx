@@ -1,3 +1,20 @@
+// =============================================================================
+// DYNAMIC PUBLIC PATH SETUP
+// =============================================================================
+// Set webpack public path dynamically based on the script src
+declare let __webpack_public_path__: string;
+
+if (typeof document !== 'undefined') {
+  const scripts = document.getElementsByTagName('script');
+  for (let i = scripts.length - 1; i >= 0; i--) {
+    const script = scripts[i];
+    if (script.src && script.src.includes('remoteEntry.js')) {
+      __webpack_public_path__ = script.src.replace('remoteEntry.js', '');
+      break;
+    }
+  }
+}
+
 import React, { useState, useEffect } from 'react';
 import { 
   definePlugin, 

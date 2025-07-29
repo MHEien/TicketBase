@@ -454,10 +454,26 @@ export const SpacingField: React.FC<SpacingFieldProps> = ({ value, onChange, lab
 
 /**
  * Hook to access the platform SDK within plugin components
+ * Now works with Module Federation shared dependencies
  */
 export function usePlatformSDK(): PlatformSDK {
-  // This will be injected by the platform at runtime
-  return (window as any).PluginSDK as PlatformSDK;
+  // For Module Federation, we'll try multiple access patterns
+  if (typeof window !== 'undefined') {
+    // First try the modern Module Federation way
+    if ((window as any).__SHARED_PLUGIN_SDK__) {
+      return (window as any).__SHARED_PLUGIN_SDK__ as PlatformSDK;
+    }
+    
+    // Fallback to the old global way for backward compatibility
+    if ((window as any).PluginSDK) {
+      return (window as any).PluginSDK as PlatformSDK;
+    }
+  }
+  
+  // If neither is available, throw a helpful error
+  throw new Error(
+    'Platform SDK not available. Make sure your plugin is loaded through the Module Federation system.'
+  );
 }
 
 /**
@@ -586,10 +602,22 @@ export function usePaymentProcessor(pluginId: string) {
 
 /**
  * Register plugin Puck components with the platform
+ * Now works with Module Federation component registry
  */
 export function registerPuckComponents(components: PuckWidgetDefinition[]): void {
-  // This will be called by the platform when a plugin is activated
   if (typeof window !== 'undefined') {
+    // Modern Module Federation approach - use the global registry function
+    if (typeof (window as any).registerPuckComponents === 'function') {
+      (window as any).registerPuckComponents(components);
+      console.log('✅ Registered Puck components via Module Federation:', components.map(c => c.id));
+    }
+    
+    // Also dispatch event for backward compatibility and other listeners
+    window.dispatchEvent(new CustomEvent('puck-components-registered', {
+      detail: { components }
+    }));
+    
+    // Legacy event name for backward compatibility
     window.dispatchEvent(new CustomEvent('plugin:register-puck-components', {
       detail: { components }
     }));

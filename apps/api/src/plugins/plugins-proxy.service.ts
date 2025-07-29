@@ -42,6 +42,50 @@ export class PluginsProxyService {
     return url;
   }
 
+  /**
+   * Proxy plugin bundle request to plugin server
+   */
+  async getPluginBundle(bundlePath: string): Promise<string> {
+    try {
+      this.logger.debug(`🔄 Proxying plugin bundle request: ${bundlePath}`);
+      
+      const pluginServerUrl = this.getPluginServerUrl();
+      const bundleUrl = `${pluginServerUrl}/plugins/bundles/${bundlePath}`;
+      
+      const response = await firstValueFrom(
+        this.httpService.get(bundleUrl, {
+          responseType: 'text',
+          headers: {
+            'Accept': 'application/javascript, text/javascript, */*',
+          },
+        }).pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(`❌ Failed to proxy plugin bundle: ${error.message}`, {
+              bundlePath,
+              status: error.response?.status,
+              statusText: error.response?.statusText,
+            });
+            throw error;
+          })
+        )
+      );
+
+      this.logger.debug(`✅ Successfully proxied plugin bundle: ${bundlePath}`);
+      return response.data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        throw new NotFoundException(`Plugin bundle not found: ${bundlePath}`);
+      }
+      
+      this.logger.error(`❌ Error proxying plugin bundle: ${error.message}`, {
+        bundlePath,
+        error: error.stack,
+      });
+      
+      throw new InternalServerErrorException(`Failed to load plugin bundle: ${error.message}`);
+    }
+  }
+
   private createAuthHeaders(authToken?: string): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -728,9 +772,15 @@ export class PluginsProxyService {
       const response = await firstValueFrom(
         this.httpService
           .post<{
-            bundleUrl: string;
+            remoteEntryUrl?: string;
+            bundleUrl?: string; // Keep for backward compatibility
             pluginId: string;
             version: string;
+            metadata?: {
+              federationName: string;
+              exposes: Record<string, string>;
+              shared: Record<string, any>;
+            };
           }>(url, formData, { headers })
           .pipe(
             catchError((error: AxiosError) => {
@@ -753,10 +803,15 @@ export class PluginsProxyService {
         status: response.status,
         pluginId,
         version,
-        bundleUrl: response.data.bundleUrl,
+        bundleUrl: response.data.remoteEntryUrl || response.data.bundleUrl,
+        federationMetadata: response.data.metadata,
       });
 
-      return response.data;
+      // Return bundleUrl for backward compatibility, but use remoteEntryUrl if available
+      return {
+        ...response.data,
+        bundleUrl: response.data.remoteEntryUrl || response.data.bundleUrl || '',
+      };
     } catch (error) {
       if (error instanceof AxiosError) {
         this.handleHttpError(error, `Upload plugin storage ${pluginId}`);
@@ -877,7 +932,8 @@ export class PluginsProxyService {
         this.httpService
           .post<{
             success: boolean;
-            bundleUrl: string;
+            remoteEntryUrl?: string;
+            bundleUrl?: string; // Keep for backward compatibility
             fileName: string;
             pluginId: string;
             version: string;
@@ -904,10 +960,14 @@ export class PluginsProxyService {
         status: response.status,
         filename,
         pluginId: response.data.pluginId,
-        bundleUrl: response.data.bundleUrl,
+        bundleUrl: response.data.remoteEntryUrl || response.data.bundleUrl,
       });
 
-      return response.data;
+      // Return with bundleUrl for backward compatibility, using remoteEntryUrl if available
+      return {
+        ...response.data,
+        bundleUrl: response.data.remoteEntryUrl || response.data.bundleUrl || '',
+      };
     } catch (error) {
       if (error instanceof AxiosError) {
         this.handleHttpError(error, `Upload plugin for build ${filename}`);

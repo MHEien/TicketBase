@@ -18,6 +18,7 @@ import { AssetsModule } from '../assets/assets.module';
 import { CompatibilityService } from './services/compatibility.service';
 import { PluginEventBus } from './services/plugin-event-bus.service';
 import { BundleService } from './services/bundle.service';
+import { ModuleFederationService } from './services/module-federation.service';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { PluginBundleController } from './bundle.controller';
 import { MinioModule } from '../minio/minio.module';
@@ -59,6 +60,7 @@ import { PluginActionService } from './services/plugin-action.service';
     CompatibilityService,
     PluginEventBus,
     BundleService,
+    ModuleFederationService,
     PluginStorageService,
     SecureConfigService,
     PluginActionService,
