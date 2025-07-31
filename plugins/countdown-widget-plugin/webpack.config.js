@@ -55,12 +55,20 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     clean: true,
-    // Remove hardcoded publicPath - we'll set it dynamically
-    publicPath: '',
+    // CRITICAL FIX: Use 'auto' instead of empty string for Vite compatibility
+    publicPath: 'auto',
+    // Add these for better Module Federation support with Vite hosts
+    uniqueName: 'countdownWidget',
+    chunkLoadingGlobal: 'webpackChunkCountdownWidget',
   },
-  externals: {
-    // Don't bundle these, they'll be provided by the host
-    react: 'react',
-    'react-dom': 'react-dom',
+  // Remove externals - let Module Federation handle shared dependencies
+  // externals: {
+  //   react: 'react',
+  //   'react-dom': 'react-dom',
+  // },
+  
+  // Add optimization for better chunk handling
+  optimization: {
+    splitChunks: false, // Let Module Federation handle code splitting
   },
 };

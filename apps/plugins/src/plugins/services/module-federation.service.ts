@@ -2,15 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 
-export interface ModuleFederationConfig {
+export interface ViteFederationConfig {
   name: string;
   filename: string;
   exposes: Record<string, string>;
   shared: Record<string, any>;
-  library: {
-    type: string;
-    name: string;
-  };
 }
 
 @Injectable()
@@ -18,18 +14,18 @@ export class ModuleFederationService {
   private readonly logger = new Logger(ModuleFederationService.name);
 
   /**
-   * Generates a Module Federation webpack configuration for a plugin
+   * Generates a Vite Module Federation configuration for a plugin
    * @param pluginId - The unique ID of the plugin
    * @param pluginDir - The plugin directory path
    * @param metadata - Plugin metadata from plugin.json
-   * @returns Module Federation configuration object
+   * @returns Vite Module Federation configuration object
    */
-  async generateFederationConfig(
+  async generateViteFederationConfig(
     pluginId: string,
     pluginDir: string,
     metadata?: any,
-  ): Promise<ModuleFederationConfig> {
-    this.logger.log(`Generating Module Federation config for plugin: ${pluginId}`);
+  ): Promise<ViteFederationConfig> {
+    this.logger.log(`Generating Vite Module Federation config for plugin: ${pluginId}`);
 
     // Read plugin.json if it exists to get federation-specific config
     let pluginJson: any = {};
@@ -42,20 +38,16 @@ export class ModuleFederationService {
       this.logger.warn(`Could not read plugin.json for ${pluginId}:`, error);
     }
 
-    // Generate clean plugin name for federation (replace special chars)
-    const federationName = pluginId.replace(/[^a-zA-Z0-9_]/g, '_');
+    // Generate clean plugin name for federation
+    const federationName = this.sanitizePluginName(pluginId);
 
-    const config: ModuleFederationConfig = {
-      name: `${federationName}_plugin`,
+    const config: ViteFederationConfig = {
+      name: federationName,
       filename: 'remoteEntry.js',
       exposes: {
         './plugin': './src/index.tsx', // Main plugin entry point
       },
       shared: this.generateSharedDependencies(pluginJson),
-      library: {
-        type: 'var',
-        name: `${federationName}_plugin`,
-      },
     };
 
     // Add additional exposes if plugin specifies them
@@ -67,143 +59,115 @@ export class ModuleFederationService {
   }
 
   /**
-   * Generates webpack configuration with Module Federation
-   * @param pluginId - The unique ID of the plugin
+   * Writes Vite configuration to plugin directory
    * @param pluginDir - The plugin directory path
-   * @param federationConfig - Module Federation configuration
-   * @returns Webpack configuration object
+   * @param federationConfig - Vite Module Federation configuration
    */
-  async generateWebpackConfig(
-    pluginId: string,
-    pluginDir: string,
-    federationConfig: ModuleFederationConfig,
-  ): Promise<any> {
-    this.logger.log(`Generating Webpack config for plugin: ${pluginId}`);
+  async writeViteConfig(pluginDir: string, federationConfig: ViteFederationConfig): Promise<void> {
+    const configPath = path.join(pluginDir, 'vite.config.ts');
+    
+    // Generate TypeScript Vite config
+    const configContent = `import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { federation } from '@module-federation/vite';
+import { resolve } from 'path';
 
-    // Use native webpack container plugin for better compatibility
-    const webpackConfig = {
-      mode: 'development',
-      entry: './src/index.tsx',
-      devtool: 'source-map',
-      resolve: {
-        extensions: ['.tsx', '.ts', '.jsx', '.js'],
-      },
-      module: {
-        rules: [
-          {
-            test: /\.tsx?$/,
-            use: {
-              loader: 'ts-loader',
-              options: {
-                transpileOnly: true,
-              },
-            },
-            exclude: /node_modules/,
-          },
-          {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader'],
-          },
-        ],
-      },
-      plugins: [
-        // Will be replaced with proper plugin instance in writeWebpackConfig
-        {
-          __mf_config: {
-            name: federationConfig.name,
-            filename: federationConfig.filename,
-            exposes: federationConfig.exposes,
-            shared: {
-              react: {
-                singleton: true,
-                requiredVersion: '^19.0.0',
-              },
-              'react-dom': {
-                singleton: true,
-                requiredVersion: '^19.0.0',
-              },
-              'ticketsplatform-plugin-sdk': {
-                singleton: true,
-              },
-              'framer-motion': {
-                singleton: true,
-              },
-            },
-          }
-        }
-      ],
+export default defineConfig({
+  plugins: [
+    react(),
+    federation({
+      name: '${federationConfig.name}',
+      filename: '${federationConfig.filename}',
+      exposes: ${JSON.stringify(federationConfig.exposes, null, 2)},
+      shared: ${JSON.stringify(federationConfig.shared, null, 2)},
+    }),
+  ],
+  build: {
+    target: 'esnext',
+    minify: false,
+    cssCodeSplit: false,
+    rollupOptions: {
+      external: [],
       output: {
-        path: path.join(pluginDir, 'dist'),
-        filename: '[name].js',
-        publicPath: 'auto',
-        clean: true,
+        format: 'es',
       },
-      target: 'web',
-      stats: 'minimal',
-    };
-
-    return webpackConfig;
+    },
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    },
+  },
+});`;
+    
+    await fs.promises.writeFile(configPath, configContent, 'utf-8');
+    this.logger.log(`Vite config written to: ${configPath}`);
   }
 
   /**
-   * Writes webpack configuration to plugin directory
+   * Updates plugin package.json with Vite build scripts
    * @param pluginDir - The plugin directory path
-   * @param webpackConfig - Webpack configuration object
    */
-  async writeWebpackConfig(pluginDir: string, webpackConfig: any): Promise<void> {
-    const configPath = path.join(pluginDir, 'webpack.config.js');
+  async updatePackageJsonForVite(pluginDir: string): Promise<void> {
+    const packageJsonPath = path.join(pluginDir, 'package.json');
     
-    // Extract MF config from the placeholder
-    const mfConfig = webpackConfig.plugins[0].__mf_config;
-    
-    // Generate proper JavaScript config
-    const configContent = `const path = require('path');
+    try {
+      const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf-8'));
+      
+      // Update build script to use Vite
+      packageJson.scripts = {
+        ...packageJson.scripts,
+        build: 'vite build',
+        'build:prod': 'vite build --mode production',
+        dev: 'vite build --watch',
+        preview: 'vite preview',
+      };
 
-module.exports = {
-  mode: '${webpackConfig.mode}',
-  entry: '${webpackConfig.entry}',
-  devtool: '${webpackConfig.devtool}',
-  resolve: {
-    extensions: ${JSON.stringify(webpackConfig.resolve.extensions)},
-  },
-  module: {
-    rules: [
-      {
-        test: /\\.tsx?$/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: true,
-          },
-        },
-        exclude: /node_modules/,
-      },
-      {
-        test: /\\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-    ],
-  },
-  plugins: [
-    new (require('webpack')).container.ModuleFederationPlugin({
-      name: '${mfConfig.name}',
-      filename: '${mfConfig.filename}',
-      exposes: ${JSON.stringify(mfConfig.exposes)},
-      shared: ${JSON.stringify(mfConfig.shared, null, 2)},
-    }),
-  ],
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
-    publicPath: 'auto',
-    clean: true,
-  },
-  target: '${webpackConfig.target}',
-  stats: '${webpackConfig.stats}',
-};`;
-    
-    await fs.promises.writeFile(configPath, configContent, 'utf-8');
-    this.logger.log(`Webpack config written to: ${configPath}`);
+      // Add Vite and Module Federation as dependencies
+      packageJson.devDependencies = {
+        ...packageJson.devDependencies,
+        vite: '^7.0.3',
+        '@module-federation/vite': '^1.7.1',
+        '@vitejs/plugin-react': '^4.7.0',
+      };
+
+      // Remove webpack dependencies if they exist
+      delete packageJson.devDependencies?.webpack;
+      delete packageJson.devDependencies?.['webpack-cli'];
+      delete packageJson.devDependencies?.['@module-federation/enhanced'];
+      delete packageJson.devDependencies?.['ts-loader'];
+      delete packageJson.devDependencies?.['css-loader'];
+      delete packageJson.devDependencies?.['style-loader'];
+
+      await fs.promises.writeFile(
+        packageJsonPath,
+        JSON.stringify(packageJson, null, 2),
+        'utf-8'
+      );
+
+      this.logger.log(`Updated package.json for Vite: ${packageJsonPath}`);
+    } catch (error) {
+      this.logger.error(`Failed to update package.json for plugin: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Sanitizes plugin name for use as federation name
+   * @param pluginId - The plugin ID
+   * @returns Sanitized name suitable for Vite federation
+   */
+  private sanitizePluginName(pluginId: string): string {
+    // Convert to camelCase for Vite compatibility
+    return pluginId
+      .replace(/[^a-zA-Z0-9]/g, ' ')
+      .split(' ')
+      .map((word, index) => 
+        index === 0 
+          ? word.toLowerCase() 
+          : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join('');
   }
 
   /**
@@ -216,16 +180,13 @@ module.exports = {
       react: {
         singleton: true,
         requiredVersion: '^19.0.0',
-        strictVersion: false,
       },
       'react-dom': {
         singleton: true,
         requiredVersion: '^19.0.0',
-        strictVersion: false,
       },
       'ticketsplatform-plugin-sdk': {
         singleton: true,
-        strictVersion: false,
       },
     };
 
@@ -250,7 +211,6 @@ module.exports = {
         if (pluginJson.dependencies[lib]) {
           autoShared[lib] = {
             singleton: true,
-            strictVersion: false,
           };
         }
       });
