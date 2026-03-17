@@ -1,0 +1,21 @@
+{
+  "name": "stripe-payments-plugin",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Stripe payments plugin for Tickets Platform — reference implementation",
+  "scripts": {
+    "build": "bun run build:frontend && bun run build:backend",
+    "build:frontend": "bun build src/frontend.tsx --outfile dist/frontend.js --format esm --external react --external react-dom",
+    "build:backend": "bun build src/backend.ts --outfile dist/backend.js --format esm --target node --external ticketsplatform-plugin-sdk",
+    "type-check": "tsc --noEmit",
+    "package": "bun run build && cd dist && zip -r ../stripe-payments.zip . && cd .. && zip stripe-payments.zip plugin.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/react": "^19.0.8",
+    "ticketsplatform-plugin-sdk": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

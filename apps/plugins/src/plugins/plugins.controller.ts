@@ -303,6 +303,12 @@ export class PluginsController {
       createDto.bundleUrl,
       createDto.extensionPoints,
       createDto.configSchema,
+      {
+        backendEntryPoint: createDto.backendEntryPoint,
+        backendRoutes: createDto.backendRoutes,
+        backendHooks: createDto.backendHooks,
+        requiredSecrets: createDto.requiredSecrets,
+      },
     );
   }
 

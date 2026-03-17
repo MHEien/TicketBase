@@ -29,6 +29,11 @@ import {
 import { ConfigAudit, ConfigAuditSchema } from './schemas/config-audit.schema';
 import { SecureConfigService } from './services/secure-config.service';
 import { PluginActionService } from './services/plugin-action.service';
+import { PluginRuntimeService } from './services/plugin-runtime.service';
+import {
+  PluginStorage,
+  PluginStorageSchema,
+} from './schemas/plugin-storage.schema';
 
 @Module({
   imports: [
@@ -38,6 +43,7 @@ import { PluginActionService } from './services/plugin-action.service';
       { name: PluginRating.name, schema: PluginRatingSchema },
       { name: PluginConfig.name, schema: PluginConfigSchema },
       { name: ConfigAudit.name, schema: ConfigAuditSchema },
+      { name: PluginStorage.name, schema: PluginStorageSchema },
     ]),
     AssetsModule,
     MinioModule,
@@ -62,6 +68,7 @@ import { PluginActionService } from './services/plugin-action.service';
     PluginStorageService,
     SecureConfigService,
     PluginActionService,
+    PluginRuntimeService,
   ],
   exports: [
     PluginsService,
@@ -70,6 +77,7 @@ import { PluginActionService } from './services/plugin-action.service';
     PluginStorageService,
     SecureConfigService,
     PluginActionService,
+    PluginRuntimeService,
   ],
 })
 export class PluginsModule {}

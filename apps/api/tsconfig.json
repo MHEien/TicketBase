@@ -13,6 +13,7 @@
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": ["node", "jest", "express", "multer"],
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types", "./src/types"]
   }
 }

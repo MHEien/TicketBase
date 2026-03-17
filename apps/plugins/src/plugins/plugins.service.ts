@@ -18,6 +18,7 @@ import {
 import { BundleService } from './services/bundle.service';
 import { PluginStorageService } from './services/plugin-storage.service';
 import { SecureConfigService } from './services/secure-config.service';
+import { PluginRuntimeService } from './services/plugin-runtime.service';
 
 @Injectable()
 export class PluginsService {
@@ -32,6 +33,7 @@ export class PluginsService {
     private bundleService: BundleService,
     private pluginStorageService: PluginStorageService,
     private secureConfigService: SecureConfigService,
+    private pluginRuntimeService: PluginRuntimeService,
   ) {}
 
   async findAll(): Promise<PluginDocument[]> {
@@ -100,6 +102,15 @@ export class PluginsService {
     // Update plugin install count
     await this.updatePluginInstallCount(pluginId);
 
+    // Execute plugin onInstall lifecycle hook
+    if (plugin.backendEntryPoint) {
+      await this.pluginRuntimeService.executeLifecycle(
+        tenantId,
+        pluginId,
+        'onInstall',
+      );
+    }
+
     return {
       ...plugin.toObject(),
       enabled: installed.enabled,
@@ -113,6 +124,15 @@ export class PluginsService {
   async uninstallPlugin(tenantId: string, pluginId: string): Promise<void> {
     const plugin = await this.findById(pluginId);
 
+    // Execute plugin onUninstall lifecycle hook before removing
+    if (plugin.backendEntryPoint) {
+      await this.pluginRuntimeService.executeLifecycle(
+        tenantId,
+        pluginId,
+        'onUninstall',
+      );
+    }
+
     const result = await this.installedPluginModel
       .deleteOne({
         tenantId,
@@ -125,6 +145,9 @@ export class PluginsService {
         `Plugin ${pluginId} is not installed for tenant ${tenantId}`,
       );
     }
+
+    // Invalidate cached plugin code
+    this.pluginRuntimeService.invalidatePlugin(pluginId);
 
     // Update plugin install count (decrement)
     await this.updatePluginInstallCount(pluginId, -1);
@@ -269,6 +292,15 @@ export class PluginsService {
     installed.updatedAt = new Date();
     await installed.save();
 
+    // Execute plugin onEnable/onDisable lifecycle hook
+    if (plugin.backendEntryPoint) {
+      await this.pluginRuntimeService.executeLifecycle(
+        tenantId,
+        pluginId,
+        enabled ? 'onEnable' : 'onDisable',
+      );
+    }
+
     return {
       ...plugin.toObject(),
       enabled: installed.enabled,
@@ -290,6 +322,12 @@ export class PluginsService {
     bundleUrl?: string,
     providedExtensionPoints?: string[],
     configSchema?: any,
+    backendManifest?: {
+      backendEntryPoint?: string;
+      backendRoutes?: Array<{ method: string; path: string; handler: string }>;
+      backendHooks?: Array<{ event: string; handler: string }>;
+      requiredSecrets?: string[];
+    },
   ): Promise<PluginDocument> {
     this.logger.log(`Creating plugin ${id} v${version}`);
 
@@ -383,6 +421,19 @@ export class PluginsService {
       extensionPoints,
       metadata,
       requiredPermissions,
+      // Backend manifest fields
+      ...(backendManifest?.backendEntryPoint && {
+        backendEntryPoint: backendManifest.backendEntryPoint,
+      }),
+      ...(backendManifest?.backendRoutes && {
+        backendRoutes: backendManifest.backendRoutes,
+      }),
+      ...(backendManifest?.backendHooks && {
+        backendHooks: backendManifest.backendHooks,
+      }),
+      ...(backendManifest?.requiredSecrets && {
+        requiredSecrets: backendManifest.requiredSecrets,
+      }),
     });
 
     this.logger.log(`Plugin ${id} v${version} created successfully`);
@@ -458,6 +509,9 @@ export class PluginsService {
 
     // Apply updates
     await this.pluginModel.updateOne({ id }, { $set: updateData }).exec();
+
+    // Invalidate cached plugin code so the runtime picks up changes
+    this.pluginRuntimeService.invalidatePlugin(id);
 
     // Return updated plugin
     return this.findById(id);

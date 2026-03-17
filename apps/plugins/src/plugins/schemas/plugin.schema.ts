@@ -78,6 +78,33 @@ export class Plugin {
 
   @Prop([String])
   requiredPermissions: string[];
+
+  // =============================================================================
+  // BACKEND MANIFEST FIELDS
+  // =============================================================================
+
+  /** Entry point file for server-side code within the bundle */
+  @Prop({ required: false })
+  backendEntryPoint: string;
+
+  /** HTTP routes this plugin handles */
+  @Prop({ type: [Object], default: [] })
+  backendRoutes: Array<{
+    method: string;
+    path: string;
+    handler: string;
+  }>;
+
+  /** Platform events this plugin listens to */
+  @Prop({ type: [Object], default: [] })
+  backendHooks: Array<{
+    event: string;
+    handler: string;
+  }>;
+
+  /** Secret keys the plugin requires (e.g., ["STRIPE_SECRET_KEY"]) */
+  @Prop([String])
+  requiredSecrets: string[];
 }
 
 export const PluginSchema = SchemaFactory.createForClass(Plugin);

@@ -4,13 +4,13 @@ import {
   Req,
   Res,
   Headers,
-  NotFoundException,
   Param,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { PluginsService } from './plugins.service';
-import axios from 'axios';
+import { PluginRuntimeService } from './services/plugin-runtime.service';
+import { JwtAuthGuard } from '../common/auth/guards/jwt-auth.guard';
 import {
   ApiTags,
   ApiOperation,
@@ -19,155 +19,97 @@ import {
   ApiHeader,
 } from '@nestjs/swagger';
 
+/**
+ * Routes authenticated API requests to plugin backend handlers.
+ * This is the main entry point for plugin API calls from the frontend.
+ *
+ * URL format: ALL /api/plugin-proxy/:pluginId/*path
+ */
 @ApiTags('plugin-proxy')
 @Controller('api/plugin-proxy')
+@UseGuards(JwtAuthGuard)
 export class PluginProxyController {
   private readonly logger = new Logger(PluginProxyController.name);
 
-  constructor(private readonly pluginsService: PluginsService) {}
+  constructor(private readonly runtimeService: PluginRuntimeService) {}
 
-  @ApiOperation({ summary: 'Proxy requests to plugin services' })
+  @ApiOperation({ summary: 'Route requests to plugin backend handlers' })
   @ApiResponse({
     status: 200,
-    description: 'Successfully proxied the request to the plugin service',
+    description: 'Successfully routed the request to the plugin handler',
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Tenant ID is required',
-  })
+  @ApiResponse({ status: 401, description: 'Tenant ID is required' })
   @ApiResponse({
     status: 404,
-    description: 'Plugin not found or not installed for this tenant',
+    description: 'Plugin not found or route not matched',
   })
   @ApiHeader({
     name: 'x-tenant-id',
     description: 'Tenant identifier',
     required: true,
   })
-  @ApiParam({
-    name: 'pluginId',
-    description: 'Plugin ID',
-    required: true,
-  })
-  @ApiParam({
-    name: 'pathSuffix',
-    description: 'The path to forward to the plugin service',
-    required: false,
-  })
-  @All(':pluginId/*pathSuffix')
-  async proxyRequest(
+  @ApiParam({ name: 'pluginId', description: 'Plugin ID', required: true })
+  @All(':pluginId')
+  async proxyRoot(
     @Headers('x-tenant-id') tenantId: string,
     @Param('pluginId') pluginId: string,
-    @Param('pathSuffix') pathSuffix: string,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    this.logger.debug(`🔍 Received request: ${req.method} ${req.url}`);
-    this.logger.debug(`👉 Plugin ID: ${pluginId}, Path Suffix: ${pathSuffix}`);
-    this.logger.debug(`📄 Query params: ${JSON.stringify(req.query)}`);
-    this.logger.debug(
-      `🔑 Headers: ${JSON.stringify(this.sanitizeHeaders(req.headers))}`,
-    );
+    return this.routeToPlugin(pluginId, tenantId, '/', req, res);
+  }
 
-    if (req.body && Object.keys(req.body).length > 0) {
-      this.logger.debug(
-        `📦 Request body: ${JSON.stringify(req.body, null, 2)}`,
-      );
-    }
+  @All(':pluginId/*path')
+  async proxyWithPath(
+    @Headers('x-tenant-id') tenantId: string,
+    @Param('pluginId') pluginId: string,
+    @Param('path') path: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.routeToPlugin(pluginId, tenantId, `/${path}`, req, res);
+  }
 
+  private async routeToPlugin(
+    pluginId: string,
+    tenantId: string,
+    pluginPath: string,
+    req: Request,
+    res: Response,
+  ) {
     if (!tenantId) {
-      this.logger.warn(`❌ Missing tenant ID in request`);
       return res.status(401).json({ error: 'Tenant ID is required' });
     }
 
-    // Get plugin data
+    this.logger.debug(
+      `Plugin API: ${req.method} ${pluginPath} -> plugin ${pluginId} (tenant: ${tenantId})`,
+    );
+
     try {
-      this.logger.debug(`🔍 Looking up plugin with ID: ${pluginId}`);
-      const plugin = await this.pluginsService.findById(pluginId);
-      this.logger.debug(`✅ Found plugin: ${plugin.name} (v${plugin.version})`);
-
-      // Check if plugin is installed for this tenant
-      this.logger.debug(
-        `🔍 Checking if plugin is installed for tenant: ${tenantId}`,
-      );
-      const installedPlugins =
-        await this.pluginsService.getInstalledPlugins(tenantId);
-      const isInstalled = installedPlugins.some((p) => p.id === pluginId);
-
-      if (!isInstalled) {
-        this.logger.warn(
-          `❌ Plugin ${pluginId} not installed for tenant ${tenantId}`,
-        );
-        return res
-          .status(404)
-          .json({ error: `Plugin ${pluginId} not installed` });
-      }
-
-      this.logger.debug(
-        `✅ Plugin ${pluginId} is installed for tenant ${tenantId}`,
+      const result = await this.runtimeService.handleRoute(
+        tenantId,
+        pluginId,
+        req.method,
+        pluginPath,
+        req.body,
+        req.query as Record<string, string>,
+        req.headers as Record<string, string>,
       );
 
-      // Forward request to plugin API service
-      // This URL would be configured differently in production
-      const targetUrl = `https://api.plugin-service.example.com/${pluginId}/${pathSuffix || ''}`;
-      this.logger.debug(`🔀 Forwarding request to: ${targetUrl}`);
-
-      try {
-        // Forward the request with tenant context
-        this.logger.debug(`📤 Sending ${req.method} request to plugin service`);
-        const response = await axios({
-          method: req.method,
-          url: targetUrl,
-          data: req.body,
-          headers: {
-            ...(req.headers as Record<string, any>),
-            'x-tenant-id': tenantId,
-          },
-          params: req.query,
-        });
-
-        this.logger.debug(
-          `📥 Received response from plugin service: ${response.status}`,
-        );
-
-        // Return the response
-        return res
-          .status(response.status)
-          .set(response.headers as Record<string, string>)
-          .json(response.data);
-      } catch (error: any) {
-        if (error.response) {
-          this.logger.error(
-            `❌ Plugin service error: ${error.response.status} - ${JSON.stringify(error.response.data)}`,
-          );
-          return res.status(error.response.status).json(error.response.data);
+      if (result.headers) {
+        for (const [key, value] of Object.entries(result.headers)) {
+          res.setHeader(key, value);
         }
-        this.logger.error(`❌ Connection error: ${error.message}`, error.stack);
-        return res
-          .status(500)
-          .json({ error: 'Error connecting to plugin service' });
       }
+
+      return res.status(result.status).json(result.body);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        this.logger.error(`❌ Plugin not found: ${pluginId}`);
-        return res.status(404).json({ error: `Plugin ${pluginId} not found` });
-      }
-      this.logger.error(`❌ Server error: ${error.message}`, error.stack);
-      return res.status(500).json({ error: 'Server error' });
+      this.logger.error(
+        `Plugin proxy failed for ${pluginId}: ${error.message}`,
+      );
+      return res.status(error.status || 500).json({
+        error: error.message || 'Plugin handler failed',
+      });
     }
-  }
-
-  // Helper to prevent sensitive data from being logged
-  private sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
-    const sanitized = { ...headers };
-    const sensitiveHeaders = ['authorization', 'cookie', 'x-api-key'];
-
-    for (const header of sensitiveHeaders) {
-      if (sanitized[header]) {
-        sanitized[header] = '[REDACTED]';
-      }
-    }
-
-    return sanitized;
   }
 }
