@@ -1,0 +1,75 @@
+{
+  "id": "stripe-payments",
+  "name": "Stripe Payments",
+  "version": "3.0.0",
+  "description": "Accept credit card and other payments via Stripe. Includes checkout, webhooks, refunds, and revenue dashboards.",
+  "author": "Tickets Platform Team",
+  "category": "payment",
+  "displayName": "Stripe Payments",
+
+  "requiredPermissions": ["read:orders", "write:orders", "read:customers", "write:transactions"],
+
+  "extensionPoints": [
+    "admin-settings",
+    "payment-methods",
+    "checkout-confirmation",
+    "dashboard-widget"
+  ],
+
+  "backend": {
+    "entryPoint": "dist/backend.js",
+    "routes": [
+      { "method": "POST", "path": "/checkout/create-session", "handler": "createCheckoutSession" },
+      { "method": "POST", "path": "/checkout/verify", "handler": "verifyPayment" },
+      { "method": "POST", "path": "/webhooks/stripe", "handler": "handleWebhook" },
+      { "method": "POST", "path": "/refunds", "handler": "createRefund" },
+      { "method": "GET",  "path": "/revenue/summary", "handler": "getRevenueSummary" }
+    ],
+    "hooks": [
+      { "event": "order.created", "handler": "onOrderCreated" },
+      { "event": "order.cancelled", "handler": "onOrderCancelled" }
+    ]
+  },
+
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "secretKey": {
+        "type": "string",
+        "title": "Stripe Secret Key",
+        "description": "Your Stripe secret API key (starts with sk_test_ or sk_live_)",
+        "pattern": "^sk_(test_|live_)"
+      },
+      "publishableKey": {
+        "type": "string",
+        "title": "Stripe Publishable Key",
+        "description": "Your Stripe publishable key (starts with pk_test_ or pk_live_)",
+        "pattern": "^pk_(test_|live_)"
+      },
+      "webhookSecret": {
+        "type": "string",
+        "title": "Webhook Signing Secret",
+        "description": "Used to verify Stripe webhook signatures (starts with whsec_)"
+      },
+      "testMode": {
+        "type": "boolean",
+        "title": "Test Mode",
+        "default": true
+      }
+    },
+    "required": ["secretKey", "publishableKey"],
+    "sensitiveFields": ["secretKey", "webhookSecret"]
+  },
+
+  "build": {
+    "frontend": {
+      "entry": "src/frontend.tsx",
+      "output": "dist/frontend.js",
+      "external": ["react", "react-dom"]
+    },
+    "backend": {
+      "entry": "src/backend.ts",
+      "output": "dist/backend.js"
+    }
+  }
+}

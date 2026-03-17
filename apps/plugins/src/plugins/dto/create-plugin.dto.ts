@@ -85,4 +85,37 @@ export class CreatePluginDto {
   })
   @IsOptional()
   configSchema?: any;
+
+  @ApiPropertyOptional({
+    description: 'Backend entry point file within the bundle',
+    example: 'dist/backend.js',
+  })
+  @IsString()
+  @IsOptional()
+  backendEntryPoint?: string;
+
+  @ApiPropertyOptional({
+    description: 'Backend route definitions for the plugin runtime',
+    example: [{ method: 'POST', path: '/webhooks/stripe', handler: 'handleWebhook' }],
+  })
+  @IsArray()
+  @IsOptional()
+  backendRoutes?: Array<{ method: string; path: string; handler: string }>;
+
+  @ApiPropertyOptional({
+    description: 'Backend hook definitions for platform events',
+    example: [{ event: 'order.created', handler: 'onOrderCreated' }],
+  })
+  @IsArray()
+  @IsOptional()
+  backendHooks?: Array<{ event: string; handler: string }>;
+
+  @ApiPropertyOptional({
+    description: 'Secret keys the plugin requires',
+    example: ['secretKey', 'webhookSecret'],
+    type: [String],
+  })
+  @IsArray()
+  @IsOptional()
+  requiredSecrets?: string[];
 }
